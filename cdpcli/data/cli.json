@@ -1,0 +1,60 @@
+{
+   "description":"The Cloudera CDP Command Line Interface is a unified tool to manage your CDP services.",
+   "synopsis":"cdp [options] <command> <subcommand> [parameters]",
+   "help_usage":"Use *cdp command help* for information on a specific command.",
+   "options":{
+      "version":{
+         "action":"version",
+         "help":"<p>Display the version of this tool.</p>"
+      },
+      "debug":{
+         "action":"store_true",
+         "help":"<p>Turn on debug logging.</p>"
+      },
+      "no-verify-tls":{
+         "action":"store_false",
+         "dest":"verify_tls",
+         "help":"<p>By default, the CDP CLI uses TLS when communicating with CDP services. For each TLS connection, the CDP CLI will verify TLS certificates. This option overrides the default behavior of verifying TLS certificates.</p>"
+      },
+      "ca-bundle":{
+         "dest":"ca_bundle",
+         "help":"<p>The CA certificate bundle to use when verifying TLS certificates. Overrides any config and environment settings.</p>"
+      },
+      "endpoint-url":{
+         "hidden": true,
+         "help":"<p>Override command's default URL with the given URL.</p>"
+      },
+      "cdp-endpoint-url":{
+         "hidden": true,
+         "help":"<p>Override command's default CDP URL with the given URL.</p>"
+      },
+      "output":{
+         "choices":[
+            "json",
+            "text",
+            "table"
+         ],
+         "help":"<p>The formatting style for command output.</p>"
+      },
+      "color": {
+         "choices": [
+            "on",
+            "off",
+            "auto"],
+         "default": "auto",
+         "help": "<p>Turn on/off color output.</p>"
+      },
+      "no-paginate":{
+         "action":"store_false",
+         "help":"<p>Disable automatic pagination.</p>",
+         "dest":"paginate"
+      },
+      "auth-config":{
+         "help":"<p>Specify the path to the client authentication configuration.</p>",
+         "dest":"auth_config"
+      },
+      "profile":{
+         "help": "<p>Use a specific profile from your credential file.</p>"
+      }
+   }
+}

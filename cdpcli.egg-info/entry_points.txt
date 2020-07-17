@@ -1,0 +1,4 @@
+[console_scripts]
+cdp = cdpcli.clidriver:main
+cdp_completer = cdpcli.completer:main
+

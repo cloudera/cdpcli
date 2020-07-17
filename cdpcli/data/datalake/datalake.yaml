@@ -1,0 +1,787 @@
+swagger: '2.0'
+x-endpoint-name: datalake
+x-interface-model: cdp
+x-products: CDP
+x-cdp-releases: PUBLIC
+info:
+  version: 0.1-SNAPSHOT
+  title: Cloudera Datalake Service
+  license:
+    name: Apache 2.0
+  description: Cloudera data lake is a service for launching and managing data lake clusters powered by Cloudera Runtime.
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/v1/datalake/listRuntimes:
+    post:
+      summary: Lists the datalake versions.
+      description: Lists the available datalake runtime versions.
+      operationId: listRuntimes
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListRuntimesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListRuntimesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/createAWSDatalake:
+    post:
+      summary: Creates an AWS datalake.
+      description: Creates an AWS datalake.
+      operationId: createAWSDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAWSDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAWSDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/createAzureDatalake:
+    post:
+      summary: Creates an Azure datalake.
+      description: Creates an Azure datalake.
+      operationId: createAzureDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAzureDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAzureDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/listDatalakes:
+    post:
+      summary: Lists datalakes.
+      description: Lists datalakes.
+      operationId: listDatalakes
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDatalakesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDatalakesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/deleteDatalake:
+    post:
+      summary: Deletes a datalake.
+      description: Deletes a datalake.
+      operationId: deleteDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/describeDatalake:
+    post:
+      summary: Describes a datalake.
+      description: Describes a datalake.
+      operationId: describeDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/repairDatalake:
+    post:
+      summary: Repairs a datalake.
+      description: Repairs a datalake.
+      operationId: repairDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RepairDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RepairDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/getClusterServiceStatus:
+    post:
+      summary: Get cluster service status.
+      description: Gets the status of the services in a cluster.
+      operationId: getClusterServiceStatus
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetClusterServiceStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetClusterServiceStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/getClusterHostStatus:
+    post:
+      summary: Get cluster host status.
+      description: Gets the status of the hosts in a cluster.
+      operationId: getClusterHostStatus
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetClusterHostStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetClusterHostStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/upgradeDatalake:
+    post:
+      summary: OS or data platform upgrade for the SDX cluster.
+      description: OS or data platform upgrade for the SDX cluster. You need to specify either one of image-id, runtime or lock-components to proceed.
+      operationId: upgradeDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/startDatalake:
+    post:
+      summary: Start Datalake
+      description: Starts a stopped Datalake
+      operationId: startDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/stopDatalake:
+    post:
+      summary: Stop Datalake
+      description: Stops a running Datalake
+      operationId: stopDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StopDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StopDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Error:
+    type: object
+    description: An object returned on an error.
+    properties:
+      code:
+        type: string
+        description: The error code.
+      message:
+        type: string
+        description: The error message.
+  ClouderaManagerDetails:
+    type: object
+    description: Cloudera Manager details.
+    required:
+      - version
+      - clouderaManagerRepositoryURL
+    properties:
+      version:
+        type: string
+        description: Cloudera Manager version.
+      clouderaManagerRepositoryURL:
+        type: string
+        description: Cloudera Manager repository URL.
+      clouderaManagerServerURL:
+        type: string
+        description: Cloudera Manager server URL.
+  ProductVersion:
+    type: object
+    description: Product version.
+    required:
+      - name
+      - version
+    properties:
+      name:
+        type: string
+        description: The name of the product.
+      version:
+        type: string
+        description: The version of the product.
+  AWSConfiguration:
+    type: object
+    description: AWS configuration.
+    properties:
+      instanceProfile:
+        type: string
+        description: The instance profile used for the ID Broker instance.
+  AzureConfiguration:
+    type: object
+    description: Azure configuration.
+    properties:
+      managedIdentity:
+        type: string
+        description: The managed identity used for the ID Broker instance.
+  DatalakeDetails:
+    type: object
+    description: Details about a datalake
+    required:
+      - datalakeName
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the datalake.
+      datalakeName:
+        type: string
+        description: The name of the datalake.
+      status:
+        type: string
+        description: The status of the datalake.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      credentialCrn:
+        type: string
+        description: The CRN of credentials.
+      cloudPlatform:
+        type: string
+        description: The cloud platform.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroup'
+        description: The instance details.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when the datalake was created.
+      clouderaManager:
+        $ref: '#/definitions/ClouderaManagerDetails'
+        description: The Cloudera Manager details.
+      productVersions:
+        type: array
+        items:
+          $ref: '#/definitions/ProductVersion'
+        description: The product versions.
+      region:
+        type: string
+        description: The region of the datalake.
+      statusReason:
+        type: string
+        description: The reason for the status of the datalake.
+      awsConfiguration:
+        $ref: '#/definitions/AWSConfiguration'
+        description: The AWS configuration.
+      azureConfiguration:
+        $ref: '#/definitions/AzureConfiguration'
+        description: The Azure configuration.
+      endpoints:
+        $ref: '#/definitions/Endpoints'
+        description: The exposed service api endpoints.
+  InstanceGroup:
+    type: object
+    description: The type of the instance group which also contains the actual instance(s)
+    required:
+      - name
+      - instances
+    properties:
+      name:
+        type: string
+        description: The name of the instance group where the given instance is located.
+      instances:
+        type: array
+        items:
+          $ref: '#/definitions/Instance'
+        description: Some information about the given instance.
+  Instance:
+    type: object
+    description: Object which holds some details of an instance for the given cluster.
+    required:
+      - id
+      - state
+    properties:
+      id:
+        type: string
+        description: The ID of the given instance.
+      state:
+        type: string
+        description: The actual state of the instance.
+  Endpoints:
+    type: object
+    description: Object which holds the exposed endpoints for the given cluster.
+    required:
+      - endpoints
+    properties:
+      endpoints:
+        type: array
+        items:
+          $ref: '#/definitions/Endpoint'
+        description: The exposed API endpoints.
+  Endpoint:
+    type: object
+    description: Object which holds the exposed endpoint.
+    required:
+      - serviceName
+      - serviceUrl
+      - displayName
+      - knoxService
+      - mode
+      - open
+    properties:
+      serviceName:
+        type: string
+        description: The name of the exposed service
+      serviceUrl:
+        type: string
+        description: The server url for the given exposed service's API.
+      displayName:
+        type: string
+        description: The more consumable name of the exposed service.
+      knoxService:
+        type: string
+        description: The related knox entry.
+      mode:
+        type: string
+        description: The SSO mode of the given service.
+      open:
+        type: boolean
+        description: The access status of the given endpoint. Whether its open or not.
+  Datalake:
+    type: object
+    description: Information about a datalake.
+    required:
+      - datalakeName
+      - crn
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the datalake.
+      crn:
+        type: string
+        description: The CRN of the datalake.
+      status:
+        type: string
+        description: The status of the datalake.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when the datalake was created.
+      statusReason:
+        type: string
+        description: The reason for the status of the datalake.
+  DatalakeResourceTagRequest:
+    type: object
+    description: Tag for a datalake resource.
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The key of tag.
+      value:
+        type: string
+        description: The value of the tag.
+  ListRuntimesRequest:
+    type: object
+    description: Request object for list datalake runtime versions.
+  ListRuntimesResponse:
+    type: object
+    description: Response object for list datalake runtime versions.
+    required:
+      - versions
+    properties:
+      versions:
+        type: array
+        items:
+          $ref: '#/definitions/Runtime'
+        description: The list of datalake runtime versions.
+  Runtime:
+    type: object
+    description: An advertised datalake runtime version.
+    required:
+      - runtimeVersion
+      - defaultRuntimeVersion
+    properties:
+      runtimeVersion:
+        type: string
+        description: The actual version number.
+      defaultRuntimeVersion:
+        type: boolean
+        description: Whether it is a default runtime version or not.
+  AWSConfigurationRequest:
+    type: object
+    description: Request object for AWS configuration.
+    required:
+      - instanceProfile
+      - storageBucketLocation
+    properties:
+      instanceProfile:
+        type: string
+        description: The ARN of an IAM instance profile.
+      storageBucketLocation:
+        type: string
+        description: The location of the S3 bucket to be used as storage. The location has to start with s3a:// followed by the bucket name.
+  AzureConfigurationRequest:
+    type: object
+    description: Request object for Azure configuration.
+    required:
+      - managedIdentity
+      - storageLocation
+    properties:
+      managedIdentity:
+        type: string
+        description: The managed identity to use. The assumer should have Virtual Machine Contributor and Managed Identity Operator roles on subscription level.
+      storageLocation:
+        type: string
+        description: The storage location to use. The location has to be in the following format abfs://filesystem@storage-account-name.dfs.core.windows.net. The filesystem must already exist and the storage account must be StorageV2.
+  CreateAWSDatalakeRequest:
+    type: object
+    description: Request object for create AWS datalake request.
+    required:
+      - datalakeName
+      - environmentName
+    properties:
+      datalakeName:
+        type: string
+        description: The datalake name. This name must be unique, must have between 5 and 100 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 100
+      environmentName:
+        type: string
+        description: The environment name or CRN.
+      cloudProviderConfiguration:
+        $ref: '#/definitions/AWSConfigurationRequest'
+        description: AWS configuration.
+      tags:
+        type: array
+        description: Tags to be added to Datalake related resources.
+        items:
+          $ref: '#/definitions/DatalakeResourceTagRequest'
+      scale:
+        type: string
+        description: The scale of the datalake.
+  CreateAWSDatalakeResponse:
+    type: object
+    description: Response object for create AWS datalake request.
+    required:
+      - datalake
+    properties:
+      datalake:
+        $ref: '#/definitions/Datalake'
+        description: The datalake.
+  CreateAzureDatalakeRequest:
+    type: object
+    description: Request object for create Azure datalake request.
+    required:
+      - datalakeName
+      - environmentName
+    properties:
+      datalakeName:
+        type: string
+        description: The datalake name. This name must be unique, must have between 5 and 100 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 100
+      environmentName:
+        type: string
+        description: The environment name or CRN.
+      cloudProviderConfiguration:
+        $ref: '#/definitions/AzureConfigurationRequest'
+        description: Azure configuration.
+      tags:
+        type: array
+        description: Tags to be added to Datalake related resources.
+        items:
+          $ref: '#/definitions/DatalakeResourceTagRequest'
+      scale:
+        type: string
+        description: The scale of the datalake.
+  CreateAzureDatalakeResponse:
+    type: object
+    description: Response object for create Azure datalake request.
+    required:
+      - datalake
+    properties:
+      datalake:
+        $ref: '#/definitions/Datalake'
+        description: The datalake.
+  ListDatalakesRequest:
+    type: object
+    description: Request object for list datalakes request.
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment for which the datalakes will be listed.
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake for which details are requested.
+  ListDatalakesResponse:
+    type: object
+    description: Response object for list datalakes request.
+    required:
+      - datalakes
+    properties:
+      datalakes:
+        type: array
+        items:
+          $ref: '#/definitions/Datalake'
+        description: The datalakes.
+  DeleteDatalakeRequest:
+    type: object
+    description: Request object for delete datalake request.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake to be deleted.
+      force:
+        type: boolean
+        description: Whether the datalake should be force deleted. This option can be used when cluster deletion fails. This removes the entry from Cloudera Datalake service. Any lingering resources have to be deleted from the cloud provider manually. The default is false.
+  DeleteDatalakeResponse:
+    type: object
+    description: Response object for delete datalake request.
+  DescribeDatalakeRequest:
+    type: object
+    description: Request object for describe datalake request.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+  DescribeDatalakeResponse:
+    type: object
+    description: Response object for describe datalake request.
+    required:
+      - datalake
+    properties:
+      datalake:
+        $ref: '#/definitions/DatalakeDetails'
+        description: The datalake.
+  RepairDatalakeRequest:
+    type: object
+    description: Request object for repair datalake request.
+    required:
+      - datalakeName
+      - instanceGroupName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+      instanceGroupName:
+        type: string
+        description: The instance group where the failed instances will be repaired.
+  RepairDatalakeResponse:
+    type: object
+    description: Response object for repair datalake request.
+  GetClusterServiceStatusRequest:
+    type: object
+    description: Request object to get service status.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster.
+  GetClusterServiceStatusResponse:
+    type: object
+    description: Response object to get service status.
+    required:
+      - services
+    properties:
+      services:
+        type: array
+        items:
+          $ref: '#/definitions/ServiceStatus'
+        description: The cluster services health.
+  ServiceStatus:
+    type: object
+    description: Information about a cluster service.
+    properties:
+      type:
+        type: string
+        description: The service type.
+      state:
+        type: string
+        description: The service state.
+      healthSummary:
+        type: string
+        description: The service health summary.
+      healthChecks:
+        type: array
+        items:
+          $ref: '#/definitions/HealthCheck'
+        description: The service health checks.
+  HealthCheck:
+    type: object
+    description: The result of a health check.
+    properties:
+      name:
+        type: string
+        description: The name of service health check.
+      summary:
+        type: string
+        description: The service health check summary.
+  GetClusterHostStatusRequest:
+    type: object
+    description: Request object to get host status.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster.
+  GetClusterHostStatusResponse:
+    type: object
+    description: Response object for getting host status.
+    required:
+      - hosts
+    properties:
+      hosts:
+        type: array
+        items:
+          $ref: '#/definitions/HostStatus'
+        description: The cluster hosts status.
+  HostStatus:
+    type: object
+    description: Information about cluster host status.
+    properties:
+      hostid:
+        type: string
+        description: Unique identifier of the cluster host given by Cloudera Manager.
+      hostname:
+        type: string
+        description: The cluster hostname.
+      healthSummary:
+        type: string
+        description: The host health summary.
+  StartDatalakeRequest:
+    type: object
+    description: Request object to start a datalake.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+  StartDatalakeResponse:
+    type: object
+    description: Response object of starting a datalake.
+  StopDatalakeRequest:
+    type: object
+    description: Request object to stop a datalake.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalakeName.
+  StopDatalakeResponse:
+    type: object
+    description: Response object of stopping a datalake.
+  UpgradeDatalakeRequest:
+    type: object
+    description: Request object to upgrade datalake.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+  UpgradeDatalakeResponse:
+    type: object
+    description: Response object for upgrade datalake request.
+    properties: {}

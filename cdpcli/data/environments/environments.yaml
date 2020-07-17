@@ -1,0 +1,2211 @@
+swagger: '2.0'
+x-endpoint-name: environments2
+x-display-name: environments
+x-products: CDP
+x-cdp-releases: PUBLIC
+info:
+  version: 0.1-SNAPSHOT
+  title: Cloudera Environments Service
+  license:
+    name: Apache 2.0
+  description: Cloudera Environments Service is a web service that manages cloud provider access.
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/v1/environments2/getCredentialPrerequisites:
+    post:
+      summary: This API provides the credential prerequisites for the given cloud provider.
+      description: Provides the the credential prerequisites for the given cloud provider.
+      operationId: getCredentialPrerequisites
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetCredentialPrerequisitesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetCredentialPrerequisitesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/createAWSEnvironment:
+    post:
+      summary: Creates a new AWS environment by providing the cloud provider access and network information. A FreeIPA server will be automatically provisioned when an environment is created.
+      description: Creates a new AWS environment.
+      operationId: createAWSEnvironment
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAWSEnvironmentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAWSEnvironmentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/createAzureEnvironment:
+    post:
+      summary: Creates a new Azure environment by providing the cloud provider access and network information. A FreeIPA server will be automatically provisioned when an environment is created.
+      description: Creates a new Azure environment.
+      operationId: createAzureEnvironment
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAzureEnvironmentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAzureEnvironmentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/createAWSCredential:
+    post:
+      summary: Creates a new AWS credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
+      description: Creates a new AWS credential.
+      operationId: createAWSCredential
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAWSCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAWSCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/createAzureCredential:
+    post:
+      summary: Creates a new Azure credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
+      description: Creates a new Azure credential.
+      operationId: createAzureCredential
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAzureCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAzureCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/changeEnvironmentCredential:
+    post:
+      summary: Changes the credential for an environment.
+      description: Changes the credential for an environment.
+      operationId: changeEnvironmentCredential
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChangeEnvironmentCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ChangeEnvironmentCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/deleteEnvironment:
+    post:
+      summary: Deletes an environment.
+      description: Deletes an environment.
+      operationId: deleteEnvironment
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteEnvironmentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteEnvironmentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/deleteCredential:
+    post:
+      summary: Deletes a credential.
+      description: Deletes a credential.
+      operationId: deleteCredential
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/listEnvironments:
+    post:
+      summary: Lists environments.
+      description: Lists environments.
+      operationId: listEnvironments
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListEnvironmentsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListEnvironmentsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/listCredentials:
+    post:
+      summary: Lists credentials.
+      description: Lists credentials.
+      operationId: listCredentials
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListCredentialsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListCredentialsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/describeEnvironment:
+    post:
+      summary: Describes an environment.
+      description: Describes an environment.
+      operationId: describeEnvironment
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeEnvironmentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeEnvironmentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/syncAllUsers:
+    post:
+      summary: Synchronizes environments with all users and groups state with CDP.
+      description: Synchronizes environments with all users and groups state with CDP.
+      operationId: syncAllUsers
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SyncAllUsersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SyncAllUsersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/syncUser:
+    post:
+      summary: Synchronizes environments with single user to the FreeIPA servers.
+      description: Synchronizes environments with single user to the FreeIPA servers.
+      operationId: syncUser
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SyncUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SyncUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/syncStatus:
+    post:
+      summary: Returns status of the sync operation for the operation id.
+      description: Returns status of the sync operation for the operation id. Operation Id should be one of the previously request sync operation.
+      operationId: syncStatus
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SyncStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SyncStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/setPassword:
+    post:
+      summary: Sets workload user's password and updates into all environments.
+      description: Sets workload user's password and updates into all environments if there is no environment CRN passed or, if environment CRNs list is provided, then password is reset only for that environment. Password must be of min 8 characters and no more then 64 characters and should be combination of UPPER Case, lower case, digits and special characters.
+      operationId: setPassword
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetPasswordRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetPasswordResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getRootCertificate:
+    post:
+      summary: This API provides contents of public certificate for an environment.
+      description: This API provides the contents of the root public certificate for an environment. The contents are a base64 encoded blob between -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----. This certificate can be imported by end users to establish trust with environment resources.
+      operationId: getRootCertificate
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetRootCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetRootCertificateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getKeytab:
+    post:
+      summary: Retrieves a keytab for a user or machine user.
+      description: Retrieves a keytab for a user or machine user.
+      operationId: getKeytab
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetKeytabRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetKeytabResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getIdBrokerMappings:
+    post:
+      summary: Gets all ID Broker mappings for an environment.
+      description: Gets all ID Broker mappings for an environment.
+      operationId: getIdBrokerMappings
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetIdBrokerMappingsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetIdBrokerMappingsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/setIdBrokerMappings:
+    post:
+      summary: Sets all ID Broker mappings for an environment.
+      description: Sets all ID Broker mappings for an environment. Overwrites all existing mappings.
+      operationId: setIdBrokerMappings
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetIdBrokerMappingsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetIdBrokerMappingsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/syncIdBrokerMappings:
+    post:
+      summary: Syncs all ID Broker mappings for an environment.
+      description: Syncs all ID Broker mappings to all datalake clusters in an environment.
+      operationId: syncIdBrokerMappings
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SyncIdBrokerMappingsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SyncIdBrokerMappingsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getIdBrokerMappingsSyncStatus:
+    post:
+      summary: Gets ID Broker mappings sync status.
+      description: Gets the status of the most recent ID Broker mappings sync operation, if any.
+      operationId: getIdBrokerMappingsSyncStatus
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetIdBrokerMappingsSyncStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetIdBrokerMappingsSyncStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/startEnvironment:
+    post:
+      summary: Start an environment.
+      description: Start an environment.
+      operationId: startEnvironment
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartEnvironmentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartEnvironmentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/stopEnvironment:
+    post:
+      summary: Stop an environment.
+      description: Stop an environment.
+      operationId: stopEnvironment
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StopEnvironmentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StopEnvironmentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getFreeipaStatus:
+    post:
+      summary: Get the status of the FreeIPA services
+      description: Gets the status of the FreeIPA nodes services and connectivity.
+      operationId: getFreeipaStatus
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetFreeipaStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetFreeipaStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/repairFreeipa:
+    post:
+      summary: Repairs the FreeIPA nodes.
+      description: Repairs the FreeIPA nodes if they are in a non working state.
+      operationId: repairFreeipa
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RepairFreeipaRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RepairFreeipaResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/createProxyConfig:
+    post:
+      summary: Creates a new proxy config that can be attatched to an environment.
+      description: Creates a new proxy config.
+      operationId: createProxyConfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateProxyConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateProxyConfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/listProxyConfigs:
+    post:
+      summary: Lists proxy configs.
+      description: Lists proxy configs.
+      operationId: listProxyConfigs
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListProxyConfigsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListProxyConfigsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/deleteProxyConfig:
+    post:
+      summary: Deletes a proxy config.
+      description: Deletes a proxy config.
+      operationId: deleteProxyConfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteProxyConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteProxyConfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/setTelemetryFeatures:
+    post:
+      summary: Configure environment level telemetry feature setting.
+      description: Configure environment level telemetry feature setting.
+      operationId: setTelemetryFeatures
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetTelemetryFeaturesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetTelemetryFeaturesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/setAccountTelemetry:
+    post:
+      summary: Set account level telemetry settings. (telemetry features and anonymization rules)
+      description: Set account level telemetry settings. (telemetry features and anonymization rules)
+      operationId: setAccountTelemetry
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetAccountTelemetryRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetAccountTelemetryResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getAccountTelemetry:
+    post:
+      summary: Get account level telemetry settings. (telemetry features and anonymization rules)
+      description: Get account level telemetry settings. (telemetry features and anonymization rules)
+      operationId: getAccountTelemetry
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAccountTelemetryRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAccountTelemetryResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getAccountTelemetryDefault:
+    post:
+      summary: Get default account level telemetry settings. Helps to set back the default values.
+      description: Get default account level telemetry settings. Helps to set back the default values.
+      operationId: getAccountTelemetryDefault
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAccountTelemetryDefaultRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAccountTelemetryDefaultResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/testAccountTelemetryRules:
+    post:
+      summary: Test anonymization rules (for account telemetry) against text input.
+      description: Test anonymization rules (for account telemetry) against text input.
+      operationId: testAccountTelemetryRules
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TestAccountTelemetryRulesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/TestAccountTelemetryRulesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Error:
+    type: object
+    description: An object returned on an error.
+    properties:
+      code:
+        type: string
+        description: The error code.
+      message:
+        type: string
+        description: The error message.
+  CreateAWSCredentialResponse:
+    type: object
+    description: Response object for a create AWS credential request.
+    required:
+      - credential
+    properties:
+      credential:
+        description: The credential object.
+        $ref: '#/definitions/Credential'
+  CreateAWSCredentialRequest:
+    type: object
+    description: Request object for a create AWS credential request.
+    required:
+      - credentialName
+      - roleArn
+    properties:
+      credentialName:
+        type: string
+        description: The name of the credential.
+      roleArn:
+        type: string
+        description: The ARN of the delegated access role.
+      description:
+        type: string
+        description: A description for the credential.
+  CreateAzureCredentialRequest:
+    type: object
+    description: Request object for a create Azure credential request.
+    required:
+      - credentialName
+      - subscriptionId
+      - tenantId
+      - appBased
+    properties:
+      credentialName:
+        type: string
+        description: The name of the credential.
+      subscriptionId:
+        type: string
+        description: The Azure subscription ID.
+      tenantId:
+        type: string
+        description: The Azure AD tenant ID for the Azure subscription.
+      appBased:
+        type: object
+        description: Additional configurations needed for app-based authentication.
+        required:
+          - applicationId
+          - secretKey
+        properties:
+          applicationId:
+            type: string
+            description: The id of the application registered in Azure.
+          secretKey:
+            type: string
+            x-sensitive: true
+            description: The client secret key (also referred to as application password) for the registered application.
+      description:
+        type: string
+        description: A description for the credential.
+  CreateAzureCredentialResponse:
+    type: object
+    description: Response object for a create Azure credential request.
+    required:
+      - credential
+    properties:
+      credential:
+        description: The credential object.
+        $ref: '#/definitions/Credential'
+  Credential:
+    type: object
+    description: A credential object.
+    required:
+      - credentialName
+      - crn
+      - cloudPlatform
+    properties:
+      credentialName:
+        type: string
+        description: The name of the credential.
+      crn:
+        type: string
+        description: The CRN of the credential.
+      cloudPlatform:
+        type: string
+        description: The cloud provider.
+      description:
+        type: string
+        description: A description for the credential.
+  GetCredentialPrerequisitesRequest:
+    type: object
+    description: Request object for getting the credential prerequisites for the given cloud platform.
+    required:
+      - cloudPlatform
+    properties:
+      cloudPlatform:
+        type: string
+        enum:
+          - AWS
+          - AZURE
+        description: The kind of cloud platform.
+  GetCredentialPrerequisitesResponse:
+    type: object
+    description: The credential prerequisites for AWS.
+    required:
+      - cloudPlatform
+    properties:
+      cloudPlatform:
+        type: string
+        description: The name of the given cloud platform
+      accountId:
+        type: string
+        description: The provider specific identifier of the account/subscription/project that is used by Cloudbreak.
+      aws:
+        description: Provides the external id and policy JSON (this one encoded in base64) for AWS credential creation.
+        $ref: '#/definitions/AwsCredentialPrerequisitesResponse'
+      azure:
+        description: Provides the app creation command and role definition Json for Azure credential creation.
+        $ref: '#/definitions/AzureCredentialPrerequisitesResponse'
+  AwsCredentialPrerequisitesResponse:
+    type: object
+    description: Response object for getting AWS credential prerequisites.
+    required:
+      - externalId
+      - policyJson
+    properties:
+      externalId:
+        type: string
+        description: The cross-account external ID.
+      policyJson:
+        type: string
+        description: The related policy json encoded in base64
+  AzureCredentialPrerequisitesResponse:
+    type: object
+    description: Response object for getting Azure credential prerequisites.
+    required:
+      - appCreationCommand
+      - roleDefinitionJson
+    properties:
+      appCreationCommand:
+        type: string
+        description: Azure CLI command to create Azure AD Application encoded in base64.
+      roleDefinitionJson:
+        type: string
+        description: The related role definition json encoded in base64
+  CreateAWSEnvironmentRequest:
+    type: object
+    description: Request object for a create AWS environment request.
+    required:
+      - environmentName
+      - credentialName
+      - region
+      - securityAccess
+      - authentication
+      - logStorage
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment. Must contain only lowercase letters, numbers and hyphens.
+      credentialName:
+        type: string
+        description: Name of the credential to use for the environment.
+      region:
+        type: string
+        description: The region of the environment.
+      securityAccess:
+        description: Security control for FreeIPA and Datalake deployment.
+        $ref: '#/definitions/SecurityAccessRequest'
+      authentication:
+        description: SSH authentication information for accessing cluster node instances. Users with access to this authentication information have root level access to the Data Lake and Data Hub cluster instances.
+        $ref: '#/definitions/AuthenticationRequest'
+      logStorage:
+        description: AWS storage configuration for cluster and audit logs.
+        $ref: '#/definitions/AwsLogStorageRequest'
+      networkCidr:
+        type: string
+        description: The network CIDR. This will create a VPC along with subnets in multiple Availability Zones.
+      vpcId:
+        type: string
+        description: The Amazon VPC ID. Mutually exclusive with networkCidr.
+      subnetIds:
+        type: array
+        description: One or more subnet ids within the VPC. Mutually exclusive with networkCidr.
+        uniqueItems: true
+        items:
+          type: string
+      s3GuardTableName:
+        type: string
+        description: The name for the DynamoDB table backing S3Guard.
+      description:
+        type: string
+        description: An description of the environment.
+      enableTunnel:
+        type: boolean
+        description: Whether to enable SSH tunnelling for the environment.
+      workloadAnalytics:
+        type: boolean
+        description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
+      freeIpa:
+        $ref: '#/definitions/AWSFreeIpaCreationRequest'
+        description: The FreeIPA creation request for the environment
+      tags:
+        type: array
+        description: Tags associated with the resources.
+        items:
+          $ref: '#/definitions/TagRequest'
+      proxyConfigName:
+        type: string
+        description: Name of the proxy config to use for the environment.
+  AwsLogStorageRequest:
+    type: object
+    required:
+      - storageLocationBase
+      - instanceProfile
+    description: AWS storage configuration for cluster and audit logs.
+    properties:
+      storageLocationBase:
+        type: string
+        description: The base location to store logs in S3. This should be an s3a:// url.
+      instanceProfile:
+        type: string
+        description: The AWS instance profile that which contains the necessary permissions to access the S3 storage location.
+  AzureLogStorageRequest:
+    type: object
+    description: Azure storage configuration for cluster and audit logs.
+    required:
+      - storageLocationBase
+      - managedIdentity
+    properties:
+      storageLocationBase:
+        type: string
+        description: The storage location to use. The location has to be in the following format abfs://filesystem@storage-account-name.dfs.core.windows.net. The filesystem must already exist and the storage account must be StorageV2.
+      managedIdentity:
+        type: string
+        description: The managed identity associated with the logger. This identity should have Storage Blob Data Contributor role on the given storage account.
+  LogStorage:
+    type: object
+    description: Storage configuration for cluster and audit logs.
+    required:
+      - enabled
+    properties:
+      enabled:
+        type: boolean
+        description: Whether external log storage is enabled.
+      awsDetails:
+        type: object
+        description: AWS-specific log storage configuration information.
+        properties:
+          storageLocationBase:
+            type: string
+            description: The base location to store logs in S3. This should be an s3a:// url.
+          instanceProfile:
+            type: string
+            description: The AWS instance profile that which contains the necessary permissions to access the S3 storage location.
+      azureDetails:
+        type: object
+        description: Azure-specific log storage configuration information.
+        properties:
+          storageLocationBase:
+            type: string
+            description: The storage location to use. The location has to be in the following format abfs://filesystem@storage-account-name.dfs.core.windows.net.
+          managedIdentity:
+            type: string
+            description: The managed identity associated with the logger. This identity should have Storage Blob Data Contributor role on the given storage account.
+  SecurityAccessRequest:
+    type: object
+    description: Security control configuration for FreeIPA and Datalake deployment. Choosing a CIDR will automatically create security groups. Alternatively existing security groups can be specified.
+    properties:
+      cidr:
+        type: string
+        description: CIDR range which is allowed for inbound traffic. Either IPv4 or IPv6 is allowed.
+      securityGroupIdForKnox:
+        type: string
+        description: Security group where Knox-enabled hosts are placed. Mutually exclusive with cidr.
+      defaultSecurityGroupId:
+        type: string
+        description: Security group where all other hosts are placed. Mutually exclusive with cidr.
+  SecurityAccess:
+    type: object
+    description: Security control configuration for FreeIPA and Datalake deployment.
+    properties:
+      cidr:
+        type: string
+        description: CIDR range which is allowed for inbound traffic. Either IPv4 or IPv6 is allowed.
+      securityGroupIdForKnox:
+        type: string
+        description: Security group where Knox-enabled hosts are placed.
+      defaultSecurityGroupId:
+        type: string
+        description: Security group where all other hosts are placed.
+  CreateAWSEnvironmentResponse:
+    type: object
+    description: Response object for a create AWS environment request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: Created environment object.
+  CreateAzureEnvironmentResponse:
+    type: object
+    description: Response object for a create Azure environment request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: Created environment object.
+  ListEnvironmentsRequest:
+    type: object
+    description: Request object for a list environments request.
+  ListEnvironmentsResponse:
+    type: object
+    description: Response object for a list environments request.
+    required:
+      - environments
+    properties:
+      environments:
+        type: array
+        items:
+          $ref: '#/definitions/EnvironmentSummary'
+        description: The environment.
+  ListCredentialsRequest:
+    type: object
+    description: Request object for a list credentials request.
+    properties:
+      credentialName:
+        type: string
+        description: An optional credential name to search by.
+  ListCredentialsResponse:
+    type: object
+    description: Response object for a list credentials request.
+    required:
+      - credentials
+    properties:
+      credentials:
+        type: array
+        items:
+          $ref: '#/definitions/Credential'
+        description: The credentials.
+  CreateAzureEnvironmentRequest:
+    type: object
+    description: Request object for a create Azure environment request.
+    required:
+      - environmentName
+      - credentialName
+      - region
+      - publicKey
+      - securityAccess
+      - usePublicIp
+      - logStorage
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment. Must contain only lowercase letters, numbers and hyphens.
+      credentialName:
+        type: string
+        description: Name of the credential to use for the environment.
+      region:
+        type: string
+        description: The region of the environment.
+      publicKey:
+        type: string
+        description: Public SSH key string. The associated private key can be used to get root-level access to the Data Lake instance and Data Hub cluster instances.
+      securityAccess:
+        description: Security control for FreeIPA and Datalake deployment.
+        $ref: '#/definitions/SecurityAccessRequest'
+      usePublicIp:
+        type: boolean
+        description: Whether to associate public ip's to the resources within the network.
+      logStorage:
+        description: Azure storage configuration for cluster and audit logs.
+        $ref: '#/definitions/AzureLogStorageRequest'
+      existingNetworkParams:
+        description: Parameters needed to use an existing VNet and Subnets.
+        $ref: '#/definitions/ExistingAzureNetworkRequest'
+      newNetworkParams:
+        type: object
+        description: Parameteres needed to automatically create VNet and Subnets.
+        required:
+          - networkCidr
+        properties:
+          networkCidr:
+            type: string
+            description: The range of private IPv4 addresses that resources will use under the created VNet.
+      description:
+        type: string
+        description: An description of the environment.
+      enableTunnel:
+        type: boolean
+        description: Whether to enable SSH tunnelling for the environment.
+      workloadAnalytics:
+        type: boolean
+        description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
+      freeIpa:
+        $ref: '#/definitions/AzureFreeIpaCreationRequest'
+        description: The FreeIPA creation request for the environment
+      tags:
+        type: array
+        description: Tags associated with the resources.
+        items:
+          $ref: '#/definitions/TagRequest'
+      proxyConfigName:
+        type: string
+        description: Name of the proxy config to use for the environment.
+  ExistingAzureNetworkRequest:
+    type: object
+    description: Request object for creating an Azure environment using existing VNet and subnets.
+    required:
+      - networkId
+      - resourceGroupName
+      - subnetIds
+    properties:
+      networkId:
+        type: string
+        description: The id of the Azure VNet.
+      resourceGroupName:
+        type: string
+        description: The name of the resource group associated with the VNet.
+      subnetIds:
+        type: array
+        description: One or more subnet ids within the VNet.
+        uniqueItems: true
+        items:
+          type: string
+  ChangeEnvironmentCredentialRequest:
+    type: object
+    description: Request object for a change environment credentials request.
+    required:
+      - environmentName
+      - credentialName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+      credentialName:
+        type: string
+        description: The credential name to set for the environment. This must be a credential that already exists.
+  ChangeEnvironmentCredentialResponse:
+    type: object
+    description: Response object for a change environment credentials request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/EnvironmentSummary'
+        description: The environment summary.
+  DescribeEnvironmentRequest:
+    type: object
+    description: Request object for a describe environment request.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The names or CRN of the environment.
+  DescribeEnvironmentResponse:
+    type: object
+    description: Response object for a describe environment request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: The environment.
+  EnvironmentSummary:
+    type: object
+    description: The environment summary.
+    required:
+      - environmentName
+      - crn
+      - status
+      - region
+      - cloudPlatform
+      - credentialName
+    properties:
+      environmentName:
+        type: string
+        description: Name of the environment.
+      crn:
+        type: string
+        description: CRN of the environment.
+      status:
+        type: string
+        description: Status of the environment,
+      region:
+        type: string
+        description: Region of the environment.
+      cloudPlatform:
+        type: string
+        description: Cloud platform of the environment.
+      credentialName:
+        type: string
+        description: Name of the credential of the environment. Must contain only lowercase letters, numbers and hyphens.
+      description:
+        type: string
+        description: Description of the environment.
+      proxyConfigName:
+        type: string
+        description: Name of the proxy config of the environment.
+  Environment:
+    type: object
+    description: The environment.
+    required:
+      - environmentName
+      - crn
+      - status
+      - region
+      - cloudPlatform
+      - credentialName
+      - network
+      - logStorage
+    properties:
+      environmentName:
+        type: string
+        description: Name of the environment.
+      crn:
+        type: string
+        description: CRN of the environment.
+      status:
+        type: string
+        description: Status of the environment.
+      region:
+        type: string
+        description: Region of the environment.
+      cloudPlatform:
+        type: string
+        description: Cloud platform of the environment.
+      credentialName:
+        type: string
+        description: Name of the credential of the environment.
+      network:
+        description: Network related specifics of the environment.
+        $ref: '#/definitions/Network'
+      logStorage:
+        description: Storage configuration for cluster and audit logs.
+        $ref: '#/definitions/LogStorage'
+      authentication:
+        description: SSH key for accessing cluster node instances.
+        $ref: '#/definitions/Authentication'
+      securityAccess:
+        description: Security control for FreeIPA and Datalake deployment.
+        $ref: '#/definitions/SecurityAccess'
+      description:
+        type: string
+        description: Description of the environment
+      statusReason:
+        type: string
+        description: The status reason.
+      awsDetails:
+        type: object
+        description: AWS-specific environment configuration information.
+        properties:
+          s3GuardTableName:
+            type: string
+            description: The name for the DynamoDB table backing S3Guard.
+      freeipa:
+        type: object
+        description: Details of FreeIPA instance associated with this environment.
+        $ref: '#/definitions/FreeipaDetails'
+      proxyConfig:
+        description: The proxy config.
+        $ref: '#/definitions/ProxyConfig'
+  AuthenticationRequest:
+    type: object
+    description: Additional SSH key authentication configuration for accessing cluster node.
+    properties:
+      publicKey:
+        type: string
+        description: Public SSH key string. Mutually exclusive with publicKeyId.
+      publicKeyId:
+        type: string
+        description: Public SSH key ID already registered in the cloud provider. Mutually exclusive with publicKey.
+  Authentication:
+    type: object
+    description: Additional SSH key authentication configuration for accessing cluster node instances.
+    properties:
+      publicKey:
+        type: string
+        description: SSH Public key string.
+      publicKeyId:
+        type: string
+        description: Public SSH key ID already registered in the cloud provider.
+      loginUserName:
+        type: string
+        description: The SSH user name created on the nodes for SSH access.
+  Network:
+    type: object
+    description: The network.
+    required:
+      - networkName
+      - subnetIds
+    properties:
+      networkName:
+        type: string
+        description: Name of the network
+      subnetIds:
+        type: array
+        description: Subnet ids of the network.
+        uniqueItems: true
+        items:
+          type: string
+      aws:
+        description: AWS network parameters.
+        $ref: '#/definitions/NetworkAwsParams'
+      azure:
+        description: Azure network parameters.
+        $ref: '#/definitions/NetworkAzureParams'
+      networkCidr:
+        type: string
+        description: The range of private IPv4 addresses that resources will use under this network.
+      subnetMetadata:
+        type: object
+        description: Additional subnet metadata of the network.
+        additionalProperties:
+          description: The subnet information.
+          $ref: '#/definitions/CloudSubnet'
+  CloudSubnet:
+    type: object
+    description: Information about a cloud provider subnet.
+    properties:
+      subnetId:
+        description: The id of the subnet.
+        type: string
+      subnetName:
+        description: The name of the subnet.
+        type: string
+      availabilityZone:
+        description: The availability zone of the subnet.
+        type: string
+      cidr:
+        description: The CIDR IP range of the subnet.
+        type: string
+  NetworkAwsParams:
+    type: object
+    description: AWS network parameters.
+    required:
+      - vpcId
+    properties:
+      vpcId:
+        type: string
+        description: VPC ids of the specified networks.
+  NetworkAzureParams:
+    type: object
+    description: Azure network parameters.
+    required:
+      - networkId
+      - resourceGroupName
+      - usePublicIp
+    properties:
+      networkId:
+        type: string
+        description: The id of the Azure VNet.
+      resourceGroupName:
+        type: string
+        description: The name of the resource group associated with the VNet.
+      usePublicIp:
+        type: boolean
+        description: Whether to associate public ip's to the resources within the network.
+  DeleteEnvironmentRequest:
+    type: object
+    description: Request object for a delete environment request.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  DeleteEnvironmentResponse:
+    type: object
+    description: Response object for a delete environment request.
+  StartEnvironmentRequest:
+    type: object
+    description: Request object for a start environment request.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  StartEnvironmentResponse:
+    type: object
+    description: Response object for a start environment request.
+  StopEnvironmentRequest:
+    type: object
+    description: Request object for a stop environment request.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  StopEnvironmentResponse:
+    type: object
+    description: Response object for a stop environment request.
+  DeleteCredentialRequest:
+    type: object
+    description: Request object for a delete credential request.
+    required:
+      - credentialName
+    properties:
+      credentialName:
+        type: string
+        description: The name or CRN of the credential.
+  DeleteCredentialResponse:
+    type: object
+    description: Response object for a delete credential request.
+  SyncAllUsersRequest:
+    type: object
+    description: Request object for a All Users and Groups Sync.
+    properties:
+      environmentNames:
+        type: array
+        description: List of environments to be synced. If not present, all environments will be synced.
+        items:
+          type: string
+  SyncAllUsersResponse:
+    type: object
+    description: All Users and Groups Sync Response Object
+    required:
+      - operationId
+    properties:
+      operationId:
+        type: string
+        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+      operationType:
+        description: Operation type, set password or user sync
+        $ref: '#/definitions/OperationType'
+      status:
+        description: Status of this operation. Status can be one of these values (REQUESTED, RUNNING, COMPLETED, FAILED, REJECTED, TIMEDOUT)
+        $ref: '#/definitions/SyncStatus'
+      success:
+        type: array
+        description: List of sync operation details for all succeeded environments.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      failure:
+        type: array
+        description: List of sync operation details for all failed envs.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      error:
+        type: string
+        description: If there is any error associated.
+      startTime:
+        type: string
+        description: Sync operation start timestamp.
+      endTime:
+        type: string
+        description: Sync operation end timestamp.
+  SyncUserRequest:
+    type: object
+    description: Request Object for single user sync operation.
+  SyncUserResponse:
+    type: object
+    description: Response Object for single user sync operation.
+    required:
+      - operationId
+    properties:
+      operationId:
+        type: string
+        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+      operationType:
+        description: Operation type, set password or user sync
+        $ref: '#/definitions/OperationType'
+      status:
+        description: Status of this operation. Status can be one of these values (REQUESTED, RUNNING, COMPLETED, FAILED, REJECTED, TIMEDOUT)
+        $ref: '#/definitions/SyncStatus'
+      success:
+        type: array
+        description: List of sync operation details for all succeeded environments.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      failure:
+        type: array
+        description: List of sync operation details for all failed envs.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      error:
+        type: string
+        description: If there is any error associated.
+      startTime:
+        type: string
+        description: Sync operation start timestamp.
+      endTime:
+        type: string
+        description: Sync operation end timestamp.
+  SetPasswordRequest:
+    type: object
+    description: Request object for set password request.
+    required:
+      - password
+    properties:
+      password:
+        type: string
+        description: password field.
+        x-sensitive: true
+      environmentCRNs:
+        type: array
+        description: Optional list of environment CRNs. Only the passed environments user's password will be affected. If this field is not present, all environments will be affected.
+        items:
+          type: string
+  SetPasswordResponse:
+    type: object
+    description: Response object for set password request.
+    required:
+      - operationId
+    properties:
+      operationId:
+        type: string
+        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+      operationType:
+        description: Operation type, set password or user sync
+        $ref: '#/definitions/OperationType'
+      status:
+        description: Status of this operation. Status can be one of these values (REQUESTED, RUNNING, COMPLETED, FAILED, REJECTED, TIMEDOUT)
+        $ref: '#/definitions/SyncStatus'
+      success:
+        type: array
+        description: List of sync operation details for all succeeded environments.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      failure:
+        type: array
+        description: List of sync operation details for all failed envs.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      error:
+        type: string
+        description: If there is any error associated.
+      startTime:
+        type: string
+        description: Sync operation start timestamp.
+      endTime:
+        type: string
+        description: Sync operation end timestamp.
+  SyncStatusRequest:
+    type: object
+    description: Request object for Sync Status.
+    required:
+      - operationId
+    properties:
+      operationId:
+        type: string
+        description: operationId for the previously requested sync operation for user sync or password.
+  SyncStatusResponse:
+    type: object
+    description: Response object for Sync Operation.
+    required:
+      - operationId
+    properties:
+      operationId:
+        type: string
+        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+      operationType:
+        description: Operation type, set password or user sync
+        $ref: '#/definitions/OperationType'
+      status:
+        description: Status of this operation. Status can be one of these values (REQUESTED, RUNNING, COMPLETED, FAILED, REJECTED, TIMEDOUT)
+        $ref: '#/definitions/SyncStatus'
+      success:
+        type: array
+        description: List of sync operation details for all succeeded environments.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      failure:
+        type: array
+        description: List of sync operation details for all failed envs.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      error:
+        type: string
+        description: If there is any error associated.
+      startTime:
+        type: string
+        description: Sync operation start timestamp.
+      endTime:
+        type: string
+        description: Sync operation end timestamp.
+  GetRootCertificateRequest:
+    type: object
+    description: Request object for obtaining public certificate of an environment.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  GetRootCertificateResponse:
+    type: object
+    description: Response object with base64 encoded contents of the public certificate for an environment.
+    properties:
+      contents:
+        type: string
+        description: Contents of a certificate.
+  GetKeytabRequest:
+    type: object
+    description: Request object for get keytab request.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+      actorCrn:
+        type: string
+        description: The CRN of the user or machine user to retrieve the keytab for. If it is not included, it defaults to the user making the request.
+  GetKeytabResponse:
+    type: object
+    description: Request object for get keytab request.
+    properties:
+      contents:
+        type: string
+        description: The contents of the keytab encoded as a base64 string.
+  GetIdBrokerMappingsRequest:
+    type: object
+    description: Request object for getting ID Broker mappings for an environment.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  GetIdBrokerMappingsResponse:
+    type: object
+    description: Response object for getting ID Broker mappings for an environment.
+    required:
+      - mappingsVersion
+      - dataAccessRole
+      - rangerAuditRole
+    properties:
+      mappingsVersion:
+        type: integer
+        format: int64
+        description: The version of the mappings.
+      dataAccessRole:
+        type: string
+        description: The cloud provider role to which data access services will be mapped (e.g. an ARN in AWS, a Resource ID in Azure).
+      rangerAuditRole:
+        type: string
+        description: The cloud provider role to which services that write to Ranger audit logs will be mapped (e.g. an ARN in AWS, a Resource ID in Azure). Note that some data access services also write to Ranger audit logs; such services will be mapped to the dataAccessRole, not the rangerAuditRole.
+      rangerCloudAccessAuthorizerRole:
+        type: string
+        description: The cloud provider role to which the Ranger RAZ service will be mapped (e.g. an ARN in AWS, a Resource ID in Azure).
+      baselineRole:
+        type: string
+        description: Deprecated. Please use rangerAuditRole instead.
+        x-deprecated: true
+      mappings:
+        type: array
+        description: ID Broker mappings for individual actors and groups. Does not include mappings for data access services. May be empty if no individual mappings are needed.
+        items:
+          $ref: '#/definitions/IdBrokerMapping'
+  SetIdBrokerMappingsRequest:
+    type: object
+    description: Request object for setting ID Broker mappings for an environment. Overwrites all existing mappings.
+    required:
+      - environmentName
+      - dataAccessRole
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+      dataAccessRole:
+        type: string
+        description: The cloud provider role to which data access services will be mapped (e.g. an ARN in AWS, a Resource ID in Azure).
+      rangerAuditRole:
+        type: string
+        description: The cloud provider role to which services that write to Ranger audit logs will be mapped (e.g. an ARN in AWS, a Resource ID in Azure). Note that some data access services also write to Ranger audit logs; such services will be mapped to the dataAccessRole, not the rangerAuditRole. ``THIS PARAMETER IS REQUIRED.``
+      rangerCloudAccessAuthorizerRole:
+        type: string
+        description: The cloud provider role to which the Ranger RAZ service will be mapped (e.g. an ARN in AWS, a Resource ID in Azure). This is required in RAZ-enabled environments.
+      baselineRole:
+        type: string
+        description: Deprecated. Please use rangerAuditRole instead.
+        x-deprecated: true
+      mappings:
+        type: array
+        description: ID Broker mappings for individual actors and groups. Does not include mappings for data access services. If omitted or set to an empty list, you must also specify the ``--set-empty-mappings`` option, to confirm that you want to remove any existing individual mappings.
+        items:
+          $ref: '#/definitions/IdBrokerMappingRequest'
+      setEmptyMappings:
+        type: boolean
+        default: false
+        description: Whether to install an empty set of individual mappings, deleting any existing mappings. The ``--set-empty-mappings`` option is required if ``--mappings`` is omitted or if its value is an empty list, and disallowed otherwise.
+  SetIdBrokerMappingsResponse:
+    type: object
+    description: Response object for setting ID Broker mappings for an environment.
+    required:
+      - mappingsVersion
+      - dataAccessRole
+      - rangerAuditRole
+    properties:
+      mappingsVersion:
+        type: integer
+        format: int64
+        description: The version of the mappings.
+      dataAccessRole:
+        type: string
+        description: The cloud provider role to which data access services will be mapped (e.g. an ARN in AWS, a Resource ID in Azure).
+      rangerAuditRole:
+        type: string
+        description: The cloud provider role to which services that write to Ranger audit logs will be mapped (e.g. an ARN in AWS, a Resource ID in Azure). Note that some data access services also write to Ranger audit logs; such services will be mapped to the dataAccessRole, not the rangerAuditRole.
+      rangerCloudAccessAuthorizerRole:
+        type: string
+        description: The cloud provider role to which the Ranger RAZ service will be mapped (e.g. an ARN in AWS, a Resource ID in Azure).
+      baselineRole:
+        type: string
+        description: Deprecated. Please use rangerAuditRole instead.
+        x-deprecated: true
+      mappings:
+        type: array
+        description: ID Broker mappings for individual actors and groups. Does not include mappings for data access services. May be empty if no individual mappings are needed.
+        items:
+          $ref: '#/definitions/IdBrokerMapping'
+  SyncIdBrokerMappingsRequest:
+    type: object
+    description: Request object for synchronizing ID Broker mappings for an environment.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  SyncIdBrokerMappingsResponse:
+    type: object
+    description: Response object for synchronizing ID Broker mappings for an environment.
+  GetIdBrokerMappingsSyncStatusRequest:
+    type: object
+    description: Request object for getting ID Broker mappings sync status.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  GetIdBrokerMappingsSyncStatusResponse:
+    type: object
+    description: Response object for getting ID Broker mappings sync status.
+    required:
+      - syncNeeded
+      - globalStatus
+      - statuses
+    properties:
+      syncNeeded:
+        type: boolean
+        description: Whether a sync is needed to bring in-cluster mappings up-to-date.
+      globalStatus:
+        description: The overall mappings sync status for all datalake clusters in the environment.
+        $ref: '#/definitions/SyncStatus'
+      statuses:
+        type: object
+        description: Map of datalake cluster CRN to mappings sync status for each datalake cluster in the environment.
+        additionalProperties:
+          description: ID Broker sync status.
+          $ref: '#/definitions/IdBrokerSyncStatus'
+  IdBrokerMapping:
+    type: object
+    description: A mapping of an actor or group to a cloud provider role.
+    required:
+      - accessorCrn
+      - role
+    properties:
+      accessorCrn:
+        type: string
+        description: The CRN of the actor or group.
+      role:
+        type: string
+        description: The cloud provider role (e.g., ARN in AWS, Resource ID in Azure) to which the actor or group is mapped.
+  IdBrokerMappingRequest:
+    type: object
+    description: A mapping of an actor or group to a cloud provider role, used in request objects.
+    required:
+      - accessorCrn
+      - role
+    properties:
+      accessorCrn:
+        type: string
+        description: The CRN of the actor or group.
+      role:
+        type: string
+        description: The cloud provider role (e.g., ARN in AWS, Resource ID in Azure) to which the actor or group is mapped.
+  IdBrokerSyncStatus:
+    type: object
+    description: Status of an ID Broker mappings sync operation.
+    required:
+      - status
+    properties:
+      status:
+        description: The mappings sync summary status.
+        $ref: '#/definitions/SyncStatus'
+      startDate:
+        type: string
+        format: date-time
+        description: The date when the mappings sync started executing. Omitted if status is NEVER_RUN.
+      endDate:
+        type: string
+        format: date-time
+        description: The date when the mappings sync completed or was terminated. Omitted if status is NEVER_RUN or RUNNING.
+      errorDetail:
+        type: string
+        description: The detail of the error. Omitted if status is not FAILED.
+  SyncOperationDetails:
+    type: object
+    description: Details object of the sync operation for success or falure.
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        description: environment crn.
+        type: string
+      message:
+        type: string
+        description: The detail of the success or failure.
+  SyncStatus:
+    type: string
+    description: Status of a sync operation.
+    enum:
+      - NEVER_RUN
+      - REQUESTED
+      - REJECTED
+      - RUNNING
+      - COMPLETED
+      - FAILED
+      - TIMEDOUT
+  OperationType:
+    type: string
+    description: Operation Type.
+    enum:
+      - SET_PASSWORD
+      - USER_SYNC
+  GetFreeipaStatusRequest:
+    type: object
+    description: Request object for getting the status of the FreeIPA servers.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The environment name or CRN of the FreeIPA to repair
+  FreeIPANodeStatus:
+    type: object
+    description: The status and issues of an individual FreeIPA node.
+    required:
+      - hostname
+      - status
+    properties:
+      hostname:
+        type: string
+        description: The hostname of the ipa instance.
+      status:
+        type: string
+        description: The status of the individual node
+        enum:
+          - REQUESTED
+          - CREATED
+          - UNREGISTERED
+          - REGISTERED
+          - DECOMMISSIONED
+          - TERMINATED
+          - DELETED_ON_PROVIDER_SIDE
+          - FAILED
+          - STOPPED
+          - REBOOTING
+          - UNREACHABLE
+      issues:
+        type: array
+        description: A list of issues the node is having
+        items:
+          type: string
+  GetFreeipaStatusResponse:
+    type: object
+    description: The overall status of the FreeIPA cluster.
+    required:
+      - environmentCrn
+      - environmentName
+      - status
+      - instances
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of the environment
+      environmentName:
+        type: string
+        description: The name of the Environment
+      status:
+        type: string
+        description: The overall status of the FreeIPA cluster
+        enum:
+          - REQUESTED
+          - CREATE_IN_PROGRESS
+          - AVAILABLE
+          - STACK_AVAILABLE
+          - UPDATE_IN_PROGRESS
+          - UPDATE_REQUESTED
+          - UPDATE_FAILED
+          - CREATE_FAILED
+          - DELETE_IN_PROGRESS
+          - DELETE_FAILED
+          - DELETE_COMPLETED
+          - STOPPED
+          - STOP_REQUESTED
+          - START_REQUESTED
+          - STOP_IN_PROGRESS
+          - START_IN_PROGRESS
+          - START_FAILED
+          - STOP_FAILED
+          - WAIT_FOR_SYNC
+          - MAINTENANCE_MODE_ENABLED
+          - UNREACHABLE
+          - UNHEALTHY
+          - DELETED_ON_PROVIDER_SIDE
+          - UNKNOWN
+      instances:
+        type: object
+        description: Status of individual nodes in the FreeIPA cluster
+        additionalProperties:
+          description: An Individual Node Status
+          $ref: '#/definitions/FreeIPANodeStatus'
+  RepairFreeipaRequest:
+    type: object
+    description: Request object for repairing the FreeIPA servers.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The environment name or CRN of the FreeIPA to repair
+      force:
+        type: boolean
+        description: Force the repair even if the status if the FreeIPA nodes are good.
+        default: false
+      instances:
+        type: array
+        items:
+          type: string
+        description: The instance Ids to repair. If not provided then all instances are looked at for repair.
+  RepairFreeipaResponse:
+    type: object
+    description: Response object for an FreeIPA repair request.
+  AWSFreeIpaCreationRequest:
+    description: Request object for creating FreeIPA in the environment.
+    type: object
+    properties:
+      instanceCountByGroup:
+        type: integer
+        format: int32
+        description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
+  AzureFreeIpaCreationRequest:
+    description: Request object for creating FreeIPA in the environment.
+    type: object
+    properties:
+      instanceCountByGroup:
+        type: integer
+        format: int32
+        description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
+  TagRequest:
+    description: A label that can be attached to some resources.
+    type: object
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The tag's name.
+      value:
+        type: string
+        description: The associated value of the tag.
+  FreeipaDetails:
+    description: Details of a FreeIPA instance.
+    type: object
+    properties:
+      crn:
+        type: string
+        description: CRN of the FreeIPA instance.
+      domain:
+        type: string
+        description: The domain name of the FreeIPA instance.
+      hostname:
+        type: string
+        description: The hostname of the FreeIPA instance.
+      serverIP:
+        type: array
+        description: The IP addresses of the FreeIPA instance.
+        uniqueItems: true
+        items:
+          type: string
+  ProxyConfig:
+    type: object
+    description: A proxy config object.
+    required:
+      - proxyConfigName
+      - crn
+      - protocol
+      - host
+      - port
+    properties:
+      proxyConfigName:
+        type: string
+        description: The name of the proxy config.
+      crn:
+        type: string
+        description: The CRN of the proxy config.
+      protocol:
+        type: string
+        description: The protocol.
+      host:
+        type: string
+        description: The proxy host.
+      port:
+        type: integer
+        format: int32
+        description: The proxy port.
+      description:
+        type: string
+        description: A description for the proxy config.
+      user:
+        type: string
+        description: The proxy user.
+      password:
+        type: string
+        description: The proxy password.
+  CreateProxyConfigRequest:
+    type: object
+    description: Request object for a create proxy config request.
+    required:
+      - proxyConfigName
+      - protocol
+      - host
+      - port
+    properties:
+      proxyConfigName:
+        type: string
+        description: The name of the proxy config.
+      protocol:
+        type: string
+        description: The protocol.
+      host:
+        type: string
+        description: The proxy host.
+      port:
+        type: integer
+        format: int32
+        description: The proxy port.
+      description:
+        type: string
+        description: A description for the proxy config.
+      user:
+        type: string
+        description: The proxy user.
+      password:
+        type: string
+        description: The proxy password.
+  CreateProxyConfigResponse:
+    type: object
+    description: Response object for a create proxy config request.
+    required:
+      - proxyConfig
+    properties:
+      proxyConfig:
+        description: The proxy config object.
+        $ref: '#/definitions/ProxyConfig'
+  ListProxyConfigsRequest:
+    type: object
+    description: Request object for a list proxy configs request.
+    properties:
+      proxyConfigName:
+        type: string
+        description: An optional proxy config name to search by.
+  ListProxyConfigsResponse:
+    type: object
+    description: Response object for a list proxy configs request.
+    required:
+      - proxyConfigs
+    properties:
+      proxyConfigs:
+        type: array
+        items:
+          $ref: '#/definitions/ProxyConfig'
+        description: The proxy configs.
+  DeleteProxyConfigRequest:
+    type: object
+    description: Request object for a delete proxy config request.
+    required:
+      - proxyConfigName
+    properties:
+      proxyConfigName:
+        type: string
+        description: The name or CRN of the proxy config.
+  DeleteProxyConfigResponse:
+    type: object
+    description: Response object for a delete proxy config request.
+  SetTelemetryFeaturesRequest:
+    type: object
+    description: Request object to enable environment level telemetry features.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+      workloadAnalytics:
+        type: boolean
+        description: Flag to enable environment level workload analytics.
+      reportDeploymentLogs:
+        type: boolean
+        description: Flag to enable environment level deployment log collection.
+  SetTelemetryFeaturesResponse:
+    type: object
+    description: Response object to enable environment level telemetry features.
+  SetAccountTelemetryRequest:
+    type: object
+    description: Request object to enable environment level telemetry features.
+    properties:
+      workloadAnalytics:
+        type: boolean
+        description: Flag to enable account level workload analytics. (that will be used as a default for environment)
+      reportDeploymentLogs:
+        type: boolean
+        description: Flag to enable account level deployment log collection. (that will be used as a default for environment)
+      rules:
+        type: array
+        description: List of anonymization rules that are applied on logs that are shipped to Cloudera
+        items:
+          $ref: '#/definitions/AnonymizationRuleRequest'
+  SetAccountTelemetryResponse:
+    type: object
+    description: Response object for set account level telemetry settings.
+    properties:
+      workloadAnalytics:
+        type: boolean
+        description: Flag to enable account level workload analytics. (that will be used as a default for environment)
+      reportDeploymentLogs:
+        type: boolean
+        description: Flag to enable account level deployment log collection. (that will be used as a default for environment)
+      rules:
+        type: array
+        description: List of anonymization rules that are applied on logs that are shipped to Cloudera
+        items:
+          $ref: '#/definitions/AnonymizationRuleResponse'
+  GetAccountTelemetryRequest:
+    type: object
+    description: Request object for get account level telemetry settings.
+  GetAccountTelemetryResponse:
+    type: object
+    description: Response object for get account level telemetry settings.
+    properties:
+      workloadAnalytics:
+        type: boolean
+        description: Flag to enable account level workload analytics. (that will be used as a default for environment)
+      reportDeploymentLogs:
+        type: boolean
+        description: Flag to enable account level deployment log collection. (that will be used as a default for environment)
+      rules:
+        type: array
+        description: List of anonymization rules that are applied on logs that are shipped to Cloudera
+        items:
+          $ref: '#/definitions/AnonymizationRuleResponse'
+  GetAccountTelemetryDefaultRequest:
+    type: object
+    description: Request object for get default account level telemetry settings.
+  GetAccountTelemetryDefaultResponse:
+    type: object
+    description: Response object for get default account level telemetry settings.
+    properties:
+      workloadAnalytics:
+        type: boolean
+        description: Flag to enable account level workload analytics. (that will be used as a default for environment)
+      reportDeploymentLogs:
+        type: boolean
+        description: Flag to enable account level deployment log collection. (that will be used as a default for environment)
+      rules:
+        type: array
+        description: List of anonymization rules that are applied on logs that are shipped to Cloudera
+        items:
+          $ref: '#/definitions/AnonymizationRuleResponse'
+  AnonymizationRuleRequest:
+    type: object
+    description: Anonymization rule request object that is applied on logs that are sent to Cloudera.
+    required:
+      - value
+    properties:
+      value:
+        type: string
+        description: Pattern of the rule that should be redacted.
+      replacement:
+        type: string
+        default: '[REDACTED]'
+        description: If rule pattern (value) matches, that will be replaced for this string (default [REDACTED])
+  AnonymizationRuleResponse:
+    type: object
+    description: Anonymization rule response object rule that is applied on logs that are sent to Cloudera.
+    properties:
+      value:
+        type: string
+        description: Pattern of the rule that should be redacted.
+      replacement:
+        type: string
+        description: If rule pattern (value) matches, that will be replaced for this string (default [REDACTED])
+  TestAccountTelemetryRulesRequest:
+    type: object
+    description: Request object for testing text input against provided account telemetry anonymization rules.
+    required:
+      - testInput
+      - rules
+    properties:
+      testInput:
+        type: string
+        description: Text input that will be tested against the provided account telemetry anonymization rules.
+      rules:
+        type: array
+        description: List of anonymization rules that are applied on logs that are shipped to Cloudera
+        items:
+          $ref: '#/definitions/AnonymizationRuleRequest'
+  TestAccountTelemetryRulesResponse:
+    type: object
+    description: Response object for testing anonymization rules for account telemetry.
+    properties:
+      output:
+        type: string
+        description: Output text after applying the anonymization rules on the test input.

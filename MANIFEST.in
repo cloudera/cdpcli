@@ -1,0 +1,10 @@
+include LICENSE.txt
+include LICENSE_SUPPLEMENTAL_DISCLAIMER.txt
+include NOTICES.txt
+include README.rst
+recursive-include cdpcli/data *.json
+recursive-include cdpcli/data *.yaml
+recursive-include cdpcli/thirdparty *.pem
+recursive-include cdpcli/examples *.rst
+include versioneer.py
+include cdpcli/_version.py

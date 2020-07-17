@@ -1,0 +1,2833 @@
+swagger: '2.0'
+x-endpoint-name: iam
+x-products: ALTUS,CDP
+x-altus-releases: PUBLIC
+x-cdp-releases: PUBLIC
+x-audit: true
+x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_IAM_API
+info:
+  version: 0.1-SNAPSHOT
+  title: Cloudera IAM Service
+  license:
+    name: Apache 2.0
+  description: Cloudera Altus IAM is a web service that you can use to manage users and user permissions under your Altus account.
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /iam/getUser:
+    post:
+      summary: Gets information on a user.
+      description: Gets information on a user. If no user name is specified. The user name is determined from the access key used to make the request.
+      operationId: getUser
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listUsers:
+    post:
+      summary: Lists users.
+      description: Lists users.
+      operationId: listUsers
+      x-right: iam/listUsers
+      x-paginates: true
+      x-paging-default-max-items: 100
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListUsersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListUsersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/createUser:
+    post:
+      summary: Creates a user in Altus.
+      description: Creates a user in Altus.
+      operationId: createUser
+      x-right: iam/createUser
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/deleteUser:
+    post:
+      summary: Deletes a user and all associated resources.
+      description: Deletes a user. This includes deleting all associated access keys and unassigning all roles and resource roles assigned to the user. The user is also removed from all groups it belongs to. If the call succeeds the user will not be able to login interactively, or use any access keys to access the CDP control plane. This feature is under development and some reasources may be left behind after a successful call. Note that user-sync is not triggered yet by this call and the caller must trigger that to ensure that the user loses access to all environments as soon as possible.
+      operationId: deleteUser
+      x-right: iam/deleteUser
+      x-entitlement: DELETE_USER
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/createUserAccessKey:
+    post:
+      summary: Creates a new access key for a user.
+      description: Creates a new access key for a user.
+      operationId: createUserAccessKey
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateUserAccessKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateUserAccessKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/createMachineUserAccessKey:
+    post:
+      summary: Creates a new access key for a machine user.
+      description: Creates a new access key for a machine user.
+      operationId: createMachineUserAccessKey
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateMachineUserAccessKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateMachineUserAccessKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/deleteAccessKey:
+    post:
+      summary: Deletes an access key.
+      description: Deletes an access key.
+      operationId: deleteAccessKey
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteAccessKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteAccessKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/updateAccessKey:
+    post:
+      summary: Updates an access key.
+      description: Updates an access key.
+      operationId: updateAccessKey
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAccessKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateAccessKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/getAccessKey:
+    post:
+      summary: Gets information on an access key.
+      description: Gets information on an access key. If no access key ID is specified. Information on the access key used to make the request is returned.
+      operationId: getAccessKey
+      x-right: iam/getAccessKey
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAccessKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAccessKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listAccessKeys:
+    post:
+      summary: Lists access keys.
+      description: Lists access keys.
+      operationId: listAccessKeys
+      x-right: iam/listAccessKeys
+      x-paginates: true
+      x-paging-default-max-items: 100
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListAccessKeysRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListAccessKeysResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listRoles:
+    post:
+      summary: Lists all the available roles.
+      description: Lists all the available roles. Roles grant rights to users via policies that are attached to the roles.
+      operationId: listRoles
+      x-right: iam/listRoles
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listResourceRoles:
+    post:
+      summary: Lists all the available resource roles.
+      description: Lists all the available reource roles. Resource roles grants rights over certain resources.
+      operationId: listResourceRoles
+      x-right: iam/listResourceRoles
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListResourceRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListResourceRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/assignUserRole:
+    post:
+      summary: Assign a role to a user.
+      description: Assign a role to a user. If the role is already assigned to the user the request will fail.
+      operationId: assignUserRole
+      x-right: iam/assignRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AssignUserRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AssignUserRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/unassignUserRole:
+    post:
+      summary: Unassign a role from a user.
+      description: Unassign a role from a user. If the role is not currently assigned to the user the request will fail.
+      operationId: unassignUserRole
+      x-right: iam/unassignRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnassignUserRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UnassignUserRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/assignUserResourceRole:
+    post:
+      summary: Assign a resource role to a user.
+      description: Assign a resource role to a user. If the resource role is already assigned to the user the request will fail.
+      operationId: assignUserResourceRole
+      x-right: iam/assignResourceRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AssignUserResourceRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AssignUserResourceRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/unassignUserResourceRole:
+    post:
+      summary: Unassign a resource role from a user.
+      description: Unassign a resource role from a user. If the resource role is not currently assigned to the user the request will fail.
+      operationId: unassignUserResourceRole
+      x-right: iam/unassignResourceRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnassignUserResourceRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UnassignUserResourceRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listUserAssignedRoles:
+    post:
+      summary: Lists the user's assigned roles.
+      description: Lists the user's assigned roles.
+      operationId: listUserAssignedRoles
+      x-right: iam/listAssignedRoles
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListUserAssignedRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListUserAssignedRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listUserAssignedResourceRoles:
+    post:
+      summary: Lists a user's assigned resource roles.
+      description: Lists a user's assigned resource roles.
+      operationId: listUserAssignedResourceRoles
+      x-right: iam/listAssignedResourceRoles
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListUserAssignedResourceRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListUserAssignedResourceRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/assignMachineUserRole:
+    post:
+      summary: Assign a role to a machine user.
+      description: Assign a role to a machine user. If the role is already assigned to the machine user the request will fail.
+      operationId: assignMachineUserRole
+      x-right: iam/assignRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AssignMachineUserRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AssignMachineUserRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/unassignMachineUserRole:
+    post:
+      summary: Unassign a role from a machine user.
+      description: Unassign a role from a machine user. If the role is not currently assigned to the machine user the request will fail.
+      operationId: unassignMachineUserRole
+      x-right: iam/unassignRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnassignMachineUserRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UnassignMachineUserRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/assignMachineUserResourceRole:
+    post:
+      summary: Assign a resource role to a machine user.
+      description: Assign a resource role to a machine user. If the resource role is already assigned to the machine user the request will fail.
+      operationId: assignMachineUserResourceRole
+      x-right: iam/assignResourceRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AssignMachineUserResourceRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AssignMachineUserResourceRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/unassignMachineUserResourceRole:
+    post:
+      summary: Unassign a resource role from a machine user.
+      description: Unassign a resource role from a machine user. If the resource role is not currently assigned to the machine user the request will fail.
+      operationId: unassignMachineUserResourceRole
+      x-right: iam/unassignResourceRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnassignMachineUserResourceRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UnassignMachineUserResourceRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listMachineUserAssignedRoles:
+    post:
+      summary: Lists the machine user's assigned roles.
+      description: Lists the machine user's assigned roles.
+      operationId: listMachineUserAssignedRoles
+      x-right: iam/listAssignedRoles
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListMachineUserAssignedRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListMachineUserAssignedRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listMachineUserAssignedResourceRoles:
+    post:
+      summary: Lists a machine user's assigned resource roles.
+      description: Lists a machine user's assigned resource roles.
+      operationId: listMachineUserAssignedResourceRoles
+      x-right: iam/listAssignedResourceRoles
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListMachineUserAssignedResourceRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListMachineUserAssignedResourceRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listResourceAssignees:
+    post:
+      summary: List the resource assignees and their respective resource roles for the resource.
+      description: List the resource assignees and their respective resource roles for the resource.
+      operationId: listResourceAssignees
+      x-right: iam/listResourceAssignees
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListResourceAssigneesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListResourceAssigneesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/createMachineUser:
+    post:
+      summary: Create a machine user.
+      description: Creates a machine user in the account. A machine user can be used to access Altus API. A machine user can have access keys associated with it and can be assigned roles and resource roles. A machine user cannot login to the Altus console.
+      operationId: createMachineUser
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateMachineUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateMachineUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listMachineUsers:
+    post:
+      summary: Lists machine users.
+      description: Lists machine users in the account.
+      operationId: listMachineUsers
+      x-right: iam/listMachineUsers
+      x-paginates: true
+      x-paging-default-max-items: 100
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListMachineUsersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListMachineUsersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/deleteMachineUser:
+    post:
+      summary: Delete a machine user.
+      description: Deletes a machine user previously created in the account.
+      operationId: deleteMachineUser
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteMachineUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteMachineUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/createSamlProvider:
+    post:
+      summary: Creates a SAML provider in Altus.
+      description: Creates a SAML provider in Altus.
+      operationId: createSamlProvider
+      x-right: iam/createSamlProvider
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateSamlProviderRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateSamlProviderResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/deleteSamlProvider:
+    post:
+      summary: Deletes a SAML provider in Altus account.
+      description: Deletes a SAML provider in Altus account.
+      operationId: deleteSamlProvider
+      x-right: iam/deleteSamlProvider
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteSamlProviderRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteSamlProviderResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listSamlProviders:
+    post:
+      summary: Lists SAML providers in Altus account.
+      description: Lists SAML providers in Altus account.
+      operationId: listSamlProviders
+      x-right: iam/listSamlProviders
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListSamlProvidersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListSamlProvidersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/updateSamlProvider:
+    post:
+      summary: Updates a SAML provider in Altus.
+      description: Updates a SAML provider in Altus.
+      operationId: updateSamlProvider
+      x-right: iam/updateSamlProvider
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateSamlProviderRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateSamlProviderResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/enableClouderaSSOLogin:
+    post:
+      summary: Enables interactive login using Cloudera SSO for this account.
+      description: Enables interactive login using Cloudera SSO for this account. This is a no-op if login using Cloudera SSO are already enabled.
+      operationId: enableClouderaSSOLogin
+      x-right: iam/manageClouderaSSOLogin
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnableClouderaSSOLoginRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/EnableClouderaSSOLoginResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/disableClouderaSSOLogin:
+    post:
+      summary: Disables interactive login using Cloudera SSO for this account.
+      description: Disables interactive login using Cloudera SSO for this account. When disabled, only users who are designated account administrators will be able to use Cloudera SSO to interactively login to the Altus account. All other users will only be able to interactively login using SAML providers defined for the account. This is a no-op if login using Cloudera SSO are already disabled.
+      operationId: disableClouderaSSOLogin
+      x-right: iam/manageClouderaSSOLogin
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DisableClouderaSSOLoginRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DisableClouderaSSOLoginResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/getAccount:
+    post:
+      summary: Retrieves information about the Altus account.
+      description: Retrieves information about the Altus account.
+      operationId: getAccount
+      x-right: iam/getAccount
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAccountRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAccountResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/createGroup:
+    post:
+      summary: Create a group.
+      description: Create a group. A group is a named collection of users and machine users. Roles and resource roles can be assigned to a group impacting all members of the group.
+      operationId: createGroup
+      x-right: iam/createGroup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/deleteGroup:
+    post:
+      summary: Delete a group.
+      description: Delete a group.
+      operationId: deleteGroup
+      x-right: iam/deleteGroup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listGroups:
+    post:
+      summary: Lists groups.
+      description: Lists groups. If no group names are specified, the call lists all groups.
+      operationId: listGroups
+      x-right: iam/listGroups
+      x-paginates: true
+      x-paging-default-max-items: 100
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListGroupsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListGroupsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/updateGroup:
+    post:
+      summary: Update a group.
+      description: Update a group.
+      operationId: updateGroup
+      x-right: iam/updateGroup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/addUserToGroup:
+    post:
+      summary: Add a user to a group.
+      description: Add a user to group.
+      operationId: addUserToGroup
+      x-right: iam/addMemberToGroup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AddUserToGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AddUserToGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/addMachineUserToGroup:
+    post:
+      summary: Add a machine user to group.
+      description: Add a machine user to a group.
+      operationId: addMachineUserToGroup
+      x-right: iam/addMemberToGroup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AddMachineUserToGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AddMachineUserToGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/removeUserFromGroup:
+    post:
+      summary: Remove a user from a group.
+      description: Remove a user from a group.
+      operationId: removeUserFromGroup
+      x-right: iam/removeMemberFromGroup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RemoveUserFromGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RemoveUserFromGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/removeMachineUserFromGroup:
+    post:
+      summary: Remove a machine user from a group.
+      description: Remove a machine user from a group.
+      operationId: removeMachineUserFromGroup
+      x-right: iam/removeMemberFromGroup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RemoveMachineUserFromGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RemoveMachineUserFromGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listGroupMembers:
+    post:
+      summary: List the members of a group.
+      description: List the members of a group.
+      operationId: listGroupMembers
+      x-right: iam/listGroupMembers
+      x-paginates: true
+      x-paging-default-max-items: 100
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListGroupMembersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListGroupMembersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listGroupsForUser:
+    post:
+      summary: List the groups that the user belongs to.
+      description: List the groups that the user belongs to.
+      operationId: listGroupsForUser
+      x-right: iam/listGroupsForActor
+      x-paginates: true
+      x-paging-default-max-items: 100
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListGroupsForUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListGroupsForUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listGroupsForMachineUser:
+    post:
+      summary: List the groups that the machine user belongs to.
+      description: List the groups that the machine user belongs to.
+      operationId: listGroupsForMachineUser
+      x-right: iam/listGroupsForActor
+      x-paginates: true
+      x-paging-default-max-items: 100
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListGroupsForMachineUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListGroupsForMachineUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/assignGroupRole:
+    post:
+      summary: Assign a role to a group.
+      description: Assign a role to a group. If the role is already assigned to the group the request will fail.
+      operationId: assignGroupRole
+      x-right: iam/assignRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AssignGroupRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AssignGroupRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/unassignGroupRole:
+    post:
+      summary: Unassign a role from a group.
+      description: Unassign a role from a group. If the role is not currently assigned to the group the request will fail.
+      operationId: unassignGroupRole
+      x-right: iam/unassignRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnassignGroupRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UnassignGroupRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/assignGroupResourceRole:
+    post:
+      summary: Assign a resource role to a group.
+      description: Assign a resource role to a group. If the resource role is already assigned to the group the request will fail.
+      operationId: assignGroupResourceRole
+      x-right: iam/assignResourceRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AssignGroupResourceRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AssignGroupResourceRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/unassignGroupResourceRole:
+    post:
+      summary: Unassign a resource role from a group.
+      description: Unassign a resource role from a group. If the resource role is not currently assigned to the group the request will fail.
+      operationId: unassignGroupResourceRole
+      x-right: iam/unassignResourceRole
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnassignGroupResourceRoleRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UnassignGroupResourceRoleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listGroupAssignedRoles:
+    post:
+      summary: Lists the group's assigned roles.
+      description: Lists the group's assigned roles.
+      operationId: listGroupAssignedRoles
+      x-right: iam/listAssignedRoles
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListGroupAssignedRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListGroupAssignedRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listGroupAssignedResourceRoles:
+    post:
+      summary: Lists a group's assigned resource roles.
+      description: Lists a group's assigned resource roles.
+      operationId: listGroupAssignedResourceRoles
+      x-right: iam/listAssignedResourceRoles
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListGroupAssignedResourceRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListGroupAssignedResourceRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/setWorkloadPassword:
+    post:
+      summary: Set the workload password for an actor.
+      description: Set the workload password for an actor. This will be the actor's password in all Environments they have access to, including Environments they are given access to after setting the password. The password plaintext is not kept.
+      operationId: setWorkloadPassword
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetWorkloadPasswordRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetWorkloadPasswordResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/setWorkloadPasswordPolicy:
+    post:
+      summary: Set the workload password policy for the account.
+      description: Set the workload password for the account. Changes to the workload password policy only affect passwords that are set after the policy has been updated. By default, passwords never expire.
+      operationId: setWorkloadPasswordPolicy
+      x-no-compatibility-guarantee: true
+      x-right: iam/setWorkloadPasswordPolicy
+      x-entitlement: WORKLOAD_PASSWORD_POLICY
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetWorkloadPasswordPolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetWorkloadPasswordPolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Error:
+    type: object
+    description: An object returned on an error.
+    properties:
+      code:
+        type: string
+        description: The error code.
+      message:
+        type: string
+        description: The error message.
+  WorkloadPasswordPolicy:
+    type: object
+    description: Information about the workload password policy for an account.
+    x-no-compatibility-guarantee: true
+    required:
+      - maxPasswordLifetimeDays
+    properties:
+      maxPasswordLifetimeDays:
+        type: integer
+        format: int32
+        description: The max lifetime, in days, of the password. If '0' passwords never expire.
+  Account:
+    type: object
+    description: Information about a Cloudera Altus account.
+    required:
+      - clouderaSSOLoginEnabled
+      - workloadPasswordPolicy
+    properties:
+      clouderaSSOLoginEnabled:
+        type: boolean
+        description: Whether interactive login using Cloudera SSO is enabled.
+      workloadPasswordPolicy:
+        x-no-compatibility-guarantee: true
+        $ref: '#/definitions/WorkloadPasswordPolicy'
+        description: The workload password policy object.
+  User:
+    type: object
+    description: Information about a Cloudera Altus user.
+    required:
+      - userId
+      - crn
+      - email
+      - firstName
+      - lastName
+      - creationDate
+      - accountAdmin
+      - identityProviderCrn
+    x-limits:
+      - scope: account
+        value: 100
+        doc: The maximum number of users that can be created in an account.
+    properties:
+      userId:
+        type: string
+        description: The stable, unique identifier of the user.
+      crn:
+        type: string
+        description: The CRN of the user.
+      email:
+        type: string
+        description: The user's email address.
+      firstName:
+        type: string
+        description: The user's first name.
+      lastName:
+        type: string
+        description: The user's last name.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when this user record was created.
+      accountAdmin:
+        type: boolean
+        description: Whether the user is an administrator of their Altus account.
+      identityProviderCrn:
+        type: string
+        description: The identity provider that the user belongs to. It can be "Cloudera-Default", "Cloudera-Administration", or a customer defined IdP.
+      lastInteractiveLogin:
+        type: string
+        format: date-time
+        description: The date of the user's last interactive login.
+      workloadUsername:
+        type: string
+        description: The username used in all the workload clusters of the user.
+        x-no-compatibility-guarantee: true
+  MachineUser:
+    type: object
+    description: Information about a Cloudera Altus machine user.
+    required:
+      - machineUserName
+      - crn
+      - creationDate
+    x-limits:
+      - scope: account
+        value: 100
+        doc: The maximum number of machine users that can be created in an account.
+    properties:
+      machineUserName:
+        type: string
+        description: The machine user name.
+      crn:
+        type: string
+        description: The CRN of the user.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when this machine user record was created.
+      workloadUsername:
+        type: string
+        description: The username used in all the workload clusters of the machine user.
+        x-no-compatibility-guarantee: true
+  AccessKey:
+    type: object
+    description: Information about a Cloudera Altus access key.
+    required:
+      - accessKeyId
+      - crn
+      - actorCrn
+      - creationDate
+    x-limits:
+      - scope: account
+        value: 200
+        doc: The maximum number of access keys that can be created in an account.
+    properties:
+      accessKeyId:
+        type: string
+        description: The ID of the access key.
+      crn:
+        type: string
+        description: The CRN of the access key.
+      actorCrn:
+        type: string
+        description: The CRN of the actor with which this access key is associated.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when the access key was created.
+      status:
+        type: string
+        description: The status of an access key.
+        enum:
+          - ACTIVE
+          - INACTIVE
+      type:
+        type: string
+        description: The type of an access key.
+        enum:
+          - V1
+          - V2
+      lastUsage:
+        $ref: '#/definitions/AccessKeyLastUsage'
+        description: Information on the last time this access key was used.
+  AccessKeyLastUsage:
+    type: object
+    description: Information on the last time an access key was used.
+    properties:
+      lastUsageDate:
+        type: string
+        format: date-time
+        description: The date when the access key was last used.
+      serviceName:
+        type: string
+        description: The name of the service with which this access key was most recently used.
+  PolicyStatement:
+    type: object
+    description: A policy statement is a list of rights and zero or more resources on which the rights are granted.
+    required:
+      - rights
+      - resources
+    properties:
+      rights:
+        type: array
+        items:
+          type: string
+        description: The list of rights in the policy statement.
+      resources:
+        type: array
+        items:
+          type: string
+        description: The resources on which the rights are granted.
+  Policy:
+    type: object
+    description: A policy contains a list of one or more policy statements.
+    required:
+      - crn
+      - policyStatements
+    properties:
+      crn:
+        type: string
+        description: The policy crn.
+      policyStatements:
+        type: array
+        items:
+          $ref: '#/definitions/PolicyStatement'
+        description: The policy statements.
+  ResourceRole:
+    type: object
+    description: Information about a resource role. A resource role is a role that grants a collection of rights to a user on resources.
+    required:
+      - crn
+      - rights
+    properties:
+      crn:
+        type: string
+        description: The CRN of the resource role.
+      rights:
+        type: array
+        items:
+          type: string
+        description: The rights granted by this role.
+  Role:
+    type: object
+    description: Information about a role.
+    required:
+      - crn
+      - policies
+    properties:
+      crn:
+        type: string
+        description: The role's CRN.
+      policies:
+        type: array
+        items:
+          $ref: '#/definitions/Policy'
+        description: The list of policies that belong to the role. Cannot be empty.
+  ResourceAssignment:
+    type: object
+    description: Information about a resource assignment.
+    required:
+      - resourceCrn
+      - resourceRoleCrn
+    properties:
+      resourceCrn:
+        type: string
+        description: The assigned resource's CRN.
+      resourceRoleCrn:
+        type: string
+        description: The assigned resource role CRN.
+  ResourceAssignee:
+    type: object
+    description: Information about the resource role assignee for the resource.
+    required:
+      - assigneeCrn
+      - resourceRoleCrn
+    properties:
+      assigneeCrn:
+        type: string
+        description: The CRN of the assignee.
+      resourceRoleCrn:
+        type: string
+        description: The assigned resource role CRN.
+  Group:
+    type: object
+    description: Information about a group.
+    required:
+      - groupName
+      - crn
+      - creationDate
+    properties:
+      groupName:
+        type: string
+        description: The group name.
+      crn:
+        type: string
+        description: The CRN of the group.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when this group record was created.
+      syncMembershipOnUserLogin:
+        type: boolean
+        description: Whether group membership is synced when a user logs in. The default is to sync group membership.
+  SamlProvider:
+    type: object
+    description: Information used to connect an Altus account to an external identity provider.
+    required:
+      - crn
+      - creationDate
+      - samlProviderName
+      - samlProviderId
+      - syncGroupsOnLogin
+    properties:
+      crn:
+        type: string
+        description: CRN of the SAML provider in Altus.
+        x-no-compatibility-guarantee: true
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when this SAML provider record was created.
+        x-no-compatibility-guarantee: true
+      samlProviderName:
+        type: string
+        description: Name of the SAML provider.
+      samlProviderId:
+        type: string
+        description: The unique ID of the saml provider.
+      syncGroupsOnLogin:
+        type: boolean
+        description: Whether users federated with this SAML provider will have their group membership synchronized. Group membership can be passed using the https://altus.cloudera.com/SAML/Attributes/groups SAML assertion.
+      samlMetadataDocument:
+        type: string
+        description: The original metadata that was passed while creating the SAML provider connector. This field will not be set for listSamlProviders API response.
+  GetUserRequest:
+    type: object
+    description: Request object for a get user request.
+    properties:
+      userId:
+        type: string
+        description: The ID of the user to get information about. If it is not included, it defaults to the user making the request.
+  GetUserResponse:
+    type: object
+    description: Response object for a get user request.
+    required:
+      - user
+    properties:
+      user:
+        $ref: '#/definitions/User'
+        description: Information about the user.
+  ListUsersRequest:
+    type: object
+    description: Request object for a list users request.
+    properties:
+      userIds:
+        type: array
+        items:
+          type: string
+        description: The user IDs or CRNs of the users.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListUsersResponse:
+    type: object
+    description: Response object for a list users request.
+    required:
+      - users
+    properties:
+      users:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+        x-paging-result: true
+        description: The users.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  CreateUserAccessKeyRequest:
+    type: object
+    description: Request object for a create user access key request.
+    properties:
+      user:
+        type: string
+        description: The ID or CRN of the user to whom this access key will be associated. If it is not included, it defaults to the user making the request.
+      type:
+        type: string
+        description: The version of an access key to create. Default is V2. Use V1 for compatibility with old CLI (< 1.6)  and SDK (< 1.3) releases.
+        enum:
+          - V1
+          - V2
+  CreateUserAccessKeyResponse:
+    type: object
+    description: Response object for a create user access key request.
+    required:
+      - accessKey
+      - privateKey
+    properties:
+      accessKey:
+        $ref: '#/definitions/AccessKey'
+        description: The access key that was created.
+      privateKey:
+        type: string
+        description: The private key associated with this access key. This string is the contents of a PEM file containing a PKCS#8 private key.
+        x-sensitive: true
+  CreateMachineUserAccessKeyRequest:
+    type: object
+    description: Request object for a create machine user access key request.
+    required:
+      - machineUserName
+    properties:
+      machineUserName:
+        type: string
+        description: The name or CRN of the machine user to whom this access key will be associated.
+      type:
+        type: string
+        description: The version of an access key to create. Default is V2. Use V1 for compatibility with old CLI (< 1.6)  and SDK (< 1.3) releases.
+        enum:
+          - V1
+          - V2
+  CreateMachineUserAccessKeyResponse:
+    type: object
+    description: Response object for a create machine user access key request.
+    required:
+      - accessKey
+      - privateKey
+    properties:
+      accessKey:
+        $ref: '#/definitions/AccessKey'
+        description: The access key that was created.
+      privateKey:
+        type: string
+        description: The private key associated with this access key. This string is the contents of a PEM file containing a PKCS#8 private key.
+        x-sensitive: true
+  DeleteAccessKeyRequest:
+    type: object
+    description: Request object for a delete access key request.
+    required:
+      - accessKeyId
+    properties:
+      accessKeyId:
+        type: string
+        description: The ID of the access key.
+  DeleteAccessKeyResponse:
+    type: object
+    description: Response object for a delete access key request.
+  UpdateAccessKeyRequest:
+    type: object
+    description: Request object for an update access key request.
+    required:
+      - accessKeyId
+      - status
+    properties:
+      accessKeyId:
+        type: string
+        description: The ID of the access key to update.
+      status:
+        type: string
+        description: The status to assign to the access key.
+        enum:
+          - ACTIVE
+          - INACTIVE
+  UpdateAccessKeyResponse:
+    type: object
+    description: Response object for an update access key request.
+    required:
+      - accessKey
+    properties:
+      accessKey:
+        $ref: '#/definitions/AccessKey'
+        description: The access key that was updated.
+  GetAccessKeyRequest:
+    type: object
+    description: Request object for a get access key request.
+    properties:
+      accessKeyId:
+        type: string
+        description: The ID of the access key to get information about. If it is not included, it defaults to the access key used to make the request.
+  GetAccessKeyResponse:
+    type: object
+    description: Response object for a get access key request.
+    required:
+      - accessKey
+    properties:
+      accessKey:
+        $ref: '#/definitions/AccessKey'
+        description: Information about the access key.
+  ListAccessKeysRequest:
+    type: object
+    description: Request object for a list access keys request.
+    properties:
+      accessKeyIds:
+        type: array
+        items:
+          type: string
+        description: The access key IDs or CRNs of the access keys.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListAccessKeysResponse:
+    type: object
+    description: Response object for a list access keys request.
+    required:
+      - accessKeys
+    properties:
+      accessKeys:
+        type: array
+        items:
+          $ref: '#/definitions/AccessKey'
+        x-paging-result: true
+        description: The access keys.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  CreateSamlProviderRequest:
+    type: object
+    description: Request object for creating SAML provider request.
+    required:
+      - samlProviderName
+      - samlMetadataDocument
+    properties:
+      samlProviderName:
+        type: string
+        description: The name of SAML provider. The name must be unique, must have a maximum of 128 characters, and must contain only alphanumeric characters, "-" and "_". Names are are not case-sensitive.
+      samlMetadataDocument:
+        type: string
+        description: SAML metadata document XML file. Length of meta data document cannot be more than 200 KB (200,000 bytes).
+        maxLength: 200000
+      syncGroupsOnLogin:
+        type: boolean
+        description: Whether to sync group information for users federated with this SAML provider. Group membership can be passed using the https://altus.cloudera.com/SAML/Attributes/groups SAML assertion. The default is to synchronize group membership.
+  CreateSamlProviderResponse:
+    type: object
+    description: Response object for a creating SAML provider request.
+    required:
+      - samlProvider
+    properties:
+      samlProvider:
+        $ref: '#/definitions/SamlProvider'
+        description: The SAML provider.
+  DeleteSamlProviderRequest:
+    type: object
+    description: Request object for deleting SAML provider request.
+    properties:
+      samlProviderName:
+        type: string
+        description: The name or CRN of the SAML provider to delete.
+  DeleteSamlProviderResponse:
+    type: object
+    description: Response object for delete SAML provider request.
+  ListSamlProvidersRequest:
+    type: object
+    description: Request object for a list SAML providers request.
+    properties:
+      samlProviderNames:
+        type: array
+        description: The SAML providers names or CRNs to retrieve. If empty all SAML providers will be returned.
+        items:
+          type: string
+          description: The SAML providers names or CRNs to retrieve. If empty all SAML providers will be returned.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListSamlProvidersResponse:
+    type: object
+    description: Response object for a list SAML providers request.
+    required:
+      - samlProviders
+    properties:
+      samlProviders:
+        type: array
+        items:
+          $ref: '#/definitions/SamlProvider'
+        x-paging-result: true
+        description: The SAML providers.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  UpdateSamlProviderRequest:
+    type: object
+    description: Request object for an updating SAML provider request.
+    required:
+      - samlProviderName
+    properties:
+      samlProviderName:
+        type: string
+        description: The name or CRN of SAML provider to update.
+      samlMetadataDocument:
+        type: string
+        description: SAML metadata document XML file. Length of meta data document cannot be more than 200 KB (200,000 bytes). Can be omitted if no update is required.
+        maxLength: 200000
+      syncGroupsOnLogin:
+        type: boolean
+        description: Whether to sync group information for users federated with this SAML provider. Group membership can be passed using the https://altus.cloudera.com/SAML/Attributes/groups SAML assertion. The default is to synchronize group membership. Can be omitted if no update is required.
+  UpdateSamlProviderResponse:
+    type: object
+    description: Response object for an updating SAML provider request.
+    required:
+      - samlProvider
+    properties:
+      samlProvider:
+        $ref: '#/definitions/SamlProvider'
+        description: The SAML provider.
+  ListRolesRequest:
+    type: object
+    description: Request object for a list roles request.
+    properties:
+      roleNames:
+        type: array
+        items:
+          type: string
+        description: The roles names or CRNs to retrieve. If empty all roles will be returned.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListRolesResponse:
+    type: object
+    description: Response object for a list roles request.
+    required:
+      - roles
+    properties:
+      roles:
+        type: array
+        items:
+          $ref: '#/definitions/Role'
+        x-paging-result: true
+        description: The list of roles in the account.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  ListResourceRolesRequest:
+    type: object
+    description: Request object for a list resource roles request.
+    properties:
+      resourceRoleNames:
+        type: array
+        items:
+          type: string
+        description: The resource roles CRNs to retrieve. If empty all resource roles will be returned.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListResourceRolesResponse:
+    type: object
+    description: Response object for a list resource roles request.
+    required:
+      - resourceRoles
+    properties:
+      resourceRoles:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceRole'
+        x-paging-result: true
+        description: The list of resource roles. Cannot be empty.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  AssignUserRoleRequest:
+    type: object
+    description: Request object for an assign user role request.
+    required:
+      - user
+      - role
+    properties:
+      user:
+        type: string
+        description: The user the role is assigned to. Can be the user's CRN or id.
+      role:
+        type: string
+        description: The role to assign to the user. Can be the role's CRN or name.
+  AssignUserRoleResponse:
+    type: object
+    description: Response object for an assign user role request.
+  UnassignUserRoleRequest:
+    type: object
+    description: Request object for an unassign user role request.
+    required:
+      - user
+      - role
+    properties:
+      user:
+        type: string
+        description: The user to unassigned the roles from. Can be the user CRN or id.
+      role:
+        type: string
+        description: The role to unassigned from the user. Can be the role's CRN or name.
+  UnassignUserRoleResponse:
+    type: object
+    description: Response object for an unassign user role request.
+  AssignUserResourceRoleRequest:
+    type: object
+    description: Request object for an assign user resource role request.
+    required:
+      - user
+      - resourceRoleCrn
+      - resourceCrn
+    properties:
+      user:
+        type: string
+        description: The user to assign the resource role to. Can be the user's CRN or id.
+      resourceRoleCrn:
+        type: string
+        description: The CRN of the resource role to assign to the user.
+      resourceCrn:
+        type: string
+        description: The resource for which the resource role rights are granted.
+  AssignUserResourceRoleResponse:
+    type: object
+    description: Response object for an assign user resource role request.
+  UnassignUserResourceRoleRequest:
+    type: object
+    description: Request object for an unassign user role request.
+    required:
+      - user
+      - resourceRoleCrn
+      - resourceCrn
+    properties:
+      user:
+        type: string
+        description: The user to unassign the resource role from.
+      resourceRoleCrn:
+        type: string
+        description: The CRN of the resource role to unassigned from the user.
+      resourceCrn:
+        type: string
+        description: The CRN of the resource for which the resource role rights will be unassigned.
+  UnassignUserResourceRoleResponse:
+    type: object
+    description: Response object for an unassign user role request.
+  ListUserAssignedRolesRequest:
+    type: object
+    description: Request object for a list user assigned roles request.
+    properties:
+      user:
+        type: string
+        description: The user to list the assigned roles for. Can be the user's CRN or id. If it is not included, it defaults to the user making the request.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListUserAssignedRolesResponse:
+    type: object
+    description: Response object for a list user assigned roles request.
+    required:
+      - roleCrns
+    properties:
+      roleCrns:
+        type: array
+        items:
+          type: string
+        x-paging-result: true
+        description: The role CRNs assigned to the user.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  ListUserAssignedResourceRolesRequest:
+    type: object
+    description: Request object for a list user assigned resource roles request.
+    properties:
+      user:
+        type: string
+        description: The user to list the assigned roles for. Can be the user's CRN or id. If it is not included, it defaults to the user making the request.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListUserAssignedResourceRolesResponse:
+    type: object
+    description: Response object for a list user assigned roles request.
+    required:
+      - resourceAssignments
+    properties:
+      resourceAssignments:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceAssignment'
+        x-paging-result: true
+        description: The user's resource assignments.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  AssignMachineUserRoleRequest:
+    type: object
+    description: Request object for an assign machine user role request.
+    required:
+      - machineUserName
+      - role
+    properties:
+      machineUserName:
+        type: string
+        description: The machine user the role is assigned to. Can be the machine user's name or CRN.
+      role:
+        type: string
+        description: The role to assign to the machine user. Can be the role's name or CRN.
+  AssignMachineUserRoleResponse:
+    type: object
+    description: Response object for an assign machine user role request.
+  UnassignMachineUserRoleRequest:
+    type: object
+    description: Request object for an unassign machine user role request.
+    required:
+      - machineUserName
+      - role
+    properties:
+      machineUserName:
+        type: string
+        description: The machine user to unassigned the roles from. Can be the machine user's name or CRN.
+      role:
+        type: string
+        description: The role to unassigned from the user. Can be the role's name or CRN.
+  UnassignMachineUserRoleResponse:
+    type: object
+    description: Response object for an unassign machine user role request.
+  AssignMachineUserResourceRoleRequest:
+    type: object
+    description: Request object for an assign machine user resource role request.
+    required:
+      - machineUserName
+      - resourceRoleCrn
+      - resourceCrn
+    properties:
+      machineUserName:
+        type: string
+        description: The machine user to assign the resource role to. Can be the user's name or CRN.
+      resourceRoleCrn:
+        type: string
+        description: The CRN of the resource role to assign to the machine user.
+      resourceCrn:
+        type: string
+        description: The resource for which the resource role rights are granted.
+  AssignMachineUserResourceRoleResponse:
+    type: object
+    description: Response object for an assign machine user resource role request.
+  UnassignMachineUserResourceRoleRequest:
+    type: object
+    description: Request object for an unassign machine user role request.
+    required:
+      - machineUserName
+      - resourceRoleCrn
+      - resourceCrn
+    properties:
+      machineUserName:
+        type: string
+        description: The machine user to unassign the resource role from.
+      resourceRoleCrn:
+        type: string
+        description: The CRN of the resource role to unassigned from the machine user.
+      resourceCrn:
+        type: string
+        description: The CRN of the resource for which the resource role rights will be unassigned.
+  UnassignMachineUserResourceRoleResponse:
+    type: object
+    description: Response object for an unassign machine user role request.
+  ListMachineUserAssignedRolesRequest:
+    type: object
+    description: Request object for a list machine user assigned roles request.
+    required:
+      - machineUserName
+    properties:
+      machineUserName:
+        type: string
+        description: The machine user to list the assigned roles for. Can be the machine user's name or CRN.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListMachineUserAssignedRolesResponse:
+    type: object
+    description: Response object for a list machine user assigned roles request.
+    required:
+      - roleCrns
+    properties:
+      roleCrns:
+        type: array
+        items:
+          type: string
+        x-paging-result: true
+        description: The role CRNs assigned to the user.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  ListMachineUserAssignedResourceRolesRequest:
+    type: object
+    description: Request object for a list machine user assigned resource roles request.
+    required:
+      - machineUserName
+    properties:
+      machineUserName:
+        type: string
+        description: The machine user to list the assigned resource roles for. Can be the machine user's name or CRN.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListMachineUserAssignedResourceRolesResponse:
+    type: object
+    description: Response object for a list machine user assigned roles request.
+    required:
+      - resourceAssignments
+    properties:
+      resourceAssignments:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceAssignment'
+        x-paging-result: true
+        description: The user's resource assignments.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  ListResourceAssigneesRequest:
+    type: object
+    description: Request object for a list resource assignees request.
+    required:
+      - resourceCrn
+    properties:
+      resourceCrn:
+        type: string
+        description: The resource CRN for which to list the assignees.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListResourceAssigneesResponse:
+    type: object
+    description: Response object for a list resource assignees request.
+    required:
+      - resourceAssignees
+    properties:
+      resourceAssignees:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceAssignee'
+        x-paging-result: true
+        description: List of resource assignees and their respective resource roles for the resource.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  CreateMachineUserRequest:
+    type: object
+    description: Request object for create machine user request.
+    required:
+      - machineUserName
+    properties:
+      machineUserName:
+        type: string
+        description: The name to use for the new machine user. The name should be an alpha numeric string, including '-' and '_', no longer than 128 characters long. Only one machine user with this name can be exist at a given time in an account.
+  CreateMachineUserResponse:
+    type: object
+    description: Response object for create machine user request.
+    required:
+      - machineUser
+    properties:
+      machineUser:
+        $ref: '#/definitions/MachineUser'
+        description: Information about the machine user.
+  ListMachineUsersRequest:
+    type: object
+    description: Request object for a list machine users request.
+    properties:
+      machineUserNames:
+        type: array
+        items:
+          type: string
+        description: The machine user names or CRNs of the macihne users. If not provided all machine users for the account are retrieved.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListMachineUsersResponse:
+    type: object
+    description: Response object for a list machine users request.
+    required:
+      - machineUsers
+    properties:
+      machineUsers:
+        type: array
+        items:
+          $ref: '#/definitions/MachineUser'
+        x-paging-result: true
+        description: The machine users.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  DeleteMachineUserRequest:
+    type: object
+    description: Request object for delete machine user request.
+    required:
+      - machineUserName
+    properties:
+      machineUserName:
+        type: string
+        description: The name or CRN of the machine user to delete.
+  DeleteMachineUserResponse:
+    type: object
+    description: Response object for delete machine user request.
+    required:
+      - accessKeysDeleted
+      - groupsModified
+      - rolesUnassigned
+      - resourcesUnassigned
+    properties:
+      accessKeysDeleted:
+        type: array
+        items:
+          type: string
+        description: The list of associated access key CRNs that were deleted.
+      groupsModified:
+        type: array
+        items:
+          type: string
+        description: The list of group CRNs from which the user has been removed.
+      rolesUnassigned:
+        type: array
+        items:
+          type: string
+        description: The list of role CRNs unassigned from the user.
+      resourcesUnassigned:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceAssignment'
+        description: The list of resource role assignments that have been unassigned from the user.
+  CreateGroupRequest:
+    type: object
+    description: Request object for create group request.
+    required:
+      - groupName
+    properties:
+      groupName:
+        type: string
+        description: The name of the group. This name must be unique, must have a maximum of 32 characters, and must contain only alphanumeric characters, "-" and "_". Also, the first character of the name must be alphabetic or an underscore. Names are are not case-sensitive. The group named administrators is reserved.
+      syncMembershipOnUserLogin:
+        x-nullable: true
+        type: boolean
+        description: Whether group membership is synced when a user logs in. The default is to sync group membership.
+  CreateGroupResponse:
+    type: object
+    description: Response object for create group request.
+    required:
+      - group
+    properties:
+      group:
+        $ref: '#/definitions/Group'
+        description: Information about the group.
+  DeleteGroupRequest:
+    type: object
+    description: Request object for delete group request.
+    required:
+      - groupName
+    properties:
+      groupName:
+        type: string
+        description: The name or CRN of the group to delete.
+  DeleteGroupResponse:
+    type: object
+    description: Response object for delete group request.
+  ListGroupsRequest:
+    type: object
+    description: Request object for a list groups request.
+    properties:
+      groupNames:
+        type: array
+        items:
+          type: string
+        description: The group names or CRNs of the groups. If not provided, all groups in the account are retrieved.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListGroupsResponse:
+    type: object
+    description: Response object for a list groups request.
+    required:
+      - groups
+    properties:
+      groups:
+        type: array
+        items:
+          $ref: '#/definitions/Group'
+        x-paging-result: true
+        description: The list of groups.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  UpdateGroupRequest:
+    type: object
+    description: Request object for update group request.
+    required:
+      - groupName
+    properties:
+      groupName:
+        type: string
+        description: The name or CRN of the group to update.
+      syncMembershipOnUserLogin:
+        type: boolean
+        description: Whether group membership is synced when a user logs in. Can be omitted if no update is required.
+  UpdateGroupResponse:
+    type: object
+    description: Response object for update group request.
+    required:
+      - group
+    properties:
+      group:
+        $ref: '#/definitions/Group'
+        description: Information about the updated group.
+  AddUserToGroupRequest:
+    type: object
+    description: Request object for an add user to group request.
+    required:
+      - userId
+      - groupName
+    properties:
+      userId:
+        type: string
+        description: The ID or CRN of the user to add to the group.
+      groupName:
+        type: string
+        description: The name or CRN of the group to add the user to.
+  AddUserToGroupResponse:
+    type: object
+    description: Response object for an add user to group request.
+  AddMachineUserToGroupRequest:
+    type: object
+    description: Request object for an add machine user to group request.
+    required:
+      - machineUserName
+      - groupName
+    properties:
+      machineUserName:
+        type: string
+        description: The name or CRN of the machine user to add to the group.
+      groupName:
+        type: string
+        description: The name or CRN of the group to add the machine user to.
+  AddMachineUserToGroupResponse:
+    type: object
+    description: Response object for add machine user to group request.
+  RemoveUserFromGroupRequest:
+    type: object
+    description: Request object for a remove user from group request.
+    required:
+      - userId
+      - groupName
+    properties:
+      userId:
+        type: string
+        description: The ID or CRN of the user to remove from the group.
+      groupName:
+        type: string
+        description: The name or CRN of the group to remove the user from.
+  RemoveUserFromGroupResponse:
+    type: object
+    description: Response object for a remove user from group request.
+  RemoveMachineUserFromGroupRequest:
+    type: object
+    description: Request object for a remove machine user from group request.
+    required:
+      - machineUserName
+      - groupName
+    properties:
+      machineUserName:
+        type: string
+        description: The name or CRN of the machine user to add to the group.
+      groupName:
+        type: string
+        description: The name or CRN of the group to remove the machine user from.
+  RemoveMachineUserFromGroupResponse:
+    type: object
+    description: Response object for a remove machine user from group request.
+  ListGroupMembersRequest:
+    type: object
+    description: Request object for a list group members request.
+    required:
+      - groupName
+    properties:
+      groupName:
+        type: string
+        description: The name or CRN of the group to list the membership of.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListGroupMembersResponse:
+    type: object
+    description: Response object for a list group members request.
+    required:
+      - memberCrns
+    properties:
+      memberCrns:
+        type: array
+        items:
+          type: string
+        description: The list of group members.
+        x-paging-result: true
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  ListGroupsForUserRequest:
+    type: object
+    description: Request object for a list groups for user request.
+    required:
+      - userId
+    properties:
+      userId:
+        type: string
+        description: The ID or CRN of the user to list the groups of.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListGroupsForUserResponse:
+    type: object
+    description: Response object for a list groups for user request.
+    required:
+      - groupCrns
+    properties:
+      groupCrns:
+        type: array
+        items:
+          type: string
+        x-paging-result: true
+        description: The list of groups.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  ListGroupsForMachineUserRequest:
+    type: object
+    description: Request object for a list groups for machine user request.
+    required:
+      - machineUserName
+    properties:
+      machineUserName:
+        type: string
+        description: The name or CRN of the machine user to list the groups of.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListGroupsForMachineUserResponse:
+    type: object
+    description: Response object for a list groups for machine user request.
+    required:
+      - groupCrns
+    properties:
+      groupCrns:
+        type: array
+        items:
+          type: string
+        x-paging-result: true
+        description: The list of groups.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  AssignGroupRoleRequest:
+    type: object
+    description: Request object for an assign group role request.
+    required:
+      - groupName
+      - role
+    properties:
+      groupName:
+        type: string
+        description: The group to which the role is assigned to. Can be the group name or CRN.
+      role:
+        type: string
+        description: The role being assigned to the group. Can be the role's CRN or name.
+  AssignGroupRoleResponse:
+    type: object
+    description: Response object for an assign group role request.
+  UnassignGroupRoleRequest:
+    type: object
+    description: Request object for an unassign group role request.
+    required:
+      - groupName
+      - role
+    properties:
+      groupName:
+        type: string
+        description: The group to unassign the role from. Can be the group name or CRN.
+      role:
+        type: string
+        description: The role to unassign from the group. Can be the role's CRN or name.
+  UnassignGroupRoleResponse:
+    type: object
+    description: Response object for an unassign group role request.
+  AssignGroupResourceRoleRequest:
+    type: object
+    description: Request object for an assign group resource role request.
+    required:
+      - groupName
+      - resourceRoleCrn
+      - resourceCrn
+    properties:
+      groupName:
+        type: string
+        description: The group to assign the resource role to. Can be the group's name or CRN.
+      resourceRoleCrn:
+        type: string
+        description: The CRN of the resource role being assigned to the group.
+      resourceCrn:
+        type: string
+        description: The resource for which the resource role rights are granted.
+  AssignGroupResourceRoleResponse:
+    type: object
+    description: Response object for an assign group resource role request.
+  UnassignGroupResourceRoleRequest:
+    type: object
+    description: Request object for an unassign group resource role request.
+    required:
+      - groupName
+      - resourceRoleCrn
+      - resourceCrn
+    properties:
+      groupName:
+        type: string
+        description: The group to unassign the resource role from.
+      resourceRoleCrn:
+        type: string
+        description: The CRN of the resource role to unassign from the group.
+      resourceCrn:
+        type: string
+        description: The CRN of the resource for which the resource role rights will be unassigned.
+  UnassignGroupResourceRoleResponse:
+    type: object
+    description: Response object for an unassign group role request.
+  ListGroupAssignedRolesRequest:
+    type: object
+    description: Request object for a list group assigned roles request.
+    required:
+      - groupName
+    properties:
+      groupName:
+        type: string
+        description: The group to list the assigned roles for. Can be the group's name or CRN.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListGroupAssignedRolesResponse:
+    type: object
+    description: Response object for a list group assigned roles request.
+    required:
+      - roleCrns
+    properties:
+      roleCrns:
+        type: array
+        items:
+          type: string
+        x-paging-result: true
+        description: The role CRNs assigned to the group.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  ListGroupAssignedResourceRolesRequest:
+    type: object
+    description: Request object for a list group assigned resource roles request.
+    required:
+      - groupName
+    properties:
+      groupName:
+        type: string
+        description: The group to list the assigned resource roles for. Can be the group's name or CRN.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListGroupAssignedResourceRolesResponse:
+    type: object
+    description: Response object for a list group assigned resource roles request.
+    required:
+      - resourceAssignments
+    properties:
+      resourceAssignments:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceAssignment'
+        x-paging-result: true
+        description: The group's resource assignments.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  EnableClouderaSSOLoginRequest:
+    type: object
+    description: Request object for an enable Cloudera SSO login request.
+  EnableClouderaSSOLoginResponse:
+    type: object
+    description: Response object for an enable Cloudera SSO login request.
+  DisableClouderaSSOLoginRequest:
+    type: object
+    description: Request object for a disable Cloudera SSO login request.
+  DisableClouderaSSOLoginResponse:
+    type: object
+    description: Response object for a disable Cloudera SSO login request.
+  GetAccountRequest:
+    type: object
+    description: Request object for a get account request.
+  GetAccountResponse:
+    type: object
+    description: Response object for a get account response.
+    required:
+      - account
+    properties:
+      account:
+        $ref: '#/definitions/Account'
+        description: The account object.
+  CreateUserRequest:
+    type: object
+    description: Request object for creating user request.
+    required:
+      - samlProviderName
+      - identityProviderUserId
+      - email
+    properties:
+      samlProviderName:
+        type: string
+        description: The name or CRN of the SAML provider the user will use for login.
+      identityProviderUserId:
+        type: string
+        description: The identity provider user id for the user. This ID must match the NameId attribute value that will be passed for the user in the SAML response using the associated SAML provider.
+      email:
+        type: string
+        description: The email address for the user. Used for display purposes only.
+      groups:
+        type: array
+        items:
+          type: string
+        description: The list of groups the user belongs to. The groups will be created if they do not exist.
+      firstName:
+        type: string
+        description: The user first name.
+      lastName:
+        type: string
+        description: The user last name.
+  CreateUserResponse:
+    type: object
+    description: Response object for a create user request.
+    required:
+      - user
+    properties:
+      user:
+        $ref: '#/definitions/User'
+        description: Information about the user.
+  DeleteUserRequest:
+    type: object
+    description: Request object to delete a user.
+    required:
+      - userId
+    properties:
+      userId:
+        type: string
+        description: The ID or CRN of the user to delete.
+  DeleteUserResponse:
+    type: object
+    description: Response object to delete a user.
+    required:
+      - accessKeysDeleted
+      - groupsModified
+      - rolesUnassigned
+      - resourcesUnassigned
+    properties:
+      accessKeysDeleted:
+        type: array
+        items:
+          type: string
+        description: The list of associated access key CRNs that were deleted.
+      groupsModified:
+        type: array
+        items:
+          type: string
+        description: The list of group CRNs from which the user has been removed.
+      rolesUnassigned:
+        type: array
+        items:
+          type: string
+        description: The list of role CRNs unassigned from the user.
+      resourcesUnassigned:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceAssignment'
+        description: The list of resource role assignments that have been unassigned from the user.
+  SetWorkloadPasswordRequest:
+    type: object
+    description: Request object for a set workload password request.
+    required:
+      - password
+    properties:
+      password:
+        type: string
+        description: The password value to set
+        x-sensitive: true
+  SetWorkloadPasswordResponse:
+    type: object
+    description: Response object for a set workload password request.
+  SetWorkloadPasswordPolicyRequest:
+    type: object
+    description: Request object for a set workload password policy request.
+    x-no-compatibility-guarantee: true
+    properties:
+      maxPasswordLifetimeDays:
+        type: integer
+        format: int32
+        minimum: 0
+        description: The max lifetime of passwords, in days. If set to '0' passwords never expires.
+  SetWorkloadPasswordPolicyResponse:
+    type: object
+    description: Response object for a set workload password policy request.
+    x-no-compatibility-guarantee: true

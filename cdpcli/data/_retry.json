@@ -1,0 +1,46 @@
+{
+  "definitions": {
+    "too_many_requests": {
+      "applies_when": {
+        "response": {
+          "http_status_code": 429
+        }
+      }
+    },
+    "general_socket_errors": {
+      "applies_when": {
+        "socket_errors": ["GENERAL_CONNECTION_ERROR"]
+      }
+    },
+    "service_unavailable": {
+      "applies_when": {
+        "response": {
+          "http_status_code": 503
+        }
+      }
+    },
+    "limit_exceeded": {
+      "applies_when": {
+        "response": {
+          "http_status_code": 509
+        }
+      }
+    }
+  },
+  "retry": {
+    "__default__": {
+      "max_attempts": 10,
+      "delay": {
+        "type": "exponential",
+        "base": 0.1,
+        "growth_factor": 2
+      },
+      "policies": {
+          "general_socket_errors": {"$ref": "general_socket_errors"},
+          "service_unavailable": {"$ref": "service_unavailable"},
+          "limit_exceeded": {"$ref": "limit_exceeded"},
+          "too_many_requests": {"$ref": "too_many_requests"}
+      }
+    }
+  }
+}

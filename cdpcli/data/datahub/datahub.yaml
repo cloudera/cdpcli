@@ -1,0 +1,1672 @@
+swagger: '2.0'
+x-endpoint-name: datahub
+x-interface-model: cdp
+x-products: CDP
+x-cdp-releases: PUBLIC
+info:
+  version: 0.1-SNAPSHOT
+  title: Cloudera Data hub Service
+  license:
+    name: Apache 2.0
+  description: Cloudera data hub is a service for launching and managing workload clusters powered by Cloudera Runtime.
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/v1/datahub/deleteInstances:
+    post:
+      summary: Deletes instances for the specified cluster.
+      description: Deletes instances for the specified cluster.
+      operationId: deleteInstances
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteInstancesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteInstancesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/listClusters:
+    post:
+      summary: Lists workload clusters.
+      description: Lists workload clusters.
+      operationId: listClusters
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListClustersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListClustersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/createAWSCluster:
+    post:
+      summary: Creates an AWS workload cluster.
+      description: Creates an AWS workload cluster.
+      operationId: createAWSCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAWSClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAWSClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/createAzureCluster:
+    post:
+      summary: Creates an Azure workload cluster.
+      description: Creates an Azure workload cluster.
+      operationId: createAzureCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAzureClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAzureClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/deleteCluster:
+    post:
+      summary: Deletes a workload cluster.
+      description: Deletes a workload cluster.
+      operationId: deleteCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/describeCluster:
+    post:
+      summary: Describes a workload cluster.
+      description: Describes a workload cluster.
+      operationId: describeCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/getClusterServiceStatus:
+    post:
+      summary: Get cluster service status.
+      description: Gets the status of the services in a cluster.
+      operationId: getClusterServiceStatus
+      x-right: datahub/read
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetClusterServiceStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetClusterServiceStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/getClusterHostStatus:
+    post:
+      summary: Get cluster host status.
+      description: Gets the status of the hosts in a cluster.
+      operationId: getClusterHostStatus
+      x-right: datahub/read
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetClusterHostStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetClusterHostStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/stopCluster:
+    post:
+      summary: Stops a workload cluster.
+      description: Stops a workload cluster. When a cluster is put in the stopped state, cluster VMs are given back to the cloud provider. To provision new VMs, start the cluster.
+      operationId: stopCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StopClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StopClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/startCluster:
+    post:
+      summary: Starts a stopped workload cluster.
+      description: Starts a stopped workload cluster.
+      operationId: startCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/retryCluster:
+    post:
+      summary: Retries creation of a failed workload cluster.
+      description: When stack provisioning or cluster creation fails, retryCluster allows you to resume the process from the last failed step.
+      operationId: retryCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RetryClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RetryClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/repairCluster:
+    post:
+      summary: Repairs a cluster.
+      description: Repairs a cluster.
+      operationId: repairCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RepairClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RepairClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/syncCluster:
+    post:
+      summary: Synchronizes the state of a cluster with the cloud provider and Cloudera Manager.
+      description: Synchronizes the state of a cluster with the cloud provider and Cloudera Manager.
+      operationId: syncCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SyncClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SyncClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/scaleCluster:
+    post:
+      summary: Scales a cluster by adding or removing cluster nodes.
+      description: Scales a cluster by adding or removing cluster nodes.
+      operationId: scaleCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ScaleClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ScaleClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/listRecipes:
+    post:
+      summary: Lists recipes. A recipe is a script that runs on all nodes of a specified instance group.
+      description: Lists recipes. A recipe is a script that runs on all nodes of a specified instance group.
+      operationId: listRecipes
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListRecipesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListRecipesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/deleteRecipes:
+    post:
+      summary: Deletes recipes. A recipe is a script that runs on all nodes of a specified instance group.
+      description: Deletes recipes. A recipe is a script that runs on all nodes of a specified instance group.
+      operationId: deleteRecipes
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteRecipesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteRecipesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/createRecipe:
+    post:
+      summary: Creates recipe. A recipe is a script that runs on all nodes of a specified instance group.
+      description: Creates recipe. A recipe is a script that runs on all nodes of a specified instance group.
+      operationId: createRecipe
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateRecipeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateRecipeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/describeRecipe:
+    post:
+      summary: Describes recipe. A recipe is a script that runs on all nodes of a specified instance group.
+      description: Describes recipe. A recipe is a script that runs on all nodes of a specified instance group.
+      operationId: describeRecipe
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeRecipeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeRecipeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/listClusterDefinitions:
+    post:
+      summary: Lists cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
+      description: Lists cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
+      operationId: listClusterDefinitions
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListClusterDefinitionsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListClusterDefinitionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/deleteClusterDefinitions:
+    post:
+      summary: Deletes cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
+      description: Deletes cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
+      operationId: deleteClusterDefinitions
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteClusterDefinitionsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteClusterDefinitionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/createClusterDefinition:
+    post:
+      summary: Creates a cluster definition. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
+      description: Creates a cluster definition. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
+      operationId: createClusterDefinition
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateClusterDefinitionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateClusterDefinitionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/describeClusterDefinition:
+    post:
+      summary: Describes a cluster definition. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
+      description: Describes a cluster definition. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
+      operationId: describeClusterDefinition
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeClusterDefinitionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeClusterDefinitionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/listClusterTemplates:
+    post:
+      summary: Lists cluster templates. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
+      description: Lists cluster templates. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
+      operationId: listClusterTemplates
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListClusterTemplatesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListClusterTemplatesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/deleteClusterTemplates:
+    post:
+      summary: Deletes cluster templates. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
+      description: Deletes cluster templates. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
+      operationId: deleteClusterTemplates
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteClusterTemplatesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteClusterTemplatesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/createClusterTemplate:
+    post:
+      summary: Creates a cluster template. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
+      description: Creates a cluster template. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
+      operationId: createClusterTemplate
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateClusterTemplateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateClusterTemplateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/describeClusterTemplate:
+    post:
+      summary: Describes a cluster template. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
+      description: Describes a cluster template. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
+      operationId: describeClusterTemplate
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeClusterTemplateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeClusterTemplateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Error:
+    type: object
+    description: An object returned on an error.
+    properties:
+      code:
+        type: string
+        description: The error code.
+      message:
+        type: string
+        description: The error message.
+  ImageRequest:
+    type: object
+    description: The details of the image used for cluster instances.
+    required:
+      - id
+      - catalogName
+    properties:
+      id:
+        type: string
+        description: The ID of the image used for cluster instances. This is generated by the cloud provider to uniquely identify the image.
+      catalogName:
+        type: string
+        description: The image catalog name.
+  ImageDetails:
+    type: object
+    description: The details of the image used for cluster instances.
+    properties:
+      name:
+        type: string
+        description: The name of the image used for cluster instances.
+      id:
+        type: string
+        description: The ID of the image used for cluster instances. This is internally generated by the cloud provider to uniquely identify the image.
+      catalogUrl:
+        type: string
+        description: The image catalog URL.
+      catalogName:
+        type: string
+        description: The image catalog name.
+  Cluster:
+    type: object
+    description: Information about a cluster.
+    required:
+      - clusterName
+      - crn
+    properties:
+      clusterName:
+        type: string
+        description: The name of the cluster.
+      crn:
+        type: string
+        description: The CRN of the cluster.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when the cluster was created.
+      status:
+        type: string
+        description: The status of the stack.
+      nodeCount:
+        type: integer
+        format: int32
+        description: The cluster node count.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroup'
+        description: The instance details.
+      workloadType:
+        type: string
+        description: The workload type for the cluster.
+      cloudPlatform:
+        type: string
+        description: The cloud platform.
+      imageDetails:
+        $ref: '#/definitions/ImageDetails'
+        description: The image details.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      credentialCrn:
+        type: string
+        description: The CRN of the credential.
+      datalakeCrn:
+        type: string
+        description: The CRN of the attached datalake.
+      clusterTemplateCrn:
+        type: string
+        description: The CRN of the cluster template used for the cluster creation.
+      statusReason:
+        type: string
+        description: The status reason.
+      endpoints:
+        $ref: '#/definitions/Endpoints'
+        description: The exposed service api endpoints.
+  InstanceGroup:
+    type: object
+    description: The type of the instance group which also contains the actual instance(s)
+    required:
+      - name
+      - instances
+    properties:
+      name:
+        type: string
+        description: The name of the instance group where the given instance is located.
+      instances:
+        type: array
+        items:
+          $ref: '#/definitions/Instance'
+        description: Some information about the given instance.
+  Instance:
+    type: object
+    description: Object which holds some details of an instance for the given cluster.
+    required:
+      - id
+      - state
+    properties:
+      id:
+        type: string
+        description: The ID of the given instance.
+      state:
+        type: string
+        description: The health state of the instance. UNHEALTHY represents instances with unhealthy services, lost instances, or failed operations.
+      fqdn:
+        type: string
+        description: The FQDN for the instance
+      status:
+        type: string
+        description: The status of the instance. This includes information like whether the instance is being provisioned, stopped, decommissioning failures etc.
+  Endpoints:
+    type: object
+    description: Object which holds the exposed endpoints for the given cluster.
+    required:
+      - endpoints
+    properties:
+      endpoints:
+        type: array
+        items:
+          $ref: '#/definitions/Endpoint'
+        description: The endpoints.
+  Endpoint:
+    type: object
+    description: Object which holds the exposed endpoint.
+    required:
+      - serviceName
+      - serviceUrl
+      - displayName
+      - knoxService
+      - mode
+      - open
+    properties:
+      serviceName:
+        type: string
+        description: The name of the exposed service
+      serviceUrl:
+        type: string
+        description: The server url for the given exposed service's API.
+      displayName:
+        type: string
+        description: The more consumable name of the exposed service.
+      knoxService:
+        type: string
+        description: The related knox entry.
+      mode:
+        type: string
+        description: The SSO mode of the given service.
+      open:
+        type: boolean
+        description: The access status of the given endpoint. Whether its open or not.
+  ClusterSummary:
+    type: object
+    description: Information about a cluster.
+    required:
+      - clusterName
+      - crn
+    properties:
+      clusterName:
+        type: string
+        description: The name of the cluster.
+      crn:
+        type: string
+        description: The CRN of the cluster.
+      status:
+        type: string
+        description: The status of the cluster.
+      workloadType:
+        type: string
+        description: The type of cluster.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      cloudPlatform:
+        type: string
+        description: The name of the cloud platform.
+      nodeCount:
+        type: integer
+        format: int32
+        description: The cluster node count.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when the cluster was created.
+      datalakeCrn:
+        type: string
+        description: The CRN of the attached datalake.
+      clusterTemplateCrn:
+        type: string
+        description: The CRN of the cluster template used for the cluster creation.
+  Recipe:
+    type: object
+    description: Information about a recipe.
+    required:
+      - recipeName
+      - crn
+    properties:
+      recipeName:
+        type: string
+        description: The name of the recipe.
+      crn:
+        type: string
+        description: The CRN of the recipe.
+      recipeContent:
+        type: string
+        description: The content of the recipe.
+      type:
+        type: string
+        description: 'The type of recipe. Supported values are : PRE_CLOUDERA_MANAGER_START, PRE_TERMINATION, POST_CLOUDERA_MANAGER_START, POST_CLUSTER_INSTALL.'
+      creatorCrn:
+        type: string
+        description: The CRN of the creator of the recipe.
+      description:
+        type: string
+        description: The description of the recipe.
+  RecipeSummary:
+    type: object
+    description: Information about a recipe.
+    required:
+      - recipeName
+      - crn
+    properties:
+      recipeName:
+        type: string
+        description: The name of the recipe.
+      crn:
+        type: string
+        description: The CRN of the recipe.
+      type:
+        type: string
+        description: 'The type of recipe. Supported values are : PRE_CLOUDERA_MANAGER_START, PRE_TERMINATION, POST_CLOUDERA_MANAGER_START, POST_CLUSTER_INSTALL.'
+      description:
+        type: string
+        description: The description of the recipe.
+  ClusterDefinition:
+    type: object
+    description: Information about a cluster definition.
+    required:
+      - clusterDefinitionName
+      - crn
+    properties:
+      clusterDefinitionName:
+        type: string
+        description: The name of the cluster definition.
+      crn:
+        type: string
+        description: The CRN of the cluster definition.
+      type:
+        type: string
+        description: The type of cluster definition.
+      workloadTemplate:
+        type: string
+        description: The workload template.
+      cloudPlatform:
+        type: string
+        description: The cloud platform.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      description:
+        type: string
+        description: The description of the cluster definition.
+  ClusterDefinitionSummary:
+    type: object
+    description: Information about a cluster definition.
+    required:
+      - clusterDefinitionName
+      - crn
+    properties:
+      clusterDefinitionName:
+        type: string
+        description: The name of the cluster definition.
+      crn:
+        type: string
+        description: The CRN of the cluster definition.
+      type:
+        type: string
+        description: The type of cluster definition.
+      nodeCount:
+        type: integer
+        format: int32
+        description: The node count of the cluster.
+      cloudPlatform:
+        type: string
+        description: The cloud platform.
+      productVersion:
+        type: string
+        description: The product version.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      description:
+        type: string
+        description: The description of the cluster definition.
+  ClusterTemplate:
+    type: object
+    description: Information about a cluster template.
+    required:
+      - clusterTemplateName
+      - crn
+    properties:
+      clusterTemplateName:
+        type: string
+        description: The name of the cluster template.
+      crn:
+        type: string
+        description: The CRN of the cluster template.
+      description:
+        type: string
+        description: The description of the cluster template.
+      instanceGroupCount:
+        type: integer
+        format: int32
+        description: The instance group count of the cluster.
+      status:
+        type: string
+        description: The status of the cluster template.
+      tags:
+        type: array
+        description: Tags added to the cluster template.
+        items:
+          $ref: '#/definitions/DatahubResourceTag'
+      clusterTemplateContent:
+        type: string
+        description: The content of the cluster template.
+  ClusterTemplateSummary:
+    type: object
+    description: Information about a cluster template.
+    required:
+      - clusterTemplateName
+      - crn
+    properties:
+      clusterTemplateName:
+        type: string
+        description: The name of the cluster template.
+      crn:
+        type: string
+        description: The CRN of the cluster template.
+      description:
+        type: string
+        description: The description of the cluster template.
+      productVersion:
+        type: string
+        description: The product version.
+      instanceGroupCount:
+        type: integer
+        format: int32
+        description: The instance group count of the cluster.
+      status:
+        type: string
+        description: The status of the cluster template.
+      tags:
+        type: array
+        description: Tags added to the cluster template.
+        items:
+          $ref: '#/definitions/DatahubResourceTag'
+  DeleteInstancesRequest:
+    type: object
+    description: Request object for deleting multiple instance from a cluster
+    required:
+      - clusterName
+      - instanceIds
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster for which instances are to be deleted.
+      instanceIds:
+        description: The instanceIds to be deleted from the cluster.
+        type: array
+        items:
+          type: string
+      force:
+        type: boolean
+        description: Whether the termination would be forced or not. If it is true, the termination would not be stopped by other - usually blocking - circumstances. Defaults to false.
+  DeleteInstancesResponse:
+    type: object
+    description: Response object for instance deletion.
+    required:
+      - cluster
+    properties:
+      cluster:
+        $ref: '#/definitions/Cluster'
+        description: The cluster.
+  ListClustersRequest:
+    type: object
+    description: Request object for list clusters request.
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment for which the clusters will be listed.
+  ListClustersResponse:
+    type: object
+    description: Response object for list clusters request.
+    required:
+      - clusters
+    properties:
+      clusters:
+        type: array
+        items:
+          $ref: '#/definitions/ClusterSummary'
+        description: The clusters.
+  AttachedVolumeRequest:
+    type: object
+    description: Configurations for additional attached volumes.
+    required:
+      - volumeSize
+      - volumeCount
+      - volumeType
+    properties:
+      volumeSize:
+        type: integer
+        format: int32
+        description: The attached volume size.
+      volumeCount:
+        type: integer
+        format: int32
+        description: The attached volume count.
+      volumeType:
+        type: string
+        description: The attached volume type.
+  VolumeEncryptionRequest:
+    type: object
+    description: Configurations for volume encryption.
+    properties:
+      enableEncryption:
+        x-nullable: true
+        type: boolean
+        description: Enable encyrption for all volumes in the instance group. Default is false.
+      encryptionKey:
+        type: string
+        description: The ARN of the encryption key to use. If nothing is specified, the default key will be used.
+  InstanceGroupRequest:
+    type: object
+    description: Configurations for instance group
+    required:
+      - nodeCount
+      - instanceGroupName
+      - instanceGroupType
+      - instanceType
+      - rootVolumeSize
+      - attachedVolumeConfiguration
+    properties:
+      nodeCount:
+        type: integer
+        format: int32
+        description: Number of instances in the instance group
+      instanceGroupName:
+        type: string
+        description: The instance group name.
+      instanceGroupType:
+        type: string
+        description: The instance group type.
+      instanceType:
+        type: string
+        description: The cloud provider specific instance type to be used.
+      rootVolumeSize:
+        type: integer
+        format: int32
+        description: The root volume size.
+      attachedVolumeConfiguration:
+        type: array
+        items:
+          $ref: '#/definitions/AttachedVolumeRequest'
+        description: The attached volume configuration. This does not include root volume.
+      recipeNames:
+        type: array
+        items:
+          type: string
+        description: The names or CRNs of the recipes that would be applied to the instance group.
+      recoveryMode:
+        type: string
+        description: Recovery mode for the instance group.
+      volumeEncryption:
+        $ref: '#/definitions/VolumeEncryptionRequest'
+        description: The volume encryption settings. This setting does not apply to Azure which always encrypts volumes.
+  AzureInstanceGroupRequest:
+    type: object
+    description: Configurations for instance group
+    required:
+      - nodeCount
+      - instanceGroupName
+      - instanceGroupType
+      - instanceType
+      - rootVolumeSize
+      - attachedVolumeConfiguration
+    properties:
+      nodeCount:
+        type: integer
+        format: int32
+        description: Number of instances in the instance group
+      instanceGroupName:
+        type: string
+        description: The instance group name.
+      instanceGroupType:
+        type: string
+        description: The instance group type.
+      instanceType:
+        type: string
+        description: The cloud provider specific instance type to be used.
+      rootVolumeSize:
+        type: integer
+        format: int32
+        description: The root volume size.
+      attachedVolumeConfiguration:
+        type: array
+        items:
+          $ref: '#/definitions/AttachedVolumeRequest'
+        description: The attached volume configuration. This does not include root volume.
+      recipeNames:
+        type: array
+        items:
+          type: string
+        description: The names or CRNs of the recipes that would be applied to the instance group.
+      recoveryMode:
+        type: string
+        description: Recovery mode for the instance group.
+  CreateAWSClusterRequest:
+    type: object
+    description: Request object for create AWS cluster request.
+    properties:
+      clusterName:
+        type: string
+        description: The name of the cluster. This name must be unique, must have between 5 and 40 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 40
+      clusterDefinitionName:
+        type: string
+        description: The name or CRN of the cluster definition to use for cluster creation.
+      environmentName:
+        type: string
+        description: Name or CRN of the environment to use when creating the cluster. The environment must be an AWS environment.
+      clusterTemplateName:
+        type: string
+        description: Name or CRN of the cluster template to use for cluster creation.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroupRequest'
+        description: Instance group details.
+      subnetId:
+        type: string
+        description: The subnet ID.
+      image:
+        $ref: '#/definitions/ImageRequest'
+        description: The image to be used for cluster creation.
+      tags:
+        type: array
+        description: Tags to be added to Datahub related resources.
+        items:
+          $ref: '#/definitions/DatahubResourceTagRequest'
+      requestTemplate:
+        type: string
+        description: JSON template to use for cluster creation. This is different from cluster template and would be removed in the future.
+      datahubDatabase:
+        type: string
+        description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+  CreateAWSClusterResponse:
+    type: object
+    description: Response object for create AWS cluster request.
+    required:
+      - cluster
+    properties:
+      cluster:
+        $ref: '#/definitions/Cluster'
+        description: The cluster.
+  CreateAzureClusterRequest:
+    type: object
+    description: Request object for create Azure cluster request.
+    properties:
+      clusterName:
+        type: string
+        description: The name of the cluster. This name must be unique, must have between 5 and 40 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 40
+      clusterDefinitionName:
+        type: string
+        description: The name or CRN of the cluster definition to use for cluster creation.
+      environmentName:
+        type: string
+        description: Name or CRN of the environment to use when creating the cluster. The environment must be an Azure environment.
+      clusterTemplateName:
+        type: string
+        description: Name or CRN of the cluster template to use for cluster creation.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/AzureInstanceGroupRequest'
+        description: Instance group details.
+      subnetId:
+        type: string
+        description: The subnet ID.
+      image:
+        $ref: '#/definitions/ImageRequest'
+        description: The image to be used for cluster creation.
+      tags:
+        type: array
+        description: Tags to be added to Datahub related resources.
+        items:
+          $ref: '#/definitions/DatahubResourceTagRequest'
+      requestTemplate:
+        type: string
+        description: JSON template to use for cluster creation. This is different from cluster template and would be removed in the future.
+      datahubDatabase:
+        type: string
+        description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+  CreateAzureClusterResponse:
+    type: object
+    description: Response object for create Azure cluster request.
+    required:
+      - cluster
+    properties:
+      cluster:
+        $ref: '#/definitions/Cluster'
+        description: The cluster.
+  DeleteClusterRequest:
+    type: object
+    description: Request object for delete cluster request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster to be deleted.
+      force:
+        type: boolean
+        description: Whether the cluster should be force deleted. This option can be used when cluster deletion fails. This removes the entry from Cloudera Datahub service. Any lingering resources have to be deleted from the cloud provider manually. The default is false.
+  DeleteClusterResponse:
+    type: object
+    description: Response object for delete cluster request.
+  DescribeClusterRequest:
+    type: object
+    description: Request object for describe cluster request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster.
+  DescribeClusterResponse:
+    type: object
+    description: Response object for describe cluster request.
+    required:
+      - cluster
+    properties:
+      cluster:
+        $ref: '#/definitions/Cluster'
+        description: The cluster.
+  GetClusterServiceStatusRequest:
+    type: object
+    description: Request object to get service status.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster.
+  GetClusterServiceStatusResponse:
+    type: object
+    description: Response object to get service status.
+    required:
+      - services
+    properties:
+      services:
+        type: array
+        items:
+          $ref: '#/definitions/ServiceStatus'
+        description: The cluster services health.
+  ServiceStatus:
+    type: object
+    description: Information about a cluster service.
+    properties:
+      type:
+        type: string
+        description: The service type.
+      state:
+        type: string
+        description: The service state.
+      healthSummary:
+        type: string
+        description: The service health summary.
+      healthChecks:
+        type: array
+        items:
+          $ref: '#/definitions/HealthCheck'
+        description: The service health checks.
+  HealthCheck:
+    type: object
+    description: The result of a health check.
+    properties:
+      name:
+        type: string
+        description: The name of service health check.
+      summary:
+        type: string
+        description: The service health check summary.
+  GetClusterHostStatusRequest:
+    type: object
+    description: Request object to get host status.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster.
+  GetClusterHostStatusResponse:
+    type: object
+    description: Response object for getting host status.
+    required:
+      - hosts
+    properties:
+      hosts:
+        type: array
+        items:
+          $ref: '#/definitions/HostStatus'
+        description: The cluster hosts status.
+  HostStatus:
+    type: object
+    description: Information about cluster host status.
+    properties:
+      hostid:
+        type: string
+        description: Unique identifier of the cluster host given by Cloudera Manager.
+      hostname:
+        type: string
+        description: The cluster hostname.
+      healthSummary:
+        type: string
+        description: The host health summary.
+  RepairInstancesRequest:
+    type: object
+    description: Details for repair instances.
+    properties:
+      instanceIds:
+        type: array
+        items:
+          type: string
+        description: List of instance ids.
+      deleteVolumes:
+        type: boolean
+        description: The existing disk volumes on the instances will be re-created if the deleteVolumes is true. Otherwise, the volumes will be reattached to the new instances.
+  StartClusterRequest:
+    type: object
+    description: Request object for start cluster request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster to be started.
+  StartClusterResponse:
+    type: object
+    description: Response object for start cluster request.
+  StopClusterRequest:
+    type: object
+    description: Request object for stop cluster request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster to be stopped.
+  StopClusterResponse:
+    type: object
+    description: Response object for stop cluster request.
+  RetryClusterRequest:
+    type: object
+    description: Request object for retry cluster request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster for which the operations need to be retried.
+  RetryClusterResponse:
+    type: object
+    description: Response object for retry cluster request.
+  RepairClusterRequest:
+    type: object
+    description: Request object for repair cluster request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster to be repaired.
+      instanceGroupNames:
+        type: array
+        items:
+          type: string
+        description: List of instance groups where the failed instances will be repaired.
+      instances:
+        $ref: '#/definitions/RepairInstancesRequest'
+        description: List of instances.
+      removeOnly:
+        type: boolean
+        description: If true, the failed instances will only be removed, otherwise the failed instances will be removed and new instances will be started.
+  RepairClusterResponse:
+    type: object
+    description: Response object for repair cluster request.
+  SyncClusterRequest:
+    type: object
+    description: Request object for sync cluster request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster to be synced.
+  SyncClusterResponse:
+    type: object
+    description: Response object for sync cluster request.
+  ScaleClusterRequest:
+    type: object
+    description: Request object for scale cluster request.
+    required:
+      - clusterName
+      - instanceGroupName
+      - instanceGroupDesiredCount
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster to be scaled.
+      instanceGroupName:
+        type: string
+        description: The name of the instance group which needs to be scaled.
+      instanceGroupDesiredCount:
+        type: integer
+        format: int32
+        description: The desired number of instances in the instance group.
+  ScaleClusterResponse:
+    type: object
+    description: Response object for scale cluster request.
+  CreateRecipeRequest:
+    type: object
+    description: Request object for create recipe request.
+    required:
+      - recipeName
+      - recipeContent
+      - type
+    properties:
+      recipeName:
+        type: string
+        description: The name of the recipe. This name must be unique, must have between 5 and 100 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 1000
+      recipeContent:
+        type: string
+        description: The content of the recipe.
+      type:
+        type: string
+        description: 'The type of recipe. Supported values are : PRE_CLOUDERA_MANAGER_START, PRE_TERMINATION, POST_CLOUDERA_MANAGER_START, POST_CLUSTER_INSTALL.'
+      description:
+        type: string
+        description: The description of the recipe. The description can have a maximum of 1000 characters.
+        maxLength: 1000
+  CreateRecipeResponse:
+    type: object
+    description: Response object for create recipe request.
+    required:
+      - recipe
+    properties:
+      recipe:
+        $ref: '#/definitions/Recipe'
+        description: The recipe.
+  DeleteRecipesRequest:
+    type: object
+    description: Request object for delete recipe request.
+    required:
+      - recipeNames
+    properties:
+      recipeNames:
+        type: array
+        items:
+          type: string
+        description: The names or CRNs of the recipes to be deleted.
+  DeleteRecipesResponse:
+    type: object
+    description: Response object for delete recipe request.
+    required:
+      - recipes
+    properties:
+      recipes:
+        type: array
+        items:
+          $ref: '#/definitions/Recipe'
+        description: The recipes.
+  DescribeRecipeRequest:
+    type: object
+    description: Request object for describe recipe request.
+    required:
+      - recipeName
+    properties:
+      recipeName:
+        type: string
+        description: The name or CRN of the recipe.
+  DescribeRecipeResponse:
+    type: object
+    description: Response object for describe recipe request.
+    required:
+      - recipe
+    properties:
+      recipe:
+        $ref: '#/definitions/Recipe'
+        description: The recipe.
+  ListRecipesRequest:
+    type: object
+    description: Request object for list recipes request.
+  ListRecipesResponse:
+    type: object
+    description: Response object for list recipes request.
+    required:
+      - recipes
+    properties:
+      recipes:
+        type: array
+        items:
+          $ref: '#/definitions/RecipeSummary'
+        description: The recipes.
+  CreateClusterDefinitionRequest:
+    type: object
+    description: Request object for create cluster definition request.
+    required:
+      - clusterDefinitionName
+      - workloadTemplate
+    properties:
+      clusterDefinitionName:
+        type: string
+        description: The name of the cluster definition. This name must be unique, must have between 5 and 100 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 1000
+      workloadTemplate:
+        type: string
+        description: The cluster creation JSON. This must contain the name of a running environment.
+      description:
+        type: string
+        description: The description of the cluster definition. The description can have a maximum of 1000 characters.
+        maxLength: 1000
+  CreateClusterDefinitionResponse:
+    type: object
+    description: Response object for create cluster definition request.
+    required:
+      - clusterDefinition
+    properties:
+      clusterDefinition:
+        $ref: '#/definitions/ClusterDefinition'
+        description: The clusterDefinition.
+  DeleteClusterDefinitionsRequest:
+    type: object
+    description: Request object for delete cluster definition request.
+    required:
+      - clusterDefinitionNames
+    properties:
+      clusterDefinitionNames:
+        type: array
+        items:
+          type: string
+        description: The name or CRN of the cluster definitions to be deleted.
+  DeleteClusterDefinitionsResponse:
+    type: object
+    description: Response object for delete cluster definition request.
+    required:
+      - clusterDefinitions
+    properties:
+      clusterDefinitions:
+        type: array
+        items:
+          $ref: '#/definitions/ClusterDefinition'
+        description: The clusterDefinitions.
+  DescribeClusterDefinitionRequest:
+    type: object
+    description: Request object for describe cluster definition request.
+    required:
+      - clusterDefinitionName
+    properties:
+      clusterDefinitionName:
+        type: string
+        description: The name or CRN of the cluster definition.
+  DescribeClusterDefinitionResponse:
+    type: object
+    description: Response object for describe cluster definition response.
+    required:
+      - clusterDefinition
+    properties:
+      clusterDefinition:
+        $ref: '#/definitions/ClusterDefinition'
+        description: The clusterDefinition.
+  ListClusterDefinitionsRequest:
+    type: object
+    description: Request object for list cluster definitions request.
+  ListClusterDefinitionsResponse:
+    type: object
+    description: Response object for list cluster definition response.
+    required:
+      - clusterDefinitions
+    properties:
+      clusterDefinitions:
+        type: array
+        items:
+          $ref: '#/definitions/ClusterDefinitionSummary'
+        description: The clusterDefinitions.
+  CreateClusterTemplateRequest:
+    type: object
+    description: Request object for create cluster template request.
+    required:
+      - clusterTemplateName
+      - clusterTemplateContent
+    properties:
+      clusterTemplateName:
+        type: string
+        description: The name of the cluster template. This name must be unique, must have between 5 and 100 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 1000
+      clusterTemplateContent:
+        type: string
+        description: The cluster template content.
+      description:
+        type: string
+        description: The description of the cluster template. The description can have a maximum of 1000 characters.
+        maxLength: 1000
+      tags:
+        type: array
+        description: Tags to be added to the cluster template.
+        items:
+          $ref: '#/definitions/DatahubResourceTagRequest'
+  CreateClusterTemplateResponse:
+    type: object
+    description: Response object for create cluster template request.
+    required:
+      - clusterTemplate
+    properties:
+      clusterTemplate:
+        $ref: '#/definitions/ClusterTemplate'
+        description: The cluster template.
+  DeleteClusterTemplatesRequest:
+    type: object
+    description: Request object for delete cluster templates request.
+    required:
+      - clusterTemplateNames
+    properties:
+      clusterTemplateNames:
+        type: array
+        items:
+          type: string
+        description: The names or CRNs of the cluster templates to be deleted.
+  DeleteClusterTemplatesResponse:
+    type: object
+    description: Response object for delete cluster templates request.
+    required:
+      - clusterTemplates
+    properties:
+      clusterTemplates:
+        type: array
+        items:
+          $ref: '#/definitions/ClusterTemplate'
+        description: The cluster templates.
+  DescribeClusterTemplateRequest:
+    type: object
+    description: Request object for describe cluster template request.
+    required:
+      - clusterTemplateName
+    properties:
+      clusterTemplateName:
+        type: string
+        description: The name or CRN of the cluster template.
+  DescribeClusterTemplateResponse:
+    type: object
+    description: Response object for describe cluster template request.
+    required:
+      - clusterTemplate
+    properties:
+      clusterTemplate:
+        $ref: '#/definitions/ClusterTemplate'
+        description: The cluster template.
+  ListClusterTemplatesRequest:
+    type: object
+    description: Request object for list cluster templates request.
+  ListClusterTemplatesResponse:
+    type: object
+    description: Response object for list cluster templates request.
+    required:
+      - clusterTemplates
+    properties:
+      clusterTemplates:
+        type: array
+        items:
+          $ref: '#/definitions/ClusterTemplateSummary'
+        description: The cluster templates.
+  DatahubResourceTagRequest:
+    type: object
+    description: Tag for a datahub resource.
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The key of tag.
+      value:
+        type: string
+        description: The value of the tag.
+  DatahubResourceTag:
+    type: object
+    description: Tag for a datahub resource.
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The key of tag.
+      value:
+        type: string
+        description: The value of the tag.
