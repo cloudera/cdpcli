@@ -631,9 +631,24 @@ definitions:
       statusReason:
         type: string
         description: The status reason.
+      clouderaManager:
+        $ref: '#/definitions/ClouderaManagerDetails'
+        description: The Cloudera Manager details.
       endpoints:
         $ref: '#/definitions/Endpoints'
         description: The exposed service api endpoints.
+  ClouderaManagerDetails:
+    type: object
+    description: Cloudera Manager details.
+    required:
+      - version
+    properties:
+      version:
+        type: string
+        description: Cloudera Manager version.
+      platformVersion:
+        type: string
+        description: CDP Platform version.
   InstanceGroup:
     type: object
     description: The type of the instance group which also contains the actual instance(s)

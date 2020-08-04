@@ -1092,6 +1092,9 @@ definitions:
       proxyConfigName:
         type: string
         description: Name of the proxy config to use for the environment.
+      resourceGroupName:
+        type: string
+        description: Name of an existing Azure resource group to be used for the environment. If it is not specified then a new resource group will be generated.
   ExistingAzureNetworkRequest:
     type: object
     description: Request object for creating an Azure environment using existing VNet and subnets.
@@ -1184,6 +1187,10 @@ definitions:
       description:
         type: string
         description: Description of the environment.
+      created:
+        type: string
+        format: date-time
+        description: Creation date
       proxyConfigName:
         type: string
         description: Name of the proxy config of the environment.
@@ -1236,6 +1243,10 @@ definitions:
       statusReason:
         type: string
         description: The status reason.
+      created:
+        type: string
+        format: date-time
+        description: Creation date
       awsDetails:
         type: object
         description: AWS-specific environment configuration information.
@@ -1355,6 +1366,12 @@ definitions:
       environmentName:
         type: string
         description: The name or CRN of the environment.
+      cascading:
+        type: boolean
+        description: Delete all connected resources too.
+      forced:
+        type: boolean
+        description: Force delete action removes CDP resources and may leave cloud provider resources running even if the deletion did not succeed.
   DeleteEnvironmentResponse:
     type: object
     description: Response object for a delete environment request.
@@ -1818,6 +1835,29 @@ definitions:
     enum:
       - SET_PASSWORD
       - USER_SYNC
+  RepairOperationDetails:
+    type: object
+    description: Details object of the repair operation for success or falure.
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        description: environment crn.
+        type: string
+      message:
+        type: string
+        description: The detail of the success or failure.
+  RepairStatus:
+    type: string
+    description: Status of a repair operation.
+    enum:
+      - NEVER_RUN
+      - REQUESTED
+      - REJECTED
+      - RUNNING
+      - COMPLETED
+      - FAILED
+      - TIMEDOUT
   GetFreeipaStatusRequest:
     type: object
     description: Request object for getting the status of the FreeIPA servers.
@@ -1924,9 +1964,44 @@ definitions:
         items:
           type: string
         description: The instance Ids to repair. If not provided then all instances are looked at for repair.
+      repairType:
+        type: string
+        description: The type of FreeIPA repair to perform. * AUTO - Currently, this is the same as reboot but this may change in the future. * REBOOT - Repair the failed instances by rebooting them. * REBUILD - Repair the failed instances by deleting them and creating new instances, then replicate data from an existing instance to the new instances.
+        enum:
+          - AUTO
+          - REBOOT
+          - REBUILD
   RepairFreeipaResponse:
     type: object
     description: Response object for an FreeIPA repair request.
+    properties:
+      operationId:
+        type: string
+        description: Operation ID of the request for this operation. This ID can be used for geting status on the operation.
+      status:
+        description: Status of this operation.
+        $ref: '#/definitions/RepairStatus'
+      successfulOperationDetails:
+        type: array
+        description: List of operation details for all successes. If the repair is only partially successful both successful and failure operation details will be populated.
+        items:
+          $ref: '#/definitions/RepairOperationDetails'
+      failureOperationDetails:
+        type: array
+        description: List of operation details for failures. If the repair is only partially successful both successful and failure operation details will be populated.
+        items:
+          $ref: '#/definitions/RepairOperationDetails'
+      error:
+        type: string
+        description: If there is any error associated. The error will be populated on any error and it may be populated when the operation failure details are empty. The error will typically contain the high level information such as the assocated repair failure phase.
+      startDate:
+        type: string
+        format: date-time
+        description: Date when the operation started.
+      endDate:
+        type: string
+        format: date-time
+        description: Date when the operation ended. Omitted if operation has not ended.
   AWSFreeIpaCreationRequest:
     description: Request object for creating FreeIPA in the environment.
     type: object

@@ -331,7 +331,6 @@ paths:
       summary: Assign a resource role to a user.
       description: Assign a resource role to a user. If the resource role is already assigned to the user the request will fail.
       operationId: assignUserResourceRole
-      x-right: iam/assignResourceRole
       x-mutating: true
       parameters:
         - name: input
@@ -353,7 +352,6 @@ paths:
       summary: Unassign a resource role from a user.
       description: Unassign a resource role from a user. If the resource role is not currently assigned to the user the request will fail.
       operationId: unassignUserResourceRole
-      x-right: iam/unassignResourceRole
       x-mutating: true
       parameters:
         - name: input
@@ -463,7 +461,6 @@ paths:
       summary: Assign a resource role to a machine user.
       description: Assign a resource role to a machine user. If the resource role is already assigned to the machine user the request will fail.
       operationId: assignMachineUserResourceRole
-      x-right: iam/assignResourceRole
       x-mutating: true
       parameters:
         - name: input
@@ -485,7 +482,6 @@ paths:
       summary: Unassign a resource role from a machine user.
       description: Unassign a resource role from a machine user. If the resource role is not currently assigned to the machine user the request will fail.
       operationId: unassignMachineUserResourceRole
-      x-right: iam/unassignResourceRole
       x-mutating: true
       parameters:
         - name: input
@@ -1087,7 +1083,6 @@ paths:
       summary: Assign a resource role to a group.
       description: Assign a resource role to a group. If the resource role is already assigned to the group the request will fail.
       operationId: assignGroupResourceRole
-      x-right: iam/assignResourceRole
       x-mutating: true
       parameters:
         - name: input
@@ -1109,7 +1104,6 @@ paths:
       summary: Unassign a resource role from a group.
       description: Unassign a resource role from a group. If the resource role is not currently assigned to the group the request will fail.
       operationId: unassignGroupResourceRole
-      x-right: iam/unassignResourceRole
       x-mutating: true
       parameters:
         - name: input
@@ -1211,6 +1205,90 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/SetWorkloadPasswordPolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/addSshPublicKey:
+    post:
+      summary: Adds an SSH public key for an actor.
+      description: Adds an SSH public key for an actor. The private key that corresponds to this public key can be used to SSH into any workload cluster that the actor is authorized to use.
+      operationId: addSshPublicKey
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AddSshPublicKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AddSshPublicKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listSshPublicKeys:
+    post:
+      summary: Lists SSH public keys for an actor.
+      description: Lists SSH public keys for an actor.
+      operationId: listSshPublicKeys
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListSshPublicKeysRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListSshPublicKeysResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/describeSshPublicKey:
+    post:
+      summary: Describes an SSH public key for an actor.
+      description: Describe an SSH public key for an actor.
+      operationId: describeSshPublicKey
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeSshPublicKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeSshPublicKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/deleteSshPublicKey:
+    post:
+      summary: Deletes an SSH public key for an actor.
+      description: Delete an SSH public key for an actor.
+      operationId: deleteSshPublicKey
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteSshPublicKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteSshPublicKeyResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1519,6 +1597,25 @@ definitions:
       samlMetadataDocument:
         type: string
         description: The original metadata that was passed while creating the SAML provider connector. This field will not be set for listSamlProviders API response.
+  SshPublicKey:
+    type: object
+    description: Information about an SSH public key.
+    required:
+      - crn
+      - publicKeyFingerprint
+    properties:
+      crn:
+        type: string
+        description: The SSH public key CRN.
+      publicKeyFingerprint:
+        type: string
+        description: The SSH public key SHA256 fingerprint. This is identical to the SHA256 produced by running the following command on a public key named 'key.pub'; ssh-keygen -l -E SHA256 -f /home/user/.ssh/key.pub. Note that ssh-keygen removes any padding bytes from the BASE64 fingerprint encoding (the '=' characters at the end of the fingerprint) which is also true for this fingerprint.
+      description:
+        type: string
+        description: An optional description for the public key.
+      publicKey:
+        type: string
+        description: The SSH public key string. Only populated for DescribeSshPublicKeyResponses. This is the same string that was used when the key was added.
   GetUserRequest:
     type: object
     description: Request object for a get user request.
@@ -2831,3 +2928,81 @@ definitions:
     type: object
     description: Response object for a set workload password policy request.
     x-no-compatibility-guarantee: true
+  AddSshPublicKeyRequest:
+    type: object
+    description: Request object for add user ssh public key.
+    required:
+      - publicKey
+    properties:
+      publicKey:
+        type: string
+        description: The RSA or ED25519 public ssh key to add. DSA and ECDSA public keys are not supported. The public key should be in RFC4253 format. (e.g. ssh-rsa AAAAB3NzaC1yc2EAAA.. user@host) as produced, for example, by ssh-keygen.
+      actorCrn:
+        type: string
+        description: The CRN of the user or machine user for whom the SSH public key will be added. If it is not included, it defaults to the user making the request.
+      description:
+        type: string
+        description: An optional description for the public key.
+  AddSshPublicKeyResponse:
+    type: object
+    description: Response object for add ssh public key.
+    required:
+      - sshPublicKey
+    properties:
+      sshPublicKey:
+        $ref: '#/definitions/SshPublicKey'
+        description: Information about the SSH public key.
+  ListSshPublicKeysRequest:
+    type: object
+    description: Request object for list SSH public key.
+    properties:
+      actorCrn:
+        type: string
+        description: The CRN of the user or machine user to list SSH public keys for. If it is not included, it defaults to the actor making the request.
+  ListSshPublicKeysResponse:
+    type: object
+    description: Response object for list SSH public key.
+    required:
+      - sshPublicKeys
+    properties:
+      sshPublicKeys:
+        type: array
+        items:
+          $ref: '#/definitions/SshPublicKey'
+        description: The list of SSH Public keys.
+  DescribeSshPublicKeyRequest:
+    type: object
+    description: Request object for describe SSH public key.
+    required:
+      - crnOrFingerprint
+    properties:
+      crnOrFingerprint:
+        type: string
+        description: The SSH public key CRN or its SHA256 fingerprint.
+      actorCrn:
+        type: string
+        description: The CRN of the user or machine user that the SSH public key belongs to. If it is not included, it defaults to the actor making the request.
+  DescribeSshPublicKeyResponse:
+    type: object
+    description: Response object for describe user SSH public key.
+    required:
+      - sshPublicKey
+    properties:
+      sshPublicKey:
+        $ref: '#/definitions/SshPublicKey'
+        description: Information about the SSH public key.
+  DeleteSshPublicKeyRequest:
+    type: object
+    description: Request object for delete SSH public key.
+    required:
+      - crnOrFingerprint
+    properties:
+      crnOrFingerprint:
+        type: string
+        description: The SSH public key CRN or the keys SHA256 fingerprint to remove.
+      actorCrn:
+        type: string
+        description: The CRN of the user or machine user that the SSH public key belongs to. If it is not included, it defaults to the actor making the request.
+  DeleteSshPublicKeyResponse:
+    type: object
+    description: Response object for delete SSH public key.

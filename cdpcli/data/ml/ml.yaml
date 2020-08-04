@@ -179,6 +179,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-skip-auditing: true
   /api/v1/ml/revokeWorkspaceAccess:
     post:
       summary: RevokeWorkspaceAccess Cloudera Machine Learning Workspace.
@@ -515,6 +516,28 @@ definitions:
         items:
           $ref: '#/definitions/ProvisionTag'
         description: Tags to add to the cloud provider resources created. This is in addition to any tags added by Cloudera.
+      network:
+        description: The overlay network for an AWS Kubernetes cluster's CNI.
+        $ref: '#/definitions/OverlayNetwork'
+  OverlayNetwork:
+    type: object
+    description: Contains the information about overlay network.
+    properties:
+      plugin:
+        type: string
+        description: 'The plugin specifies specific cni vendor, ex: calico, weave etc.'
+      topology:
+        description: The options for overlay topology.
+        $ref: '#/definitions/Topology'
+  Topology:
+    type: object
+    description: Contains the information about topology.
+    properties:
+      subnets:
+        type: array
+        items:
+          type: string
+        description: The options for subnets.
   ExistingDatabaseConfig:
     type: object
     description: Configurations for bringing an existing database for model metrics
@@ -804,7 +827,6 @@ definitions:
     description: Request object for the DeleteWorkspace method.
     required:
       - force
-      - removeStorage
     properties:
       force:
         type: boolean

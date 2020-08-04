@@ -1,7 +1,7 @@
 {
    "description":"The Cloudera CDP Command Line Interface is a unified tool to manage your CDP services.",
    "synopsis":"cdp [options] <command> <subcommand> [parameters]",
-   "help_usage":"Use *cdp command help* for information on a specific command.",
+   "help_usage":"Use *cdp command help* for information on a specific command, and *cdp command subcommand help* for information on a specific subcommand.",
    "options":{
       "version":{
          "action":"version",

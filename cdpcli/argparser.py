@@ -17,6 +17,7 @@
 import argparse
 from difflib import get_close_matches
 import logging
+import os
 import sys
 
 from cdpcli import ARGPARSE_DASH_ENCODING
@@ -24,19 +25,6 @@ from cdpcli.compat import six
 
 
 LOG = logging.getLogger('cdpcli.argparser')
-
-
-HELP_BLURB = (
-    "To see help text, you can run:\n"
-    "\n"
-    "  cdp help\n"
-    "  cdp <command> help\n"
-    "  cdp <command> <subcommand> help\n"
-)
-USAGE = (
-    "cdp [options] <command> <subcommand> [<subcommand> ...] [parameters]\n"
-    "%s" % HELP_BLURB
-)
 
 
 class CLIArgParser(argparse.ArgumentParser):
@@ -123,8 +111,7 @@ class MainArgParser(CLIArgParser):
             formatter_class=self.Formatter,
             add_help=False,
             conflict_handler='resolve',
-            description=description,
-            usage=USAGE)
+            description=description)
         self._build(command_table, version_string, argument_table)
 
     def _create_choice_help(self, choices):
@@ -146,14 +133,20 @@ class MainArgParser(CLIArgParser):
 
 class ArgTableArgParser(CLIArgParser):
 
-    def __init__(self, argument_table, command_table=None):
+    def __init__(self, argument_table, service_name=None, operation_name=None,
+                 command_table=None):
         # command_table is an optional subcommand_table.  If it's passed
         # in, then we'll update the argparse to parse a 'subcommand' argument
         # and populate the choices field with the command table keys.
+        if service_name and operation_name:
+            progString = "{} {} {}".format(os.path.basename(sys.argv[0]), service_name,
+                                           operation_name)
+        else:
+            progString = os.path.basename(sys.argv[0])
         super(ArgTableArgParser, self).__init__(
+            prog=progString,
             formatter_class=self.Formatter,
             add_help=False,
-            usage=USAGE,
             conflict_handler='resolve')
         if command_table is None:
             command_table = {}
@@ -168,7 +161,7 @@ class ArgTableArgParser(CLIArgParser):
                               nargs='?')
 
     def parse_known_args(self, args, namespace=None):
-        if len(args) == 1 and args[0] == 'help':
+        if len(args) == 1 and (args[0] == 'help' or args[0] == '--help'):
             namespace = argparse.Namespace()
             namespace.help = 'help'
             return namespace, []
@@ -181,12 +174,18 @@ class ServiceArgParser(CLIArgParser):
 
     def __init__(self, operations_table, service_name):
         super(ServiceArgParser, self).__init__(
+            prog="{} {}".format(os.path.basename(sys.argv[0]), service_name),
             formatter_class=argparse.RawTextHelpFormatter,
             add_help=False,
-            conflict_handler='resolve',
-            usage=USAGE)
+            conflict_handler='resolve')
         self._build(operations_table)
         self._service_name = service_name
 
     def _build(self, operations_table):
         self.add_argument('operation', choices=list(operations_table.keys()))
+
+    def parse_known_args(self, args, namespace=None):
+        if len(args) == 0 or (len(args) == 1 and args[0] == '--help'):
+            args = ['help']
+        return super(ServiceArgParser, self).parse_known_args(
+            args, namespace)

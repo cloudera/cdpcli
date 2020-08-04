@@ -244,7 +244,7 @@ class ProviderDocumentGenerator(CLIDocumentGenerator):
 
     def doc_subitems_start(self, help_command):
         doc = help_command.doc
-        doc.style.h2('Available Services')
+        doc.style.h2('Available Commands')
         doc.style.toctree()
 
     def doc_subitem(self, command_name, help_command):
@@ -294,7 +294,7 @@ class ServiceDocumentGenerator(CLIDocumentGenerator):
 
     def doc_subitems_start(self, help_command):
         doc = help_command.doc
-        doc.style.h2('Available Commands')
+        doc.style.h2('Available Subcommands')
         doc.style.toctree()
 
     def doc_subitem(self, command_name, help_command):

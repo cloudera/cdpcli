@@ -17,7 +17,6 @@
 import os
 import signal
 
-from cdpcli.argparser import HELP_BLURB
 from cdpcli.help import ExecutableNotFoundError
 from cdpcli.help import HelpCommand, WindowsHelpRenderer
 from cdpcli.help import PosixHelpRenderer
@@ -187,4 +186,4 @@ class TestHelpCommand(TestHelpCommandBase):
             with self.assertRaises(SystemExit):
                 self.cmd(None, ['no-exist-command'], None)
         error_message = ''.join(arg[0][0] for arg in f.write.call_args_list)
-        self.assertIn(HELP_BLURB, error_message)
+        self.assertIn('Invalid choice', error_message)

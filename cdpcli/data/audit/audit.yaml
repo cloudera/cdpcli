@@ -16,6 +16,29 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/v1/audit/archiveAuditEvents:
+    post:
+      summary: Archive audit events.
+      description: 'This is used to trigger immediate audit event archiving based on input criteria. WARNING: This command is experimental and subject to backwards-incompatible change.'
+      operationId: archiveAuditEvents
+      x-entitlement: AUDIT_ARCHIVING_API
+      x-right: audit/archiveAuditEvents
+      x-api-rate-limit-group: AUDIT
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ArchiveAuditEventsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ArchiveAuditEventsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/audit/configureArchiving:
     post:
       summary: Configures the audit system for archiving audit events to external cloud storage.
@@ -333,3 +356,49 @@ definitions:
       interactiveLoginEvent:
         description: Information originating from a login event.
         $ref: '#/definitions/InteractiveLoginEvent'
+  ArchiveAuditEventsRequest:
+    type: object
+    description: Request to archive audit events.
+    required:
+      - fromTimestamp
+      - toTimestamp
+    properties:
+      fromTimestamp:
+        type: string
+        format: date-time
+        description: The beginning timestamp for the search range (inclusive).
+      toTimestamp:
+        type: string
+        format: date-time
+        description: The ending timestamp for the search range (exclusive).
+  ArchiveAuditEventsResponse:
+    type: object
+    description: Response from archiving audit events.
+    properties:
+      eventCount:
+        type: integer
+        format: int64
+        description: The number of events archived.
+      eventBatches:
+        type: array
+        items:
+          $ref: '#/definitions/ArchiveAuditEventsBatchResponse'
+        description: The details about the batches of events archived.
+  ArchiveAuditEventsBatchResponse:
+    type: object
+    description: Information about a batch of audit events that were archived.
+    properties:
+      accountId:
+        type: string
+        description: The account ID for which events were archived.
+      eventCount:
+        type: integer
+        format: int64
+        description: The number of events archived.
+      archiveId:
+        type: string
+        description: The archive ID of the batch.
+      archiveTimestamp:
+        type: integer
+        format: int64
+        description: The archive timestamp of the batch.

@@ -143,7 +143,7 @@ class BasicCommand(CLICommand):
         self._subcommand_table = self._build_subcommand_table()
         self._arg_table = self._build_arg_table()
         self._handle_override_required_args(args)
-        parser = ArgTableArgParser(self.arg_table, self.subcommand_table)
+        parser = ArgTableArgParser(self.arg_table, command_table=self.subcommand_table)
         parsed_args, remaining = parser.parse_known_args(args)
 
         # Unpack arguments

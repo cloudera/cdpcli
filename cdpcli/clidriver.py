@@ -90,6 +90,8 @@ class CLIDriver(object):
             args = sys.argv[1:]
         parser = self._create_parser()
         command_table = self._get_command_table()
+        if len(args) == 0 or (len(args) == 1 and args[0] == '--help'):
+            args = ['help']
         parsed_args, remaining = parser.parse_known_args(args)
         try:
             self._handle_top_level_args(parsed_args)
@@ -467,7 +469,8 @@ class ServiceOperation(object):
         return argument_table
 
     def _create_operation_parser(self, arg_table):
-        return ArgTableArgParser(arg_table)
+        return ArgTableArgParser(arg_table, service_name=self._parent_name,
+                                 operation_name=self._name)
 
     def _handle_override_required_args(self, args):
         argument_table = self.arg_table

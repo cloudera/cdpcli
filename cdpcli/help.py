@@ -163,7 +163,7 @@ class HelpCommand(object):
 
     def __call__(self, client_creator, args, parsed_globals):
         if args:
-            subcommand_parser = ArgTableArgParser({}, self.subcommand_table)
+            subcommand_parser = ArgTableArgParser({}, command_table=self.subcommand_table)
             parsed, remaining = subcommand_parser.parse_known_args(args)
             if getattr(parsed, 'subcommand', None) is not None:
                 return self.subcommand_table[parsed.subcommand](remaining,

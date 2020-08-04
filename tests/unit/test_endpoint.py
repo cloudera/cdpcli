@@ -423,3 +423,31 @@ class TestEndpointCreator(unittest.TestCase):
             tls_verification=False,
             retry_handler=self.retry_handler)
         self.assertEqual(endpoint.host, endpoint_url)
+
+    def test_create_endpoint_for_internal_apis(self):
+        endpoint_url = 'https://foo-api.internal.url'
+        endpoint = self.creator.create_endpoint(
+            self.cdp_service_model,
+            endpoint_url=None,
+            scoped_config={"cdp_endpoint_url": endpoint_url,
+                           "config1": "value1"},
+            timeout=123,
+            response_parser_factory=self.factory_patch,
+            tls_verification=False,
+            retry_handler=self.retry_handler)
+        self.assertEqual(endpoint.host, endpoint_url)
+
+    def test_create_wildcard_endpoint_for_internal_apis(self):
+        endpoint_url = 'https://%s-api.internal.url'
+        self.cdp_service_model.endpoint_prefix = 'prefix'
+        expected = endpoint_url % self.cdp_service_model.endpoint_prefix
+        endpoint = self.creator.create_endpoint(
+            self.cdp_service_model,
+            endpoint_url=None,
+            scoped_config={"cdp_endpoint_url": endpoint_url,
+                           "config1": "value1"},
+            timeout=123,
+            response_parser_factory=self.factory_patch,
+            tls_verification=False,
+            retry_handler=self.retry_handler)
+        self.assertEqual(endpoint.host, expected)
