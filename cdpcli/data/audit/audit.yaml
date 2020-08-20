@@ -44,7 +44,6 @@ paths:
       summary: Configures the audit system for archiving audit events to external cloud storage.
       description: Configures the audit system for archiving audit events to an external cloud storage service, replacing any existing configuration. Also returns the current configuration.
       operationId: configureArchiving
-      x-entitlement: AUDIT_API
       x-right: audit/configureArchiving
       x-api-rate-limit-group: AUDIT
       parameters:
@@ -67,7 +66,6 @@ paths:
       summary: Retrieve the current archiving configuration.
       description: Returns the current configuration.
       operationId: getArchivingConfig
-      x-entitlement: AUDIT_API
       x-right: audit/getArchivingConfig
       x-api-rate-limit-group: AUDIT
       parameters:
@@ -90,7 +88,6 @@ paths:
       summary: List all audit events recorded in a specified time span, and optionally with a specified request ID and/or event source.
       description: Returns all audit log events that have a timestamp within the provided range (start is inclusive, end is exclusive) and, optionally, with the specified request ID and/or event source.
       operationId: listEvents
-      x-entitlement: AUDIT_API
       x-right: audit/listAuditEvents
       x-api-rate-limit-group: AUDIT
       parameters:

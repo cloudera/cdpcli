@@ -1247,6 +1247,9 @@ definitions:
         type: string
         format: date-time
         description: Creation date
+      creator:
+        type: string
+        description: The CRN of the user who has created the given environment.
       awsDetails:
         type: object
         description: AWS-specific environment configuration information.
@@ -1293,10 +1296,10 @@ definitions:
     properties:
       networkName:
         type: string
-        description: Name of the network
+        description: Name or id of the network
       subnetIds:
         type: array
-        description: Subnet ids of the network.
+        description: Subnet names or ids of the network.
         uniqueItems: true
         items:
           type: string

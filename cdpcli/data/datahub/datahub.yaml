@@ -598,6 +598,9 @@ definitions:
       status:
         type: string
         description: The status of the stack.
+      clusterStatus:
+        type: string
+        description: The status of the cluster.
       nodeCount:
         type: integer
         format: int32

@@ -557,6 +557,7 @@ definitions:
       existingDatabasePassword:
         type: string
         description: Optionally provide a Postgresql database password to use when exporting model metrics.
+        x-sensitive: true
   CreateWorkspaceRequest:
     type: object
     description: Request object for the CreateWorkspace method.
@@ -875,6 +876,7 @@ definitions:
       kubeconfig:
         type: string
         description: The Kubernetes config file
+        x-sensitive: true
   RevokeWorkspaceAccessRequest:
     type: object
     description: Request object for the RevokeWorkspace method.

@@ -256,6 +256,106 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datalake/backupDatalake:
+    post:
+      summary: Create backup of datalake.
+      description: Takes a backup of all the data in the datalake.
+      operationId: backupDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BackupDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/BackupDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/backupDatalakeStatus:
+    post:
+      summary: Check the status of a datalake backup operation performed.
+      description: Identifies the backup operation based on the inputs provided and gets the status. BackupName and BackupId are mutually exclusive. Only one of them can be provided.
+      operationId: backupDatalakeStatus
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BackupDatalakeStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/BackupDatalakeStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/restoreDatalake:
+    post:
+      summary: Restore the datalake from backup taken.
+      description: Restore the datalake from a backup that was taken. Backup to be used for restore is identified based on the information provided in the restore request. BackupId and BackupName are mutually exclusive. Only one of them can be provided. If both are provided, BackupId takes precedence.
+      operationId: restoreDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestoreDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestoreDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/restoreDatalakeStatus:
+    post:
+      summary: Check the status of datalake restore operation.
+      description: Identifies the restore operation based on the inputs provided and gets the status. RestoreId and BackupName are mutually exclusive. Only one of them can be provided.
+      operationId: restoreDatalakeStatus
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestoreDatalakeStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestoreDatalakeStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/listDatalakeBackups:
+    post:
+      summary: List all the backup operations that were performed on the datalake.
+      description: List all the backup operations that were performed on the datalake.
+      operationId: listDatalakeBackups
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDatalakeBackupsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDatalakeBackupsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -533,6 +633,7 @@ definitions:
     required:
       - datalakeName
       - environmentName
+      - cloudProviderConfiguration
     properties:
       datalakeName:
         type: string
@@ -553,6 +654,9 @@ definitions:
       scale:
         type: string
         description: The scale of the datalake.
+      runtime:
+        type: string
+        description: Cloudera Runtime version.
   CreateAWSDatalakeResponse:
     type: object
     description: Response object for create AWS datalake request.
@@ -568,6 +672,7 @@ definitions:
     required:
       - datalakeName
       - environmentName
+      - cloudProviderConfiguration
     properties:
       datalakeName:
         type: string
@@ -588,6 +693,9 @@ definitions:
       scale:
         type: string
         description: The scale of the datalake.
+      runtime:
+        type: string
+        description: Cloudera Runtime version.
   CreateAzureDatalakeResponse:
     type: object
     description: Response object for create Azure datalake request.
@@ -772,6 +880,313 @@ definitions:
   StopDatalakeResponse:
     type: object
     description: Response object of stopping a datalake.
+  BackupDatalakeRequest:
+    type: object
+    description: Request object to perform a backup of datalake.
+    required:
+      - datalakeName
+      - backupLocation
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the datalake.
+      backupLocation:
+        type: string
+        description: Location where the back-up has to be stored. For example s3a://Location/of/the/backup.
+      backupName:
+        type: string
+        description: The name of the backup.
+  BackupDatalakeResponse:
+    type: object
+    description: Response object to a request made for backup of datalake.
+    required:
+      - accountId
+      - backupId
+      - userCrn
+      - internalState
+      - status
+      - startTime
+      - endTime
+      - backupLocation
+    properties:
+      accountId:
+        type: string
+        description: Account where the datalake exists.
+      backupId:
+        type: string
+        description: Unique identifier for the backup requested.
+      userCrn:
+        type: string
+        description: Crn of the user triggered this operation.
+      internalState:
+        type: string
+        description: Provides the details of the internal state where the backup operation stands.
+      status:
+        type: string
+        description: Provide the current status.
+      startTime:
+        type: string
+        description: Time when the backup operation started.
+      endTime:
+        type: string
+        description: Time when the backup operation ended.
+      backupLocation:
+        type: string
+        description: Location of the backup to be used to perform restore.
+      backupName:
+        type: string
+        description: Name of the backup.
+      failureReason:
+        type: string
+        description: Reason for the failure.
+  BackupDatalakeStatusRequest:
+    type: object
+    description: Request object to get the status of datalake backup. Returns the status of the latest backup that matches the provided input.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the datalake. When backupName and backupId are not provided, status request will get the status of the latest backup operation performed on the given datalake.
+      backupName:
+        type: string
+        description: The name of the backup. When provided, the status request will get the status of the latest backup performed with the given backup name on the given datalake.
+      backupId:
+        type: string
+        description: Unique identifier of the backup performed. When provided, the status request will get the status entry that has the backupid provided.
+  BackupDatalakeStatusResponse:
+    type: object
+    description: Response object to get the status of datalake backup status request.
+    required:
+      - accountId
+      - backupId
+      - userCrn
+      - internalState
+      - status
+      - startTime
+      - endTime
+      - backupLocation
+    properties:
+      accountId:
+        type: string
+        description: Account where the datalake exists.
+      backupId:
+        type: string
+        description: Unique identifier for the backup requested.
+      userCrn:
+        type: string
+        description: Crn of the user triggered this operation.
+      internalState:
+        type: string
+        description: Provides the details of the internal state where the backup operation stands.
+      status:
+        type: string
+        description: Provide the current status.
+      startTime:
+        type: string
+        description: Time when the backup operation started.
+      endTime:
+        type: string
+        description: Time when the backup operation ended.
+      backupLocation:
+        type: string
+        description: Location of the backup to be used to perform restore.
+      backupName:
+        type: string
+        description: Name of the backup.
+      failureReason:
+        type: string
+        description: Reason for the failure.
+  RestoreDatalakeRequest:
+    type: object
+    description: Request to restore datalake from backup. Restore does not restore the database by default.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the datalake to be restored. When backupId is not provided, the most recent successful backup on datalake with the provided name would be used.
+      backupId:
+        type: string
+        description: The ID of the backup to be used to perform a restore. The ID could refer to backup of any datalake in the same account. This is the only way to restore from a backup that was taken on a datalake with a different name.
+      backupName:
+        type: string
+        description: The name of the backup. When provided, the restore will be performed using the latest successful backup whose name matches the parameter, and that was taken from the datalake that is being restored.
+      includeDatabase:
+        type: boolean
+        description: Restore the database backing HMS/Ranger services as well. Default value is false.
+  RestoreDatalakeResponse:
+    type: object
+    description: Response object to a request to perform restore of datalake.
+    required:
+      - accountId
+      - restoreId
+      - backupId
+      - userCrn
+      - internalState
+      - status
+      - startTime
+      - endTime
+      - backupLocation
+    properties:
+      accountId:
+        type: string
+        description: Account where the datalake exists.
+      restoreId:
+        type: string
+        description: Unique identifier of the restore operation performed.
+      backupId:
+        type: string
+        description: Unique identifier of the backup used to perform restore.
+      userCrn:
+        type: string
+        description: Crn of the user triggered this operation.
+      internalState:
+        type: string
+        description: Provides the details of the internal state where the backup operation stands.
+      status:
+        type: string
+        description: Provide the current status.
+      startTime:
+        type: string
+        description: Time when the backup operation started.
+      endTime:
+        type: string
+        description: Time when the backup operation ended.
+      backupLocation:
+        type: string
+        description: Location of the backup to be used to perform restore.
+      backupName:
+        type: string
+        description: Name of the backup.
+      failureReason:
+        type: string
+        description: Reason for the failure.
+  RestoreDatalakeStatusRequest:
+    type: object
+    description: Request object to get the status of last restore operation that matches the inputs provided.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the datalake. When backupName and restoreId are not provided, status request will get the status of the latest restore operation performed on the given datalake.
+      backupName:
+        type: string
+        description: The name of the backup. When provided, the status request will get the status of the latest restore operation performed using the provided backupname on the given datalake.
+      restoreId:
+        type: string
+        description: Unique identifier of the restore operation performed. When provided, the status request will get the status of a specific restore that has the unique identifier.
+  RestoreDatalakeStatusResponse:
+    type: object
+    description: Response object with information on last restore operation on a datalake.
+    required:
+      - accountId
+      - restoreId
+      - backupId
+      - userCrn
+      - internalState
+      - status
+      - startTime
+      - endTime
+      - backupLocation
+    properties:
+      accountId:
+        type: string
+        description: Account where the datalake exists.
+      restoreId:
+        type: string
+        description: Unique identifier of the restore operation performed.
+      backupId:
+        type: string
+        description: Unique identifier of the backup used to perform restore.
+      userCrn:
+        type: string
+        description: Crn of the user triggered this operation.
+      internalState:
+        type: string
+        description: Provides the details of the internal state where the backup operation stands.
+      status:
+        type: string
+        description: Provide the current status.
+      startTime:
+        type: string
+        description: Time when the backup operation started.
+      endTime:
+        type: string
+        description: Time when the backup operation ended.
+      backupLocation:
+        type: string
+        description: Location of the backup to be used to perform restore.
+      backupName:
+        type: string
+        description: Name of the backup.
+      failureReason:
+        type: string
+        description: Reason for the failure.
+  ListDatalakeBackupsRequest:
+    type: object
+    description: Request object to get the list of backup operations performed on a datalake.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the datalake.
+  ListDatalakeBackupsResponse:
+    type: object
+    description: Response object with the list of backup operations performed on a datalake.
+    properties:
+      backups:
+        type: array
+        description: Backup object with details of backup performed.
+        items:
+          $ref: '#/definitions/DatalakeBackup'
+  DatalakeBackup:
+    type: object
+    description: Backup object with details of backup performed.
+    required:
+      - backupName
+      - accountId
+      - userCrn
+      - backupId
+      - internalState
+      - status
+      - startTime
+      - endTime
+      - backupLocation
+      - failureReason
+    properties:
+      backupName:
+        type: string
+        description: Name of the backup.
+      accountId:
+        type: string
+        description: Account where the datalake exists.
+      userCrn:
+        type: string
+        description: Crn of the user triggered this operation.
+      backupId:
+        type: string
+        description: Request to perform a from a specific status for a specific backup. Else, status of the last backup performed will be returned.
+      internalState:
+        type: string
+        description: Provides the details of the internal state where the backup operation stands.
+      status:
+        type: string
+        description: Provide the current status.
+      startTime:
+        type: string
+        description: Time when the backup operation started.
+      endTime:
+        type: string
+        description: Time when the backup operation ended.
+      backupLocation:
+        type: string
+        description: Location of the backup to be used to perform restore.
+      failureReason:
+        type: string
+        description: Reason for the failure.
   UpgradeDatalakeRequest:
     type: object
     description: Request object to upgrade datalake.
