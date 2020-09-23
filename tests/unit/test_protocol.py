@@ -16,6 +16,7 @@
 
 import datetime
 import os
+import sys
 
 from cdpcli.compat import json
 from cdpcli.compat import six
@@ -98,6 +99,30 @@ class TestSerializer(unittest.TestCase):
         operation_model = self.service_model.operation_model('arrayOfObjects')
         request = self.serializer.serialize_to_request(params, operation_model)
         self._validate_request(request, '/directors/arrayOfObjects', params)
+
+    if sys.version_info.major >= 3:  # bytes is introduced in python3
+        def test_blob_param_bytes(self):
+            params = {}
+            params['data'] = b'Hello World'
+            operation_model = self.service_model.operation_model('blobObject')
+            request = self.serializer.serialize_to_request(params, operation_model)
+            params['data'] = 'SGVsbG8gV29ybGQ='
+            self._validate_request(request, '/directors/blobObject', params)
+
+    def test_blob_param_bytearray(self):
+        params = {}
+        params['data'] = bytearray(b'Hello World')
+        operation_model = self.service_model.operation_model('blobObject')
+        request = self.serializer.serialize_to_request(params, operation_model)
+        params['data'] = 'SGVsbG8gV29ybGQ='
+        self._validate_request(request, '/directors/blobObject', params)
+
+    def test_blob_param_base64(self):
+        params = {}
+        params['data'] = 'SGVsbG8gV29ybGQ='
+        operation_model = self.service_model.operation_model('blobObject')
+        request = self.serializer.serialize_to_request(params, operation_model)
+        self._validate_request(request, '/directors/blobObject', params)
 
 
 class TestParser(unittest.TestCase):

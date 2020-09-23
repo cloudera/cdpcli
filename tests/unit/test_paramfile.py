@@ -152,3 +152,15 @@ class TestParamFileVisitor(unittest.TestCase):
         visited = ParamFileVisitor().visit(params, shape)
         params['jobs']['job1']['script'] = contents
         self.assertEqual(params, visited)
+
+    def test_blob_visitor(self):
+        contents = b'This is a test'
+        filename = self.files.create_file('jobOne.hql', contents, mode='wb')
+        # We have modified our test model to mark jobXml with x-no-paramfile.
+        params = {'jobs': {'job1': {'script': 'fileb://' + filename,
+                                    'jobXml': 'fileb://' + filename}}}
+        shape = self.resolver.get_shape_by_name(
+            'blob-test', 'BlobParamFileTest')
+        visited = ParamFileVisitor().visit(params, shape)
+        params['jobs']['job1']['script'] = contents
+        self.assertEqual(params, visited)

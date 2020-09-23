@@ -220,6 +220,10 @@ class TestShapeResolver(unittest.TestCase):
             shape = self.resolver.get_shape_by_name('invalid', 'NoFreeformMapTrueTest')
             shape.members['endpoints'].value
 
+    def test_blob_shape(self):
+        shape = self.resolver.get_shape_by_name('shape', 'BlobTest')
+        self.assertEqual(shape.members['blobparam'].type_name, 'blob')
+
     def _compare_lists(self, x, y):
         return collections.Counter(x) == collections.Counter(y)
 

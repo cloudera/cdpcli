@@ -15,6 +15,7 @@
 # language governing permissions and limitations under the License.
 
 import logging
+import pprint
 import threading
 import time
 
@@ -228,6 +229,18 @@ class Endpoint(object):
                 return (None, e)
         except Exception as e:
             return (None, e)
+
+        if LOG.isEnabledFor(logging.DEBUG):
+            skip_keys = [
+                'content-security-policy',
+                'x-content-type-options',
+                'x-frame-options',
+                'x-xss-protection'
+            ]
+            logged_headers = {k: v for k, v in dict(http_response.headers).items()
+                              if k not in skip_keys}
+            LOG.debug("Response headers: %s", pprint.pformat(logged_headers, indent=2))
+
         # This returns the http_response and the parsed_data.
         response_dict = convert_to_response_dict(http_response,
                                                  operation_model)

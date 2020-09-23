@@ -119,6 +119,8 @@ class CLIDocumentGenerator(object):
                 [a.cli_name for a in
                  self._arg_groups[argument.group_name]])
             self._documented_arg_groups.append(argument.group_name)
+        elif argument.cli_type_name == 'blob':
+            option_str = '%s <blob>' % argument.cli_name
         else:
             option_str = '%s <value>' % argument.cli_name
         if not argument.required:

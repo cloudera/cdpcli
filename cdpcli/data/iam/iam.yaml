@@ -282,6 +282,49 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /iam/setAccountMessages:
+    post:
+      summary: Set messages for an account.
+      description: Set messages for an account.
+      operationId: setAccountMessages
+      x-right: iam/setAccountMessages
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetAccountMessagesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetAccountMessagesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/getAccountMessages:
+    post:
+      summary: Get account messages.
+      description: Get account messages.
+      operationId: getAccountMessages
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAccountMessagesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAccountMessagesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /iam/assignUserRole:
     post:
       summary: Assign a role to a user.
@@ -879,7 +922,6 @@ paths:
       summary: Add a user to a group.
       description: Add a user to group.
       operationId: addUserToGroup
-      x-right: iam/addMemberToGroup
       x-mutating: true
       parameters:
         - name: input
@@ -901,7 +943,6 @@ paths:
       summary: Add a machine user to group.
       description: Add a machine user to a group.
       operationId: addMachineUserToGroup
-      x-right: iam/addMemberToGroup
       x-mutating: true
       parameters:
         - name: input
@@ -923,7 +964,6 @@ paths:
       summary: Remove a user from a group.
       description: Remove a user from a group.
       operationId: removeUserFromGroup
-      x-right: iam/removeMemberFromGroup
       x-mutating: true
       parameters:
         - name: input
@@ -945,7 +985,6 @@ paths:
       summary: Remove a machine user from a group.
       description: Remove a machine user from a group.
       operationId: removeMachineUserFromGroup
-      x-right: iam/removeMemberFromGroup
       x-mutating: true
       parameters:
         - name: input
@@ -1983,6 +2022,26 @@ definitions:
         type: string
         x-paging-output-token: true
         description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  SetAccountMessagesRequest:
+    type: object
+    description: Request object for set account messages for account.
+    properties:
+      contactYourAdministratorMessage:
+        type: string
+        description: Message shown to user when user does not have sufficient rights. Length of message cannot be more than 512 characters. If string is empty, default message is displayed.
+  SetAccountMessagesResponse:
+    type: object
+    description: Response object for set account messages.
+  GetAccountMessagesRequest:
+    type: object
+    description: Request object for get account messages.
+  GetAccountMessagesResponse:
+    type: object
+    description: Response object for get account messages.
+    properties:
+      contactYourAdministratorMessage:
+        type: string
+        description: Message shown to user when user does not have sufficient rights.
   AssignUserRoleRequest:
     type: object
     description: Request object for an assign user role request.
@@ -2384,17 +2443,17 @@ definitions:
         type: array
         items:
           type: string
-        description: The list of group CRNs from which the user has been removed.
+        description: The list of group CRNs from which the machine user has been removed.
       rolesUnassigned:
         type: array
         items:
           type: string
-        description: The list of role CRNs unassigned from the user.
+        description: The list of role CRNs unassigned from the machine user.
       resourcesUnassigned:
         type: array
         items:
           $ref: '#/definitions/ResourceAssignment'
-        description: The list of resource role assignments that have been unassigned from the user.
+        description: The list of resource role assignments that have been unassigned from the machine user.
   CreateGroupRequest:
     type: object
     description: Request object for create group request.
@@ -2830,19 +2889,18 @@ definitions:
     type: object
     description: Request object for creating user request.
     required:
-      - samlProviderName
       - identityProviderUserId
       - email
     properties:
-      samlProviderName:
-        type: string
-        description: The name or CRN of the SAML provider the user will use for login.
       identityProviderUserId:
         type: string
         description: The identity provider user id for the user. This ID must match the NameId attribute value that will be passed for the user in the SAML response using the associated SAML provider.
       email:
         type: string
         description: The email address for the user. Used for display purposes only.
+      samlProviderName:
+        type: string
+        description: The name or CRN of the SAML provider the user will use for login.
       groups:
         type: array
         items:

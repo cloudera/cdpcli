@@ -225,16 +225,19 @@ class TestModelVisitor(unittest.TestCase):
             'C': {'type': 'float'},
             'D': {'type': 'boolean'},
             'E': {'type': 'boolean'},
+            'F': {'type': 'blob'},
         }).build_model()
         b = shorthand.BackCompatVisitor()
 
         params = {'A': '24', 'B': '24', 'C': '24.12345',
-                  'D': 'true', 'E': 'false'}
+                  'D': 'true', 'E': 'false',
+                  'F': 'SGVsbG8gV29ybGQ='}
         b.visit(params, m)
         self.assertEqual(
             params,
             {'A': 24, 'B': '24', 'C': float('24.12345'),
-             'D': True, 'E': False})
+             'D': True, 'E': False,
+             'F': 'SGVsbG8gV29ybGQ='})
 
     def test_empty_values_not_added(self):
         m = model.DenormalizedStructureBuilder().with_members({

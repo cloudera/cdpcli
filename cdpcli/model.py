@@ -49,6 +49,8 @@ def _get_shape_type(shape_data):
     if shape_type == 'string':
         if shape_data.get('format', None) == 'date-time':
             return 'datetime'
+        if shape_data.get('format', None) == 'byte':
+            return 'blob'
     if shape_type == 'number':
         return shape_data.get('format')
     if shape_type == 'object':
@@ -188,7 +190,8 @@ class ShapeResolver(object):
                                 'float',
                                 'double',
                                 'boolean',
-                                'datetime']:
+                                'datetime',
+                                'blob']:
                 shape_cls = Shape
             else:
                 raise InvalidShapeError("Unknown shape type: %s" % shape_type)
@@ -407,7 +410,8 @@ class DenormalizedStructureBuilder(object):
                             'float',
                             'double',
                             'boolean',
-                            'datetime']:
+                            'datetime',
+                            'blob']:
             shapes[shape_name] = self._build_scalar(model)
         else:
             raise InvalidShapeError("Unknown shape type: %s" % model['type'])

@@ -142,3 +142,11 @@ class ParamFileVisitor(object):
 
     def _visit_datetime(self, param, shape, name):
         return param
+
+    def _visit_blob(self, param, shape, name):
+        if shape.is_no_paramfile:
+            return param
+        override = get_paramfile(param)
+        if override is not None:
+            return override
+        return param

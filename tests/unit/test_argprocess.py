@@ -15,7 +15,6 @@
 # language governing permissions and limitations under the License.
 import json
 
-
 from cdpcli import xform_name
 from cdpcli.argprocess import uri_param
 from cdpcli.arguments import BooleanArgument

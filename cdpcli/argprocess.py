@@ -14,8 +14,6 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-import os
-
 from cdpcli import COMPLEX_TYPES
 from cdpcli import LIST_TYPE
 from cdpcli import MAP_TYPE
@@ -160,14 +158,6 @@ def unpack_scalar_cli_arg(argument_model, value, cli_name=''):
     elif argument_model.type_name == 'float' or argument_model.type_name == 'double':
         # TODO: losing precision on double types
         return float(value)
-    elif argument_model.type_name == 'blob' and \
-            argument_model.serialization.get('streaming'):
-        file_path = os.path.expandvars(value)
-        file_path = os.path.expanduser(file_path)
-        if not os.path.isfile(file_path):
-            msg = 'Blob values must be a path to a file.'
-            raise ParamError(cli_name, msg)
-        return open(file_path, 'rb')
     elif argument_model.type_name == 'boolean':
         if isinstance(value, six.string_types) and value.lower() == 'false':
             return False

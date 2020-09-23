@@ -116,6 +116,26 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datalake/retryDatalake:
+    post:
+      summary: Retry last failed operation on a datalake.
+      description: Retry last failed operation on a datalake.
+      operationId: retryDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RetryDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RetryDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datalake/describeDatalake:
     post:
       summary: Describes a datalake.
@@ -199,7 +219,7 @@ paths:
   /api/v1/datalake/upgradeDatalake:
     post:
       summary: OS or data platform upgrade for the SDX cluster.
-      description: OS or data platform upgrade for the SDX cluster. You need to specify either one of image-id, runtime or lock-components to proceed.
+      description: OS or data platform upgrade for the SDX cluster. You have the option to either specify one of 'imageId', 'runtime' or 'lockComponents' or both 'imageId' and 'lockComponents' or none of the parameters.
       operationId: upgradeDatalake
       parameters:
         - name: input
@@ -653,7 +673,7 @@ definitions:
           $ref: '#/definitions/DatalakeResourceTagRequest'
       scale:
         type: string
-        description: The scale of the datalake.
+        description: The scale of the datalake. Allowed values are "LIGHT_DUTY" or "MEDIUM_DUTY_HA".
       runtime:
         type: string
         description: Cloudera Runtime version.
@@ -692,7 +712,7 @@ definitions:
           $ref: '#/definitions/DatalakeResourceTagRequest'
       scale:
         type: string
-        description: The scale of the datalake.
+        description: The scale of the datalake. Allowed values are "LIGHT_DUTY" or "MEDIUM_DUTY_HA".
       runtime:
         type: string
         description: Cloudera Runtime version.
@@ -741,6 +761,18 @@ definitions:
   DeleteDatalakeResponse:
     type: object
     description: Response object for delete datalake request.
+  RetryDatalakeResponse:
+    type: object
+    description: Response object for retry datalake request.
+  RetryDatalakeRequest:
+    type: object
+    description: Request object for retry datalake request.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake to be retry on.
   DescribeDatalakeRequest:
     type: object
     description: Request object for describe datalake request.
@@ -1014,7 +1046,7 @@ definitions:
         description: The name of the backup. When provided, the restore will be performed using the latest successful backup whose name matches the parameter, and that was taken from the datalake that is being restored.
       includeDatabase:
         type: boolean
-        description: Restore the database backing HMS/Ranger services as well. Default value is false.
+        description: Restore the database backing HMS/Ranger services. If this option is not provided, the HMS/Ranger services are restored by default.
   RestoreDatalakeResponse:
     type: object
     description: Response object to a request to perform restore of datalake.
@@ -1064,19 +1096,16 @@ definitions:
         description: Reason for the failure.
   RestoreDatalakeStatusRequest:
     type: object
-    description: Request object to get the status of last restore operation that matches the inputs provided.
+    description: Request object to get the status of a restore operation.
     required:
       - datalakeName
     properties:
       datalakeName:
         type: string
-        description: The name of the datalake. When backupName and restoreId are not provided, status request will get the status of the latest restore operation performed on the given datalake.
-      backupName:
-        type: string
-        description: The name of the backup. When provided, the status request will get the status of the latest restore operation performed using the provided backupname on the given datalake.
+        description: The name of the Data Lake for which the most recent restore status will be retrieved.
       restoreId:
         type: string
-        description: Unique identifier of the restore operation performed. When provided, the status request will get the status of a specific restore that has the unique identifier.
+        description: Unique identifier of the restore operation performed.
   RestoreDatalakeStatusResponse:
     type: object
     description: Response object with information on last restore operation on a datalake.

@@ -14,6 +14,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import base64
 import datetime
 import decimal
 
@@ -138,6 +139,9 @@ class ValidationErrors(object):
             return ('Invalid length for parameter %s, value: %s, valid range: '
                     '%s-%s' % (name, additional['param'],
                                min_allowed, max_allowed))
+        elif error_type == 'invalid base64':
+            return 'Invalid base64 value for parameter %s, error: %s' \
+                % (name, additional['error'])
 
     def _get_name(self, name):
         if not name:
@@ -225,6 +229,17 @@ class ParamValidator(object):
             valid_type_names = [six.text_type(datetime), 'timestamp-string']
             errors.report(name, 'invalid type', param=param,
                           valid_types=valid_type_names)
+
+    @type_check(valid_types=(bytes, bytearray, six.string_types))
+    def _validate_blob(self, param, shape, errors, name):
+        if isinstance(param, six.string_types):
+            try:
+                bytes = base64.b64decode(param)
+                length_check(name, len(bytes), shape, 'invalid length', errors)
+            except Exception as err:
+                errors.report(name, 'invalid base64', error=err)
+        else:
+            length_check(name, len(param), shape, 'invalid length', errors)
 
     def _type_check_datetime(self, value):
         try:

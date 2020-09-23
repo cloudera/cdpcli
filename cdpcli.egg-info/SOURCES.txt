@@ -66,7 +66,6 @@ cdpcli/examples/configure/get/_description.rst
 cdpcli/examples/configure/get/_examples.rst
 cdpcli/examples/configure/set/_description.rst
 cdpcli/examples/configure/set/_examples.rst
-cdpcli/examples/dataeng/submit-jobs.rst
 cdpcli/extensions/__init__.py
 cdpcli/extensions/arguments.py
 cdpcli/extensions/cliinputjson.py

@@ -241,6 +241,8 @@ class ArgumentGenerator(object):
             return True
         elif shape.type_name == 'datetime':
             return '2002-10-02T13:00:00+00:00'
+        elif shape.type_name == 'blob':
+            return ''
         else:
             raise Exception("Unknown shape type: %s" % shape.type_name)
 

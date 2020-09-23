@@ -17,6 +17,7 @@
 from datetime import datetime
 import decimal
 import os
+import sys
 
 from cdpcli.model import ServiceModel
 from cdpcli.model import ShapeResolver
@@ -83,7 +84,8 @@ class TestValidateTypes(BaseTestValidate):
              'datetimeparam': 'notdatetime',
              'arrayparam': 'notarray',
              'objectparam': 'notobject',
-             'mapparam': 'notmap'},
+             'mapparam': 'notmap',
+             'blobparam': 123},
             ['Invalid type for parameter stringparam',
              'Invalid type for parameter intparam',
              'Invalid type for parameter boolparam',
@@ -91,7 +93,8 @@ class TestValidateTypes(BaseTestValidate):
              'Invalid type for parameter datetimeparam',
              'Invalid type for parameter arrayparam',
              'Invalid type for parameter objectparam',
-             'Invalid type for parameter mapparam'])
+             'Invalid type for parameter mapparam',
+             'Invalid type for parameter blobparam'])
 
     def test_datetime_type_accepts_datetime_object(self):
         errors = self.get_validation_error_message(
@@ -134,6 +137,50 @@ class TestValidateTypes(BaseTestValidate):
             self.resolver.get_shape_by_name('typestest', 'TypesTest'),
             {'mapparam': {'key1': 'value1', 'key2': 2}},
             ["Invalid type for parameter mapparam.key2, value: 2"])
+
+    def test_valid_blob_base64(self):
+        errors = self.get_validation_error_message(
+            self.resolver.get_shape_by_name('typestest', 'TypesTest'),
+            {'blobparam': 'SGVsbG8gV29ybGQ='})
+        self.assertEqual(errors.generate_report(), '')
+
+    def test_valid_blob_empty_base64(self):
+        errors = self.get_validation_error_message(
+            self.resolver.get_shape_by_name('typestest', 'TypesTest'),
+            {'blobparam': ''})
+        self.assertEqual(errors.generate_report(), '')
+
+    def test_invalid_value_blob_base64(self):
+        self.assert_has_validation_errors(
+            self.resolver.get_shape_by_name('typestest', 'TypesTest'),
+            {'blobparam': 'ABC'},
+            ["Invalid base64 value for parameter blobparam, error: Incorrect padding"])
+
+    if sys.version_info.major >= 3:  # bytes is introduced in python3
+        def test_valid_blob_bytes(self):
+            errors = self.get_validation_error_message(
+                self.resolver.get_shape_by_name('typestest', 'TypesTest'),
+                {'blobparam': b'BlobTest'})
+            self.assertEqual(errors.generate_report(), '')
+
+    if sys.version_info.major >= 3:  # bytes is introduced in python3
+        def test_valid_blob_empty_bytes(self):
+            errors = self.get_validation_error_message(
+                self.resolver.get_shape_by_name('typestest', 'TypesTest'),
+                {'blobparam': b''})
+            self.assertEqual(errors.generate_report(), '')
+
+    def test_valid_blob_bytearray(self):
+        errors = self.get_validation_error_message(
+            self.resolver.get_shape_by_name('typestest', 'TypesTest'),
+            {'blobparam': bytearray(b'BlobTest')})
+        self.assertEqual(errors.generate_report(), '')
+
+    def test_valid_blob_empty_bytearray(self):
+        errors = self.get_validation_error_message(
+            self.resolver.get_shape_by_name('typestest', 'TypesTest'),
+            {'blobparam': bytearray(b'')})
+        self.assertEqual(errors.generate_report(), '')
 
 
 class TestValidateRanges(BaseTestValidate):
@@ -196,6 +243,44 @@ class TestValidateRanges(BaseTestValidate):
             self.resolver.get_shape_by_name('rangetest', 'RangeTest'),
             {'maxonlystringparam': 'thisistoolong'},
             ['Invalid length for parameter maxonlystringparam'])
+
+    if sys.version_info.major >= 3:  # bytes is introduced in python3
+        def test_blob_min_length_contraint_bytes(self):
+            self.assert_has_validation_errors(
+                self.resolver.get_shape_by_name('rangetest', 'RangeTest'),
+                {'blobparam': b''},
+                ['Invalid length for parameter blobparam'])
+
+    if sys.version_info.major >= 3:  # bytes is introduced in python3
+        def test_blob_max_length_contraint_bytes(self):
+            self.assert_has_validation_errors(
+                self.resolver.get_shape_by_name('rangetest', 'RangeTest'),
+                {'blobparam': b'thisistoolong'},
+                ['Invalid length for parameter blobparam'])
+
+    def test_blob_min_length_contraint_bytearray(self):
+        self.assert_has_validation_errors(
+            self.resolver.get_shape_by_name('rangetest', 'RangeTest'),
+            {'blobparam': bytearray(b'')},
+            ['Invalid length for parameter blobparam'])
+
+    def test_blob_max_length_contraint_bytearray(self):
+        self.assert_has_validation_errors(
+            self.resolver.get_shape_by_name('rangetest', 'RangeTest'),
+            {'blobparam': bytearray(b'thisistoolong')},
+            ['Invalid length for parameter blobparam'])
+
+    def test_blob_min_length_contraint_base64(self):
+        self.assert_has_validation_errors(
+            self.resolver.get_shape_by_name('rangetest', 'RangeTest'),
+            {'blobparam': ''},
+            ['Invalid length for parameter blobparam'])
+
+    def test_blob_max_length_contraint_base64(self):
+        self.assert_has_validation_errors(
+            self.resolver.get_shape_by_name('rangetest', 'RangeTest'),
+            {'blobparam': 'dGhpc2lzdG9vbG9uZw=='},
+            ['Invalid length for parameter blobparam'])
 
 
 class TestValidationNumberType(BaseTestValidate):

@@ -197,7 +197,8 @@ class TestArgumentGenerator(unittest.TestCase):
                 'C': {'type': 'float'},
                 'D': {'type': 'double'},
                 'E': {'type': 'boolean'},
-                'F': {'type': 'datetime'}
+                'F': {'type': 'datetime'},
+                'G': {'type': 'blob'}
             },
             generated_skeleton={
                 'A': '',
@@ -205,7 +206,8 @@ class TestArgumentGenerator(unittest.TestCase):
                 'C': 0.0,
                 'D': 0.0,
                 'E': True,
-                'F': '2002-10-02T13:00:00+00:00'
+                'F': '2002-10-02T13:00:00+00:00',
+                'G': ''
             }
         )
 

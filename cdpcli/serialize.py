@@ -14,9 +14,12 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import base64
+
 from cdpcli import validate
 from cdpcli.compat import json
 from cdpcli.compat import OrderedDict
+from cdpcli.compat import six
 
 
 def create_serializer():
@@ -27,6 +30,15 @@ def create_serializer():
 
 class Serializer(object):
     DEFAULT_ENCODING = 'utf-8'
+
+    def _get_base64(self, value):
+        # Returns the base64-encoded version of value, handling
+        # both strings and bytes. The returned value is a string
+        # via the default encoding.
+        if isinstance(value, six.string_types):
+            value = value.encode(self.DEFAULT_ENCODING)
+        return base64.b64encode(value).strip().decode(
+            self.DEFAULT_ENCODING)
 
     def serialize_to_request(self, parameters, operation_model):
         # Don't serialize any parameter with a None value.
@@ -76,6 +88,17 @@ class Serializer(object):
             # the serialized list.
             self._serialize(wrapper, array_item, shape.member, "__current__")
             array_obj.append(wrapper["__current__"])
+
+    def _serialize_type_blob(self, serialized, value, shape, key):
+        # Blob args must be base64 encoded.
+        # If value type is string/text, it is already base64 encoded, verified
+        # in validate.py.
+        # Use isinstance(six.string_types) because a string could be either str
+        # or unicode in python2.
+        if isinstance(value, six.string_types):
+            serialized[key] = value
+        else:
+            serialized[key] = self._get_base64(value)
 
     def _default_serialize(self, serialized, value, shape, key):
         serialized[key] = value

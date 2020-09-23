@@ -1094,7 +1094,7 @@ definitions:
         description: Name of the proxy config to use for the environment.
       resourceGroupName:
         type: string
-        description: Name of an existing Azure resource group to be used for the environment. If it is not specified then a new resource group will be generated.
+        description: Name of an existing Azure resource group to be used for the environment. If it is not specified then new resource groups will be generated.
   ExistingAzureNetworkRequest:
     type: object
     description: Request object for creating an Azure environment using existing VNet and subnets.
@@ -2035,21 +2035,21 @@ definitions:
         type: string
         description: The associated value of the tag.
   FreeipaDetails:
-    description: Details of a FreeIPA instance.
+    description: Details of a FreeIPA cluster.
     type: object
     properties:
       crn:
         type: string
-        description: CRN of the FreeIPA instance.
+        description: CRN of the FreeIPA cluster.
       domain:
         type: string
-        description: The domain name of the FreeIPA instance.
+        description: The domain name of the FreeIPA cluster.
       hostname:
         type: string
-        description: The hostname of the FreeIPA instance.
+        description: The hostname of the FreeIPA cluster.
       serverIP:
         type: array
-        description: The IP addresses of the FreeIPA instance.
+        description: The IP addresses of the FreeIPA cluster.
         uniqueItems: true
         items:
           type: string
