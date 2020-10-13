@@ -1,0 +1,1173 @@
+swagger: '2.0'
+x-endpoint-name: dw
+x-products: CDP
+x-cdp-releases: PUBLIC
+info:
+  version: 0.1-SNAPSHOT
+  title: Cloudera Data Warehouse [EXPERIMENTAL]
+  license:
+    name: Apache 2.0
+  description: Install and manage Cloudera Data Warehouse clusters.
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/v1/dw/listClusters:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: List Cloudera Data Warehouse clusters.
+      description: List Cloudera Data Warehouse clusters.
+      operationId: listClusters
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListClustersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListClustersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/describeCluster:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Describe a Cloudera Data Warehouse cluster.
+      description: Describe a Cloudera Data Warehouse cluster.
+      operationId: describeCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/createCluster:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Create a Cloudera Data Warehouse cluster.
+      description: Create a Cloudera Data Warehouse cluster.
+      operationId: createCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/deleteCluster:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Delete a Cloudera Data Warehouse cluster.
+      description: Delete a Cloudera Data Warehouse cluster.
+      operationId: deleteCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/createDbc:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Create a Database Catalog.
+      description: Create a Database Catalog.
+      operationId: createDbc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateDbcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateDbcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/listDbcs:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: List Database Catalogs.
+      description: List Database Catalogs.
+      operationId: listDbcs
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDbcsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDbcsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/describeDbc:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Describe a Database Catalog.
+      description: Describe a Database Catalog.
+      operationId: describeDbc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeDbcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeDbcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/deleteDbc:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Delete a Database Catalog.
+      description: Delete a Database Catalog.
+      operationId: deleteDbc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteDbcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteDbcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/createVw:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Create a Virtual Warehouse.
+      description: Create a Virtual Warehouse.
+      operationId: createVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/listVws:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: List Virtual Warehouses.
+      description: List Virtual Warehouses.
+      operationId: listVws
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListVwsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListVwsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/describeVw:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Describe a Virtual Warehouse.
+      description: Describe a Virtual Warehouse.
+      operationId: describeVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/deleteVw:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: true
+      summary: Delete a Virtual Warehouse.
+      description: Delete a Virtual Warehouse.
+      operationId: deleteVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/describeConfig:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: false
+      summary: Describe a service configuration.
+      description: Describe a service configuration.
+      operationId: describeConfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeConfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/describeConfigDiff:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: false
+      summary: Get differences between two service configurations.
+      description: Get differences between two service configurations.
+      operationId: describeConfigDiff
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeConfigDiffRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeConfigDiffResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listDbcConfigs:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: false
+      summary: Get the configuration history of a Database Catalog.
+      description: Get the configuration history of a Database Catalog.
+      operationId: listDbcConfigs
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDbcConfigsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDbcConfigsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listVwConfigs:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: false
+      summary: Get the configuration history of a Virtual Warehouse.
+      description: Get the configuration history of a Virtual Warehouse.
+      operationId: listVwConfigs
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListVwConfigsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListVwConfigsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/updateVw:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: true
+      summary: Update the configuration of a Virtual Warehouse.
+      description: Update the configuration of a Virtual Warehouse.
+      operationId: updateVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/updateDbc:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: true
+      summary: Update the configuration of a Database Catalog.
+      description: Update the configuration of a Database Catalog.
+      operationId: updateDbc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateDbcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateDbcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Error:
+    type: object
+    description: An object returned on an error.
+    properties:
+      code:
+        type: string
+        description: The error code.
+      message:
+        type: string
+        description: The error message.
+  DescribeClusterRequest:
+    type: object
+    description: Request object for the describeCluster method. Use only one of environmentName, clusterCrn and clusterId.
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to describe.
+  DescribeClusterResponse:
+    type: object
+    description: Response object for the describeCluster method.
+    properties:
+      cluster:
+        description: The cluster.
+        $ref: '#/definitions/ClusterSummary'
+  CreateClusterRequest:
+    type: object
+    description: Request object for the createCluster method.
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The environment for the cluster to create.
+      useOverlayNetwork:
+        type: boolean
+        description: Using an overlay network will save IP addresses in the VPC by using a private IP address range for Pods in the cluster.
+      awsOptions:
+        description: Options for activating an AWS environment.
+        $ref: '#/definitions/AwsActivationOptions'
+      azureOptions:
+        description: Options for activating an Azure environment.
+        $ref: '#/definitions/AzureActivationOptions'
+  AwsActivationOptions:
+    type: object
+    description: Options for activating an AWS environment.
+    properties:
+      privateSubnetIds:
+        type: array
+        description: IDs of private AWS subnets where the cluster should be deployed.
+        items:
+          type: string
+      publicSubnetIds:
+        type: array
+        description: IDs of public AWS subnets where the cluster should be deployed.
+        items:
+          type: string
+  AzureActivationOptions:
+    type: object
+    description: Options for activating an Azure environment.
+    properties:
+      subnetId:
+        type: string
+        description: ID of Azure subnet where the cluster should be deployed.
+      enableAZ:
+        type: boolean
+        description: Enables Azure Availability Zones for the cluster deployment.
+  CreateClusterResponse:
+    type: object
+    description: Response object for the createCluster method.
+    properties:
+      clusterId:
+        type: string
+        description: ID of new cluster.
+  DeleteClusterRequest:
+    type: object
+    description: Request object for the deleteCluster method.
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to delete.
+      force:
+        type: boolean
+        description: 'Force delete cluster (default: false). Force delete means CDW will delete the cluster even if there are attached DB Catalogs and Virtual Warehouses. All managed data will be lost and won''t be recoverable. Force delete attampts all steps of the deletion even if previous steps have failed.'
+    required:
+      - clusterId
+  DeleteClusterResponse:
+    type: object
+    description: Response object for the deleteCluster method.
+  ListClustersRequest:
+    type: object
+    description: Request object for the listClusters method.
+  ListClustersResponse:
+    type: object
+    description: Response object for the listClusters method.
+    properties:
+      clusters:
+        type: array
+        items:
+          $ref: '#/definitions/ClusterSummary'
+        description: The list of clusters.
+  CreateDbcRequest:
+    type: object
+    description: Request object for the createDbc method.
+    required:
+      - clusterId
+      - name
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster where Database Catalog should be created.
+      name:
+        type: string
+        description: Name of the Database Catalog.
+      loadDemoData:
+        type: boolean
+        description: Load demo data into the Database Catalog?
+  CreateDbcResponse:
+    type: object
+    description: Response object for the createDbc method.
+    properties:
+      dbcId:
+        type: string
+        description: ID of the new Database Catalog.
+  ListDbcsRequest:
+    type: object
+    description: Request object for the listDbcs method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster to list.
+  ListDbcsResponse:
+    type: object
+    description: Response object for the listDbcs method.
+    properties:
+      dbcs:
+        type: array
+        items:
+          $ref: '#/definitions/DbcSummary'
+        description: The list of Database Catalogs.
+  DescribeDbcRequest:
+    type: object
+    description: Request object for the describeDbc method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+  DescribeDbcResponse:
+    type: object
+    description: Response object for the describeDbc method.
+    properties:
+      dbc:
+        description: The Database Catalog.
+        $ref: '#/definitions/DbcSummary'
+  DeleteDbcRequest:
+    type: object
+    description: Request object for the deleteDbc method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog to delete.
+  DeleteDbcResponse:
+    type: object
+    description: Response object for the deleteDbc method.
+  VwType:
+    type: string
+    enum:
+      - hive
+      - impala
+    description: 'Type of Virtual Warehouse: ''hive'' or ''impala''.'
+  AutoscalingOptions:
+    type: object
+    description: Configurations for auto-scaling a Virtual Warehouse.
+    properties:
+      minClusters:
+        type: integer
+        format: int32
+        default: 1
+        description: TODO
+      maxClusters:
+        type: integer
+        format: int32
+        default: 20
+        description: TODO
+  CreateVwRequest:
+    type: object
+    description: Request object for the createVw method.
+    required:
+      - clusterId
+      - dbcId
+      - vwType
+      - name
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster where Virtual Warehouse should be created.
+      dbcId:
+        type: string
+        description: ID of Database Catalog that the Virtual Warehouse should be attached to.
+      vwType:
+        description: Type of Virtual Warehouse to be created.
+        $ref: '#/definitions/VwType'
+      name:
+        type: string
+        description: Name of the Virtual Warehouse.
+      template:
+        type: string
+        description: Name of configuration template to use.
+        enum:
+          - xsmall
+          - small
+          - medium
+          - large
+      autoscaling:
+        description: Autoscaling settings for the Virtual Warehouse.
+        $ref: '#/definitions/AutoscalingOptions'
+  CreateVwResponse:
+    type: object
+    description: Response object for the createVw method.
+    properties:
+      vwId:
+        type: string
+        description: ID of the new Virtual Warehouse.
+  ListVwsRequest:
+    type: object
+    description: Request object for the listDbcs method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster to list.
+  ListVwsResponse:
+    type: object
+    description: Response object for the listVws method.
+    properties:
+      vws:
+        type: array
+        items:
+          $ref: '#/definitions/VwSummary'
+        description: The list of Virtual Warehouses.
+  DescribeVwRequest:
+    type: object
+    description: Request object for the describeVw method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Virtual Warehouse's cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+  DescribeVwResponse:
+    type: object
+    description: Response object for the describeVw method.
+    properties:
+      vw:
+        description: The Virtual Warehouse.
+        $ref: '#/definitions/VwSummary'
+  DeleteVwRequest:
+    type: object
+    description: Request object for the deleteVw method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Virtual Warehouse's cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse to delete.
+  DeleteVwResponse:
+    type: object
+    description: Response object for the deleteVw method.
+  Actor:
+    type: object
+    description: A CDP actor (user or machine user).
+    properties:
+      crn:
+        type: string
+        description: Actor CRN.
+      email:
+        type: string
+        description: Email address for users.
+      workloadUsername:
+        type: string
+        description: Username for users.
+      machineUsername:
+        type: string
+        description: Username for machine users.
+  ClusterSummary:
+    type: object
+    description: A Cloudera Data Warehouse cluster.
+    properties:
+      crn:
+        type: string
+        description: The CRN of the cluster.
+      id:
+        type: string
+        description: The ID of the cluster.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment where the cluster is located.
+      status:
+        type: string
+        description: Status of the cluster.
+      creator:
+        $ref: '#/definitions/Actor'
+        description: The creator of the cluster.
+      creationDate:
+        type: string
+        format: date-time
+        description: Creation date of cluster.
+      cloudPlatform:
+        type: string
+        description: The cloud platform of the environment that was used to create this cluster.
+  DbcSummary:
+    type: object
+    description: A Database Catalog.
+    properties:
+      crn:
+        type: string
+        description: The CRN of the Database Catalog.
+      id:
+        type: string
+        description: The ID of the Database Catalog.
+      name:
+        type: string
+        description: The name of the Database Catalog.
+      status:
+        type: string
+        description: Status of the Database Catalog.
+      creator:
+        $ref: '#/definitions/Actor'
+        description: The creator of the Database Catalog.
+      creationDate:
+        type: string
+        format: date-time
+        description: Creation date of Database Catalog.
+  VwSummary:
+    type: object
+    description: A Virtual Warehouse.
+    properties:
+      crn:
+        type: string
+        description: The CRN of the Virtual Warehouse.
+      id:
+        type: string
+        description: The ID of the Virtual Warehouse.
+      name:
+        type: string
+        description: The name of the Virtual Warehouse.
+      vwType:
+        description: The type of the Virtual Warehouse.
+        $ref: '#/definitions/VwType'
+      dbcId:
+        type: string
+        description: ID of Database Catalog that the Virtual Warehouse is attached to.
+      status:
+        type: string
+        description: Status of the Virtual Warehouse.
+      creator:
+        $ref: '#/definitions/Actor'
+        description: The creator of the Virtual Warehouse.
+      creationDate:
+        type: string
+        format: date-time
+        description: Creation date of Virtual Warehouse.
+  DescribeConfigRequest:
+    type: object
+    description: Request object for the describeConfig method.
+    required:
+      - clusterId
+      - configId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the cluster.
+      configId:
+        type: string
+        description: ID of the service (Database Catalog or Virtual Warehouse).
+  DescribeConfigResponse:
+    type: object
+    description: Response object for the describeConfig method.
+    properties:
+      config:
+        description: The service configuration.
+        $ref: '#/definitions/ServiceConfigResp'
+  DescribeConfigDiffRequest:
+    type: object
+    description: Request object for the describeConfigDiff method.
+    required:
+      - clusterId
+      - fromConfigId
+      - toConfigId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the cluster.
+      fromConfigId:
+        type: string
+        description: ID of the old service configuration.
+      toConfigId:
+        type: string
+        description: ID of the new service configuration.
+  DescribeConfigDiffResponse:
+    type: object
+    description: Response object for the describeConfigDiff method.
+    properties:
+      config:
+        description: The service configuration.
+        $ref: '#/definitions/ServiceConfigDiff'
+  ListDbcConfigsRequest:
+    type: object
+    description: Request object for the listDbcConfigs method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+  ListDbcConfigsResponse:
+    type: object
+    description: Response object for the listDbcConfigs method.
+    properties:
+      configHistory:
+        type: array
+        description: Configuration history of a service.
+        items:
+          $ref: '#/definitions/ConfigHistoryItem'
+  ListVwConfigsRequest:
+    type: object
+    description: Request object for the listVwConfigs method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Virtual Warehouse's cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+  ListVwConfigsResponse:
+    type: object
+    description: Response object for the listVwConfigs method.
+    properties:
+      configHistory:
+        type: array
+        description: Configuration history of a service.
+        items:
+          $ref: '#/definitions/ConfigHistoryItem'
+  UpdateVwRequest:
+    type: object
+    description: Request object for the updateVw method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Virtual Warehouse's cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+      config:
+        description: The service configuration to update the VW with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
+        $ref: '#/definitions/ServiceConfigReq'
+  UpdateVwResponse:
+    type: object
+    description: Response object for the updateVw method.
+  UpdateDbcRequest:
+    type: object
+    description: Request object for the updateDbc method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+      config:
+        description: The service configuration to update the DBC with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
+        $ref: '#/definitions/ServiceConfigReq'
+  UpdateDbcResponse:
+    type: object
+    description: Response object for the updateDbc method.
+  ConfigHistoryItem:
+    type: object
+    description: An entry in the configuration history of a service.
+    properties:
+      serviceId:
+        type: string
+        description: DBC or VW ID that this configuration belongs to.
+      configId:
+        type: string
+        description: ID of the configuration.
+      from:
+        type: string
+        format: date-time
+        description: When was this configuration used from.
+  ConfigContentResp:
+    type: object
+    description: Contents of a ConfigBlock.
+    properties:
+      keyValues:
+        type: object
+        description: Key-value type configurations.
+        additionalProperties:
+          description: Key-value type configurations.
+          type: string
+      text:
+        type: string
+        description: Text type configuration.
+      json:
+        type: string
+        description: JSON type configuration.
+  ConfigContentReq:
+    type: object
+    description: Contents of a ConfigBlock.
+    properties:
+      keyValues:
+        type: object
+        description: Key-value type configurations.
+        additionalProperties:
+          description: Key-value type configurations.
+          type: string
+      text:
+        type: string
+        description: Text type configuration.
+      json:
+        type: string
+        description: JSON type configuration.
+  StringDiff:
+    type: object
+    description: Difference between two strings.
+    required:
+      - from
+      - to
+    properties:
+      from:
+        type: string
+        description: The old value.
+      to:
+        type: string
+        description: The new value.
+  KeyValuesDiff:
+    type: object
+    description: Different between keyValues of two ConfigContents.
+    properties:
+      added:
+        type: object
+        description: Keys that are only present in the new configuration.
+        additionalProperties:
+          type: string
+          description: Keys that are only present in the new configuration.
+      removed:
+        type: object
+        description: Keys that are only present in the old configuration.
+        additionalProperties:
+          type: string
+          description: Keys that are only present in the old configuration.
+      same:
+        type: object
+        description: Keys that are present in both configurations.
+        additionalProperties:
+          description: Keys that are present in both configurations.
+          type: string
+      changed:
+        type: object
+        description: Keys with different values.
+        additionalProperties:
+          description: Keys with different values.
+          $ref: '#/definitions/StringDiff'
+  ConfigContentDiff:
+    type: object
+    description: Difference between two ConfigContents.
+    properties:
+      keyValues:
+        description: Different between keyValues of two ConfigContents.
+        $ref: '#/definitions/KeyValuesDiff'
+  ConfigBlockResp:
+    type: object
+    description: A piece of configuration stored in the same place (e.g. same file or environment variables).
+    properties:
+      id:
+        type: string
+        description: ID of the ConfigBlock. Unique within an ApplicationConfig.
+      format:
+        type: string
+        description: Format of ConfigBlock.
+        enum:
+          - HADOOP_XML
+          - PROPERTIES
+          - TEXT
+          - JSON
+          - BINARY
+          - ENV
+          - FLAGFILE
+      content:
+        description: Contents of a ConfigBlock.
+        $ref: '#/definitions/ConfigContentResp'
+  ConfigBlockReq:
+    type: object
+    description: A piece of configuration stored in the same place (e.g. same file or environment variables).
+    properties:
+      id:
+        type: string
+        description: ID of the ConfigBlock. Unique within an ApplicationConfig.
+      format:
+        type: string
+        description: Format of ConfigBlock.
+        enum:
+          - HADOOP_XML
+          - PROPERTIES
+          - TEXT
+          - JSON
+          - BINARY
+          - ENV
+          - FLAGFILE
+      content:
+        description: Contents of a ConfigBlock.
+        $ref: '#/definitions/ConfigContentReq'
+  ConfigBlockDiff:
+    type: object
+    description: Differences between two ConfigBlocks.
+    properties:
+      id:
+        type: string
+        description: ID of the ConfigBlock.
+      contentDiff:
+        description: Differences between the contents.
+        $ref: '#/definitions/ConfigContentDiff'
+  ConfigBlocksDiffs:
+    type: object
+    description: Differences between two sets of ConfigBlocks.
+    required:
+      - isChanged
+    properties:
+      isChanged:
+        type: boolean
+        description: Has any of the config blocks changed?
+      added:
+        type: array
+        description: Config blocks that are only present in the new configuration.
+        items:
+          $ref: '#/definitions/ConfigBlockResp'
+      removed:
+        type: array
+        description: Config blocks that are only present in the old configuration.
+        items:
+          $ref: '#/definitions/ConfigBlockResp'
+      same:
+        type: array
+        description: Config blocks that are the same in both configurations.
+        items:
+          $ref: '#/definitions/ConfigBlockResp'
+      changed:
+        type: array
+        description: Config blocks that are different between the two configurations.
+        items:
+          $ref: '#/definitions/ConfigBlockDiff'
+  ApplicationConfigResp:
+    type: object
+    description: Configurations for an application inside a service.
+    properties:
+      configBlocks:
+        type: array
+        description: List of ConfigBlocks for the application.
+        items:
+          $ref: '#/definitions/ConfigBlockResp'
+  ApplicationConfigReq:
+    type: object
+    description: Configurations for an application inside a service.
+    properties:
+      configBlocks:
+        type: array
+        description: List of ConfigBlocks for the application.
+        items:
+          $ref: '#/definitions/ConfigBlockReq'
+  ApplicationConfigDiff:
+    type: object
+    description: Differences between two ApplicationConfigs.
+    required:
+      - isChanged
+    properties:
+      isChanged:
+        type: boolean
+        description: Has any of the configurations changed?
+      configBlocksDiffs:
+        description: Differences between the two sets of ConfigBlocks.
+        $ref: '#/definitions/ConfigBlocksDiffs'
+  ServiceConfigResp:
+    type: object
+    description: Configurations for a service (DBC or VW)
+    properties:
+      commonConfigs:
+        description: Configurations that are applied to every application in the service.
+        $ref: '#/definitions/ApplicationConfigResp'
+      applicationConfigs:
+        type: object
+        description: Application specific configurations.
+        additionalProperties:
+          description: Application specific configurations.
+          $ref: '#/definitions/ApplicationConfigResp'
+  ServiceConfigReq:
+    type: object
+    description: Configurations for a service (DBC or VW)
+    properties:
+      commonConfigs:
+        description: Configurations that are applied to every application in the service.
+        $ref: '#/definitions/ApplicationConfigReq'
+      applicationConfigs:
+        type: object
+        description: Application specific configurations.
+        additionalProperties:
+          description: Application specific configurations.
+          $ref: '#/definitions/ApplicationConfigReq'
+  ServiceConfigDiff:
+    type: object
+    description: Differences between two service configurations.
+    properties:
+      isChanged:
+        type: boolean
+        description: Has any of the configurations changed?
+      commonConfigsDiff:
+        description: Differences between the common configurations.
+        $ref: '#/definitions/ApplicationConfigDiff'
+      applicationConfigsDiffs:
+        type: object
+        description: Differences between the application specific configurations.
+        additionalProperties:
+          description: Differences between the application specific configurations.
+          $ref: '#/definitions/ApplicationConfigDiff'
+x-audit: true
+x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_DW_API

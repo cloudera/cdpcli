@@ -95,6 +95,7 @@ class CLIDriver(object):
         parsed_args, remaining = parser.parse_known_args(args)
         try:
             self._handle_top_level_args(parsed_args)
+            self._warn_for_old_python()
             return command_table[parsed_args.command](
                 self._client_creator, remaining, parsed_args)
         except Exception as e:
@@ -196,7 +197,7 @@ class CLIDriver(object):
             LOG.debug("CLI version: %s", self._user_agent_header)
             LOG.debug("Arguments entered to CLI: %s", sys.argv[1:])
         else:
-            self._setup_logger(logging.ERROR)
+            self._setup_logger(logging.WARNING)
 
     def _setup_logger(self, log_level):
         ROOT_LOGGER.setLevel(logging.DEBUG)
@@ -222,6 +223,14 @@ class CLIDriver(object):
             original_config['retry'],
             original_config.get('definitions', {}))
         return retry_config
+
+    def _warn_for_old_python(self):
+        if sys.version_info[0] < 3 or \
+                (sys.version_info[0] == 3 and sys.version_info[1] < 5):
+            LOG.warn('You are running the CDP CLI under Python %s. The CDP CLI '
+                     'will require Python 3.5 or higher starting in '
+                     'January 2021. '
+                     'Please upgrade now!', sys.version)
 
 
 class ServiceCommand(CLICommand):

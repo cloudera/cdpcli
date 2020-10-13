@@ -54,6 +54,7 @@ cdpcli/data/cli.json
 cdpcli/data/audit/audit.yaml
 cdpcli/data/datahub/datahub.yaml
 cdpcli/data/datalake/datalake.yaml
+cdpcli/data/dw/dw.yaml
 cdpcli/data/environments/environments.yaml
 cdpcli/data/iam/iam.yaml
 cdpcli/data/ml/ml.yaml

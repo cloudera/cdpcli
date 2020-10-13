@@ -3,6 +3,8 @@ x-endpoint-name: environments2
 x-display-name: environments
 x-products: CDP
 x-cdp-releases: PUBLIC
+x-audit: true
+x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_ENVIRONMENTS2_API
 info:
   version: 0.1-SNAPSHOT
   title: Cloudera Environments Service
@@ -21,6 +23,7 @@ paths:
       summary: This API provides the credential prerequisites for the given cloud provider.
       description: Provides the the credential prerequisites for the given cloud provider.
       operationId: getCredentialPrerequisites
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -41,6 +44,7 @@ paths:
       summary: Creates a new AWS environment by providing the cloud provider access and network information. A FreeIPA server will be automatically provisioned when an environment is created.
       description: Creates a new AWS environment.
       operationId: createAWSEnvironment
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -61,6 +65,7 @@ paths:
       summary: Creates a new Azure environment by providing the cloud provider access and network information. A FreeIPA server will be automatically provisioned when an environment is created.
       description: Creates a new Azure environment.
       operationId: createAzureEnvironment
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -81,6 +86,7 @@ paths:
       summary: Creates a new AWS credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
       description: Creates a new AWS credential.
       operationId: createAWSCredential
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -101,6 +107,7 @@ paths:
       summary: Creates a new Azure credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
       description: Creates a new Azure credential.
       operationId: createAzureCredential
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -121,6 +128,7 @@ paths:
       summary: Changes the credential for an environment.
       description: Changes the credential for an environment.
       operationId: changeEnvironmentCredential
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -141,6 +149,7 @@ paths:
       summary: Deletes an environment.
       description: Deletes an environment.
       operationId: deleteEnvironment
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -161,6 +170,7 @@ paths:
       summary: Deletes a credential.
       description: Deletes a credential.
       operationId: deleteCredential
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -181,6 +191,7 @@ paths:
       summary: Lists environments.
       description: Lists environments.
       operationId: listEnvironments
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -201,6 +212,7 @@ paths:
       summary: Lists credentials.
       description: Lists credentials.
       operationId: listCredentials
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -221,6 +233,7 @@ paths:
       summary: Describes an environment.
       description: Describes an environment.
       operationId: describeEnvironment
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -241,6 +254,7 @@ paths:
       summary: Synchronizes environments with all users and groups state with CDP.
       description: Synchronizes environments with all users and groups state with CDP.
       operationId: syncAllUsers
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -261,6 +275,7 @@ paths:
       summary: Synchronizes environments with single user to the FreeIPA servers.
       description: Synchronizes environments with single user to the FreeIPA servers.
       operationId: syncUser
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -281,6 +296,7 @@ paths:
       summary: Returns status of the sync operation for the operation id.
       description: Returns status of the sync operation for the operation id. Operation Id should be one of the previously request sync operation.
       operationId: syncStatus
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -301,6 +317,7 @@ paths:
       summary: Sets workload user's password and updates into all environments.
       description: Sets workload user's password and updates into all environments if there is no environment CRN passed or, if environment CRNs list is provided, then password is reset only for that environment. Password must be of min 8 characters and no more then 64 characters and should be combination of UPPER Case, lower case, digits and special characters.
       operationId: setPassword
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -321,6 +338,7 @@ paths:
       summary: This API provides contents of public certificate for an environment.
       description: This API provides the contents of the root public certificate for an environment. The contents are a base64 encoded blob between -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----. This certificate can be imported by end users to establish trust with environment resources.
       operationId: getRootCertificate
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -341,6 +359,7 @@ paths:
       summary: Retrieves a keytab for a user or machine user.
       description: Retrieves a keytab for a user or machine user.
       operationId: getKeytab
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -361,6 +380,7 @@ paths:
       summary: Gets all ID Broker mappings for an environment.
       description: Gets all ID Broker mappings for an environment.
       operationId: getIdBrokerMappings
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -381,6 +401,7 @@ paths:
       summary: Sets all ID Broker mappings for an environment.
       description: Sets all ID Broker mappings for an environment. Overwrites all existing mappings.
       operationId: setIdBrokerMappings
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -401,6 +422,7 @@ paths:
       summary: Syncs all ID Broker mappings for an environment.
       description: Syncs all ID Broker mappings to all datalake clusters in an environment.
       operationId: syncIdBrokerMappings
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -421,6 +443,7 @@ paths:
       summary: Gets ID Broker mappings sync status.
       description: Gets the status of the most recent ID Broker mappings sync operation, if any.
       operationId: getIdBrokerMappingsSyncStatus
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -441,6 +464,7 @@ paths:
       summary: Start an environment.
       description: Start an environment.
       operationId: startEnvironment
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -461,6 +485,7 @@ paths:
       summary: Stop an environment.
       description: Stop an environment.
       operationId: stopEnvironment
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -481,6 +506,7 @@ paths:
       summary: Get the status of the FreeIPA services
       description: Gets the status of the FreeIPA nodes services and connectivity.
       operationId: getFreeipaStatus
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -501,6 +527,7 @@ paths:
       summary: Repairs the FreeIPA nodes.
       description: Repairs the FreeIPA nodes if they are in a non working state.
       operationId: repairFreeipa
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -516,11 +543,33 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/getRepairFreeipaStatus:
+    post:
+      summary: Returns status of the repair operation for the operation id.
+      description: Returns status of the repair operation for the operation id. Operation Id should be one of the previously requested repair operation ids.
+      operationId: getRepairFreeipaStatus
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetRepairFreeipaStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetRepairFreeipaStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/createProxyConfig:
     post:
       summary: Creates a new proxy config that can be attatched to an environment.
       description: Creates a new proxy config.
       operationId: createProxyConfig
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -541,6 +590,7 @@ paths:
       summary: Lists proxy configs.
       description: Lists proxy configs.
       operationId: listProxyConfigs
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -561,6 +611,7 @@ paths:
       summary: Deletes a proxy config.
       description: Deletes a proxy config.
       operationId: deleteProxyConfig
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -581,6 +632,7 @@ paths:
       summary: Configure environment level telemetry feature setting.
       description: Configure environment level telemetry feature setting.
       operationId: setTelemetryFeatures
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -601,6 +653,7 @@ paths:
       summary: Set account level telemetry settings. (telemetry features and anonymization rules)
       description: Set account level telemetry settings. (telemetry features and anonymization rules)
       operationId: setAccountTelemetry
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -621,6 +674,7 @@ paths:
       summary: Get account level telemetry settings. (telemetry features and anonymization rules)
       description: Get account level telemetry settings. (telemetry features and anonymization rules)
       operationId: getAccountTelemetry
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -641,6 +695,7 @@ paths:
       summary: Get default account level telemetry settings. Helps to set back the default values.
       description: Get default account level telemetry settings. Helps to set back the default values.
       operationId: getAccountTelemetryDefault
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -661,6 +716,7 @@ paths:
       summary: Test anonymization rules (for account telemetry) against text input.
       description: Test anonymization rules (for account telemetry) against text input.
       operationId: testAccountTelemetryRules
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -672,6 +728,90 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/TestAccountTelemetryRulesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getAuditCredentialPrerequisites:
+    post:
+      summary: This API provides the audit credential prerequisites for the given cloud provider.
+      description: Provides the the audit credential prerequisites for the given cloud provider.
+      operationId: getAuditCredentialPrerequisites
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAuditCredentialPrerequisitesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAuditCredentialPrerequisitesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/listAuditCredentials:
+    post:
+      summary: Lists audit credentials.
+      description: Lists audit credentials.
+      operationId: listAuditCredentials
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListAuditCredentialsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListAuditCredentialsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/setAWSAuditCredential:
+    post:
+      summary: Creates or updates the AWS audit credential for the account. The credential is used for authorization to archive audit events to your cloud storage.
+      description: Creates or updates the AWS audit credential for the account.
+      operationId: setAWSAuditCredential
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetAWSAuditCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetAWSAuditCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/setAzureAuditCredential:
+    post:
+      summary: Creates or updates the Azure audit credential for the account. The credential is used for authorization to archive audit events to your cloud storage.
+      description: Creates or updates the Azure audit credential for the account.
+      operationId: setAzureAuditCredential
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetAzureAuditCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetAzureAuditCredentialResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2005,6 +2145,43 @@ definitions:
         type: string
         format: date-time
         description: Date when the operation ended. Omitted if operation has not ended.
+  GetRepairFreeipaStatusRequest:
+    type: object
+    description: Request object for Repair Status.
+    required:
+      - operationId
+    properties:
+      operationId:
+        type: string
+        description: operationId for the previously requested repair operation.
+  GetRepairFreeipaStatusResponse:
+    type: object
+    description: Response object for Repair Operation.
+    properties:
+      status:
+        description: Status of this operation.
+        $ref: '#/definitions/RepairStatus'
+      successfulOperationDetails:
+        type: array
+        description: List of operation details for all successes. If the repair is only partially successful both successful and failure operation details will be populated.
+        items:
+          $ref: '#/definitions/RepairOperationDetails'
+      failureOperationDetails:
+        type: array
+        description: List of operation details for failures. If the repair is only partially successful both successful and failure operation details will be populated.
+        items:
+          $ref: '#/definitions/RepairOperationDetails'
+      error:
+        type: string
+        description: If there is any error associated. The error will be populated on any error and it may be populated when the operation failure details are empty. The error will typically contain the high level information such as the assocated repair failure phase.
+      startDate:
+        type: string
+        format: date-time
+        description: Date when the operation started.
+      endDate:
+        type: string
+        format: date-time
+        description: Date when the operation ended. Omitted if operation has not ended.
   AWSFreeIpaCreationRequest:
     description: Request object for creating FreeIPA in the environment.
     type: object
@@ -2287,3 +2464,102 @@ definitions:
       output:
         type: string
         description: Output text after applying the anonymization rules on the test input.
+  GetAuditCredentialPrerequisitesRequest:
+    type: object
+    description: Request object for getting the audit credential prerequisites for the given cloud platform.
+    required:
+      - cloudPlatform
+    properties:
+      cloudPlatform:
+        type: string
+        enum:
+          - AWS
+          - AZURE
+        description: The kind of cloud platform.
+  GetAuditCredentialPrerequisitesResponse:
+    type: object
+    description: The audit credential prerequisites.
+    required:
+      - cloudPlatform
+    properties:
+      cloudPlatform:
+        type: string
+        description: The name of the given cloud platform
+      accountId:
+        type: string
+        description: The provider specific identifier of the account/subscription/project that is used by Cloudbreak.
+      aws:
+        description: Provides the external id and policy JSON (this one encoded in base64) for AWS credential creation.
+        $ref: '#/definitions/AwsCredentialPrerequisitesResponse'
+      azure:
+        description: Provides the app creation command and role definition Json for Azure credential creation.
+        $ref: '#/definitions/AzureCredentialPrerequisitesResponse'
+  ListAuditCredentialsRequest:
+    type: object
+    description: Request object for a list audit credentials request.
+  ListAuditCredentialsResponse:
+    type: object
+    description: Response object for a list audit credentials request.
+    required:
+      - credentials
+    properties:
+      credentials:
+        type: array
+        items:
+          $ref: '#/definitions/Credential'
+        description: The credentials.
+  SetAWSAuditCredentialRequest:
+    type: object
+    description: Request object for a set AWS audit credential request.
+    required:
+      - roleArn
+    properties:
+      roleArn:
+        type: string
+        description: The ARN of the delegated access role.
+  SetAWSAuditCredentialResponse:
+    type: object
+    description: Response object for a set AWS audit credential request.
+    required:
+      - credential
+    properties:
+      credential:
+        description: The credential object.
+        $ref: '#/definitions/Credential'
+  SetAzureAuditCredentialRequest:
+    type: object
+    description: Request object for a set Azure audit credential request.
+    required:
+      - subscriptionId
+      - tenantId
+      - appBased
+    properties:
+      subscriptionId:
+        type: string
+        description: The Azure subscription ID.
+      tenantId:
+        type: string
+        description: The Azure AD tenant ID for the Azure subscription.
+      appBased:
+        type: object
+        description: Additional configurations needed for app-based authentication.
+        required:
+          - applicationId
+          - secretKey
+        properties:
+          applicationId:
+            type: string
+            description: The id of the application registered in Azure.
+          secretKey:
+            type: string
+            x-sensitive: true
+            description: The client secret key (also referred to as application password) for the registered application.
+  SetAzureAuditCredentialResponse:
+    type: object
+    description: Response object for a set Azure audit credential request.
+    required:
+      - credential
+    properties:
+      credential:
+        description: The credential object.
+        $ref: '#/definitions/Credential'

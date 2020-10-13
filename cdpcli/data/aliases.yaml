@@ -1,1 +1,2 @@
-{audit: null, datahub: null, datalake: null, environments: null, iam: null, ml: null}
+{audit: null, datahub: null, datalake: null, dw: null, environments: null, iam: null,
+  ml: null}

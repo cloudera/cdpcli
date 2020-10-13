@@ -30,7 +30,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 requirements = ["python-dateutil>=2.1,<3.0.0",
                 "docutils==0.14",
                 "pyyaml>=3.11",
-                "colorama>=0.2.5,<=0.3.3",
+                "colorama>=0.2.5,<=0.3.9",
                 "asn1crypto>=0.21.1",
                 "rsa>=3.4.2",
                 "gitpython>=2.1.8",

@@ -3,6 +3,8 @@ x-endpoint-name: datalake
 x-interface-model: cdp
 x-products: CDP
 x-cdp-releases: PUBLIC
+x-audit: true
+x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_DATALAKE_API
 info:
   version: 0.1-SNAPSHOT
   title: Cloudera Datalake Service
@@ -21,6 +23,7 @@ paths:
       summary: Lists the datalake versions.
       description: Lists the available datalake runtime versions.
       operationId: listRuntimes
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -41,6 +44,7 @@ paths:
       summary: Creates an AWS datalake.
       description: Creates an AWS datalake.
       operationId: createAWSDatalake
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -61,6 +65,7 @@ paths:
       summary: Creates an Azure datalake.
       description: Creates an Azure datalake.
       operationId: createAzureDatalake
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -81,6 +86,7 @@ paths:
       summary: Lists datalakes.
       description: Lists datalakes.
       operationId: listDatalakes
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -101,6 +107,7 @@ paths:
       summary: Deletes a datalake.
       description: Deletes a datalake.
       operationId: deleteDatalake
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -141,6 +148,7 @@ paths:
       summary: Describes a datalake.
       description: Describes a datalake.
       operationId: describeDatalake
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -161,6 +169,7 @@ paths:
       summary: Repairs a datalake.
       description: Repairs a datalake.
       operationId: repairDatalake
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -181,6 +190,7 @@ paths:
       summary: Get cluster service status.
       description: Gets the status of the services in a cluster.
       operationId: getClusterServiceStatus
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -201,6 +211,7 @@ paths:
       summary: Get cluster host status.
       description: Gets the status of the hosts in a cluster.
       operationId: getClusterHostStatus
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -221,6 +232,7 @@ paths:
       summary: OS or data platform upgrade for the SDX cluster.
       description: OS or data platform upgrade for the SDX cluster. You have the option to either specify one of 'imageId', 'runtime' or 'lockComponents' or both 'imageId' and 'lockComponents' or none of the parameters.
       operationId: upgradeDatalake
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -239,8 +251,10 @@ paths:
   /api/v1/datalake/startDatalake:
     post:
       summary: Start Datalake
-      description: Starts a stopped Datalake
+      description: Deprecated, please use 'cdp environments start-environment' instead.
       operationId: startDatalake
+      x-mutating: true
+      x-deprecated: true
       parameters:
         - name: input
           in: body
@@ -259,8 +273,10 @@ paths:
   /api/v1/datalake/stopDatalake:
     post:
       summary: Stop Datalake
-      description: Stops a running Datalake
+      description: Deprecated, please use 'cdp environments stop-environment' instead.
       operationId: stopDatalake
+      x-mutating: true
+      x-deprecated: true
       parameters:
         - name: input
           in: body
@@ -281,6 +297,7 @@ paths:
       summary: Create backup of datalake.
       description: Takes a backup of all the data in the datalake.
       operationId: backupDatalake
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -301,6 +318,7 @@ paths:
       summary: Check the status of a datalake backup operation performed.
       description: Identifies the backup operation based on the inputs provided and gets the status. BackupName and BackupId are mutually exclusive. Only one of them can be provided.
       operationId: backupDatalakeStatus
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -321,6 +339,7 @@ paths:
       summary: Restore the datalake from backup taken.
       description: Restore the datalake from a backup that was taken. Backup to be used for restore is identified based on the information provided in the restore request. BackupId and BackupName are mutually exclusive. Only one of them can be provided. If both are provided, BackupId takes precedence.
       operationId: restoreDatalake
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -341,6 +360,7 @@ paths:
       summary: Check the status of datalake restore operation.
       description: Identifies the restore operation based on the inputs provided and gets the status. RestoreId and BackupName are mutually exclusive. Only one of them can be provided.
       operationId: restoreDatalakeStatus
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -361,6 +381,7 @@ paths:
       summary: List all the backup operations that were performed on the datalake.
       description: List all the backup operations that were performed on the datalake.
       operationId: listDatalakeBackups
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -666,14 +687,15 @@ definitions:
       cloudProviderConfiguration:
         $ref: '#/definitions/AWSConfigurationRequest'
         description: AWS configuration.
+      scale:
+        description: The scale of the datalake. Allowed values are "LIGHT_DUTY" or "MEDIUM_DUTY_HA". Defaults to "LIGHT_DUTY" if not set.
+        $ref: '#/definitions/DatalakeScaleType'
+        x-no-compatibility-guarantee: true
       tags:
         type: array
         description: Tags to be added to Datalake related resources.
         items:
           $ref: '#/definitions/DatalakeResourceTagRequest'
-      scale:
-        type: string
-        description: The scale of the datalake. Allowed values are "LIGHT_DUTY" or "MEDIUM_DUTY_HA".
       runtime:
         type: string
         description: Cloudera Runtime version.
@@ -705,14 +727,15 @@ definitions:
       cloudProviderConfiguration:
         $ref: '#/definitions/AzureConfigurationRequest'
         description: Azure configuration.
+      scale:
+        description: The scale of the datalake. Allowed values are "LIGHT_DUTY" or "MEDIUM_DUTY_HA". Defaults to "LIGHT_DUTY" if not set.
+        $ref: '#/definitions/DatalakeScaleType'
+        x-no-compatibility-guarantee: true
       tags:
         type: array
         description: Tags to be added to Datalake related resources.
         items:
           $ref: '#/definitions/DatalakeResourceTagRequest'
-      scale:
-        type: string
-        description: The scale of the datalake. Allowed values are "LIGHT_DUTY" or "MEDIUM_DUTY_HA".
       runtime:
         type: string
         description: Cloudera Runtime version.
@@ -725,6 +748,12 @@ definitions:
       datalake:
         $ref: '#/definitions/Datalake'
         description: The datalake.
+  DatalakeScaleType:
+    type: string
+    description: Represents the available datalake scales. Defaults to LIGHT_DUTY if not set.
+    enum:
+      - LIGHT_DUTY
+      - MEDIUM_DUTY_HA
   ListDatalakesRequest:
     type: object
     description: Request object for list datalakes request.
@@ -891,6 +920,7 @@ definitions:
   StartDatalakeRequest:
     type: object
     description: Request object to start a datalake.
+    x-deprecated: true
     required:
       - datalakeName
     properties:
@@ -900,9 +930,11 @@ definitions:
   StartDatalakeResponse:
     type: object
     description: Response object of starting a datalake.
+    x-deprecated: true
   StopDatalakeRequest:
     type: object
     description: Request object to stop a datalake.
+    x-deprecated: true
     required:
       - datalakeName
     properties:
@@ -912,6 +944,7 @@ definitions:
   StopDatalakeResponse:
     type: object
     description: Response object of stopping a datalake.
+    x-deprecated: true
   BackupDatalakeRequest:
     type: object
     description: Request object to perform a backup of datalake.

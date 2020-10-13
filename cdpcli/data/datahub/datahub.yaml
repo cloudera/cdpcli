@@ -3,6 +3,8 @@ x-endpoint-name: datahub
 x-interface-model: cdp
 x-products: CDP
 x-cdp-releases: PUBLIC
+x-audit: true
+x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_DATAHUB_API
 info:
   version: 0.1-SNAPSHOT
   title: Cloudera Data hub Service
@@ -21,6 +23,7 @@ paths:
       summary: Deletes instances for the specified cluster.
       description: Deletes instances for the specified cluster.
       operationId: deleteInstances
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -41,6 +44,7 @@ paths:
       summary: Lists workload clusters.
       description: Lists workload clusters.
       operationId: listClusters
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -61,6 +65,7 @@ paths:
       summary: Creates an AWS workload cluster.
       description: Creates an AWS workload cluster.
       operationId: createAWSCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -81,6 +86,7 @@ paths:
       summary: Creates an Azure workload cluster.
       description: Creates an Azure workload cluster.
       operationId: createAzureCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -101,6 +107,7 @@ paths:
       summary: Deletes a workload cluster.
       description: Deletes a workload cluster.
       operationId: deleteCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -121,6 +128,7 @@ paths:
       summary: Describes a workload cluster.
       description: Describes a workload cluster.
       operationId: describeCluster
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -142,6 +150,7 @@ paths:
       description: Gets the status of the services in a cluster.
       operationId: getClusterServiceStatus
       x-right: datahub/read
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -163,6 +172,7 @@ paths:
       description: Gets the status of the hosts in a cluster.
       operationId: getClusterHostStatus
       x-right: datahub/read
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -183,6 +193,7 @@ paths:
       summary: Stops a workload cluster.
       description: Stops a workload cluster. When a cluster is put in the stopped state, cluster VMs are given back to the cloud provider. To provision new VMs, start the cluster.
       operationId: stopCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -203,6 +214,7 @@ paths:
       summary: Starts a stopped workload cluster.
       description: Starts a stopped workload cluster.
       operationId: startCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -223,6 +235,7 @@ paths:
       summary: Retries creation of a failed workload cluster.
       description: When stack provisioning or cluster creation fails, retryCluster allows you to resume the process from the last failed step.
       operationId: retryCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -243,6 +256,7 @@ paths:
       summary: Repairs a cluster.
       description: Repairs a cluster.
       operationId: repairCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -263,6 +277,7 @@ paths:
       summary: Synchronizes the state of a cluster with the cloud provider and Cloudera Manager.
       description: Synchronizes the state of a cluster with the cloud provider and Cloudera Manager.
       operationId: syncCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -283,6 +298,7 @@ paths:
       summary: Scales a cluster by adding or removing cluster nodes.
       description: Scales a cluster by adding or removing cluster nodes.
       operationId: scaleCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -303,6 +319,7 @@ paths:
       summary: Lists recipes. A recipe is a script that runs on all nodes of a specified instance group.
       description: Lists recipes. A recipe is a script that runs on all nodes of a specified instance group.
       operationId: listRecipes
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -323,6 +340,7 @@ paths:
       summary: Deletes recipes. A recipe is a script that runs on all nodes of a specified instance group.
       description: Deletes recipes. A recipe is a script that runs on all nodes of a specified instance group.
       operationId: deleteRecipes
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -343,6 +361,7 @@ paths:
       summary: Creates recipe. A recipe is a script that runs on all nodes of a specified instance group.
       description: Creates recipe. A recipe is a script that runs on all nodes of a specified instance group.
       operationId: createRecipe
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -363,6 +382,7 @@ paths:
       summary: Describes recipe. A recipe is a script that runs on all nodes of a specified instance group.
       description: Describes recipe. A recipe is a script that runs on all nodes of a specified instance group.
       operationId: describeRecipe
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -383,6 +403,7 @@ paths:
       summary: Lists cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
       description: Lists cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
       operationId: listClusterDefinitions
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -403,6 +424,7 @@ paths:
       summary: Deletes cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
       description: Deletes cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
       operationId: deleteClusterDefinitions
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -423,6 +445,7 @@ paths:
       summary: Creates a cluster definition. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
       description: Creates a cluster definition. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
       operationId: createClusterDefinition
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -443,6 +466,7 @@ paths:
       summary: Describes a cluster definition. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
       description: Describes a cluster definition. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
       operationId: describeClusterDefinition
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -463,6 +487,7 @@ paths:
       summary: Lists cluster templates. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
       description: Lists cluster templates. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
       operationId: listClusterTemplates
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -483,6 +508,7 @@ paths:
       summary: Deletes cluster templates. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
       description: Deletes cluster templates. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
       operationId: deleteClusterTemplates
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -503,6 +529,7 @@ paths:
       summary: Creates a cluster template. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
       description: Creates a cluster template. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
       operationId: createClusterTemplate
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -523,6 +550,7 @@ paths:
       summary: Describes a cluster template. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
       description: Describes a cluster template. A cluster template is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical Cloudera Runtime settings.
       operationId: describeClusterTemplate
+      x-mutating: false
       parameters:
         - name: input
           in: body
