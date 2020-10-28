@@ -916,6 +916,34 @@ definitions:
       description:
         type: string
         description: A description for the credential.
+      awsCredentialProperties:
+        type: object
+        description: The credential properties that closely related to those that have been created on AWS.
+        $ref: '#/definitions/AwsCredentialProperties'
+      azureCredentialProperties:
+        type: object
+        description: The credential properties that closely related to those that have been created on Azure.
+        $ref: '#/definitions/AzureCredentialProperties'
+  AwsCredentialProperties:
+    type: object
+    description: The credential properties that closely related to those that have been created on AWS.
+    properties:
+      roleArn:
+        type: string
+        description: The AWS role arn for the given credential.
+  AzureCredentialProperties:
+    type: object
+    description: The credential properties that closely related to those that have been created on Azure.
+    properties:
+      subscriptionId:
+        type: string
+        description: The Azure subscription ID for the given credential.
+      tenantId:
+        type: string
+        description: The Azure tenant ID for the given credential.
+      appId:
+        type: string
+        description: The ID of the created Azure app.
   GetCredentialPrerequisitesRequest:
     type: object
     description: Request object for getting the credential prerequisites for the given cloud platform.

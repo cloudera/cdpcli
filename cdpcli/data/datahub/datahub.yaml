@@ -708,6 +708,12 @@ definitions:
       state:
         type: string
         description: The health state of the instance. UNHEALTHY represents instances with unhealthy services, lost instances, or failed operations.
+      privateIp:
+        type: string
+        description: The private ip of the given instance.
+      publicIp:
+        type: string
+        description: The public ip of the given instance.
       fqdn:
         type: string
         description: The FQDN for the instance

@@ -98,6 +98,26 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/ml/getKubeconfig:
+    post:
+      summary: ListWorkspaceAccess Cloudera Machine Learning Workspace.
+      description: Lists users that can perform Kubernetes operations on a Cloudera Machine Learning workspace via EKS.
+      operationId: getKubeconfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetKubeconfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetKubeconfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/ml/getLatestWorkspaceVersion:
     post:
       summary: GetLatestWorkspaceVersion Cloudera Machine Learning Workspace.
@@ -159,6 +179,26 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/listWorkspaceAccess:
+    post:
+      summary: ListWorkspaceAccess Cloudera Machine Learning Workspace.
+      description: Lists users that can perform Kubernetes operations on a Cloudera Machine Learning workspace via EKS.
+      operationId: listWorkspaceAccess
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListWorkspaceAccessRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListWorkspaceAccessResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/ml/listWorkspaces:
     post:
       summary: List Cloudera Machine Learning workspaces.
@@ -900,6 +940,55 @@ definitions:
   RevokeWorkspaceAccessResponse:
     type: object
     description: Response object for the RevokeWorkspaceAccess method.
+  ListWorkspaceAccessRequest:
+    type: object
+    description: Request object for the ListWorkspace method.
+    properties:
+      environmentName:
+        type: string
+        description: The environment that the workspace is a member of.
+      workspaceName:
+        type: string
+        description: The name of the workspace to list access.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to list access. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
+  ListWorkspaceAccessResponse:
+    type: object
+    description: Response object for the ListWorkspaceAccess method.
+    required:
+      - users
+    properties:
+      users:
+        type: array
+        items:
+          type: string
+          x-sensitive: true
+        description: The list of users that have access.
+        x-sensitive: true
+  GetKubeconfigRequest:
+    type: object
+    description: Request object for the GetKubeconfig method.
+    properties:
+      environmentName:
+        type: string
+        description: The environment that the workspace is a member of.
+      workspaceName:
+        type: string
+        description: The name of the workspace to list access.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to list access.
+  GetKubeconfigResponse:
+    type: object
+    description: Response object for the GetKubeconfig method.
+    required:
+      - kubeconfig
+    properties:
+      kubeconfig:
+        type: string
+        description: The list of users that have access.
+        x-sensitive: true
   GetLatestWorkspaceVersionRequest:
     type: object
     description: Request object for GetLatestWorkspaceVersion.

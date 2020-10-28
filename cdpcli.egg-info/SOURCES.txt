@@ -58,6 +58,7 @@ cdpcli/data/dw/dw.yaml
 cdpcli/data/environments/environments.yaml
 cdpcli/data/iam/iam.yaml
 cdpcli/data/ml/ml.yaml
+cdpcli/data/opdb/opdb.yaml
 cdpcli/doc/__init__.py
 cdpcli/doc/docstringparser.py
 cdpcli/doc/restdoc.py

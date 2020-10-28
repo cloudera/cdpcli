@@ -2969,6 +2969,9 @@ definitions:
         type: string
         description: The password value to set
         x-sensitive: true
+      actorCrn:
+        type: string
+        description: The CRN of the user or machine user for whom the password will be set. If it is not included, it defaults to the user making the request.
   SetWorkloadPasswordResponse:
     type: object
     description: Response object for a set workload password request.
