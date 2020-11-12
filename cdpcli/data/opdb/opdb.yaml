@@ -16,6 +16,26 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/v1/opdb/collectDiagnostics:
+    post:
+      summary: Collect diagnostic data bundles from the database
+      description: returns details of running command
+      operationId: collectDiagnostics
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CollectDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CollectDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/opdb/createDatabase:
     post:
       summary: Create opDb
@@ -118,6 +138,26 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/opdb/listDiagnostics:
+    post:
+      summary: List all diagnostics associated to the database
+      description: returns list of diagnostics collections
+      operationId: listDiagnostics
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/opdb/listSupportedEnvironments:
     post:
       summary: List of environments available for the database creation
@@ -191,6 +231,80 @@ definitions:
       message:
         type: string
         description: The error message.
+  DiagnosticsBundle:
+    type: object
+    description: Describe a diagnostics bundle
+    properties:
+      id:
+        type: string
+        description: Identifier for each bundle collection
+      crn:
+        type: string
+        description: The object on which diagnostics was collected
+      startTime:
+        type: string
+        format: date-time
+        description: Start time
+      endTime:
+        type: string
+        format: date-time
+        description: The end time, if the command is finished.
+      status:
+        type: string
+        description: A status of the diagnostics collection process
+      result:
+        type: string
+        description: If this is a download, a link to the download location of the bundle
+  CollectDiagnosticsRequest:
+    type: object
+    description: Enables starting collection of the diagnostics. This is an asynchronous API and not expected to block.
+    required:
+      - environmentName
+      - databaseName
+      - startTime
+      - endTime
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment
+      databaseName:
+        type: string
+        description: The name of the database
+      startTime:
+        type: string
+        description: The start time (in ISO 8601 format) of the period to collection statistics for.
+      endTime:
+        type: string
+        description: The end time (in ISO 8601 format) of the period to collection statistics for.
+  CollectDiagnosticsResponse:
+    type: object
+    description: Information about diagnostic bundle generation
+    properties:
+      diagnosticsBundle:
+        description: Details of requested diagnostic bundle collection
+        $ref: '#/definitions/DiagnosticsBundle'
+  ListDiagnosticsRequest:
+    type: object
+    description: Lists the in-progress diagnostic bundle operations.
+    required:
+      - environmentName
+      - databaseName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment
+      databaseName:
+        type: string
+        description: The name of the database
+  ListDiagnosticsResponse:
+    type: object
+    description: The list of in-progress diagnostic bundle operations
+    properties:
+      diagnosticsBundles:
+        type: array
+        items:
+          $ref: '#/definitions/DiagnosticsBundle'
+        description: List of diagnostics operations
   CreateDatabaseRequest:
     type: object
     description: A request to create the database

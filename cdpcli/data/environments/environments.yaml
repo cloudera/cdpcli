@@ -732,6 +732,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/getFreeipaLogDescriptors:
+    post:
+      summary: Gather log descriptors that are used for diagnostics collection.
+      description: Gather log descriptors that are used for diagnostics collection.
+      operationId: getFreeipaLogDescriptors
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetFreeipaLogDescriptorsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetFreeipaLogDescriptorsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/collectFreeipaDiagnostics:
+    post:
+      summary: Start FreeIPA diagnostics collection
+      description: Start FreeIPA diagnostics collection
+      operationId: collectFreeipaDiagnostics
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CollectFreeipaDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CollectFreeipaDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/getAuditCredentialPrerequisites:
     post:
       summary: This API provides the audit credential prerequisites for the given cloud provider.
@@ -2492,6 +2534,111 @@ definitions:
       output:
         type: string
         description: Output text after applying the anonymization rules on the test input.
+  FreeipaVmLogRequest:
+    type: object
+    description: Log descriptor, contains a path and label pair. Used for diagnostics collections.
+    required:
+      - path
+      - label
+    properties:
+      path:
+        type: string
+        description: Path of the log file(s) that needs to be collected. (Can be glob wildcard)
+      label:
+        type: string
+        description: Label that will be used to identify a log descriptor. (will be used as a folder inside logs folder)
+  FreeipaVmLogResponse:
+    type: object
+    description: Log descriptor, contains a path and label pair. Used for diagnostics collections.
+    properties:
+      path:
+        type: string
+        description: Path of the log file(s) that needs to be collected. (Can be glob wildcard)
+      label:
+        type: string
+        description: Label that will be used to identify a log descriptor. (will be used as a folder inside logs folder)
+  CollectFreeipaDiagnosticsRequest:
+    type: object
+    description: Request object for collecting FreeIPA diagnostics.
+    required:
+      - environmentName
+      - destination
+      - description
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+      destination:
+        type: string
+        enum:
+          - SUPPORT
+          - CLOUD_STORAGE
+          - ENG
+          - LOCAL
+        description: Destination of the diagnostics collection (Support, Own cloud storage, Engineering or collect only on the nodes)
+      description:
+        type: string
+        description: Additional information / title for the diagnostics collection.
+      caseNumber:
+        type: string
+        description: Optional support case number in case of SUPPORT destination, otherwise only act as additional data.
+      labels:
+        type: array
+        description: Array of labels that can filter logs that are collected during diagnostics collection.
+        uniqueItems: true
+        items:
+          type: string
+      startDate:
+        type: string
+        format: date-time
+        description: Date timestamp - collect files only for diagnostics that has higher last modified timestamp value than this.
+      endDate:
+        type: string
+        format: date-time
+        description: Date timestamp - collect files only for diagnostics that has lower created timestamp value than this.
+      additionalLogs:
+        type: array
+        description: Array of log descriptors that should be additionally collected during diagnostics collection.
+        items:
+          $ref: '#/definitions/FreeipaVmLogRequest'
+      hosts:
+        type: array
+        description: Array of host names (fqdn), collection will run only on the dedicated hosts.
+        uniqueItems: true
+        items:
+          type: string
+      hostGroups:
+        type: array
+        description: Array of host groups, collection will run only on the dedicated hosts that belongs to these host groups.
+        uniqueItems: true
+        items:
+          type: string
+      includeSaltLogs:
+        type: boolean
+        description: Include salt minion/master/api system logs in the diagnostics collection.
+      updatePackage:
+        type: boolean
+        default: false
+        description: If enabled, required package (cdp-telemetry) will be upgraded or installed on the nodes. (useful if package is not installed or needs to be upgraded) Network is required for this operation.
+      storageValidation:
+        type: boolean
+        default: false
+        description: Enable/disable node level storage validation (can be disabled for example, if you have too many hosts and do not want to do too much parallel writes to s3/abfs)
+  CollectFreeipaDiagnosticsResponse:
+    type: object
+    description: Response object for collecting FreeIPA diagnostics.
+  GetFreeipaLogDescriptorsRequest:
+    type: object
+    description: Request object for obtaining log descriptors. (that are used for diagnostics collection)
+  GetFreeipaLogDescriptorsResponse:
+    type: object
+    description: Response object for obtaining log descriptors. (useful for diagnostics collection filtering)
+    properties:
+      logs:
+        type: array
+        description: Array of log descriptors. (useful for diagnostics collection filtering)
+        items:
+          $ref: '#/definitions/FreeipaVmLogResponse'
   GetAuditCredentialPrerequisitesRequest:
     type: object
     description: Request object for getting the audit credential prerequisites for the given cloud platform.

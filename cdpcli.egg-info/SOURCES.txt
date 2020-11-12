@@ -2,7 +2,7 @@ LICENSE.txt
 LICENSE_SUPPLEMENTAL_DISCLAIMER.txt
 MANIFEST.in
 NOTICES.txt
-README.rst
+README.md
 setup.cfg
 setup.py
 versioneer.py
@@ -51,6 +51,7 @@ cdpcli.egg-info/top_level.txt
 cdpcli/data/_retry.json
 cdpcli/data/aliases.yaml
 cdpcli/data/cli.json
+cdpcli/data/release.txt
 cdpcli/data/audit/audit.yaml
 cdpcli/data/datahub/datahub.yaml
 cdpcli/data/datalake/datalake.yaml

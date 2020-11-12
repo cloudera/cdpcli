@@ -19,6 +19,7 @@ import platform
 import sys
 
 from cdpcli import LIST_TYPE
+from cdpcli import RELEASE
 from cdpcli import VERSION
 from cdpcli import xform_name
 from cdpcli.argparser import ArgTableArgParser
@@ -96,6 +97,7 @@ class CLIDriver(object):
         try:
             self._handle_top_level_args(parsed_args)
             self._warn_for_old_python()
+            self._warn_for_non_public_release()
             return command_table[parsed_args.command](
                 self._client_creator, remaining, parsed_args)
         except Exception as e:
@@ -226,11 +228,18 @@ class CLIDriver(object):
 
     def _warn_for_old_python(self):
         if sys.version_info[0] < 3 or \
-                (sys.version_info[0] == 3 and sys.version_info[1] < 5):
+                (sys.version_info[0] == 3 and sys.version_info[1] < 6):
             LOG.warn('You are running the CDP CLI under Python %s. The CDP CLI '
-                     'will require Python 3.5 or higher starting in '
+                     'will require Python 3.6 or higher starting in '
                      'January 2021. '
                      'Please upgrade now!', sys.version)
+
+    def _warn_for_non_public_release(self):
+        if RELEASE != 'PUBLIC':
+            LOG.warn('You are running a {0} release of the CDP CLI, which '
+                     'has different capabilities from the standard public '
+                     'release. Find the public release at: '
+                     'https://pypi.org/project/cdpcli/'.format(RELEASE))
 
 
 class ServiceCommand(CLICommand):

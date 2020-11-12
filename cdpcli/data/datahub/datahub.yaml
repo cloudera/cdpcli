@@ -566,6 +566,68 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/getDatahubLogDescriptors:
+    post:
+      summary: Gather log descriptors that are used for diagnostics collection.
+      description: Gather log descriptors that are used for diagnostics collection.
+      operationId: getDatahubLogDescriptors
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetDatahubLogDescriptorsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetDatahubLogDescriptorsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/collectDatahubDiagnostics:
+    post:
+      summary: Start DataHub diagnostics collection
+      description: Start DataHub diagnostics collection
+      operationId: collectDatahubDiagnostics
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CollectDatahubDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CollectDatahubDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/rotateAutoTlsCertificates:
+    post:
+      summary: Rotate autotls certificates on the datahub's hosts
+      description: Rotate autotls certificates on the datahub's hosts
+      operationId: rotateAutoTlsCertificates
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RotateAutoTlsCertificatesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RotateAutoTlsCertificatesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -1722,3 +1784,120 @@ definitions:
       value:
         type: string
         description: The value of the tag.
+  DatahubVmLogRequest:
+    type: object
+    description: Log descriptor, contains a path and label pair. Used for diagnostics collections.
+    required:
+      - path
+      - label
+    properties:
+      path:
+        type: string
+        description: Path of the log file(s) that needs to be collected. (Can be glob wildcard)
+      label:
+        type: string
+        description: Label that will be used to identify a log descriptor. (will be used as a folder inside logs folder)
+  DatahubVmLogResponse:
+    type: object
+    description: Log descriptor, contains a path and label pair. Used for diagnostics collections.
+    properties:
+      path:
+        type: string
+        description: Path of the log file(s) that needs to be collected. (Can be glob wildcard)
+      label:
+        type: string
+        description: Label that will be used to identify a log descriptor. (will be used as a folder inside logs folder)
+  CollectDatahubDiagnosticsRequest:
+    type: object
+    description: Request object for collecting DataHub diagnostics.
+    required:
+      - crn
+      - destination
+      - description
+    properties:
+      crn:
+        type: string
+        description: CRN of the DataHub cluster.
+      destination:
+        type: string
+        enum:
+          - SUPPORT
+          - CLOUD_STORAGE
+          - ENG
+          - LOCAL
+        description: Destination of the diagnostics collection (Support, Own cloud storage, Engineering or collect only on the nodes)
+      description:
+        type: string
+        description: Additional information / title for the diagnostics collection.
+      caseNumber:
+        type: string
+        description: Optional support case number in case of SUPPORT destination, otherwise only act as additional data.
+      labels:
+        type: array
+        description: Array of labels that can filter logs that are collected during diagnostics collection.
+        uniqueItems: true
+        items:
+          type: string
+      startDate:
+        type: string
+        format: date-time
+        description: Date timestamp - collect files only for diagnostics that has higher last modified timestamp value than this.
+      endDate:
+        type: string
+        format: date-time
+        description: Date timestamp - collect files only for diagnostics that has lower created timestamp value than this.
+      additionalLogs:
+        type: array
+        description: Array of log descriptors that should be additionally collected during diagnostics collection.
+        items:
+          $ref: '#/definitions/DatahubVmLogRequest'
+      hosts:
+        type: array
+        description: Array of host names (fqdn), collection will run only on the dedicated hosts.
+        uniqueItems: true
+        items:
+          type: string
+      hostGroups:
+        type: array
+        description: Array of host groups, collection will run only on the dedicated hosts that belongs to these host groups.
+        uniqueItems: true
+        items:
+          type: string
+      includeSaltLogs:
+        type: boolean
+        description: Include salt minion/master/api system logs in the diagnostics collection.
+      updatePackage:
+        type: boolean
+        default: false
+        description: If enabled, required package (cdp-telemetry) will be upgraded or installed on the nodes. (useful if package is not installed or needs to be upgraded) Network is required for this operation.
+      storageValidation:
+        type: boolean
+        default: false
+        description: Enable/disable node level storage validation (can be disabled for example, if you have too many hosts and do not want to do too much parallel writes to s3/abfs)
+  CollectDatahubDiagnosticsResponse:
+    type: object
+    description: Response object for collecting DataHub diagnostics.
+  GetDatahubLogDescriptorsRequest:
+    type: object
+    description: Request object for obtaining log descriptors. (that are used for diagnostics collection)
+  GetDatahubLogDescriptorsResponse:
+    type: object
+    description: Response object for obtaining log descriptors. (useful for diagnostics collection filtering)
+    properties:
+      logs:
+        type: array
+        description: Array of log descriptors. (useful for diagnostics collection filtering)
+        items:
+          $ref: '#/definitions/DatahubVmLogResponse'
+  RotateAutoTlsCertificatesRequest:
+    type: object
+    description: Request object to rotate autotls certificates on datahub's hosts.
+    required:
+      - datahubName
+    properties:
+      datahubName:
+        type: string
+        description: The name or CRN of the datahub.
+  RotateAutoTlsCertificatesResponse:
+    type: object
+    description: Response object to rotate autotls certificates on datahub's hosts.

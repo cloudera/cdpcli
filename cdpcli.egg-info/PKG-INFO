@@ -1,23 +1,112 @@
 Metadata-Version: 1.1
 Name: cdpcli
-Version: 0.9.18
+Version: 0.9.19
 Summary: Cloudera CDP Command Line Interface
-Home-page: https://console.altus.cloudera.com/
+Home-page: https://console.cdp.cloudera.com/
 Author: Cloudera, Inc.
 Author-email: UNKNOWN
 License: Apache License 2.0
-Description: =====================================
-        Cloudera CDP Command Line Interface
-        =====================================
+Description: # Cloudera CDP Command Line Interface
         
-        This package provides a unified command line interface to Cloudera CDP.
+        This package provides a unified command line interface to the Cloudera Data
+        Platform (CDP) control plane API.
         
-        -------
-        License
-        -------
+        ## Prerequisites
         
-        The CDP CLI is licensed under the `Apache License, Version 2.0 <https://www.apache.org/licenses/LICENSE-2.0>`__.
-        with a `supplemental license disclaimer <https://console.altus.cloudera.com/downloads/LICENSE_SUPPLEMENTAL_DISCLAIMER.txt>`__.
+        * Python 2.7 or higher (3.5 or higher recommended)
+        
+        *Note: Starting in January 2021, Python 3.5 or higher will be required.*
+        
+        ## Installation
+        
+        To install using `pip` from the
+        [cdpcli PyPI project](https://pypi.org/project/cdpcli/):
+        
+        ```
+        $ pip install cdpcli
+        ```
+        
+        To install from source:
+        
+        ```
+        $ git clone git@github.com:cloudera/cdpcli.git
+        $ cd cdpcli
+        $ pip install .
+        ```
+        
+        ## Configuring
+        
+        API calls through the CDP CLI require a key pair issued from the CDP control
+        plane. Use the CDP console to generate keys, following [documented
+        instructions](https://docs.cloudera.com/management-console/cloud/cli/topics/mc-cli-generating-an-api-access-key.html). Then, run `cdp configure` to provide
+        the credentials to the CLI.
+        
+        ```
+        $ cdp configure
+        CDP Access Key ID [None]: xxx
+        CDP Private Key [None]: yyy
+        ```
+        
+        Credentials are stored under the "default" profile in _$HOME/.cdp/credentials_,
+        using the ini file format.
+        
+        ### Profiles
+        
+        If you need to access the API as more than one user, set up a named profile for
+        each user. Each profile stores a separate set of credentials.
+        
+        ```
+        $ cdp configure --profile my-other-user
+        ```
+        
+        ## Running
+        
+        Basic syntax:
+        
+        ```
+        cdp [options] <command> <subcommand> [parameters]
+        ```
+        
+        Examples:
+        
+        ```
+        $ cdp iam get-user
+        $ cdp environments describe-environments --environment-name myenv1
+        ```
+        
+        ### Help
+        
+        For general help, use any of these commands.
+        
+        ```
+        $ cdp help
+        $ cdp --help
+        $ cdp # no arguments
+        ```
+        
+        Most CLI commands correspond to API services. Subcommands correspond to
+        operations in services.
+        
+        * For help on any command, run its `help` subcommand, or pass the `--help`
+        parameter.
+        * For help on any subcommand, pass the `help` or `--help` parameter.
+        
+        The same help content is available in online
+        [API documentation](https://cloudera.github.io/cdp-dev-docs/api-docs/).
+        
+        ### Profiles
+        
+        By default, the CLI uses credentials in the "default" profile. Use a different
+        profile by passing the `--profile` option.
+        
+        ```
+        $ cdp --profile my-other-user iam get-user
+        ```
+        
+        ## License
+        
+        The CDP CLI is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+        with a [supplemental license disclaimer](https://console.cdp.cloudera.com/downloads/LICENSE_SUPPLEMENTAL_DISCLAIMER.txt).
         
 Platform: UNKNOWN
 Classifier: Development Status :: 5 - Production/Stable

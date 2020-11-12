@@ -24,7 +24,7 @@ import versioneer
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 requirements = ["python-dateutil>=2.1,<3.0.0",
@@ -41,7 +41,8 @@ setup(
     version=versioneer.get_version(),
     description='Cloudera CDP Command Line Interface',
     long_description=long_description,
-    url='https://console.altus.cloudera.com/',
+    long_description_content_type='text/markdown',
+    url='https://console.cdp.cloudera.com/',
     license='Apache License 2.0',
     author='Cloudera, Inc.',
     classifiers=[

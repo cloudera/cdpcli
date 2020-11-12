@@ -20,6 +20,7 @@ import re
 from ._version import get_versions
 
 
+# Retrieve the version number from versioneer's code.
 __version__ = get_versions()['version']
 del get_versions
 
@@ -27,6 +28,14 @@ VERSION = __version__
 
 CDPCLI_ROOT = os.path.dirname(os.path.abspath(__file__))
 
+# Read in the release file and update the advertised version with it if it's
+# not the default / PUBLIC release.
+_release_file_path = os.path.normpath("{0}/data/release.txt".format(CDPCLI_ROOT))
+with open(_release_file_path) as releaseFile:
+    RELEASE = releaseFile.readline()
+
+if RELEASE != 'PUBLIC':
+    VERSION += ' (%s)' % RELEASE
 
 # Used to specify anonymous (unsigned) request signature
 UNSIGNED = object()
