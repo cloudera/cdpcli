@@ -1684,7 +1684,7 @@ definitions:
         type: integer
         format: int32
         minimum: 1
-        maximum: 100
+        maximum: 500
         x-paging-page-size: true
         description: The size of each page.
       startingToken:
@@ -1829,7 +1829,7 @@ definitions:
         type: integer
         format: int32
         minimum: 1
-        maximum: 100
+        maximum: 500
         x-paging-page-size: true
         description: The size of each page.
       startingToken:

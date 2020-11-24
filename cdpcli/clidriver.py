@@ -37,6 +37,7 @@ from cdpcli.client import Context
 from cdpcli.compat import copy_kwargs
 from cdpcli.compat import OrderedDict
 from cdpcli.compat import six
+from cdpcli.config import Config
 from cdpcli.endpoint import EndpointCreator
 from cdpcli.endpoint import EndpointResolver
 from cdpcli.extensions.arguments import OverrideRequiredArgsArgument
@@ -185,6 +186,7 @@ class CLIDriver(object):
           action=option_params.get('action'),
           required=option_params.get('required'),
           choices=option_params.get('choices'),
+          cli_type_name=option_params.get('type'),
           hidden=option_params.get('hidden', False))
 
     def _handle_top_level_args(self, args):
@@ -418,11 +420,20 @@ class ServiceOperation(object):
         if parsed_globals.verify_tls and ca_bundle is not None:
             tls_verification = ca_bundle
 
+        # Retrieve values passed for extra client configuration.
+        config_kwargs = {}
+        if parsed_globals.read_timeout is not None:
+            config_kwargs['read_timeout'] = int(parsed_globals.read_timeout)
+        if parsed_globals.connect_timeout is not None:
+            config_kwargs['connect_timeout'] = int(parsed_globals.connect_timeout)
+        config = Config(**config_kwargs)
+
         client = client_creator.create_client(
             self._operation_model.service_model.service_name,
             parsed_globals.endpoint_url,
             tls_verification,
-            client_creator.context.get_credentials())
+            client_creator.context.get_credentials(),
+            client_config=config)
         return self._invoke_operation_callers(client,
                                               call_parameters,
                                               parsed_args,

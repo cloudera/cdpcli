@@ -60,13 +60,15 @@ class ClientCreator(object):
                       service_name,
                       endpoint_url,
                       tls_verification,
-                      credentials):
+                      credentials,
+                      client_config=None):
         service_model = self._load_service_model(service_name)
         cls = self._create_client_class(service_name, service_model)
         client_args = self._get_client_args(service_model,
                                             endpoint_url,
                                             tls_verification,
-                                            credentials)
+                                            credentials,
+                                            client_config)
         return cls(**client_args)
 
     def _load_service_model(self, service_name):
@@ -86,16 +88,26 @@ class ClientCreator(object):
                          service_model,
                          endpoint_url,
                          tls_verification,
-                         credentials):
+                         credentials,
+                         client_config):
         serializer = create_serializer()
-        timeout = (DEFAULT_TIMEOUT, DEFAULT_TIMEOUT)
+        if client_config is not None:
+            connect_timeout = client_config.connect_timeout
+            if connect_timeout <= 0:
+                connect_timeout = None
+            read_timeout = client_config.read_timeout
+            if read_timeout <= 0:
+                read_timeout = None
+        else:
+            connect_timeout = DEFAULT_TIMEOUT
+            read_timeout = DEFAULT_TIMEOUT
         endpoint = self._endpoint_creator.create_endpoint(
             service_model,
             endpoint_url,
             self._context.get_scoped_config(),
             self._response_parser_factory,
             tls_verification,
-            timeout,
+            (connect_timeout, read_timeout),
             self._retryhandler)
         if Ed25519v1Auth.detect_private_key(credentials.private_key):
             auth_method = Ed25519v1Auth.AUTH_METHOD_NAME

@@ -6,6 +6,7 @@ recursive-include cdpcli/data *.json
 recursive-include cdpcli/data *.yaml
 recursive-include cdpcli/thirdparty *.pem
 recursive-include cdpcli/examples *.rst
+include setup_common.py
 include versioneer.py
 include cdpcli/_version.py
 include cdpcli/data/release.txt

@@ -5,9 +5,9 @@ Platform (CDP) control plane API.
 
 ## Prerequisites
 
-* Python 2.7 or higher (3.5 or higher recommended)
+* Python 2.7 or higher (3.6 or higher recommended)
 
-*Note: Starting in January 2021, Python 3.5 or higher will be required.*
+*Note: Starting in January 2021, Python 3.6 or higher will be required.*
 
 ## Installation
 
@@ -26,6 +26,22 @@ $ cd cdpcli
 $ pip install .
 ```
 
+### Beta CLI
+
+An alternative CLI exposing beta functionality is available in its own package.
+
+```
+$ pip install cdpcli-beta
+```
+
+Do not install both the regular and beta CLIs in the same Python environment,
+as they use the same entry points and therefore conflict.
+
+Any features exposed in the beta CLI that are not available in the regular CLI
+are still under development. They are not yet supported, may not work, and are
+subject to change in incompatible ways, including removal. Do not rely on beta
+features for production use.
+
 ## Configuring
 
 API calls through the CDP CLI require a key pair issued from the CDP control
@@ -39,7 +55,7 @@ CDP Access Key ID [None]: xxx
 CDP Private Key [None]: yyy
 ```
 
-Credentials are stored under the "default" profile in _$HOME/.cdp/credentials_,
+Credentials are stored under the "default" profile in *$HOME/.cdp/credentials*,
 using the ini file format.
 
 ### Profiles
@@ -79,8 +95,7 @@ $ cdp # no arguments
 Most CLI commands correspond to API services. Subcommands correspond to
 operations in services.
 
-* For help on any command, run its `help` subcommand, or pass the `--help`
-parameter.
+* For help on any command, run its `help` subcommand, or pass the `--help` parameter.
 * For help on any subcommand, pass the `help` or `--help` parameter.
 
 The same help content is available in online

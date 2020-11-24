@@ -37,7 +37,7 @@ def test_cli_options_match_service_model_validator():
     # The validator does this using a hardcoded list of the top level CLI options,
     # and that list is duplicated here. The source of truth for the CLI options is
     # the cli.json file. We believe these options change infrequently, and so we
-    # avoid actually hooking up some build dedendency between the validator and the
+    # avoid actually hooking up some build dependency between the validator and the
     # CLI and instead have this unit test which is meant to catch any divergence.
     #
     # So... if you add a CLI option, and this test fails. Update the CLI_OPTIONS
@@ -51,6 +51,8 @@ def test_cli_options_match_service_model_validator():
                              'cdp-endpoint-url',
                              'output',
                              'color',
+                             'cli-read-timeout',
+                             'cli-connect-timeout',
                              'no-paginate',
                              'auth-config',
                              'profile']

@@ -5,6 +5,7 @@ NOTICES.txt
 README.md
 setup.cfg
 setup.py
+setup_common.py
 versioneer.py
 cdpcli/__init__.py
 cdpcli/_version.py
@@ -18,6 +19,7 @@ cdpcli/clidriver.py
 cdpcli/client.py
 cdpcli/compat.py
 cdpcli/completer.py
+cdpcli/config.py
 cdpcli/configloader.py
 cdpcli/credentials.py
 cdpcli/docs.py

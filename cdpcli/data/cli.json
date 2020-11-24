@@ -44,6 +44,16 @@
          "default": "auto",
          "help": "<p>Turn on/off color output.</p>"
       },
+      "cli-read-timeout": {
+         "dest": "read_timeout",
+         "type": "integer",
+         "help": "<p>The maximum socket read time in seconds. If the value is set to 0, the socket read will be blocking and not timeout.</p>"
+      },
+      "cli-connect-timeout": {
+         "dest": "connect_timeout",
+         "type": "integer",
+         "help": "<p>The maximum socket connect time in seconds. If the value is set to 0, the socket connect will be blocking and not timeout.</p>"
+      },
       "no-paginate":{
          "action":"store_false",
          "help":"<p>Disable automatic pagination.</p>",
