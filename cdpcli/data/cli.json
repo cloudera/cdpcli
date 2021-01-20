@@ -28,6 +28,10 @@
          "hidden": true,
          "help":"<p>Override command's default CDP URL with the given URL.</p>"
       },
+      "access-token":{
+         "hidden": true,
+         "help":"<p>Override command's authentication token.</p>"
+      },
       "output":{
          "choices":[
             "json",

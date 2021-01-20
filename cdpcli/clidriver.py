@@ -232,9 +232,8 @@ class CLIDriver(object):
         if sys.version_info[0] < 3 or \
                 (sys.version_info[0] == 3 and sys.version_info[1] < 6):
             LOG.warn('You are running the CDP CLI under Python %s. The CDP CLI '
-                     'will require Python 3.6 or higher starting in '
-                     'January 2021. '
-                     'Please upgrade now!', sys.version)
+                     'now requires Python 3.6 or higher. Please upgrade now to '
+                     'avoid CLI errors.', sys.version)
 
     def _warn_for_non_public_release(self):
         if RELEASE != 'PUBLIC':
@@ -432,7 +431,7 @@ class ServiceOperation(object):
             self._operation_model.service_model.service_name,
             parsed_globals.endpoint_url,
             tls_verification,
-            client_creator.context.get_credentials(),
+            client_creator.context.get_credentials(parsed_globals),
             client_config=config)
         return self._invoke_operation_callers(client,
                                               call_parameters,

@@ -64,9 +64,9 @@ class TestRSAV1(unittest.TestCase):
     def setUp(self):
         access_key_id = 'ABCD-EFGH-IJKL-MNOP-QRST'
         self.credentials = cdpcli.credentials.Credentials(
-            access_key_id,
-            RSA_KEY,
-            'test')
+            access_key_id=access_key_id,
+            private_key=RSA_KEY,
+            method='test')
         self.rsav1 = cdpcli.auth.RSAv1Auth(self.credentials)
         self.date_mock = mock.patch('cdpcli.auth.formatdate')
         self.formatdate = self.date_mock.start()
@@ -159,9 +159,9 @@ class TestED25519V1(unittest.TestCase):
     def setUp(self):
         access_key_id = 'ABCD-EFGH-IJKL-MNOP-QRST'
         self.credentials = cdpcli.credentials.Credentials(
-            access_key_id,
-            ED25519_KEY,
-            'test')
+            access_key_id=access_key_id,
+            private_key=ED25519_KEY,
+            method='test')
         self.ed25519v1 = cdpcli.auth.Ed25519v1Auth(self.credentials)
         self.date_mock = mock.patch('cdpcli.auth.formatdate')
         self.formatdate = self.date_mock.start()
@@ -203,3 +203,30 @@ class TestED25519V1(unittest.TestCase):
                          json_metadata['access_key_id'])
         self.assertEqual("ed25519v1",
                          json_metadata['auth_method'])
+
+
+class TestAccessToken(unittest.TestCase):
+    def test_no_credentials_raises_error(self):
+        access_token_auth = cdpcli.auth.AccessTokenAuth(None)
+        with self.assertRaises(NoCredentialsError):
+            access_token_auth.add_auth("pass something")
+
+    def test_auth_header_string(self):
+        access_token = 'Bearer ABC.DEF'
+        credentials = cdpcli.credentials.Credentials(
+            access_token=access_token,
+            method='test')
+        access_token_auth = cdpcli.auth.AccessTokenAuth(credentials)
+
+        request = CdpRequest()
+        request.headers['Content-Type'] = 'text/html'
+        request.method = 'PUT'
+        request.url = 'https://altus.cloudera.com/service/op'
+
+        access_token_auth.add_auth(request)
+        self.assertEqual(request.headers['Authorization'], access_token)
+
+    def test_is_access_token(self):
+        self.assertFalse(cdpcli.auth.AccessTokenAuth.is_access_token(None))
+        self.assertFalse(cdpcli.auth.AccessTokenAuth.is_access_token(''))
+        self.assertTrue(cdpcli.auth.AccessTokenAuth.is_access_token('Bearer A.B'))

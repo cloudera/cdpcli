@@ -251,6 +251,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/renewCertificate:
+    post:
+      summary: Renew certificate on datahub cluster by name or CRN
+      description: Renew certificate on datahub cluster by name or CRN
+      operationId: renewCertificate
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RenewCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RenewCertificateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datahub/repairCluster:
     post:
       summary: Repairs a cluster.
@@ -562,6 +583,111 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DescribeClusterTemplateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/createAutoScaleRules:
+    post:
+      summary: Create Auto Scaling rules for a DataHub cluster
+      description: Create Auto Scaling rules for a DataHub cluster.
+      operationId: createAutoScaleRules
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAutoScaleRulesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAutoScaleRulesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/updateAutoScaleRules:
+    post:
+      summary: Modify AutoScaling for a DataHub cluster
+      description: Modify AutoScaling for a DataHub cluster
+      operationId: updateAutoScaleRules
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAutoScaleRulesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateAutoScaleRulesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/describeAutoScaleRules:
+    post:
+      summary: Describe the AutoScaling policies for a DataHub cluster
+      description: Describe the AutoScaling policies for a DataHub cluster
+      operationId: describeAutoScaleRules
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeAutoScaleRulesRequest'
+      responses:
+        200:
+          description: The AutoScaling policy for the request cluster.
+          schema:
+            $ref: '#/definitions/DescribeAutoScaleRulesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/deleteAutoScaleRules:
+    post:
+      summary: Delete AutoScaling policies for a DataHub cluster
+      description: Delete AutoScaling policies for a DataHub cluster
+      operationId: deleteAutoScaleRules
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteAutoScaleRulesRequest'
+      responses:
+        200:
+          description: The AutoScale policy before deletion.
+          schema:
+            $ref: '#/definitions/DeleteAutoScaleRulesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/listAutoScaleHistory:
+    post:
+      summary: List AutoScale history activity for a DataHub cluster.
+      description: List AutoScale history activity for a DataHub cluster.
+      operationId: listAutoScaleHistory
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListAutoScaleHistoryRequest'
+      responses:
+        200:
+          description: AutoScale activity for a DataHub cluster.
+          schema:
+            $ref: '#/definitions/ListAutoScaleHistoryResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1447,6 +1573,15 @@ definitions:
   RetryClusterResponse:
     type: object
     description: Response object for retry cluster request.
+  RenewCertificateRequest:
+    type: object
+    description: Request object for renew datahub certificate request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the cluster.
   RepairClusterRequest:
     type: object
     description: Request object for repair cluster request.
@@ -1784,6 +1919,382 @@ definitions:
       value:
         type: string
         description: The value of the tag.
+  AutoScaleRulesResponse:
+    type: object
+    description: Autoscale configuration
+    required:
+      - clusterName
+      - enabled
+      - autoScalePolicies
+    properties:
+      clusterName:
+        type: string
+        minLength: 5
+        maxLength: 500
+        description: The name or CRN of the cluster.
+      enabled:
+        type: boolean
+        description: Whether autoscaling is enabled or not for the cluster
+      autoScalePolicies:
+        description: The actual scaling policy(ies) for the cluster
+        type: array
+        items:
+          $ref: '#/definitions/AutoScalePolicyResponse'
+  CreateAutoScaleRulesRequest:
+    type: object
+    description: Autoscale configuration request
+    required:
+      - clusterName
+      - autoScalePolicies
+    properties:
+      clusterName:
+        type: string
+        minLength: 5
+        maxLength: 500
+        description: The name or CRN of the cluster.
+      autoScalePolicies:
+        description: The actual scaling policies for the cluster
+        type: array
+        items:
+          $ref: '#/definitions/AutoScalePolicyRequest'
+      enabled:
+        type: boolean
+        description: true (default) to enable Autoscaling, false to disable AutoScaling.
+  CreateAutoScaleRulesResponse:
+    type: object
+    description: The AutoScale rules for the cluster.
+    properties:
+      autoScaleRules:
+        $ref: '#/definitions/AutoScaleRulesResponse'
+        description: The autoscale rules.
+  UpdateAutoScaleRulesRequest:
+    type: object
+    description: Autoscale Modification request
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        minLength: 5
+        maxLength: 500
+        description: The name or CRN of the cluster.
+      enabled:
+        type: boolean
+        description: true to enable Autoscaling, false to disable AutoScaling. If not specified, the existing value is used.
+      autoScalePolicies:
+        description: The actual scaling policies for the cluster
+        type: array
+        items:
+          $ref: '#/definitions/AutoScalePolicyRequest'
+  UpdateAutoScaleRulesResponse:
+    type: object
+    description: The AutoScale rules for the cluster.
+    properties:
+      autoScaleRules:
+        $ref: '#/definitions/AutoScaleRulesResponse'
+        description: The autoscale rules.
+  DescribeAutoScaleRulesRequest:
+    type: object
+    description: Request object to describe the AutoScale rules for a DataHub cluster.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        minLength: 5
+        maxLength: 500
+        description: The name or CRN of the cluster.
+  DescribeAutoScaleRulesResponse:
+    type: object
+    description: The response object which describes the AutoScale rules for a DataHub cluster.
+    properties:
+      autoScaleRules:
+        $ref: '#/definitions/AutoScaleRulesResponse'
+        description: The autoscale rules.
+  DeleteAutoScaleRulesRequest:
+    type: object
+    description: Delete request.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        minLength: 5
+        maxLength: 500
+        description: The name or CRN of the cluster.
+  DeleteAutoScaleRulesResponse:
+    type: object
+    description: Response object for DeleteAutoScalesRulesRequest
+  AutoScalePolicyRequest:
+    type: object
+    description: An individual AutoScale Policy
+    required:
+      - hostGroups
+    properties:
+      hostGroups:
+        description: A single hostgroup, or a comma separated list of hostGroups to which the rules apply
+        type: string
+        minLength: 1
+        maxLength: 200
+      scheduleBasedPolicy:
+        description: Scheduled based policy
+        $ref: '#/definitions/AutoScaleScheduleRequest'
+      loadBasdePolicy:
+        description: Load based policy
+        $ref: '#/definitions/AutoScaleLoadRequest'
+  AutoScalePolicyResponse:
+    type: object
+    description: An individual AutoScale Policy
+    required:
+      - hostGroups
+    properties:
+      hostGroups:
+        description: A single hostgroup, or a comma separated list of hostGroups to which the rules apply
+        type: string
+      scheduleBasedPolicy:
+        description: Scheduled based policy
+        $ref: '#/definitions/AutoScaleScheduleResponse'
+      loadBasdePolicy:
+        description: Load based policy
+        $ref: '#/definitions/AutoScaleLoadResponse'
+  AutoScaleScheduleRequest:
+    type: object
+    description: Schedule for AutoScaling
+    properties:
+      schedules:
+        description: List of individual schedules
+        type: array
+        items:
+          $ref: '#/definitions/IndividualScheduleRequest'
+  AutoScaleScheduleResponse:
+    type: object
+    description: Schedule for AutoScaling
+    properties:
+      schedules:
+        description: List of individual schedules
+        type: array
+        items:
+          $ref: '#/definitions/IndividualScheduleResponse'
+  IndividualScheduleRequest:
+    type: object
+    description: An individual schedule based policy
+    required:
+      - configuration
+    properties:
+      configuration:
+        type: object
+        description: The schedule configuration
+        required:
+          - trigger
+          - action
+        properties:
+          trigger:
+            type: object
+            description: The trigger for this rule
+            required:
+              - cronExpression
+              - timeZone
+            properties:
+              cronExpression:
+                type: string
+                minLength: 1
+                maxLength: 100
+                description: The cron expression for this schedule
+              timeZone:
+                type: string
+                minLength: 1
+                maxLength: 50
+                description: The time zone for the cron expression
+          action:
+            type: object
+            description: The scaling action to take when triggered
+            required:
+              - resourceAdjustmentValue
+            properties:
+              resourceAdjustmentType:
+                type: string
+                enum:
+                  - ABSOLUTE_COUNT
+                description: The type of resource adjustment. Only ABSOLUTE_COUNT supported at the moment.
+              resourceAdjustmentValue:
+                type: integer
+                minimum: 0
+                format: int32
+                description: The target value for the resource based on the AdjustmentType
+      identifier:
+        type: string
+        minLength: 5
+        maxLength: 200
+        description: An optional identifier for the specific schedule. Generally useful for debugging. Will be auto-generated if none provided.
+      description:
+        type: string
+        minLength: 0
+        maxLength: 1000
+        description: An optional description for the specific schedule.
+  IndividualScheduleResponse:
+    type: object
+    description: An individual schedule based policy
+    required:
+      - configuration
+      - identifier
+    properties:
+      configuration:
+        type: object
+        description: The schedule configuration.
+        required:
+          - trigger
+          - action
+        properties:
+          trigger:
+            type: object
+            description: The trigger for this rule.
+            required:
+              - cronExpression
+              - timeZone
+            properties:
+              cronExpression:
+                type: string
+                minLength: 1
+                maxLength: 100
+                description: The cron expression for this schedule
+              timeZone:
+                type: string
+                minLength: 1
+                maxLength: 50
+                description: The time zone for the cron expression
+          action:
+            type: object
+            description: The scaling action to take when triggered.
+            required:
+              - resourceAdjustmentValue
+            properties:
+              resourceAdjustmentType:
+                type: string
+                enum:
+                  - ABSOLUTE_COUNT
+                description: The type of resource adjustment. Only ABSOLUTE_COUNT supported at the moment.
+              resourceAdjustmentValue:
+                type: integer
+                format: int32
+                description: The target value for the resource based on the AdjustmentType
+      identifier:
+        type: string
+        description: An identifier fot the specific schedule. Generally usefulf for debugging.
+      description:
+        type: string
+        description: Description for the specified schedule.
+  AutoScaleLoadRequest:
+    type: object
+    description: Configuration for Load Based Scaling
+    required:
+      - configuration
+    properties:
+      configuration:
+        description: Configuration for Load Based Scaling
+        $ref: '#/definitions/AutoScaleLoadRequestConfiguration'
+      identifier:
+        type: string
+        minLength: 5
+        maxLength: 200
+        description: An optional identifier for the rule. Generally useful for debugging. Will be auto-generated if none is provided.
+      description:
+        type: string
+        minLength: 0
+        maxLength: 1000
+        description: An optional description for the specific schedule.
+  AutoScaleLoadResponse:
+    type: object
+    description: Configuration for Load Based Scaling
+    required:
+      - configuration
+      - identifier
+    properties:
+      configuration:
+        description: Configuration for Load Based Scaling
+        $ref: '#/definitions/AutoScaleLoadResponseConfiguration'
+      identifier:
+        type: string
+        description: An identifer for this rule. Useful for debugging and logging.
+      description:
+        type: string
+        description: Description for the specified schedule.
+  AutoScaleLoadRequestConfiguration:
+    type: object
+    description: Configuration for load based scaling
+    required:
+      - minResourceValue
+      - maxResourceValue
+    properties:
+      minResourceValue:
+        type: integer
+        format: int32
+        minimum: 0
+        description: The lower bound for the resource
+      maxResourceValue:
+        type: integer
+        format: int32
+        minimum: 0
+        description: The upper bound for the resource
+      coolDownMinutes:
+        type: integer
+        description: Minimum time, in minutes, between autoscale activity
+        format: int32
+  AutoScaleLoadResponseConfiguration:
+    type: object
+    description: Configuration for load based scaling
+    required:
+      - minResourceValue
+      - maxResourceValue
+    properties:
+      minResourceValue:
+        type: integer
+        format: int32
+        description: The lower bound for the resource
+      maxResourceValue:
+        type: integer
+        format: int32
+        description: The upper bound for the resource
+      coolDownMinutes:
+        type: integer
+        description: Minimum time, in minutes, between autoscale activity
+        format: int32
+  ListAutoScaleHistoryRequest:
+    type: object
+    description: Request object to retrieve the AutoScale history for a DataHub cluster.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        minLength: 5
+        maxLength: 500
+        description: The name or CRN of the cluster.
+      count:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 1000
+        description: The maximum number of history entries to retrieve (Default 200).
+  ListAutoScaleHistoryResponse:
+    type: object
+    description: The response object which describes the AutoScale rules for a DataHub cluster.
+    properties:
+      historyEvents:
+        description: List of history events for the cluster.
+        type: array
+        items:
+          $ref: '#/definitions/IndividualAutoScaleHistoryResponse'
+  IndividualAutoScaleHistoryResponse:
+    type: object
+    description: An object representing a single AutoScale history event for a DataHub cluster.
+    properties:
+      eventTime:
+        type: string
+        format: date-time
+        description: The time at which the event occurred.
+      eventMessage:
+        type: string
+        description: The AutoScale related operation that was performed.
   DatahubVmLogRequest:
     type: object
     description: Log descriptor, contains a path and label pair. Used for diagnostics collections.
@@ -1901,3 +2412,6 @@ definitions:
   RotateAutoTlsCertificatesResponse:
     type: object
     description: Response object to rotate autotls certificates on datahub's hosts.
+  RenewCertificateResponse:
+    type: object
+    description: Response object for renew certificate request.

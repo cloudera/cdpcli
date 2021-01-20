@@ -5,9 +5,11 @@ Platform (CDP) control plane API.
 
 ## Prerequisites
 
-* Python 2.7 or higher (3.6 or higher recommended)
+* Python 3.6 or higher
 
-*Note: Starting in January 2021, Python 3.6 or higher will be required.*
+Earlier versions of Python are no longer supported for new releases, as of
+January 2021. Previous CLI releases shall continue to work under earlier Python
+versions.
 
 ## Installation
 
@@ -46,8 +48,8 @@ features for production use.
 
 API calls through the CDP CLI require a key pair issued from the CDP control
 plane. Use the CDP console to generate keys, following [documented
-instructions](https://docs.cloudera.com/management-console/cloud/cli/topics/mc-cli-generating-an-api-access-key.html). Then, run `cdp configure` to provide
-the credentials to the CLI.
+instructions](https://docs.cloudera.com/cdp/latest/cli/topics/mc-cli-generating-an-api-access-key.html).
+Then, run `cdp configure` to provide the credentials to the CLI.
 
 ```
 $ cdp configure

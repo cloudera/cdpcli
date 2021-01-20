@@ -296,7 +296,7 @@ paths:
       summary: Returns status of the sync operation for the operation id.
       description: Returns status of the sync operation for the operation id. Operation Id should be one of the previously request sync operation.
       operationId: syncStatus
-      x-mutating: true
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -308,6 +308,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/SyncStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getEnvironmentUserSyncState:
+    post:
+      summary: Returns the user synchronization state for an environment.
+      description: Returns the user synchronization state for an environment.
+      operationId: getEnvironmentUserSyncState
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetEnvironmentUserSyncStateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetEnvironmentUserSyncStateResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1095,6 +1116,9 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
+      reportDeploymentLogs:
+        type: boolean
+        description: When true, this will report additional diagnostic information back to Cloudera.
       freeIpa:
         $ref: '#/definitions/AWSFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -1291,6 +1315,9 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
+      reportDeploymentLogs:
+        type: boolean
+        description: When true, this will report additional diagnostic information back to Cloudera.
       freeIpa:
         $ref: '#/definitions/AzureFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -1305,6 +1332,9 @@ definitions:
       resourceGroupName:
         type: string
         description: Name of an existing Azure resource group to be used for the environment. If it is not specified then new resource groups will be generated.
+      createPrivateEndpoints:
+        type: boolean
+        description: When this is enabled, then Azure Postgres will be configured with Private Endpoint and a Private DNS Zone. When this is disabled, then Azure Service Endpoints will be created. The default value is disabled.
   ExistingAzureNetworkRequest:
     type: object
     description: Request object for creating an Azure environment using existing VNet and subnets.
@@ -1467,6 +1497,9 @@ definitions:
           s3GuardTableName:
             type: string
             description: The name for the DynamoDB table backing S3Guard.
+      reportDeploymentLogs:
+        type: boolean
+        description: When true, this will report additional diagnostic information back to Cloudera.
       freeipa:
         type: object
         description: Details of FreeIPA instance associated with this environment.
@@ -1796,6 +1829,32 @@ definitions:
       endTime:
         type: string
         description: Sync operation end timestamp.
+  GetEnvironmentUserSyncStateRequest:
+    type: object
+    description: Request object for retrieving the user sync state of an environment.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  GetEnvironmentUserSyncStateResponse:
+    type: object
+    description: Response object for retrieving the user sync state of an environment.
+    required:
+      - state
+    properties:
+      state:
+        type: string
+        enum:
+          - UP_TO_DATE
+          - STALE
+          - SYNC_IN_PROGRESS
+          - SYNC_FAILED
+        description: The user sync state of the environment.
+      userSyncOperationId:
+        type: string
+        description: Operation Id for the latest user sync operation, if any, run for this environment.
   GetRootCertificateRequest:
     type: object
     description: Request object for obtaining public certificate of an environment.
@@ -2101,10 +2160,13 @@ definitions:
           - DECOMMISSIONED
           - TERMINATED
           - DELETED_ON_PROVIDER_SIDE
+          - DELETED_BY_PROVIDER
           - FAILED
           - STOPPED
           - REBOOTING
           - UNREACHABLE
+          - UNHEALTHY
+          - DELETE_REQUESTED
       issues:
         type: array
         description: A list of issues the node is having

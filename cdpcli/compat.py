@@ -94,6 +94,8 @@ else:
         return codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
 
     def ensure_unicode(s, encoding='utf-8', errors='strict'):
+        if s is None:
+            return None
         if isinstance(s, six.text_type):
             return s
         return unicode(s, encoding, errors)  # noqa

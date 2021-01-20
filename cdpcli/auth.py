@@ -198,7 +198,26 @@ class RSAv1Auth(V1Signer):
         return signature
 
 
+class AccessTokenAuth:
+    AUTH_METHOD_NAME = 'access_token'
+
+    def __init__(self, credentials):
+        self._credentials = credentials
+
+    def add_auth(self, request):
+        if self._credentials is None:
+            raise NoCredentialsError
+        if 'Authorization' in request.headers:
+            raise Exception("Authorization found in headers!")
+        request.headers['Authorization'] = self._credentials.access_token
+
+    @classmethod
+    def is_access_token(cls, access_token):
+        return bool(access_token)
+
+
 AUTH_TYPE_MAPS = {
     Ed25519v1Auth.AUTH_METHOD_NAME: Ed25519v1Auth,
     RSAv1Auth.AUTH_METHOD_NAME: RSAv1Auth,
+    AccessTokenAuth.AUTH_METHOD_NAME: AccessTokenAuth
 }

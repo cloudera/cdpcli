@@ -20,6 +20,7 @@ import uuid
 
 from cdpcli import credentials, DEFAULT_PROFILE_NAME
 from cdpcli import xform_name
+from cdpcli.auth import AccessTokenAuth
 from cdpcli.auth import Ed25519v1Auth
 from cdpcli.auth import RSAv1Auth
 from cdpcli.cdprequest import prepare_request_dict
@@ -109,7 +110,9 @@ class ClientCreator(object):
             tls_verification,
             (connect_timeout, read_timeout),
             self._retryhandler)
-        if Ed25519v1Auth.detect_private_key(credentials.private_key):
+        if AccessTokenAuth.is_access_token(credentials.access_token):
+            auth_method = AccessTokenAuth.AUTH_METHOD_NAME
+        elif Ed25519v1Auth.detect_private_key(credentials.private_key):
             auth_method = Ed25519v1Auth.AUTH_METHOD_NAME
         else:
             auth_method = RSAv1Auth.AUTH_METHOD_NAME
@@ -489,7 +492,7 @@ class Context(object):
         """
         self._context_instance_vars[logical_name] = value
 
-    def get_credentials(self):
+    def get_credentials(self, parsed_globals=None):
         """
         Return the :class:`botocore.credential.Credential` object
         associated with this session.  If the credentials have not
@@ -499,5 +502,6 @@ class Context(object):
 
         """
         if self._credentials is None:
-            resolver = credentials.create_credential_resolver(self)
-            return resolver.load_credentials()
+            resolver = credentials.create_credential_resolver(self, parsed_globals)
+            self._credentials = resolver.load_credentials()
+        return self._credentials

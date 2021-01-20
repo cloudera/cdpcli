@@ -69,7 +69,7 @@ class FakeContext(object):
         # This lets us use the FakeContext as both context and "client_creator"
         self.context = self
 
-    def get_credentials(self):
+    def get_credentials(self, parsed_globals=None):
         return self._credentials
 
     def get_scoped_config(self):

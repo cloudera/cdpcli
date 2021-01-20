@@ -25,7 +25,9 @@ from tests import unittest
 
 class BaseSignerTest(unittest.TestCase):
     def setUp(self):
-        self.credentials = Credentials('key', 'secret', 'test')
+        self.credentials = Credentials(access_key_id='key',
+                                       private_key='secret',
+                                       method='test')
         self.signer = RequestSigner('rsav1', self.credentials)
         self.fixed_credentials = self.credentials.get_frozen_credentials()
 

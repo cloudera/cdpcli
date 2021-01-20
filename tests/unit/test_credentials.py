@@ -52,28 +52,38 @@ context = Context()
 
 
 class TestCredentials(BaseEnvVar):
-    def _ensure_credential_is_normalized_as_unicode(self, access, secret):
-        c = credentials.Credentials(access, secret, 'test')
+    def _ensure_credential_is_normalized_as_unicode(self, access, secret, token):
+        c = credentials.Credentials(access_key_id=access,
+                                    private_key=secret,
+                                    access_token=token,
+                                    method='test')
         self.assertTrue(isinstance(c.access_key_id, type(u'u')))
         self.assertTrue(isinstance(c.private_key, type(u'u')))
+        self.assertTrue(isinstance(c.access_token, type(u'u')))
 
     def test_detect_nonascii_character(self):
         self._ensure_credential_is_normalized_as_unicode(
-            'foo\xe2\x80\x99', 'bar\xe2\x80\x99')
+            'foo\xe2\x80\x99', 'bar\xe2\x80\x99', 'tea\xe2\x80\x99')
 
     def test_unicode_input(self):
         self._ensure_credential_is_normalized_as_unicode(
-            u'foo', u'bar')
+            u'foo', u'bar', u'tea')
 
     def test_frozen_credentials(self):
-        cred = credentials.Credentials("key", "secret", "test")
+        cred = credentials.Credentials(access_key_id="key",
+                                       private_key="secret",
+                                       access_token='token',
+                                       method="test")
         frozen_creds = cred.get_frozen_credentials()
         self.assertEqual("key", frozen_creds.access_key_id)
         self.assertEqual("secret", frozen_creds.private_key)
+        self.assertEqual("token", frozen_creds.access_token)
         cred.access_key_id = "foobar"
         cred.private_key = "foo"
+        cred.access_token = "bar"
         self.assertEqual("key", frozen_creds.access_key_id)
         self.assertEqual("secret", frozen_creds.private_key)
+        self.assertEqual("token", frozen_creds.access_token)
 
 
 class TestBaseCredentialProvider(BaseEnvVar):
@@ -106,6 +116,16 @@ class TestEnvVar(BaseEnvVar):
         self.assertEqual(creds.private_key, TestEnvVar.PEM)
         self.assertEqual(creds.method, 'env')
 
+    def test_envvars_are_found_access_token(self):
+        environ = {
+            'CDP_ACCESS_TOKEN': 'tea'
+        }
+        provider = credentials.EnvProvider(environ)
+        creds = provider.load()
+        self.assertIsNotNone(creds)
+        self.assertEqual(creds.access_token, 'tea')
+        self.assertEqual(creds.method, 'env')
+
     def test_envvars_not_found(self):
         provider = credentials.EnvProvider(environ={})
         cred = provider.load()
@@ -128,6 +148,21 @@ class TestEnvVar(BaseEnvVar):
         creds = provider.load()
         self.assertEqual(creds.access_key_id, 'foo')
         self.assertEqual(creds.private_key, TestEnvVar.PEM)
+
+    def test_can_override_env_var_mapping_access_token(self):
+        # We can change the env var provider to
+        # use our specified env var names.
+        environ = {
+            'FOO_ACCESS_token': 'foo'
+        }
+        mapping = {
+            'access_token': 'FOO_ACCESS_token'
+        }
+        provider = credentials.EnvProvider(
+            environ, mapping
+        )
+        creds = provider.load()
+        self.assertEqual(creds.access_token, 'foo')
 
     def test_can_override_partial_env_var_mapping(self):
         # Only changing the access key mapping.
@@ -165,6 +200,13 @@ class TestEnvVar(BaseEnvVar):
         self.assertEqual(creds.access_key_id, 'foo')
         self.assertEqual(creds.private_key, TestEnvVar.PEM)
 
+    def test_credential_with_envprovider_access_token(self):
+        # We can change the env var provider to
+        # use our specified env var names.
+        self.environ['CDP_ACCESS_TOKEN'] = 'foo'
+        creds = credentials.get_credentials(context)
+        self.assertEqual(creds.access_token, 'foo')
+
     def test_raise_if_not_a_file(self):
         environ = {
             'CDP_ACCESS_KEY_ID': 'foo',
@@ -194,7 +236,9 @@ class CredentialResolverTest(BaseEnvVar):
         self.provider1.METHOD = 'provider1'
         self.provider2 = mock.Mock()
         self.provider2.METHOD = 'provider2'
-        self.fake_creds = credentials.Credentials('a', 'b', 'test')
+        self.fake_creds = credentials.Credentials(access_key_id='a',
+                                                  private_key='b',
+                                                  method='test')
 
     def test_load_credentials_single_provider(self):
         self.provider1.load.return_value = self.fake_creds
@@ -249,7 +293,9 @@ class CredentialResolverTest(BaseEnvVar):
         # Providers can be added by the METHOD name of each provider.
         new_provider = mock.Mock()
         new_provider.METHOD = 'new_provider'
-        new_provider.load.return_value = credentials.Credentials('d', 'e', 'test')
+        new_provider.load.return_value = credentials.Credentials(access_key_id='d',
+                                                                 private_key='e',
+                                                                 method='test')
 
         resolver.insert_after('provider1', new_provider)
 
@@ -267,7 +313,9 @@ class CredentialResolverTest(BaseEnvVar):
     def test_inject_provider_before_existing(self):
         new_provider = mock.Mock()
         new_provider.METHOD = 'override'
-        new_provider.load.return_value = credentials.Credentials('x', 'y', 'test')
+        new_provider.load.return_value = credentials.Credentials(access_key_id='x',
+                                                                 private_key='y',
+                                                                 method='test')
 
         resolver = credentials.CredentialResolver(providers=[self.provider1,
                                                              self.provider2])
@@ -277,10 +325,12 @@ class CredentialResolverTest(BaseEnvVar):
         self.assertEqual(creds.private_key, 'y')
 
     def test_can_remove_providers(self):
-        self.provider1.load.return_value = credentials.Credentials(
-            'a', 'b', 'test')
-        self.provider2.load.return_value = credentials.Credentials(
-            'd', 'e', 'test')
+        self.provider1.load.return_value = credentials.Credentials(access_key_id='a',
+                                                                   private_key='b',
+                                                                   method='test')
+        self.provider2.load.return_value = credentials.Credentials(access_key_id='d',
+                                                                   private_key='e',
+                                                                   method='test')
         resolver = credentials.CredentialResolver(providers=[self.provider1,
                                                              self.provider2])
         resolver.remove('provider1')
@@ -359,6 +409,17 @@ class TestAuthConfigFile(unittest.TestCase):
         self.assertEqual(creds.access_key_id, 'key_id')
         self.assertEqual(creds.private_key, 'secret')
         self.assertEqual(creds.method, 'auth_config_file')
+
+    def test_config_is_found_access_token(self):
+        def validate(path):
+            provider = credentials.AuthConfigFile(path)
+            cred = provider.load()
+            self.assertIsNotNone(cred)
+            self.assertEqual(cred.access_token, 'Bearer A.B.C')
+            self.assertEqual(cred.method, 'auth_config_file')
+
+        conf = '{"access_token": "Bearer A.B.C"}'
+        _run_test(conf, validate)
 
     def test_config_not_found(self):
         with self.assertRaises(NoCredentialsError):
@@ -495,3 +556,48 @@ cdp_private_key = secret\\nwith\\na\\nfew\\nnewlines
 cdp_access_key_id = the_key
 """
         _run_test(conf, validate)
+
+    def test_credentials_file_access_token(self):
+        def validate(path):
+            provider = credentials.SharedCredentialProvider(
+                creds_filename=path, profile_name=DEFAULT_PROFILE_NAME)
+            creds = provider.load()
+            self.assertIsNotNone(creds)
+            self.assertEqual(creds.access_token, 'Bearer A.B.C')
+            self.assertEqual(creds.method, 'shared-credentials-file')
+
+        conf = """
+[default]
+cdp_access_token = Bearer A.B.C
+"""
+        _run_test(conf, validate)
+
+
+class TestParamsProvider(unittest.TestCase):
+    def test_no_param(self):
+        provider = credentials.ParamsProvider(None)
+        creds = provider.load()
+        self.assertIsNone(creds)
+
+    def test_no_access_token_param(self):
+        params = {}
+        provider = credentials.ParamsProvider(params)
+        creds = provider.load()
+        self.assertIsNone(creds)
+
+    def test_empty_access_token_param(self):
+        params = mock.Mock()
+        params.access_token = ''
+        provider = credentials.ParamsProvider(params)
+        creds = provider.load()
+        self.assertIsNone(creds)
+
+    def test_access_token_param(self):
+        access_token = 'Bearer A.B'
+        params = mock.Mock()
+        params.access_token = access_token
+        provider = credentials.ParamsProvider(params)
+        creds = provider.load()
+        self.assertIsNotNone(creds)
+        self.assertEqual(creds.access_token, access_token)
+        self.assertEqual(creds.method, 'params')

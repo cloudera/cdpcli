@@ -425,6 +425,8 @@ definitions:
   DescribeClusterRequest:
     type: object
     description: Request object for the describeCluster method. Use only one of environmentName, clusterCrn and clusterId.
+    required:
+      - clusterId
     properties:
       clusterId:
         type: string
@@ -603,12 +605,12 @@ definitions:
         type: integer
         format: int32
         default: 1
-        description: TODO
+        description: Minimum number of available nodes.
       maxClusters:
         type: integer
         format: int32
         default: 20
-        description: TODO
+        description: Maximum number of available nodes.
   CreateVwRequest:
     type: object
     description: Request object for the createVw method.
@@ -650,7 +652,7 @@ definitions:
         description: ID of the new Virtual Warehouse.
   ListVwsRequest:
     type: object
-    description: Request object for the listDbcs method.
+    description: Request object for the listVws method.
     required:
       - clusterId
     properties:

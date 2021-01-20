@@ -49,6 +49,7 @@ def test_cli_options_match_service_model_validator():
                              'ca-bundle',
                              'endpoint-url',
                              'cdp-endpoint-url',
+                             'access-token',
                              'output',
                              'color',
                              'cli-read-timeout',

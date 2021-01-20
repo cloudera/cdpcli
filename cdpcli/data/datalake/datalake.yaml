@@ -164,6 +164,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datalake/renewCertificate:
+    post:
+      summary: Renew certificate on Datalake cluster by name or CRN
+      description: Renew certificate on Datalake cluster by name or CRN
+      operationId: renewCertificate
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RenewCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RenewCertificateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datalake/repairDatalake:
     post:
       summary: Repairs a datalake.
@@ -888,6 +909,15 @@ definitions:
       datalake:
         $ref: '#/definitions/DatalakeDetails'
         description: The datalake.
+  RenewCertificateRequest:
+    type: object
+    description: Request object for renew datalake certificate request.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
   RepairDatalakeRequest:
     type: object
     description: Request object for repair datalake request.
@@ -1447,3 +1477,6 @@ definitions:
   RotateAutoTlsCertificatesResponse:
     type: object
     description: Response object to rotate autotls certificates on datalake's hosts.
+  RenewCertificateResponse:
+    type: object
+    description: Response object for renew certificate request.

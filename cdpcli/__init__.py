@@ -65,6 +65,7 @@ COMPLEX_TYPES = set([OBJECT_TYPE,
 DEFAULT_PROFILE_NAME = 'default'
 CDP_ACCESS_KEY_ID_KEY_NAME = 'cdp_access_key_id'
 CDP_PRIVATE_KEY_KEY_NAME = 'cdp_private_key'
+CDP_ACCESS_TOKEN_KEY_NAME = 'cdp_access_token'
 # Python argparse has a bug in which '-' are not parsed correctly if they appear
 # as values for other arguments, see: http://bugs.python.org/issue9334 for more
 # details. This defines special encoding for dash that we will "decode" and
