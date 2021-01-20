@@ -4,7 +4,6 @@ x-interface-model: cdp
 x-products: CDP
 x-cdp-releases: PUBLIC
 x-audit: true
-x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_DATALAKE_API
 info:
   version: 0.1-SNAPSHOT
   title: Cloudera Datalake Service

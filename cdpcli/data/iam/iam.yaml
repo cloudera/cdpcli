@@ -4,13 +4,12 @@ x-products: ALTUS,CDP
 x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
-x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_IAM_API
 info:
   version: 0.1-SNAPSHOT
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
-  description: Cloudera Altus IAM is a web service that you can use to manage users and user permissions under your Altus account.
+  description: Cloudera CDP IAM is a web service that you can use to manage users and user permissions under your CDP account.
 schemes:
   - https
 consumes:
@@ -65,8 +64,8 @@ paths:
             $ref: '#/definitions/Error'
   /iam/createUser:
     post:
-      summary: Creates a user in Altus.
-      description: Creates a user in Altus.
+      summary: Creates a user in CDP.
+      description: Creates a user in CDP.
       operationId: createUser
       x-right: iam/createUser
       x-mutating: true
@@ -610,7 +609,7 @@ paths:
   /iam/createMachineUser:
     post:
       summary: Create a machine user.
-      description: Creates a machine user in the account. A machine user can be used to access Altus API. A machine user can have access keys associated with it and can be assigned roles and resource roles. A machine user cannot login to the Altus console.
+      description: Creates a machine user in the account. A machine user can be used to access CDP API. A machine user can have access keys associated with it and can be assigned roles and resource roles. A machine user cannot login to the CDP console.
       operationId: createMachineUser
       x-mutating: true
       parameters:
@@ -675,8 +674,8 @@ paths:
             $ref: '#/definitions/Error'
   /iam/createSamlProvider:
     post:
-      summary: Creates a SAML provider in Altus.
-      description: Creates a SAML provider in Altus.
+      summary: Creates a SAML provider in CDP.
+      description: Creates a SAML provider in CDP.
       operationId: createSamlProvider
       x-right: iam/createSamlProvider
       x-mutating: true
@@ -697,8 +696,8 @@ paths:
             $ref: '#/definitions/Error'
   /iam/deleteSamlProvider:
     post:
-      summary: Deletes a SAML provider in Altus account.
-      description: Deletes a SAML provider in Altus account.
+      summary: Deletes a SAML provider in CDP account.
+      description: Deletes a SAML provider in CDP account.
       operationId: deleteSamlProvider
       x-right: iam/deleteSamlProvider
       x-mutating: true
@@ -719,8 +718,8 @@ paths:
             $ref: '#/definitions/Error'
   /iam/listSamlProviders:
     post:
-      summary: Lists SAML providers in Altus account.
-      description: Lists SAML providers in Altus account.
+      summary: Lists SAML providers in CDP account.
+      description: Lists SAML providers in CDP account.
       operationId: listSamlProviders
       x-right: iam/listSamlProviders
       x-mutating: false
@@ -741,8 +740,8 @@ paths:
             $ref: '#/definitions/Error'
   /iam/updateSamlProvider:
     post:
-      summary: Updates a SAML provider in Altus.
-      description: Updates a SAML provider in Altus.
+      summary: Updates a SAML provider in CDP.
+      description: Updates a SAML provider in CDP.
       operationId: updateSamlProvider
       x-right: iam/updateSamlProvider
       x-mutating: true
@@ -786,7 +785,7 @@ paths:
   /iam/disableClouderaSSOLogin:
     post:
       summary: Disables interactive login using Cloudera SSO for this account.
-      description: Disables interactive login using Cloudera SSO for this account. When disabled, only users who are designated account administrators will be able to use Cloudera SSO to interactively login to the Altus account. All other users will only be able to interactively login using SAML providers defined for the account. This is a no-op if login using Cloudera SSO are already disabled.
+      description: Disables interactive login using Cloudera SSO for this account. When disabled, only users who are designated account administrators will be able to use Cloudera SSO to interactively login to the CDP account. All other users will only be able to interactively login using SAML providers defined for the account. This is a no-op if login using Cloudera SSO are already disabled.
       operationId: disableClouderaSSOLogin
       x-right: iam/manageClouderaSSOLogin
       x-mutating: true
@@ -807,10 +806,9 @@ paths:
             $ref: '#/definitions/Error'
   /iam/getAccount:
     post:
-      summary: Retrieves information about the Altus account.
-      description: Retrieves information about the Altus account.
+      summary: Retrieves information about the CDP account.
+      description: Retrieves information about the CDP account.
       operationId: getAccount
-      x-right: iam/getAccount
       x-mutating: false
       parameters:
         - name: input
@@ -1356,7 +1354,7 @@ definitions:
         description: The max lifetime, in days, of the password. If '0' passwords never expire.
   Account:
     type: object
-    description: Information about a Cloudera Altus account.
+    description: Information about a Cloudera CDP account.
     required:
       - clouderaSSOLoginEnabled
       - workloadPasswordPolicy
@@ -1370,7 +1368,7 @@ definitions:
         description: The workload password policy object.
   User:
     type: object
-    description: Information about a Cloudera Altus user.
+    description: Information about a Cloudera CDP user.
     required:
       - userId
       - crn
@@ -1406,7 +1404,7 @@ definitions:
         description: The date when this user record was created.
       accountAdmin:
         type: boolean
-        description: Whether the user is an administrator of their Altus account.
+        description: Whether the user is an administrator of their CDP account.
       identityProviderCrn:
         type: string
         description: The identity provider that the user belongs to. It can be "Cloudera-Default", "Cloudera-Administration", or a customer defined IdP.
@@ -1420,7 +1418,7 @@ definitions:
         x-no-compatibility-guarantee: true
   MachineUser:
     type: object
-    description: Information about a Cloudera Altus machine user.
+    description: Information about a Cloudera CDP machine user.
     required:
       - machineUserName
       - crn
@@ -1446,7 +1444,7 @@ definitions:
         x-no-compatibility-guarantee: true
   AccessKey:
     type: object
-    description: Information about a Cloudera Altus access key.
+    description: Information about a Cloudera CDP access key.
     required:
       - accessKeyId
       - crn
@@ -1607,7 +1605,7 @@ definitions:
         description: Whether group membership is synced when a user logs in. The default is to sync group membership.
   SamlProvider:
     type: object
-    description: Information used to connect an Altus account to an external identity provider.
+    description: Information used to connect a CDP account to an external identity provider.
     required:
       - crn
       - creationDate
@@ -1617,7 +1615,7 @@ definitions:
     properties:
       crn:
         type: string
-        description: CRN of the SAML provider in Altus.
+        description: CRN of the SAML provider in CDP.
         x-no-compatibility-guarantee: true
       creationDate:
         type: string
@@ -1632,10 +1630,10 @@ definitions:
         description: The unique ID of the saml provider.
       syncGroupsOnLogin:
         type: boolean
-        description: Whether users federated with this SAML provider will have their group membership synchronized. Group membership can be passed using the https://altus.cloudera.com/SAML/Attributes/groups SAML assertion.
+        description: Whether users federated with this SAML provider will have their group membership synchronized. Group membership can be passed using the https://cdp.cloudera.com/SAML/Attributes/groups SAML assertion.
       samlMetadataDocument:
         type: string
-        description: The original metadata that was passed while creating the SAML provider connector. This field will not be set for listSamlProviders API response.
+        description: The original metadata that was passed while creating the SAML provider connector. This field will not be set when the SAML provider does not have metadata. This field will not be set for listSamlProviders API response.
   SshPublicKey:
     type: object
     description: Information about an SSH public key.
@@ -1857,7 +1855,6 @@ definitions:
     description: Request object for creating SAML provider request.
     required:
       - samlProviderName
-      - samlMetadataDocument
     properties:
       samlProviderName:
         type: string
@@ -1868,7 +1865,7 @@ definitions:
         maxLength: 200000
       syncGroupsOnLogin:
         type: boolean
-        description: Whether to sync group information for users federated with this SAML provider. Group membership can be passed using the https://altus.cloudera.com/SAML/Attributes/groups SAML assertion. The default is to synchronize group membership.
+        description: Whether to sync group information for users federated with this SAML provider. Group membership can be passed using the https://cdp.cloudera.com/SAML/Attributes/groups SAML assertion. The default is to synchronize group membership.
   CreateSamlProviderResponse:
     type: object
     description: Response object for a creating SAML provider request.
@@ -1940,7 +1937,7 @@ definitions:
         maxLength: 200000
       syncGroupsOnLogin:
         type: boolean
-        description: Whether to sync group information for users federated with this SAML provider. Group membership can be passed using the https://altus.cloudera.com/SAML/Attributes/groups SAML assertion. The default is to synchronize group membership. Can be omitted if no update is required.
+        description: Whether to sync group information for users federated with this SAML provider. Group membership can be passed using the https://cdp.cloudera.com/SAML/Attributes/groups SAML assertion. The default is to synchronize group membership. Can be omitted if no update is required.
   UpdateSamlProviderResponse:
     type: object
     description: Response object for an updating SAML provider request.
@@ -2462,7 +2459,7 @@ definitions:
     properties:
       groupName:
         type: string
-        description: The name of the group. This name must be unique, must have a maximum of 32 characters, and must contain only alphanumeric characters, "-" and "_". Also, the first character of the name must be alphabetic or an underscore. Names are are not case-sensitive. The group named administrators is reserved.
+        description: The name of the group. This name must be unique. There are certain restrictions on the group name. Refer to the How To > User Management section in the Management Console documentation for the details.
       syncMembershipOnUserLogin:
         x-nullable: true
         type: boolean
@@ -2905,7 +2902,7 @@ definitions:
         type: array
         items:
           type: string
-        description: The list of groups the user belongs to. The groups will be created if they do not exist.
+        description: The list of groups the user belongs to. The groups will be created if they do not exist. There are certain restrictions on the group name. Refer to the How To > User Management section in the Management Console documentation for the details.
       firstName:
         type: string
         description: The user first name.

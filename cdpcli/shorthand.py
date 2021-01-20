@@ -14,9 +14,11 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import logging
 import re
 import string
 
+LOG = logging.getLogger('cdpcli.shorthand')
 _EOF = object()
 
 
@@ -126,7 +128,14 @@ class ShorthandParser(object):
         params.update(self._keyval())
         while self._index < len(self._input_value):
             self._expect(',', consume_whitespace=True)
-            params.update(self._keyval())
+            keyval = self._keyval()
+            for key in keyval.keys():
+                if key in params:
+                    LOG.warn('A value for the key "%s" was given more than '
+                             'once. Only the last value listed will be used. '
+                             'Separate multiple sets of key-value pairs with '
+                             'spaces.', key)
+            params.update(keyval)
         return params
 
     def _keyval(self):

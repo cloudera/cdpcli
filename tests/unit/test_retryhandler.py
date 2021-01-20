@@ -18,12 +18,10 @@
 
 
 from cdpcli import retryhandler
-from cdpcli.thirdparty.requests import ConnectionError, Timeout
-from cdpcli.thirdparty.requests.packages.urllib3.exceptions \
-    import ClosedPoolError
 import mock
+from requests import ConnectionError, Timeout
 from tests import unittest
-
+from urllib3.exceptions import ClosedPoolError
 
 HTTP_500_RESPONSE = mock.Mock()
 HTTP_500_RESPONSE.status_code = 500

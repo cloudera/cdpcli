@@ -1172,4 +1172,3 @@ definitions:
           description: Differences between the application specific configurations.
           $ref: '#/definitions/ApplicationConfigDiff'
 x-audit: true
-x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_DW_API

@@ -4,7 +4,6 @@ x-display-name: environments
 x-products: CDP
 x-cdp-releases: PUBLIC
 x-audit: true
-x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_ENVIRONMENTS2_API
 info:
   version: 0.1-SNAPSHOT
   title: Cloudera Environments Service
@@ -1630,6 +1629,9 @@ definitions:
       environmentName:
         type: string
         description: The name or CRN of the environment.
+      withDatahubStart:
+        type: boolean
+        description: Whether the Data Hub clusters should start or not at the environment (re-)start
   StartEnvironmentResponse:
     type: object
     description: Response object for a start environment request.

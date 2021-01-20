@@ -23,9 +23,9 @@ from cdpcli.endpoint import EndpointCreator
 from cdpcli.endpoint import EndpointResolver
 from cdpcli.exceptions import EndpointConnectionError
 from cdpcli.retryhandler import create_retry_handler
-from cdpcli.thirdparty.requests import ConnectionError
 from cdpcli.translate import build_retry_config
 from mock import Mock, patch
+from requests import ConnectionError
 from tests import unittest
 
 CLIENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'client')

@@ -40,7 +40,9 @@ def get_requirements(release):
             "asn1crypto>=0.21.1",
             "rsa>=3.4.2",
             "gitpython>=2.1.8",
-            "pure25519>=0.0.1"]
+            "pure25519>=0.0.1",
+            "requests>=2.21.0",
+            "urllib3>=1.21.1"]
 
 
 def get_classifiers(release):

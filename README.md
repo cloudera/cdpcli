@@ -11,6 +11,10 @@ Earlier versions of Python are no longer supported for new releases, as of
 January 2021. Previous CLI releases shall continue to work under earlier Python
 versions.
 
+Starting with version 0.9.24, the requests and urllib3 libraries are no longer
+bundled with the CLI. When upgrading, watch for those new dependencies to be
+installed.
+
 ## Installation
 
 To install using `pip` from the

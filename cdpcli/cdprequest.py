@@ -25,12 +25,12 @@ from cdpcli.compat import six
 from cdpcli.compat import urlsplit
 from cdpcli.compat import urlunsplit
 from cdpcli.exceptions import UnseekableStreamError
-from cdpcli.thirdparty.requests import models
-from cdpcli.thirdparty.requests.packages.urllib3.connection import HTTPConnection
-from cdpcli.thirdparty.requests.packages.urllib3.connection import VerifiedHTTPSConnection  # noqa
-from cdpcli.thirdparty.requests.packages.urllib3.connectionpool import HTTPConnectionPool   # noqa
-from cdpcli.thirdparty.requests.packages.urllib3.connectionpool import HTTPSConnectionPool  # noqa
-from cdpcli.thirdparty.requests.sessions import REDIRECT_STATI
+from requests import models
+from requests.sessions import REDIRECT_STATI
+from urllib3.connection import HTTPConnection
+from urllib3.connection import VerifiedHTTPSConnection  # noqa
+from urllib3.connectionpool import HTTPConnectionPool   # noqa
+from urllib3.connectionpool import HTTPSConnectionPool  # noqa
 
 
 def _urljoin(endpoint_url, url_path):

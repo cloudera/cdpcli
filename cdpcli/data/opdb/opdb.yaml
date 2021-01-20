@@ -641,4 +641,3 @@ definitions:
         description: Kerberos configuration information
         $ref: '#/definitions/KerberosConfiguration'
 x-audit: true
-x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_ODX_API

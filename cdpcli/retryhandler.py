@@ -19,9 +19,8 @@ import functools
 import logging
 
 from cdpcli.exceptions import EndpointConnectionError
-from cdpcli.thirdparty.requests import ConnectionError, Timeout
-from cdpcli.thirdparty.requests.packages.urllib3.exceptions \
-    import ClosedPoolError
+from requests import ConnectionError, Timeout
+from urllib3.exceptions import ClosedPoolError
 
 
 LOG = logging.getLogger('cdpcli.retryhandler')

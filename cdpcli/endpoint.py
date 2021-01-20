@@ -23,9 +23,9 @@ from cdpcli.cdprequest import create_request_object
 from cdpcli.compat import six
 from cdpcli.exceptions import EndpointConnectionError
 from cdpcli.parser import ResponseParserFactory
-from cdpcli.thirdparty.requests.exceptions import ConnectionError
-from cdpcli.thirdparty.requests.sessions import Session
-from cdpcli.thirdparty.requests.utils import get_environ_proxies
+from requests.exceptions import ConnectionError
+from requests.sessions import Session
+from requests.utils import get_environ_proxies
 
 
 DEFAULT_TIMEOUT = 60

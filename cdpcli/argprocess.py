@@ -329,7 +329,8 @@ class ParamShorthandDocGen(object):
         try:
             if argument_model.type_name == LIST_TYPE:
                 argument_model = argument_model.member
-                return self._shorthand_docs(argument_model, stack) + ' ...'
+                return self._shorthand_docs(argument_model, stack) + \
+                    ' ... (separate items with spaces)'
             else:
                 return self._shorthand_docs(argument_model, stack)
         except TooComplexError:

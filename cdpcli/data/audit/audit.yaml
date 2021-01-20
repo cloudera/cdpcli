@@ -402,4 +402,3 @@ definitions:
         format: int64
         description: The archive timestamp of the batch.
 x-audit: true
-x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_AUDIT_API
