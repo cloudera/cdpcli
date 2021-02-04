@@ -1,10 +1,9 @@
-Metadata-Version: 1.1
+Metadata-Version: 2.1
 Name: cdpcli
-Version: 0.9.24
+Version: 0.9.25
 Summary: Cloudera CDP Command Line Interface
 Home-page: https://console.cdp.cloudera.com/
 Author: Cloudera, Inc.
-Author-email: UNKNOWN
 License: Apache License 2.0
 Description: # Cloudera CDP Command Line Interface
         
@@ -81,6 +80,13 @@ Description: # Cloudera CDP Command Line Interface
         $ cdp configure --profile my-other-user
         ```
         
+        ### Credential Environment Variables
+        
+        An alternative to storing credentials in *$HOME/.cdp/credentials* is to pass
+        them using the environment variables `CDP_ACCESS_KEY_ID` and `CDP_PRIVATE_KEY`.
+        However, these variables are ignored when the `--profile` option is used when
+        running the CLI (see below).
+        
         ## Running
         
         Basic syntax:
@@ -141,3 +147,4 @@ Classifier: Programming Language :: Python :: 3.6
 Classifier: Programming Language :: Python :: 3.7
 Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
+Description-Content-Type: text/markdown

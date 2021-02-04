@@ -73,6 +73,13 @@ each user. Each profile stores a separate set of credentials.
 $ cdp configure --profile my-other-user
 ```
 
+### Credential Environment Variables
+
+An alternative to storing credentials in *$HOME/.cdp/credentials* is to pass
+them using the environment variables `CDP_ACCESS_KEY_ID` and `CDP_PRIVATE_KEY`.
+However, these variables are ignored when the `--profile` option is used when
+running the CLI (see below).
+
 ## Running
 
 Basic syntax:

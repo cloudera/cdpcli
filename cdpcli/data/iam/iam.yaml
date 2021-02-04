@@ -1,6 +1,7 @@
 swagger: '2.0'
 x-endpoint-name: iam
 x-products: ALTUS,CDP
+x-form-factors: public,private
 x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
@@ -654,7 +655,7 @@ paths:
   /iam/deleteMachineUser:
     post:
       summary: Delete a machine user.
-      description: Deletes a machine user previously created in the account.
+      description: Deletes a machine user. This includes deleting all associated access keys and unassigning all roles and resource roles assigned to the machine user. The machine user is also removed from all groups it belongs to. If the call succeeds the machine user will not be able to use any access keys to access the CDP control plane. Note that user-sync is not triggered yet by this call and the caller must trigger that to ensure that the machine user loses access to all environments as soon as possible.
       operationId: deleteMachineUser
       x-mutating: true
       parameters:

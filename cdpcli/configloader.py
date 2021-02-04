@@ -15,12 +15,12 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import configparser
 import copy
 import os
 import shlex
 
 from cdpcli.exceptions import ConfigNotFound, ConfigParseError
-from six.moves import configparser
 
 
 def multi_file_load_config(*filenames):

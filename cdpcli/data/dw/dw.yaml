@@ -1,6 +1,7 @@
 swagger: '2.0'
 x-endpoint-name: dw
 x-products: CDP
+x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   version: 0.1-SNAPSHOT

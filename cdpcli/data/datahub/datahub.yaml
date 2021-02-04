@@ -2,6 +2,7 @@ swagger: '2.0'
 x-endpoint-name: datahub
 x-interface-model: cdp
 x-products: CDP
+x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:

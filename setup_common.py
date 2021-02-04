@@ -39,7 +39,6 @@ def get_requirements(release):
             "colorama>=0.2.5,<=0.3.9",
             "asn1crypto>=0.21.1",
             "rsa>=3.4.2",
-            "gitpython>=2.1.8",
             "pure25519>=0.0.1",
             "requests>=2.21.0",
             "urllib3>=1.21.1"]

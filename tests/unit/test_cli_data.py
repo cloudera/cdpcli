@@ -41,14 +41,15 @@ def test_cli_options_match_service_model_validator():
     # CLI and instead have this unit test which is meant to catch any divergence.
     #
     # So... if you add a CLI option, and this test fails. Update the CLI_OPTIONS
-    # list in: services/libs/protocols/scripts/validate_service_models.py and
-    # then update this list here.
+    # list in: services/libs/protocols-yaml-parent/scripts/validate_service_models.py
+    # and then update this list here.
     validated_cli_options = ['version',
                              'debug',
                              'no-verify-tls',
                              'ca-bundle',
                              'endpoint-url',
                              'cdp-endpoint-url',
+                             'force-ipv4',
                              'access-token',
                              'output',
                              'color',

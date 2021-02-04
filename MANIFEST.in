@@ -1,6 +1,5 @@
 include LICENSE.txt
 include LICENSE_SUPPLEMENTAL_DISCLAIMER.txt
-include NOTICES.txt
 include README.md
 recursive-include cdpcli/data *.json
 recursive-include cdpcli/data *.yaml

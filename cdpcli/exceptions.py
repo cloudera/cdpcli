@@ -240,3 +240,19 @@ class WrongPuttyKeyError(CdpCLIError):
     A wrong key has been used with a compatible program.
     """
     fmt = 'Key file file format is incorrect. Putty expects a ppk file.'
+
+
+class MissingArgumentError(CdpCLIError):
+
+    """
+    The following argument is required.
+    """
+    fmt = 'The following argument is required: {arg_name}.'
+
+
+class InteractiveLoginError(CdpCLIError):
+
+    """
+    Login failed.
+    """
+    fmt = 'Login failed: {err_msg}.'

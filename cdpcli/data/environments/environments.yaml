@@ -2,6 +2,7 @@ swagger: '2.0'
 x-endpoint-name: environments2
 x-display-name: environments
 x-products: CDP
+x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:

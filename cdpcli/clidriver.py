@@ -16,6 +16,7 @@
 
 import logging
 import platform
+import socket
 import sys
 
 from cdpcli import LIST_TYPE
@@ -44,6 +45,7 @@ from cdpcli.extensions.arguments import OverrideRequiredArgsArgument
 from cdpcli.extensions.cliinputjson import add_cli_input_json
 from cdpcli.extensions.configure.configure import ConfigureCommand
 from cdpcli.extensions.generatecliskeleton import add_generate_skeleton
+from cdpcli.extensions.interactivelogin import LoginCommand
 from cdpcli.extensions.paginate import add_pagination_params
 from cdpcli.extensions.paginate import check_should_enable_pagination
 from cdpcli.formatter import get_formatter
@@ -56,7 +58,7 @@ from cdpcli.paramfile import ParamFileVisitor
 from cdpcli.parser import ResponseParserFactory
 from cdpcli.retryhandler import create_retry_handler
 from cdpcli.translate import build_retry_config
-
+import urllib3.util.connection as urllib3_connection
 
 LOG = logging.getLogger('cdpcli.clidriver')
 ROOT_LOGGER = logging.getLogger('')
@@ -128,6 +130,7 @@ class CLIDriver(object):
         for service_name in services:
             commands[service_name] = ServiceCommand(self, service_name)
         ConfigureCommand.add_command(commands)
+        LoginCommand.add_command(commands)
         return commands
 
     def _get_argument_table(self):
@@ -202,6 +205,14 @@ class CLIDriver(object):
             LOG.debug("Arguments entered to CLI: %s", sys.argv[1:])
         else:
             self._setup_logger(logging.WARNING)
+
+        if args.force_ipv4:
+            # Based on SO /a/46972341
+            LOG.debug("Forcing IPv4 connections only")
+
+            def _allowed_gai_family():
+                return socket.AF_INET
+            urllib3_connection.allowed_gai_family = _allowed_gai_family
 
     def _setup_logger(self, log_level):
         ROOT_LOGGER.setLevel(logging.DEBUG)
