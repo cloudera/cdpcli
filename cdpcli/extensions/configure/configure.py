@@ -55,17 +55,12 @@ class ConfigureCommand(BasicCommand):
     DESCRIPTION = BasicCommand.FROM_FILE()
     SYNOPSIS = ('cdp configure [--profile profile-name]')
     EXAMPLES = (
-        'To create a new configuration::\n'
+        'To create a new default configuration for CDP Public Cloud::\n'
         '\n'
         '    $ cdp configure\n'
         '    CDP Access Key ID [None]: accesskey\n'
         '    CDP Private Key [None]: privatekey\n'
-        '\n'
-        'To update just the access key id::\n'
-        '\n'
-        '    $ cdp configure\n'
-        '    CDP Access Key ID [***]:\n'
-        '    CDP Private Key [****]:\n'
+        '    CDP Endpoint URL (blank for public cloud) [None]:\n'
     )
     SUBCOMMANDS = [
         {'name': 'list', 'command_class': ConfigureListCommand},
@@ -75,9 +70,11 @@ class ConfigureCommand(BasicCommand):
 
     # If you want to add new values to prompt, update this list here.
     VALUES_TO_PROMPT = [
-        # (logical_name, config_name, prompt_text)
+        # (config_name, prompt_text)
         (CDP_ACCESS_KEY_ID_KEY_NAME, "CDP Access Key ID"),
-        (CDP_PRIVATE_KEY_KEY_NAME, "CDP Private Key")
+        (CDP_PRIVATE_KEY_KEY_NAME, "CDP Private Key"),
+        (EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME,
+         "CDP Endpoint URL (blank for public cloud)")
     ]
 
     def __init__(self, prompter=None, config_writer=None):
@@ -105,14 +102,6 @@ class ConfigureCommand(BasicCommand):
                                                  prompt_text)
             if new_value is not None and new_value != current_value:
                 new_values[config_name] = new_value
-
-        if parsed_globals.endpoint_url is not None:
-            new_values[EndpointResolver.ENDPOINT_URL_KEY_NAME] = \
-                parsed_globals.endpoint_url
-
-        if parsed_globals.cdp_endpoint_url is not None:
-            new_values[EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME] = \
-                parsed_globals.cdp_endpoint_url
 
         config_filename = os.path.expanduser(
             context.get_config_variable('config_file'))

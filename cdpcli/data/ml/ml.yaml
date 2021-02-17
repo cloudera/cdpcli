@@ -5,11 +5,12 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.1-SNAPSHOT
+  version: __API_VERSION__
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
   description: Install and manage Cloudera Machine Learning applications.
+  termsOfService: https://www.cloudera.com/legal/commercial-terms-and-conditions.html
 schemes:
   - https
 consumes:
@@ -274,6 +275,63 @@ definitions:
       message:
         type: string
         description: The error message.
+  ListWorkspaceAccessRequest:
+    type: object
+    description: Request object for the ListWorkspace method.
+    properties:
+      environmentName:
+        type: string
+        description: The environment that the workspace is a member of.
+      workspaceName:
+        type: string
+        description: The name of the workspace to list access.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to list access. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
+  GetKubeconfigResponse:
+    type: object
+    description: Response object for the GetKubeconfig method.
+    required:
+      - kubeconfig
+    properties:
+      kubeconfig:
+        type: string
+        description: The list of users that have access.
+        x-sensitive: true
+  Topology:
+    type: object
+    description: Contains the information about topology.
+    properties:
+      subnets:
+        type: array
+        items:
+          type: string
+        description: The options for subnets.
+  GetAuditEventsRequest:
+    type: object
+    description: GetAuditEventsRequest to get all audit events for a given workspace crn.
+    required:
+      - workspaceCrn
+    properties:
+      workspaceCrn:
+        type: string
+        description: Workspace crn for which audit events to be fetched.
+  UpgradeWorkspaceRequest:
+    type: object
+    description: Request object for the UpgradeWorkspace method.
+    properties:
+      environmentName:
+        type: string
+        description: The environment of the workspace.
+      workspaceName:
+        type: string
+        description: The name of the workspace.
+      mlVersion:
+        type: string
+        description: The version of workspace to upgrade to.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
   RootVolume:
     type: object
     description: Configuration for instance root device volume
@@ -284,30 +342,6 @@ definitions:
         type: integer
         format: int64
         description: The volume size in GB.
-  GetLogsRequest:
-    type: object
-    description: GetLogsRequestfor getting logs for a request ID.
-    required:
-      - workspaceCrn
-      - requestID
-    properties:
-      workspaceCrn:
-        type: string
-        description: WorkspaceCrn the requestID belongs to.
-      requestID:
-        type: string
-        description: Unique Key to identify a set of logs.
-      fetchAll:
-        type: boolean
-        description: Flag to fetch all logs.
-      pageSize:
-        type: integer
-        format: int32
-        description: Limit the number of logs.
-      offset:
-        type: integer
-        format: int32
-        description: offset from which the logs should be fetched.
   GetLogsResponse:
     type: object
     description: GetLogsResponse contains all the logs for a given request id.
@@ -317,99 +351,6 @@ definitions:
       auditLogs:
         description: Contains all the logs for a given request id.
         $ref: '#/definitions/AuditLogs'
-  AuditLogs:
-    type: object
-    description: AuditLogs contains all the logs for a given request id.
-    required:
-      - requestID
-      - count
-      - logs
-    properties:
-      requestID:
-        type: string
-        description: The request ID associated with a long-running operation to fetch the logs for.
-      count:
-        type: integer
-        format: int32
-        description: Total number of logs associated with the request id.
-      logs:
-        type: array
-        items:
-          $ref: '#/definitions/AuditLog'
-        description: Contains all the logs for a given request id.
-  AuditLog:
-    type: object
-    description: Audit log represents an individual log.
-    required:
-      - createdDate
-      - log
-    properties:
-      createdDate:
-        type: string
-        format: date-time
-        description: Time at which the log is created.
-      log:
-        type: string
-        description: Log description.
-  GetAuditEventsRequest:
-    type: object
-    description: GetAuditEventsRequest to get all audit events for a given workspace crn.
-    required:
-      - workspaceCrn
-    properties:
-      workspaceCrn:
-        type: string
-        description: Workspace crn for which audit events to be fetched.
-  GetAuditEventsResponse:
-    type: object
-    description: GetAuditEventsResponse containes all the audit events for a given workspace crn.
-    required:
-      - auditEvents
-    properties:
-      auditEvents:
-        description: Contains all the audit events for a given workspace crn.
-        $ref: '#/definitions/AuditEvents'
-  AuditEvents:
-    type: object
-    description: AuditEvents contains all the audit events for a given workspace crn.
-    required:
-      - workspaceCrn
-      - events
-    properties:
-      workspaceCrn:
-        type: string
-        description: Workspace crn unique for the set of audit events.
-      events:
-        type: array
-        items:
-          $ref: '#/definitions/AuditEvent'
-        description: AuditEvent belong to the workspace crn.
-  AuditEvent:
-    type: object
-    description: Audit event descibes an performed or performing in a given workspace.
-    required:
-      - workspaceCrn
-      - userCrn
-      - requestID
-      - action
-      - createdDate
-    properties:
-      workspaceCrn:
-        type: string
-        description: Workspace crn where the event observed.
-      userCrn:
-        type: string
-        description: UserCrn to track which user has caused the event.
-      requestID:
-        type: string
-        description: Unique request ID to keep track of event.
-      action:
-        type: string
-        description: Action the user has generated.
-      createdDate:
-        type: string
-        format: date-time
-        description: Time at creation of event.
   Autoscaling:
     type: object
     description: Configuration for instance auto scaling.
@@ -428,115 +369,19 @@ definitions:
       enabled:
         type: boolean
         description: The boolean flag to enable the auto scaling.
-  InstanceGroup:
+  ListWorkspaceAccessResponse:
     type: object
-    description: Contains the necessary info for an instance group.
+    description: Response object for the ListWorkspaceAccess method.
     required:
-      - instanceType
+      - users
     properties:
-      instanceType:
-        type: string
-        description: The cloud provider instance type for the node instance.
-      instanceTier:
-        type: string
-        description: The tier of the instance i.e. on-demand/spot.
-      instanceCount:
-        type: integer
-        format: int32
-        description: The initial number of instance node.
-      name:
-        type: string
-        description: The unique name of the instance group.
-      ingressRules:
+      users:
         type: array
         items:
           type: string
-        description: The networking rules for the ingress.
-      rootVolume:
-        description: The root volume of the instance.
-        $ref: '#/definitions/RootVolume'
-      autoscaling:
-        description: The auto scaling configuration.
-        $ref: '#/definitions/Autoscaling'
-  WorkspaceInstanceGroup:
-    type: object
-    description: Instance group information to show in workspace details.
-    required:
-      - instanceType
-      - instanceCount
-      - instanceGroupName
-      - minInstances
-      - maxInstances
-      - instances
-      - tags
-    properties:
-      instanceType:
-        type: string
-        description: The cloud provider instance type for the node instance.
-      instanceCount:
-        type: integer
-        format: int32
-        description: The initial number of instance node.
-      instanceGroupName:
-        type: string
-        description: The unique name of the instance group.
-      minInstances:
-        type: integer
-        format: int32
-        description: The minimum number of instances that can be deployed to this instance group. If the value is 0, the group might be empty.
-      maxInstances:
-        type: integer
-        format: int32
-        description: The maximum number of instances that can be deployed to this instance group.
-      instances:
-        type: array
-        items:
-          $ref: '#/definitions/Instance'
-        description: Instances in the instance group.
-      tags:
-        type: array
-        items:
-          $ref: '#/definitions/Tag'
-        description: Tags are key/value pairs that are applied to all tag-able resources deployed in the workspace's cloud environment.
-  Instance:
-    type: object
-    description: Represents each instance in an instance group.
-    required:
-      - instanceId
-      - availabilityZone
-    properties:
-      instanceId:
-        type: string
-        description: Unique instance Id generated by the cloud provider.
-      availabilityZone:
-        type: string
-        description: Availability zone the instance belongs to.
-  Tag:
-    type: object
-    description: Contains a single tag entry associated with a workspace.
-    required:
-      - key
-      - value
-    properties:
-      key:
-        type: string
-        description: The name for the tag.
-      value:
-        type: string
-        description: The value for the tag.
-  ProvisionTag:
-    type: object
-    description: Contains a single tag entry that will be configured on cloud resources associated with a workspace.
-    required:
-      - key
-      - value
-    properties:
-      key:
-        type: string
-        description: The name for the tag.
-      value:
-        type: string
-        description: The value for the tag.
+          x-sensitive: true
+        description: The list of users that have access.
+        x-sensitive: true
   ProvisionK8sRequest:
     type: object
     description: Request object for workspace provision.
@@ -560,99 +405,6 @@ definitions:
       network:
         description: The overlay network for an AWS Kubernetes cluster's CNI.
         $ref: '#/definitions/OverlayNetwork'
-  OverlayNetwork:
-    type: object
-    description: Contains the information about overlay network.
-    properties:
-      plugin:
-        type: string
-        description: 'The plugin specifies specific cni vendor, ex: calico, weave etc.'
-      topology:
-        description: The options for overlay topology.
-        $ref: '#/definitions/Topology'
-  Topology:
-    type: object
-    description: Contains the information about topology.
-    properties:
-      subnets:
-        type: array
-        items:
-          type: string
-        description: The options for subnets.
-  ExistingDatabaseConfig:
-    type: object
-    description: Configurations for bringing an existing database for model metrics
-    properties:
-      existingDatabaseHost:
-        type: string
-        description: Optionally provide a Postgresql database host to export model metrics to.
-      existingDatabasePort:
-        type: string
-        description: Optionally provide a Postgresql database port to export model metrics to.
-      existingDatabaseName:
-        type: string
-        description: Optionally provide a Postgresql database name to export model metrics to.
-      existingDatabaseUser:
-        type: string
-        description: Optionally provide a Postgresql database user to use when exporting model metrics.
-      existingDatabasePassword:
-        type: string
-        description: Optionally provide a Postgresql database password to use when exporting model metrics.
-        x-sensitive: true
-  CreateWorkspaceRequest:
-    type: object
-    description: Request object for the CreateWorkspace method.
-    required:
-      - environmentName
-      - workspaceName
-    properties:
-      environmentName:
-        type: string
-        description: The environment for the workspace to create.
-      workspaceName:
-        type: string
-        description: The name of the workspace to create.
-      usePublicLoadBalancer:
-        type: boolean
-        description: The boolean flag to request public load balancer. By default private load balancer is used.
-      disableTLS:
-        type: boolean
-        description: The boolean flag to disable TLS setup for workspace. By default the TLS is enabled.
-      provisionK8sRequest:
-        description: The request for Kubernetes workspace provision.
-        $ref: '#/definitions/ProvisionK8sRequest'
-      enableMonitoring:
-        type: boolean
-        description: The boolean flag is used to enable mlonitoring. By default monitoring is disabled.
-      existingNFS:
-        type: string
-        description: Optionally use an existing NFS by providing the hostname and desired path (Azure and Private Cloud only).
-      loadBalancerIPWhitelists:
-        type: array
-        items:
-          type: string
-        description: The whitelist of ips for loadBalancer.
-      nfsVersion:
-        type: string
-        description: The NFS Protocol version of the NFS server we are using for Azure and Private Cloud.
-      existingDatabaseConfig:
-        description: Optional configurations for an existing Postgres to export model metrics to.
-        $ref: '#/definitions/ExistingDatabaseConfig'
-  CreateWorkspaceResponse:
-    type: object
-    description: Response object for the CreateWorkspace method.
-  ListWorkspacesRequest:
-    type: object
-    description: Request object for the ListWorkspaces method.
-  ListWorkspacesResponse:
-    type: object
-    description: Response object for the ListWorkspaces method.
-    properties:
-      workspaces:
-        type: array
-        items:
-          $ref: '#/definitions/WorkspaceSummary'
-        description: The list of workspaces.
   WorkspaceSummary:
     type: object
     description: A Cloudera Machine Learning workspace which includes the deployed configuration details.
@@ -727,6 +479,319 @@ definitions:
         items:
           $ref: '#/definitions/HealthInfo'
         description: The health info information of the workspace.
+  ProvisionTag:
+    type: object
+    description: Contains a single tag entry that will be configured on cloud resources associated with a workspace.
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The name for the tag.
+      value:
+        type: string
+        description: The value for the tag.
+  GetAuditEventsResponse:
+    type: object
+    description: GetAuditEventsResponse containes all the audit events for a given workspace crn.
+    required:
+      - auditEvents
+    properties:
+      auditEvents:
+        description: Contains all the audit events for a given workspace crn.
+        $ref: '#/definitions/AuditEvents'
+  GetLogsRequest:
+    type: object
+    description: GetLogsRequestfor getting logs for a request ID.
+    required:
+      - workspaceCrn
+      - requestID
+    properties:
+      workspaceCrn:
+        type: string
+        description: WorkspaceCrn the requestID belongs to.
+      requestID:
+        type: string
+        description: Unique Key to identify a set of logs.
+      fetchAll:
+        type: boolean
+        description: Flag to fetch all logs.
+      pageSize:
+        type: integer
+        format: int32
+        description: Limit the number of logs.
+      offset:
+        type: integer
+        format: int32
+        description: offset from which the logs should be fetched.
+  OverlayNetwork:
+    type: object
+    description: Contains the information about overlay network.
+    properties:
+      plugin:
+        type: string
+        description: 'The plugin specifies specific cni vendor, ex: calico, weave etc.'
+      topology:
+        description: The options for overlay topology.
+        $ref: '#/definitions/Topology'
+  CreateWorkspaceRequest:
+    type: object
+    description: Request object for the CreateWorkspace method.
+    required:
+      - environmentName
+      - workspaceName
+    properties:
+      environmentName:
+        type: string
+        description: The environment for the workspace to create.
+      workspaceName:
+        type: string
+        description: The name of the workspace to create.
+      usePublicLoadBalancer:
+        type: boolean
+        description: The boolean flag to request public load balancer. By default private load balancer is used.
+      disableTLS:
+        type: boolean
+        description: The boolean flag to disable TLS setup for workspace. By default the TLS is enabled.
+      provisionK8sRequest:
+        description: The request for Kubernetes workspace provision.
+        $ref: '#/definitions/ProvisionK8sRequest'
+      enableMonitoring:
+        type: boolean
+        description: The boolean flag is used to enable mlonitoring. By default monitoring is disabled.
+      existingNFS:
+        type: string
+        description: Optionally use an existing NFS by providing the hostname and desired path (Azure and Private Cloud only).
+      loadBalancerIPWhitelists:
+        type: array
+        items:
+          type: string
+        description: The whitelist of ips for loadBalancer.
+      nfsVersion:
+        type: string
+        description: The NFS Protocol version of the NFS server we are using for Azure and Private Cloud.
+      existingDatabaseConfig:
+        description: Optional configurations for an existing Postgres to export model metrics to.
+        $ref: '#/definitions/ExistingDatabaseConfig'
+  DeleteWorkspaceRequest:
+    type: object
+    description: Request object for the DeleteWorkspace method.
+    required:
+      - force
+    properties:
+      force:
+        type: boolean
+        description: Force delete a workspace even if errors occur during deletion. Force delete removes the guarantee that resources in your cloud account will be cleaned up.
+      removeStorage:
+        type: boolean
+        description: The remove storage flag indicates weather to keep the backing workspace filesystem storage or remove it during delete.
+      environmentName:
+        type: string
+        description: The environment for the workspace to delete.
+      workspaceName:
+        type: string
+        description: The name of the workspace to delete.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to delete. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
+  DeleteWorkspaceResponse:
+    type: object
+    description: Response object for the DeleteWorkspace method.
+  InstanceGroup:
+    type: object
+    description: Contains the necessary info for an instance group.
+    required:
+      - instanceType
+    properties:
+      instanceType:
+        type: string
+        description: The cloud provider instance type for the node instance.
+      instanceTier:
+        type: string
+        description: The tier of the instance i.e. on-demand/spot.
+      instanceCount:
+        type: integer
+        format: int32
+        description: The initial number of instance node.
+      name:
+        type: string
+        description: The unique name of the instance group.
+      ingressRules:
+        type: array
+        items:
+          type: string
+        description: The networking rules for the ingress.
+      rootVolume:
+        description: The root volume of the instance.
+        $ref: '#/definitions/RootVolume'
+      autoscaling:
+        description: The auto scaling configuration.
+        $ref: '#/definitions/Autoscaling'
+  RevokeWorkspaceAccessRequest:
+    type: object
+    description: Request object for the RevokeWorkspace method.
+    properties:
+      arn:
+        type: string
+        description: 'The aws user ARN to revoke access to the corresponding EKS cluster. (Deprecated: Use identifier instead).'
+        x-deprecated: true
+      environmentName:
+        type: string
+        description: The environment that the workspace is a member of.
+      workspaceName:
+        type: string
+        description: The name of the workspace to revoke access to.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to revoke access to. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
+      identifier:
+        type: string
+        description: The cloud provider user id which will be granted access to the workspace's Kubernetes cluster.
+  RevokeWorkspaceAccessResponse:
+    type: object
+    description: Response object for the RevokeWorkspaceAccess method.
+  GetLatestWorkspaceVersionRequest:
+    type: object
+    description: Request object for GetLatestWorkspaceVersion.
+  DescribeWorkspaceRequest:
+    type: object
+    description: Request object for the DescribeWorkspace method.
+    properties:
+      environmentName:
+        type: string
+        description: The environment for the workspace to describe.
+      workspaceName:
+        type: string
+        description: The name of the workspace to describe.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to describe. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
+  GetLatestWorkspaceVersionResponse:
+    type: object
+    description: Response object for GetLatestWorkspaceVersion.
+    required:
+      - version
+    properties:
+      version:
+        type: string
+        description: The latest version of a workspace that is used when deploying Cloudera Machine Learning workspaces.
+  AuditLogs:
+    type: object
+    description: AuditLogs contains all the logs for a given request id.
+    required:
+      - requestID
+      - count
+      - logs
+    properties:
+      requestID:
+        type: string
+        description: The request ID associated with a long-running operation to fetch the logs for.
+      count:
+        type: integer
+        format: int32
+        description: Total number of logs associated with the request id.
+      logs:
+        type: array
+        items:
+          $ref: '#/definitions/AuditLog'
+        description: Contains all the logs for a given request id.
+  GrantWorkspaceAccessRequest:
+    type: object
+    description: Request object for the GrantWorkspaceAccess method.
+    properties:
+      arn:
+        type: string
+        description: 'The aws user ARN to grant access to the corresponding EKS cluster. (Deprecated: Use identifier instead).'
+        x-deprecated: true
+      environmentName:
+        type: string
+        description: The environment that the workspace is a member of.
+      workspaceName:
+        type: string
+        description: The name of the workspace to grant access to.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to grant access to. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
+      identifier:
+        type: string
+        description: The cloud provider user id which will be granted access to the workspace's Kubernetes cluster.
+  WorkspaceInstanceGroup:
+    type: object
+    description: Instance group information to show in workspace details.
+    required:
+      - instanceType
+      - instanceCount
+      - instanceGroupName
+      - minInstances
+      - maxInstances
+      - instances
+      - tags
+    properties:
+      instanceType:
+        type: string
+        description: The cloud provider instance type for the node instance.
+      instanceCount:
+        type: integer
+        format: int32
+        description: The initial number of instance node.
+      instanceGroupName:
+        type: string
+        description: The unique name of the instance group.
+      minInstances:
+        type: integer
+        format: int32
+        description: The minimum number of instances that can be deployed to this instance group. If the value is 0, the group might be empty.
+      maxInstances:
+        type: integer
+        format: int32
+        description: The maximum number of instances that can be deployed to this instance group.
+      instances:
+        type: array
+        items:
+          $ref: '#/definitions/Instance'
+        description: Instances in the instance group.
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/Tag'
+        description: Tags are key/value pairs that are applied to all tag-able resources deployed in the workspace's cloud environment.
+  ExistingDatabaseConfig:
+    type: object
+    description: Configurations for bringing an existing database for model metrics
+    properties:
+      existingDatabaseHost:
+        type: string
+        description: Optionally provide a Postgresql database host to export model metrics to.
+      existingDatabasePort:
+        type: string
+        description: Optionally provide a Postgresql database port to export model metrics to.
+      existingDatabaseName:
+        type: string
+        description: Optionally provide a Postgresql database name to export model metrics to.
+      existingDatabaseUser:
+        type: string
+        description: Optionally provide a Postgresql database user to use when exporting model metrics.
+      existingDatabasePassword:
+        type: string
+        description: Optionally provide a Postgresql database password to use when exporting model metrics.
+        x-sensitive: true
+  ListWorkspacesRequest:
+    type: object
+    description: Request object for the ListWorkspaces method.
+  GetKubeconfigRequest:
+    type: object
+    description: Request object for the GetKubeconfig method.
+    properties:
+      environmentName:
+        type: string
+        description: The environment that the workspace is a member of.
+      workspaceName:
+        type: string
+        description: The name of the workspace to list access.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to list access.
   Workspace:
     type: object
     description: A ML workspace, which includes the cluster and storage.
@@ -826,185 +891,41 @@ definitions:
       governanceEnabled:
         type: boolean
         description: Whether governance is enabled.
-  UpgradeWorkspaceRequest:
+  Tag:
     type: object
-    description: Request object for the UpgradeWorkspace method.
-    properties:
-      environmentName:
-        type: string
-        description: The environment of the workspace.
-      workspaceName:
-        type: string
-        description: The name of the workspace.
-      mlVersion:
-        type: string
-        description: The version of workspace to upgrade to.
-      workspaceCrn:
-        type: string
-        description: The CRN of the workspace. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
-  UpgradeWorkspaceResponse:
-    type: object
-    description: Response object for the UpgradeWorkspace method.
-  DescribeWorkspaceRequest:
-    type: object
-    description: Request object for the DescribeWorkspace method.
-    properties:
-      environmentName:
-        type: string
-        description: The environment for the workspace to describe.
-      workspaceName:
-        type: string
-        description: The name of the workspace to describe.
-      workspaceCrn:
-        type: string
-        description: The CRN of the workspace to describe. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
-  DescribeWorkspaceResponse:
-    type: object
-    description: Response object for the DescribeWorkspace method.
+    description: Contains a single tag entry associated with a workspace.
     required:
-      - workspace
+      - key
+      - value
     properties:
-      workspace:
-        description: The workspace.
-        $ref: '#/definitions/Workspace'
-  DeleteWorkspaceRequest:
+      key:
+        type: string
+        description: The name for the tag.
+      value:
+        type: string
+        description: The value for the tag.
+  ListWorkspacesResponse:
     type: object
-    description: Request object for the DeleteWorkspace method.
-    required:
-      - force
+    description: Response object for the ListWorkspaces method.
     properties:
-      force:
-        type: boolean
-        description: Force delete a workspace even if errors occur during deletion. Force delete removes the guarantee that resources in your cloud account will be cleaned up.
-      removeStorage:
-        type: boolean
-        description: The remove storage flag indicates weather to keep the backing workspace filesystem storage or remove it during delete.
-      environmentName:
-        type: string
-        description: The environment for the workspace to delete.
-      workspaceName:
-        type: string
-        description: The name of the workspace to delete.
-      workspaceCrn:
-        type: string
-        description: The CRN of the workspace to delete. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
-  DeleteWorkspaceResponse:
-    type: object
-    description: Response object for the DeleteWorkspace method.
-  GrantWorkspaceAccessRequest:
-    type: object
-    description: Request object for the GrantWorkspaceAccess method.
-    properties:
-      arn:
-        type: string
-        description: 'The aws user ARN to grant access to the corresponding EKS cluster. (Deprecated: Use identifier instead).'
-        x-deprecated: true
-      environmentName:
-        type: string
-        description: The environment that the workspace is a member of.
-      workspaceName:
-        type: string
-        description: The name of the workspace to grant access to.
-      workspaceCrn:
-        type: string
-        description: The CRN of the workspace to grant access to. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
-      identifier:
-        type: string
-        description: The cloud provider user id which will be granted access to the workspace's Kubernetes cluster.
-  GrantWorkspaceAccessResponse:
-    type: object
-    description: Response object for the GrantWorkspaceAccess method.
-    required:
-      - kubeconfig
-    properties:
-      kubeconfig:
-        type: string
-        description: The Kubernetes config file
-        x-sensitive: true
-  RevokeWorkspaceAccessRequest:
-    type: object
-    description: Request object for the RevokeWorkspace method.
-    properties:
-      arn:
-        type: string
-        description: 'The aws user ARN to revoke access to the corresponding EKS cluster. (Deprecated: Use identifier instead).'
-        x-deprecated: true
-      environmentName:
-        type: string
-        description: The environment that the workspace is a member of.
-      workspaceName:
-        type: string
-        description: The name of the workspace to revoke access to.
-      workspaceCrn:
-        type: string
-        description: The CRN of the workspace to revoke access to. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
-      identifier:
-        type: string
-        description: The cloud provider user id which will be granted access to the workspace's Kubernetes cluster.
-  RevokeWorkspaceAccessResponse:
-    type: object
-    description: Response object for the RevokeWorkspaceAccess method.
-  ListWorkspaceAccessRequest:
-    type: object
-    description: Request object for the ListWorkspace method.
-    properties:
-      environmentName:
-        type: string
-        description: The environment that the workspace is a member of.
-      workspaceName:
-        type: string
-        description: The name of the workspace to list access.
-      workspaceCrn:
-        type: string
-        description: The CRN of the workspace to list access. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
-  ListWorkspaceAccessResponse:
-    type: object
-    description: Response object for the ListWorkspaceAccess method.
-    required:
-      - users
-    properties:
-      users:
+      workspaces:
         type: array
         items:
-          type: string
-          x-sensitive: true
-        description: The list of users that have access.
-        x-sensitive: true
-  GetKubeconfigRequest:
+          $ref: '#/definitions/WorkspaceSummary'
+        description: The list of workspaces.
+  Instance:
     type: object
-    description: Request object for the GetKubeconfig method.
-    properties:
-      environmentName:
-        type: string
-        description: The environment that the workspace is a member of.
-      workspaceName:
-        type: string
-        description: The name of the workspace to list access.
-      workspaceCrn:
-        type: string
-        description: The CRN of the workspace to list access.
-  GetKubeconfigResponse:
-    type: object
-    description: Response object for the GetKubeconfig method.
+    description: Represents each instance in an instance group.
     required:
-      - kubeconfig
+      - instanceId
+      - availabilityZone
     properties:
-      kubeconfig:
+      instanceId:
         type: string
-        description: The list of users that have access.
-        x-sensitive: true
-  GetLatestWorkspaceVersionRequest:
-    type: object
-    description: Request object for GetLatestWorkspaceVersion.
-  GetLatestWorkspaceVersionResponse:
-    type: object
-    description: Response object for GetLatestWorkspaceVersion.
-    required:
-      - version
-    properties:
-      version:
+        description: Unique instance Id generated by the cloud provider.
+      availabilityZone:
         type: string
-        description: The latest version of a workspace that is used when deploying Cloudera Machine Learning workspaces.
+        description: Availability zone the instance belongs to.
   HealthInfo:
     type: object
     description: Healthinfo object contains the health information of a resource.
@@ -1033,5 +954,84 @@ definitions:
         items:
           type: string
         description: The detail of the health info.
+  GrantWorkspaceAccessResponse:
+    type: object
+    description: Response object for the GrantWorkspaceAccess method.
+    required:
+      - kubeconfig
+    properties:
+      kubeconfig:
+        type: string
+        description: The Kubernetes config file
+        x-sensitive: true
+  CreateWorkspaceResponse:
+    type: object
+    description: Response object for the CreateWorkspace method.
+  AuditEvent:
+    type: object
+    description: Audit event descibes an performed or performing in a given workspace.
+    required:
+      - workspaceCrn
+      - userCrn
+      - requestID
+      - action
+      - createdDate
+    properties:
+      workspaceCrn:
+        type: string
+        description: Workspace crn where the event observed.
+      userCrn:
+        type: string
+        description: UserCrn to track which user has caused the event.
+      requestID:
+        type: string
+        description: Unique request ID to keep track of event.
+      action:
+        type: string
+        description: Action the user has generated.
+      createdDate:
+        type: string
+        format: date-time
+        description: Time at creation of event.
+  DescribeWorkspaceResponse:
+    type: object
+    description: Response object for the DescribeWorkspace method.
+    required:
+      - workspace
+    properties:
+      workspace:
+        description: The workspace.
+        $ref: '#/definitions/Workspace'
+  UpgradeWorkspaceResponse:
+    type: object
+    description: Response object for the UpgradeWorkspace method.
+  AuditLog:
+    type: object
+    description: Audit log represents an individual log.
+    required:
+      - createdDate
+      - log
+    properties:
+      createdDate:
+        type: string
+        format: date-time
+        description: Time at which the log is created.
+      log:
+        type: string
+        description: Log description.
+  AuditEvents:
+    type: object
+    description: AuditEvents contains all the audit events for a given workspace crn.
+    required:
+      - workspaceCrn
+      - events
+    properties:
+      workspaceCrn:
+        type: string
+        description: Workspace crn unique for the set of audit events.
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/AuditEvent'
+        description: AuditEvent belong to the workspace crn.
 x-audit: true
-x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_ML_API

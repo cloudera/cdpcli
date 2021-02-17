@@ -237,7 +237,7 @@ class TestEndpointCreator(unittest.TestCase):
     def test_altus_endpoint(self):
         endpoint = self.creator.create_endpoint(
             self.service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -248,7 +248,7 @@ class TestEndpointCreator(unittest.TestCase):
     def test_cdp_endpoint(self):
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -260,7 +260,7 @@ class TestEndpointCreator(unittest.TestCase):
         self.cdp_service_model.endpoint_prefix = 'prefix'
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -273,7 +273,7 @@ class TestEndpointCreator(unittest.TestCase):
         endpoint_url = 'https://endpoint.url'
         endpoint = self.creator.create_endpoint(
             self.service_model,
-            endpoint_url=endpoint_url,
+            explicit_endpoint_url=endpoint_url,
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -284,7 +284,7 @@ class TestEndpointCreator(unittest.TestCase):
     def test_create_endpoint_with_customized_timeout(self):
         endpoint = self.creator.create_endpoint(
             self.service_model,
-            endpoint_url='https://example.com',
+            explicit_endpoint_url='https://example.com',
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -296,7 +296,7 @@ class TestEndpointCreator(unittest.TestCase):
         endpoint_url = 'https://endpoint-config.url'
         endpoint = self.creator.create_endpoint(
             self.service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={"endpoint_url": endpoint_url,
                            "config1": "value1"},
             timeout=123,
@@ -309,7 +309,7 @@ class TestEndpointCreator(unittest.TestCase):
         endpoint_url = 'https://endpoint-config.url'
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
             timeout=123,
@@ -323,7 +323,7 @@ class TestEndpointCreator(unittest.TestCase):
         expected = endpoint_url % self.service_model.endpoint_name
         endpoint = self.creator.create_endpoint(
             self.service_model,
-            endpoint_url=endpoint_url,
+            explicit_endpoint_url=endpoint_url,
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -337,7 +337,7 @@ class TestEndpointCreator(unittest.TestCase):
         expected = endpoint_url % self.cdp_service_model.endpoint_prefix
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=endpoint_url,
+            explicit_endpoint_url=endpoint_url,
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -350,7 +350,7 @@ class TestEndpointCreator(unittest.TestCase):
         expected = endpoint_url % self.service_model.endpoint_name
         endpoint = self.creator.create_endpoint(
             self.service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={"endpoint_url": endpoint_url,
                            "config1": "value1"},
             timeout=123,
@@ -365,7 +365,7 @@ class TestEndpointCreator(unittest.TestCase):
         expected = endpoint_url % self.cdp_service_model.endpoint_prefix
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
             timeout=123,
@@ -378,7 +378,7 @@ class TestEndpointCreator(unittest.TestCase):
         endpoint_url = 'https://%s.%s.endpoint.url'
         endpoint = self.creator.create_endpoint(
             self.service_model,
-            endpoint_url=endpoint_url,
+            explicit_endpoint_url=endpoint_url,
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -390,7 +390,7 @@ class TestEndpointCreator(unittest.TestCase):
         endpoint_url = 'https://%s.%s.endpoint.url'
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=endpoint_url,
+            explicit_endpoint_url=endpoint_url,
             scoped_config={},
             timeout=123,
             response_parser_factory=self.factory_patch,
@@ -402,7 +402,7 @@ class TestEndpointCreator(unittest.TestCase):
         endpoint_url = 'https://%s.%s.endpoint-config.url'
         endpoint = self.creator.create_endpoint(
             self.service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={"endpoint_url": endpoint_url,
                            "config1": "value1"},
             timeout=123,
@@ -415,7 +415,7 @@ class TestEndpointCreator(unittest.TestCase):
         endpoint_url = 'https://%s.%s.endpoint-config.url'
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
             timeout=123,
@@ -428,7 +428,7 @@ class TestEndpointCreator(unittest.TestCase):
         endpoint_url = 'https://foo-api.internal.url'
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
             timeout=123,
@@ -443,7 +443,7 @@ class TestEndpointCreator(unittest.TestCase):
         expected = endpoint_url % self.cdp_service_model.endpoint_prefix
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
-            endpoint_url=None,
+            explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
             timeout=123,

@@ -59,14 +59,14 @@ class ClientCreator(object):
 
     def create_client(self,
                       service_name,
-                      endpoint_url,
+                      explicit_endpoint_url,
                       tls_verification,
                       credentials,
                       client_config=None):
         service_model = self._load_service_model(service_name)
         cls = self._create_client_class(service_name, service_model)
         client_args = self._get_client_args(service_model,
-                                            endpoint_url,
+                                            explicit_endpoint_url,
                                             tls_verification,
                                             credentials,
                                             client_config)
@@ -87,10 +87,12 @@ class ClientCreator(object):
 
     def _get_client_args(self,
                          service_model,
-                         endpoint_url,
+                         explicit_endpoint_url,
                          tls_verification,
                          credentials,
                          client_config):
+        """Get keyword arguments for constructing a client object.
+        """
         serializer = create_serializer()
         if client_config is not None:
             connect_timeout = client_config.connect_timeout
@@ -104,7 +106,7 @@ class ClientCreator(object):
             read_timeout = DEFAULT_TIMEOUT
         endpoint = self._endpoint_creator.create_endpoint(
             service_model,
-            endpoint_url,
+            explicit_endpoint_url,
             self._context.get_scoped_config(),
             self._response_parser_factory,
             tls_verification,

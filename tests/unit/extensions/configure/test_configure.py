@@ -34,9 +34,9 @@ class TestConfigureCommand(unittest.TestCase):
         self.writer = mock.Mock()
         self.global_args = mock.Mock()
         self.global_args.profile = None
-        self.global_args.endpoint_url = None
-        self.global_args.cdp_endpoint_url = None
-        self.precanned = PrecannedPrompter(value='new_value')
+        self.precanned = PrecannedPrompter(access_key_id='new_access_key_id',
+                                           private_key='new_private_key',
+                                           cdp_endpoint_url=None)
         self.context = FakeContext({'config_file': 'myconfigfile'})
         self.configure = configure.ConfigureCommand(prompter=self.precanned,
                                                     config_writer=self.writer)
@@ -56,55 +56,30 @@ class TestConfigureCommand(unittest.TestCase):
         self.configure(self.context, args=[], parsed_globals=self.global_args)
         # Credentials are always written to the shared credentials file.
         self.assert_credentials_file_updated_with(
-            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_value',
-             CDP_PRIVATE_KEY_KEY_NAME: 'new_value'},
+            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_access_key_id',
+             CDP_PRIVATE_KEY_KEY_NAME: 'new_private_key'},
             config_file_comment=CREDENTIAL_FILE_COMMENT)
 
         # Non-credentials config is written to the config file.
         self.writer.update_config.assert_called_with(
             {}, 'myconfigfile')
 
-    def test_configure_command_with_endpoint_url(self):
-        self.global_args.endpoint_url = "http://foo.com"
-        self.configure(self.context, args=[], parsed_globals=self.global_args)
-        # Credentials are always written to the shared credentials file.
-        self.assert_credentials_file_updated_with(
-            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_value',
-             CDP_PRIVATE_KEY_KEY_NAME: 'new_value'},
-            config_file_comment=CREDENTIAL_FILE_COMMENT)
-
-        # Non-credentials config is written to the config file.
-        self.writer.update_config.assert_called_with(
-            {EndpointResolver.ENDPOINT_URL_KEY_NAME: "http://foo.com"}, 'myconfigfile')
-
     def test_configure_command_with_cdp_endpoint_url(self):
-        self.global_args.cdp_endpoint_url = "http://foo.com"
+        self.precanned = PrecannedPrompter(access_key_id='new_access_key_id',
+                                           private_key='new_private_key',
+                                           cdp_endpoint_url='http://foo.com')
+        self.configure = configure.ConfigureCommand(prompter=self.precanned,
+                                                    config_writer=self.writer)
         self.configure(self.context, args=[], parsed_globals=self.global_args)
         # Credentials are always written to the shared credentials file.
         self.assert_credentials_file_updated_with(
-            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_value',
-             CDP_PRIVATE_KEY_KEY_NAME: 'new_value'},
+            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_access_key_id',
+             CDP_PRIVATE_KEY_KEY_NAME: 'new_private_key'},
             config_file_comment=CREDENTIAL_FILE_COMMENT)
 
         # Non-credentials config is written to the config file.
         self.writer.update_config.assert_called_with(
             {EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME: "http://foo.com"},
-            'myconfigfile')
-
-    def test_configure_command_with_both_endpoint_urls(self):
-        self.global_args.endpoint_url = "http://foo.com"
-        self.global_args.cdp_endpoint_url = "http://bar.com"
-        self.configure(self.context, args=[], parsed_globals=self.global_args)
-        # Credentials are always written to the shared credentials file.
-        self.assert_credentials_file_updated_with(
-            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_value',
-             CDP_PRIVATE_KEY_KEY_NAME: 'new_value'},
-            config_file_comment=CREDENTIAL_FILE_COMMENT)
-
-        # Non-credentials config is written to the config file.
-        self.writer.update_config.assert_called_with(
-            {EndpointResolver.ENDPOINT_URL_KEY_NAME: "http://foo.com",
-             EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME: "http://bar.com"},
             'myconfigfile')
 
     def test_same_values_are_not_changed(self):
@@ -119,9 +94,10 @@ class TestConfigureCommand(unittest.TestCase):
         # If a user hits enter, this will result in a None value which means
         # don't change the existing values.  In this case, we don't need
         # to write anything out to the config.
-        user_presses_enter = None
-        precanned = PrecannedPrompter(value=user_presses_enter)
-        self.configure = configure.ConfigureCommand(prompter=precanned,
+        self.precanned = PrecannedPrompter(access_key_id=None,
+                                           private_key=None,
+                                           cdp_endpoint_url=None)
+        self.configure = configure.ConfigureCommand(prompter=self.precanned,
                                                     config_writer=self.writer)
         self.configure(self.context, args=[], parsed_globals=self.global_args)
         self.assertFalse(self.writer.update_config.called)
@@ -137,8 +113,8 @@ class TestConfigureCommand(unittest.TestCase):
         self.configure(self.context, args=[], parsed_globals=self.global_args)
         # Note the __section__ key name.
         self.assert_credentials_file_updated_with(
-            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_value',
-             CDP_PRIVATE_KEY_KEY_NAME: 'new_value',
+            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_access_key_id',
+             CDP_PRIVATE_KEY_KEY_NAME: 'new_private_key',
              '__section__': 'myname'},
             config_file_comment=CREDENTIAL_FILE_COMMENT)
         self.writer.update_config.assert_called_with(
@@ -156,8 +132,8 @@ class TestConfigureCommand(unittest.TestCase):
         self.global_args.profile = 'profile-does-not-exist'
         self.configure(context, args=[], parsed_globals=self.global_args)
         self.assert_credentials_file_updated_with(
-            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_value',
-             CDP_PRIVATE_KEY_KEY_NAME: 'new_value',
+            {CDP_ACCESS_KEY_ID_KEY_NAME: 'new_access_key_id',
+             CDP_PRIVATE_KEY_KEY_NAME: 'new_private_key',
              '__section__': 'profile-does-not-exist'},
             config_file_comment=CREDENTIAL_FILE_COMMENT)
         self.writer.update_config.assert_called_with(
@@ -217,7 +193,7 @@ class TestInteractivePrompter(unittest.TestCase):
         prompter.get_value(
             current_value='mycurrentvalue', config_name='not_a_secret_key',
             prompt_text='Enter value')
-        # We should also not display the entire priate key.
+        # We should display the entire non-secret key.
         prompt_text = self.stdout.getvalue()
         self.assertIn('mycurrentvalue', prompt_text)
         self.assertRegexpMatches(prompt_text, r'\[mycurrentvalue\]')
@@ -274,23 +250,23 @@ class TestConfigValueMasking(unittest.TestCase):
 
 class PrecannedPrompter(object):
 
-    def __init__(self, value):
-        self._value = value
+    def __init__(self, access_key_id, private_key, cdp_endpoint_url):
+        self._access_key_id = access_key_id
+        self._private_key = private_key
+        self._cdp_endpoint_url = cdp_endpoint_url
 
-    def get_value(self, current_value, logical_name, prompt_text=''):
-        return self._value
+    def get_value(self, current_value, config_name, prompt_text=''):
+        if config_name == CDP_ACCESS_KEY_ID_KEY_NAME:
+            return self._access_key_id
+        elif config_name == CDP_PRIVATE_KEY_KEY_NAME:
+            return self._private_key
+        elif config_name == EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME:
+            return self._cdp_endpoint_url
+        else:
+            return None
 
 
 class EchoPrompter(object):
 
-    def get_value(self, current_value, logical_name, prompt_text=''):
-        return current_value
-
-
-class KeyValuePrompter(object):
-
-    def __init__(self, mapping):
-        self.mapping = mapping
-
     def get_value(self, current_value, config_name, prompt_text=''):
-        return self.mapping.get(prompt_text)
+        return current_value

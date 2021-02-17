@@ -6,11 +6,12 @@ x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.1-SNAPSHOT
+  version: __API_VERSION__
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
   description: Cloudera CDP IAM is a web service that you can use to manage users and user permissions under your CDP account.
+  termsOfService: https://www.cloudera.com/legal/commercial-terms-and-conditions.html
 schemes:
   - https
 consumes:
@@ -1635,6 +1636,9 @@ definitions:
       samlMetadataDocument:
         type: string
         description: The original metadata that was passed while creating the SAML provider connector. This field will not be set when the SAML provider does not have metadata. This field will not be set for listSamlProviders API response.
+      cdpSpMetadata:
+        type: string
+        description: The Service Provider SAML metadata specific to this CDP SAML provider. This field will only be set for createSamlProvider and describeSamlProvider API calls.
   SshPublicKey:
     type: object
     description: Information about an SSH public key.

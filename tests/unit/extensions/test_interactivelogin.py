@@ -11,10 +11,13 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import io
 import os
 import re
+import sys
 import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -94,9 +97,16 @@ class TestLoginCommand(unittest.TestCase):
         m = re.search('http%3A%2F%2Flocalhost%3A\\d+%2FinteractiveLogin', url)
         self.assertIsNotNone(m)
         return_url = urllib.parse.unquote(m.group())
-        resp = urllib.request.urlopen(return_url + login_params)
-        self.assertEqual(resp.getcode(), 200)
-        result['succeeded'] = True
+        try:
+            if login_params.startswith('/'):
+                req_url = return_url.replace('/interactiveLogin', login_params)
+            else:
+                req_url = return_url + login_params
+            resp = urllib.request.urlopen(req_url)
+            result['status_code'] = resp.getcode()
+            result['succeeded'] = True
+        except urllib.error.HTTPError as e:
+            result['status_code'] = e.code
 
     def test_login_command_open_browser(self):
         try:
@@ -129,6 +139,7 @@ class TestLoginCommand(unittest.TestCase):
                 config_file_comment=CREDENTIAL_FILE_COMMENT)
         finally:
             thread.join()
+        self.assertEqual(login_result.get('status_code'), 200)
         self.assertTrue(login_result.get('succeeded'))
 
     def test_login_command_succeeded_for_profile(self):
@@ -150,6 +161,7 @@ class TestLoginCommand(unittest.TestCase):
                 config_file_comment=CREDENTIAL_FILE_COMMENT)
         finally:
             thread.join()
+        self.assertEqual(login_result.get('status_code'), 200)
         self.assertTrue(login_result.get('succeeded'))
 
     def test_login_command_succeeded_for_profile_does_not_exist(self):
@@ -169,6 +181,7 @@ class TestLoginCommand(unittest.TestCase):
                 config_file_comment=CREDENTIAL_FILE_COMMENT)
         finally:
             thread.join()
+        self.assertEqual(login_result.get('status_code'), 200)
         self.assertTrue(login_result.get('succeeded'))
 
     def test_login_command_succeeded_for_assigned_port(self):
@@ -186,6 +199,7 @@ class TestLoginCommand(unittest.TestCase):
             self.assertTrue('10100' in args[0])
         finally:
             thread.join()
+        self.assertEqual(login_result.get('status_code'), 200)
         self.assertTrue(login_result.get('succeeded'))
 
     def test_login_command_timeout(self):
@@ -197,36 +211,98 @@ class TestLoginCommand(unittest.TestCase):
         self.assertFalse(self.writer.update_config.called)
 
     def test_login_command_failed_missing_access_key_id(self):
-        login_result = {'succeeded': False}
-        thread = threading.Thread(
-            target=TestLoginCommand.mock_user_login,
-            args=(self, '?privateKey=bar', login_result))
-        thread.start()
+        new_out = io.StringIO()
+        old_out = sys.stderr
         try:
-            args = ['--account-id', 'foobar', '--timeout', '1']
-            parsed_globals = mock.Mock()
-            self.login(self.context, args=args, parsed_globals=parsed_globals)
-        except InteractiveLoginError:
-            pass
+            sys.stderr = new_out
+            login_result = {'succeeded': False}
+            thread = threading.Thread(
+                target=TestLoginCommand.mock_user_login,
+                args=(self, '?privateKey=bar', login_result))
+            thread.start()
+            try:
+                args = ['--account-id', 'foobar']
+                parsed_globals = mock.Mock()
+                self.login(self.context, args=args, parsed_globals=parsed_globals)
+            except InteractiveLoginError:
+                pass
+            finally:
+                thread.join()
+            self.assertEqual(login_result.get('status_code'), 400)
+            self.assertFalse(login_result.get('succeeded'))
+            self.assertEqual(new_out.getvalue().strip(),
+                             'Login failed: Missing access key id or private key')
         finally:
-            thread.join()
-        self.assertFalse(login_result.get('succeeded'))
+            sys.stderr = old_out
 
     def test_login_command_failed_missing_private_key(self):
-        login_result = {'succeeded': False}
-        thread = threading.Thread(
-            target=TestLoginCommand.mock_user_login,
-            args=(self, '?accessKeyId=foo', login_result))
-        thread.start()
+        new_out = io.StringIO()
+        old_out = sys.stderr
         try:
-            args = ['--account-id', 'foobar', '--timeout', '1']
+            sys.stderr = new_out
+            login_result = {'succeeded': False}
+            thread = threading.Thread(
+                target=TestLoginCommand.mock_user_login,
+                args=(self, '?accessKeyId=foo', login_result))
+            thread.start()
+            try:
+                args = ['--account-id', 'foobar']
+                parsed_globals = mock.Mock()
+                self.login(self.context, args=args, parsed_globals=parsed_globals)
+            except InteractiveLoginError:
+                pass
+            finally:
+                thread.join()
+            self.assertEqual(login_result.get('status_code'), 400)
+            self.assertFalse(login_result.get('succeeded'))
+            self.assertEqual(new_out.getvalue().strip(),
+                             'Login failed: Missing access key id or private key')
+        finally:
+            sys.stderr = old_out
+
+    def test_login_command_failed_not_interactive_login_path(self):
+        new_out = io.StringIO()
+        old_out = sys.stderr
+        try:
+            sys.stderr = new_out
+            login_result = {'succeeded': False}
+            thread = threading.Thread(
+                target=TestLoginCommand.mock_user_login,
+                args=(self, '/wrong_path', login_result))
+            thread.start()
+            try:
+                args = ['--account-id', 'foobar']
+                parsed_globals = mock.Mock()
+                self.login(self.context, args=args, parsed_globals=parsed_globals)
+            except InteractiveLoginError:
+                pass
+            finally:
+                thread.join()
+            self.assertEqual(login_result.get('status_code'), 404)
+            self.assertFalse(login_result.get('succeeded'))
+            self.assertEqual(new_out.getvalue().strip(),
+                             'Login failed: URL path not supported')
+        finally:
+            sys.stderr = old_out
+
+    def test_login_command_failed_error(self):
+        new_out = io.StringIO()
+        old_out = sys.stderr
+        try:
+            sys.stderr = new_out
+            login_result = {'succeeded': False}
+            thread = threading.Thread(
+                target=TestLoginCommand.mock_user_login,
+                args=(self, '?error=Error+Message', login_result))
+            thread.start()
+            args = ['--account-id', 'foobar']
             parsed_globals = mock.Mock()
             self.login(self.context, args=args, parsed_globals=parsed_globals)
-        except InteractiveLoginError:
-            pass
-        finally:
             thread.join()
-        self.assertFalse(login_result.get('succeeded'))
+            self.assertEqual(login_result.get('status_code'), 200)
+            self.assertEqual(new_out.getvalue().strip(), 'Login failed: Error Message')
+        finally:
+            sys.stderr = old_out
 
     def test_find_unused_port(self):
         port = LoginCommand._find_unused_port()

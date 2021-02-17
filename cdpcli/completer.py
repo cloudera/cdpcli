@@ -76,8 +76,6 @@ class Completer(object):
     def _complete_option(self, option_name):
         if option_name == '--endpoint-url':
             return []
-        if option_name == '--cdp-endpoint-url':
-            return []
         if option_name == '--output':
             cli_data = self.driver.session.get_data('cli')
             return cli_data['options']['output']['choices']

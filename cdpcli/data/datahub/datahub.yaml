@@ -6,11 +6,12 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.1-SNAPSHOT
+  version: __API_VERSION__
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
   description: Cloudera data hub is a service for launching and managing workload clusters powered by Cloudera Runtime.
+  termsOfService: https://www.cloudera.com/legal/commercial-terms-and-conditions.html
 schemes:
   - https
 consumes:
@@ -730,6 +731,46 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CollectDatahubDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/collectCmDiagnostics:
+    post:
+      summary: Start Datahub Cloudera Manager based diagnostics collection
+      description: Start Datahub Cloudera Manager based diagnostics collection
+      operationId: collectCmDiagnostics
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CollectCmDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CollectCmDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/getCmRoles:
+    post:
+      summary: Gather Cloudera Manager roles that can be used for filtering in CM based diagnostics collection.
+      description: Gather Cloudera Manager roles that can be used for filtering in CM based diagnostics collection.
+      operationId: getCmRoles
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetCmRolesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetCmRolesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2391,6 +2432,80 @@ definitions:
   GetDatahubLogDescriptorsRequest:
     type: object
     description: Request object for obtaining log descriptors. (that are used for diagnostics collection)
+  CollectCmDiagnosticsRequest:
+    type: object
+    description: Request object for collecting Datahub diagnostics.
+    required:
+      - crn
+      - destination
+    properties:
+      crn:
+        type: string
+        description: CRN of the Datahub cluster.
+      destination:
+        type: string
+        enum:
+          - SUPPORT
+          - CLOUD_STORAGE
+          - LOCAL
+        description: Destination of the diagnostics collection (Support, Own cloud storage, Engineering or collect only on the nodes)
+      description:
+        type: string
+        description: Additional information / title for the diagnostics collection.
+      caseNumber:
+        type: string
+        description: Optional support case number in case of SUPPORT destination, otherwise only act as additional data.
+      roles:
+        type: array
+        description: Array of roles for which to get logs and metrics. If set, this restricts the roles for log and metrics collection.
+        uniqueItems: true
+        items:
+          type: string
+      startDate:
+        type: string
+        format: date-time
+        description: Restrict collected logs and metrics (from the provided date timestamp).
+      endDate:
+        type: string
+        format: date-time
+        description: Restrict collected logs and metrics (until the provided date timestamp).
+      updatePackage:
+        type: boolean
+        default: false
+        description: If enabled, required package (cdp-telemetry) will be upgraded or installed on the nodes. (useful if package is not installed or needs to be upgraded) Network is required for this operation.
+      storageValidation:
+        type: boolean
+        default: false
+        description: Enable/disable node level storage validation (can be disabled for example, if you have too many hosts and do not want to do too much parallel writes to s3/abfs)
+      monitorMetricsCollection:
+        type: boolean
+        default: false
+        description: Flag to enable collection of metrics for chart display in CM based diagnostics collection.
+      bundleSizeLimit:
+        type: integer
+        format: int32
+        description: Diagnostics bundle size limit in MB.
+  CollectCmDiagnosticsResponse:
+    type: object
+    description: Response object for collecting Datahub diagnostics.
+  GetCmRolesRequest:
+    type: object
+    description: Request object for obtaining Cloudera Manger roles. (that can be used for filtering in CM based diagnostics collection)
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: CRN of the Datahub cluster.
+  GetCmRolesResponse:
+    type: object
+    description: Response object for obtaining Cloudera Manger roles. (that can be used for filtering in CM based diagnostics collection)
+    properties:
+      roles:
+        type: array
+        description: Array of CM roles. (useful for CM based diagnostics collection filtering)
+        items:
+          type: string
   GetDatahubLogDescriptorsResponse:
     type: object
     description: Response object for obtaining log descriptors. (useful for diagnostics collection filtering)

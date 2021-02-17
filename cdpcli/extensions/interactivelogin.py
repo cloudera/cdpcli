@@ -15,6 +15,7 @@ import http.server as httpserver
 import os
 import socket
 import socketserver
+import sys
 import urllib.parse as urlparse
 import webbrowser
 
@@ -72,32 +73,47 @@ class LoginHttpHandler(httpserver.SimpleHTTPRequestHandler):
         pass
 
     def do_GET(self):
-        if self.path.startswith('/interactiveLogin'):
-            url_parsed = urlparse.urlsplit(self.path)
-            url_params = urlparse.parse_qs(url_parsed.query)
-            access_key_id = url_params.get('accessKeyId')
-            private_key = url_params.get('privateKey')
+        if not self.path.startswith('/interactiveLogin'):
+            sys.stderr.write('Login failed: URL path not supported\n')
+            self._send_response(404, b'')
+            return
 
-            # access_key_id and private_key are lists (url params are lists by default),
-            # read the first element in the list.
-            if isinstance(access_key_id, list):
-                access_key_id = access_key_id[0]
-            if isinstance(private_key, list):
-                private_key = private_key[0]
-            if access_key_id is None or private_key is None:
-                raise InteractiveLoginError(
-                    err_msg='Missing access key id or private key')
+        url_parsed = urlparse.urlsplit(self.path)
+        url_params = urlparse.parse_qs(url_parsed.query)
 
-            # save the access token.
-            self._save_access_token(access_key_id, private_key)
+        error = url_params.get('error')
+        if error is not None:
+            if isinstance(error, list):
+                error = error[0]
+            # print the error message
+            sys.stderr.write('Login failed: %s\n' % error)
+            # send empty response, do not close the browser
+            self._send_response(200, b'')
+            return
 
-            # send close browser HTML to the client.
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(LoginHttpHandler.CLOSE_BROWSER_HTML)
-        else:
-            self.send_error(404)
-            raise InteractiveLoginError(err_msg='NOT_FOUND')
+        access_key_id = url_params.get('accessKeyId')
+        private_key = url_params.get('privateKey')
+
+        # access_key_id and private_key are lists (url params are lists by default),
+        # read the first element in the list.
+        if isinstance(access_key_id, list):
+            access_key_id = access_key_id[0]
+        if isinstance(private_key, list):
+            private_key = private_key[0]
+        if access_key_id is None or private_key is None:
+            sys.stderr.write('Login failed: Missing access key id or private key\n')
+            self._send_response(400, b'Missing access key id or private key')
+            return
+
+        # save the access token.
+        self._save_access_token(access_key_id, private_key)
+        # send close browser HTML to the client.
+        self._send_response(200, LoginHttpHandler.CLOSE_BROWSER_HTML)
+
+    def _send_response(self, status_code, body):
+        self.send_response(status_code)
+        self.end_headers()
+        self.wfile.write(body)
 
     def _save_access_token(self, access_key_id, private_key):
         credential_file_values = {CDP_ACCESS_KEY_ID_KEY_NAME: access_key_id,

@@ -21,12 +21,7 @@
          "help":"<p>The CA certificate bundle to use when verifying TLS certificates. Overrides any config and environment settings.</p>"
       },
       "endpoint-url":{
-         "hidden": true,
-         "help":"<p>Override command's default URL with the given URL.</p>"
-      },
-      "cdp-endpoint-url":{
-         "hidden": true,
-         "help":"<p>Override command's default CDP URL with the given URL.</p>"
+         "help":"<p>Override command's default URL with the given URL. This is useful when temporarily calling a different CDP control plane.</p>"
       },
       "force-ipv4":{
          "hidden": true,

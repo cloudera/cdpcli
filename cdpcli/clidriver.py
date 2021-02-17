@@ -46,6 +46,7 @@ from cdpcli.extensions.cliinputjson import add_cli_input_json
 from cdpcli.extensions.configure.configure import ConfigureCommand
 from cdpcli.extensions.generatecliskeleton import add_generate_skeleton
 from cdpcli.extensions.interactivelogin import LoginCommand
+from cdpcli.extensions.logout import LogoutCommand
 from cdpcli.extensions.paginate import add_pagination_params
 from cdpcli.extensions.paginate import check_should_enable_pagination
 from cdpcli.formatter import get_formatter
@@ -131,6 +132,7 @@ class CLIDriver(object):
             commands[service_name] = ServiceCommand(self, service_name)
         ConfigureCommand.add_command(commands)
         LoginCommand.add_command(commands)
+        LogoutCommand.add_command(commands)
         return commands
 
     def _get_argument_table(self):

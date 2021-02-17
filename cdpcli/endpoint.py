@@ -1,7 +1,7 @@
 # Copyright 2012-2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Modifications made by Cloudera are:
-#     Copyright (c) 2016 Cloudera, Inc. All rights reserved.
+#     Copyright (c) 2016-2021 Cloudera, Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You
 # may not use this file except in compliance with the License. A copy of
@@ -51,29 +51,69 @@ class PreserveAuthSession(Session):
 
 
 class EndpointResolver(object):
+    """A builder of endpoint URLs for Altus and CDP services. Used by EndpointCreator."""
     ENDPOINT_URL_KEY_NAME = 'endpoint_url'
     CDP_ENDPOINT_URL_KEY_NAME = 'cdp_endpoint_url'
 
     def _construct_altus_endpoint(self, service_name, scheme, port):
+        """Construct a default base URL to an Altus service.
+
+        :param service_name: service name, as referenced in its URLs
+        :param scheme: URL scheme, e.g., 'https'
+        :param port: service port
+        :returns: Altus service base URL
+        """
         return "%s://%sapi.us-west-1.altus.cloudera.com:%d" % (scheme, service_name, port)
 
     def _construct_cdp_endpoint(self, scheme, prefix, port):
+        """Construct a default base URL to an CDP service.
+
+        :param scheme: URL scheme, e.g., 'https'
+        :param prefix: CDP API prefix used in URLs, e.g., 'api'
+        :param port: service port
+        :returns: CDP service base URL
+        """
         return "%s://%s.us-west-1.cdp.cloudera.com:%d" % (scheme, prefix, port)
 
     def _substitute_custom_endpoint(self, endpoint_url, value):
+        """Applies string formatting for one %s value.
+
+        :param endpoint_url: URL format string, expected to contain one %s
+        :param value: value to substitute into format string
+        :returns: formatted string
+        """
         return endpoint_url % (value)
 
-    def resolve(self, service_name, prefix, products, endpoint_url, config, scheme, port):
-        if endpoint_url is not None:
-            if endpoint_url.count('%s') == 1:
+    def resolve(self, service_name, prefix, products, explicit_endpoint_url, config,
+                scheme, port):
+        """Creates a fully-resolved URL for a service endpoint.
+
+        :param service_name: Altus service name, as referenced in its URLs
+        :param prefix: CDP API prefix used in URLs, e.g., 'api'
+        :param products: service products (ALTUS or CDP)
+        :param explicit_endpoint_url: explicit endpoint URL which overrides any other
+        :param config: CLI configuration
+        :param scheme: URL scheme, e.g., 'https'
+        :param port: service port
+        :returns: resolved URL for service endpoint
+        """
+        if explicit_endpoint_url is not None:
+            # For an explicit endpoint URL, swap in the service name (Altus) or prefix
+            # (CDP) if there is a spot for it, and then return it.
+            if explicit_endpoint_url.count('%s') == 1:
                 if products == ['CDP']:
-                    return self._substitute_custom_endpoint(endpoint_url, prefix)
+                    return self._substitute_custom_endpoint(explicit_endpoint_url,
+                                                            prefix)
                 else:
-                    return self._substitute_custom_endpoint(endpoint_url, service_name)
+                    return self._substitute_custom_endpoint(explicit_endpoint_url,
+                                                            service_name)
             else:
-                return endpoint_url
+                return explicit_endpoint_url
 
         if products == ['CDP']:
+            # If a CDP endpoint base URL has been configured, use it, swapping in the
+            # prefix if there is a spot for it. Otherwise, construct a default URL for
+            # the prefix.
             endpoint_from_config = config.get(EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME)
             if endpoint_from_config is not None:
                 if endpoint_from_config.count('%s') == 1:
@@ -83,6 +123,9 @@ class EndpointResolver(object):
                     return endpoint_from_config
             return self._construct_cdp_endpoint(scheme, prefix, port)
         else:
+            # If an Altus endpoint base URL has been configured, use it, swapping in the
+            # prefix if there is a spot for it. Otherwise, construct a default URL for
+            # the prefix.
             endpoint_from_config = config.get(EndpointResolver.ENDPOINT_URL_KEY_NAME)
             if endpoint_from_config is not None:
                 if endpoint_from_config.count('%s') == 1:
@@ -94,20 +137,38 @@ class EndpointResolver(object):
 
 
 class EndpointCreator(object):
+    """A creator of Endpoints for Altus and CDP services."""
 
     def __init__(self, endpoint_resolver):
+        """Construct an endpoint creator.
+
+        :param endpoint_resolver: Endpoint resolver to use
+        """
         self._endpoint_resolver = endpoint_resolver
 
     def create_endpoint(self,
                         service_model,
-                        endpoint_url,
+                        explicit_endpoint_url,
                         scoped_config,
                         response_parser_factory,
                         tls_verification,
                         timeout,
                         retry_handler):
+        """Create an Endpoint for a service. Uses scheme 'https' and port 443 for any
+           non-explicit endpoint URL. The returned endpoint uses proxies set in the
+           environment, as understood by the requests library.
+
+        :param service_model: ServiceModel holding service information
+        :param explicit_endpoint_url: explicit endpoint URL which overrides any other
+        :param scoped_config: CLI configuration
+        :param response_parser_factory: set in endpoint
+        :param tls_verification: set in endpoint
+        :param timeout: set in endpoint
+        :param retry_handler: set in endpoint
+        :returns: service endpoint
+        """
         endpoint_url = \
-            self._endpoint_resolver.resolve(endpoint_url=endpoint_url,
+            self._endpoint_resolver.resolve(explicit_endpoint_url=explicit_endpoint_url,
                                             config=scoped_config,
                                             service_name=service_model.endpoint_name,
                                             prefix=service_model.endpoint_prefix,
