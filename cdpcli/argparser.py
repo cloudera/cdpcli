@@ -111,8 +111,10 @@ class MainArgParser(CLIArgParser):
             formatter_class=self.Formatter,
             add_help=False,
             conflict_handler='resolve',
-            description=description)
+            description=description,
+            allow_abbrev=False)
         self._build(command_table, version_string, argument_table)
+        self._command_table = command_table
 
     def _create_choice_help(self, choices):
         help_str = ''
@@ -129,6 +131,15 @@ class MainArgParser(CLIArgParser):
                           version=version_string,
                           help='Display the version of this tool')
         self.add_argument('command', choices=list(command_table.keys()))
+
+    def parse_known_args(self, args, namespace=None):
+        """
+        Parses normally, but also adds the command_table to the parsed
+        arguments, so that commands like refdoc may access it. This is a hack.
+        """
+        parsed, remaining = super(MainArgParser, self).parse_known_args(args, namespace)
+        setattr(parsed, 'command_table', self._command_table)
+        return parsed, remaining
 
 
 class ArgTableArgParser(CLIArgParser):

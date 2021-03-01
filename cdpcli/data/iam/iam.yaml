@@ -24,6 +24,7 @@ paths:
       summary: Gets information on a user.
       description: Gets information on a user. If no user name is specified. The user name is determined from the access key used to make the request.
       operationId: getUser
+      x-form-factors: public,private
       x-mutating: false
       parameters:
         - name: input
@@ -45,6 +46,7 @@ paths:
       summary: Lists users.
       description: Lists users.
       operationId: listUsers
+      x-form-factors: public,private
       x-right: iam/listUsers
       x-paginates: true
       x-paging-default-max-items: 100
@@ -69,6 +71,7 @@ paths:
       summary: Creates a user in CDP.
       description: Creates a user in CDP.
       operationId: createUser
+      x-form-factors: public,private
       x-right: iam/createUser
       x-mutating: true
       parameters:
@@ -91,8 +94,8 @@ paths:
       summary: Deletes a user and all associated resources.
       description: Deletes a user. This includes deleting all associated access keys and unassigning all roles and resource roles assigned to the user. The user is also removed from all groups it belongs to. If the call succeeds the user will not be able to login interactively, or use any access keys to access the CDP control plane. This feature is under development and some reasources may be left behind after a successful call. Note that user-sync is not triggered yet by this call and the caller must trigger that to ensure that the user loses access to all environments as soon as possible.
       operationId: deleteUser
+      x-form-factors: public,private
       x-right: iam/deleteUser
-      x-entitlement: DELETE_USER
       x-mutating: true
       parameters:
         - name: input
@@ -114,6 +117,7 @@ paths:
       summary: Creates a new access key for a user.
       description: Creates a new access key for a user.
       operationId: createUserAccessKey
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -135,6 +139,7 @@ paths:
       summary: Creates a new access key for a machine user.
       description: Creates a new access key for a machine user.
       operationId: createMachineUserAccessKey
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -156,6 +161,7 @@ paths:
       summary: Deletes an access key.
       description: Deletes an access key.
       operationId: deleteAccessKey
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -177,6 +183,7 @@ paths:
       summary: Updates an access key.
       description: Updates an access key.
       operationId: updateAccessKey
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -198,6 +205,7 @@ paths:
       summary: Gets information on an access key.
       description: Gets information on an access key. If no access key ID is specified. Information on the access key used to make the request is returned.
       operationId: getAccessKey
+      x-form-factors: public,private
       x-right: iam/getAccessKey
       x-mutating: false
       parameters:
@@ -220,6 +228,7 @@ paths:
       summary: Lists access keys.
       description: Lists access keys.
       operationId: listAccessKeys
+      x-form-factors: public,private
       x-right: iam/listAccessKeys
       x-paginates: true
       x-paging-default-max-items: 100
@@ -244,6 +253,7 @@ paths:
       summary: Lists all the available roles.
       description: Lists all the available roles. Roles grant rights to users via policies that are attached to the roles.
       operationId: listRoles
+      x-form-factors: public,private
       x-right: iam/listRoles
       x-mutating: false
       parameters:
@@ -266,6 +276,7 @@ paths:
       summary: Lists all the available resource roles.
       description: Lists all the available reource roles. Resource roles grants rights over certain resources.
       operationId: listResourceRoles
+      x-form-factors: public,private
       x-right: iam/listResourceRoles
       x-mutating: false
       parameters:
@@ -331,6 +342,7 @@ paths:
       summary: Assign a role to a user.
       description: Assign a role to a user. If the role is already assigned to the user the request will fail.
       operationId: assignUserRole
+      x-form-factors: public,private
       x-right: iam/assignRole
       x-mutating: true
       parameters:
@@ -353,6 +365,7 @@ paths:
       summary: Unassign a role from a user.
       description: Unassign a role from a user. If the role is not currently assigned to the user the request will fail.
       operationId: unassignUserRole
+      x-form-factors: public,private
       x-right: iam/unassignRole
       x-mutating: true
       parameters:
@@ -375,6 +388,7 @@ paths:
       summary: Assign a resource role to a user.
       description: Assign a resource role to a user. If the resource role is already assigned to the user the request will fail.
       operationId: assignUserResourceRole
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -396,6 +410,7 @@ paths:
       summary: Unassign a resource role from a user.
       description: Unassign a resource role from a user. If the resource role is not currently assigned to the user the request will fail.
       operationId: unassignUserResourceRole
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -417,6 +432,7 @@ paths:
       summary: Lists the user's assigned roles.
       description: Lists the user's assigned roles.
       operationId: listUserAssignedRoles
+      x-form-factors: public,private
       x-right: iam/listAssignedRoles
       x-mutating: false
       parameters:
@@ -439,6 +455,7 @@ paths:
       summary: Lists a user's assigned resource roles.
       description: Lists a user's assigned resource roles.
       operationId: listUserAssignedResourceRoles
+      x-form-factors: public,private
       x-right: iam/listAssignedResourceRoles
       x-mutating: false
       parameters:
@@ -461,6 +478,7 @@ paths:
       summary: Assign a role to a machine user.
       description: Assign a role to a machine user. If the role is already assigned to the machine user the request will fail.
       operationId: assignMachineUserRole
+      x-form-factors: public,private
       x-right: iam/assignRole
       x-mutating: true
       parameters:
@@ -483,6 +501,7 @@ paths:
       summary: Unassign a role from a machine user.
       description: Unassign a role from a machine user. If the role is not currently assigned to the machine user the request will fail.
       operationId: unassignMachineUserRole
+      x-form-factors: public,private
       x-right: iam/unassignRole
       x-mutating: true
       parameters:
@@ -505,6 +524,7 @@ paths:
       summary: Assign a resource role to a machine user.
       description: Assign a resource role to a machine user. If the resource role is already assigned to the machine user the request will fail.
       operationId: assignMachineUserResourceRole
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -526,6 +546,7 @@ paths:
       summary: Unassign a resource role from a machine user.
       description: Unassign a resource role from a machine user. If the resource role is not currently assigned to the machine user the request will fail.
       operationId: unassignMachineUserResourceRole
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -547,6 +568,7 @@ paths:
       summary: Lists the machine user's assigned roles.
       description: Lists the machine user's assigned roles.
       operationId: listMachineUserAssignedRoles
+      x-form-factors: public,private
       x-right: iam/listAssignedRoles
       x-mutating: false
       parameters:
@@ -569,6 +591,7 @@ paths:
       summary: Lists a machine user's assigned resource roles.
       description: Lists a machine user's assigned resource roles.
       operationId: listMachineUserAssignedResourceRoles
+      x-form-factors: public,private
       x-right: iam/listAssignedResourceRoles
       x-mutating: false
       parameters:
@@ -591,6 +614,7 @@ paths:
       summary: List the resource assignees and their respective resource roles for the resource.
       description: List the resource assignees and their respective resource roles for the resource.
       operationId: listResourceAssignees
+      x-form-factors: public,private
       x-right: iam/listResourceAssignees
       x-mutating: false
       parameters:
@@ -613,6 +637,7 @@ paths:
       summary: Create a machine user.
       description: Creates a machine user in the account. A machine user can be used to access CDP API. A machine user can have access keys associated with it and can be assigned roles and resource roles. A machine user cannot login to the CDP console.
       operationId: createMachineUser
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -634,6 +659,7 @@ paths:
       summary: Lists machine users.
       description: Lists machine users in the account.
       operationId: listMachineUsers
+      x-form-factors: public,private
       x-right: iam/listMachineUsers
       x-paginates: true
       x-paging-default-max-items: 100
@@ -658,6 +684,7 @@ paths:
       summary: Delete a machine user.
       description: Deletes a machine user. This includes deleting all associated access keys and unassigning all roles and resource roles assigned to the machine user. The machine user is also removed from all groups it belongs to. If the call succeeds the machine user will not be able to use any access keys to access the CDP control plane. Note that user-sync is not triggered yet by this call and the caller must trigger that to ensure that the machine user loses access to all environments as soon as possible.
       operationId: deleteMachineUser
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -811,6 +838,7 @@ paths:
       summary: Retrieves information about the CDP account.
       description: Retrieves information about the CDP account.
       operationId: getAccount
+      x-form-factors: public,private
       x-mutating: false
       parameters:
         - name: input
@@ -832,6 +860,7 @@ paths:
       summary: Create a group.
       description: Create a group. A group is a named collection of users and machine users. Roles and resource roles can be assigned to a group impacting all members of the group.
       operationId: createGroup
+      x-form-factors: public,private
       x-right: iam/createGroup
       x-mutating: true
       parameters:
@@ -854,6 +883,7 @@ paths:
       summary: Delete a group.
       description: Delete a group.
       operationId: deleteGroup
+      x-form-factors: public,private
       x-right: iam/deleteGroup
       x-mutating: true
       parameters:
@@ -876,6 +906,7 @@ paths:
       summary: Lists groups.
       description: Lists groups. If no group names are specified, the call lists all groups.
       operationId: listGroups
+      x-form-factors: public,private
       x-right: iam/listGroups
       x-paginates: true
       x-paging-default-max-items: 100
@@ -900,6 +931,7 @@ paths:
       summary: Update a group.
       description: Update a group.
       operationId: updateGroup
+      x-form-factors: public,private
       x-right: iam/updateGroup
       x-mutating: true
       parameters:
@@ -922,6 +954,7 @@ paths:
       summary: Add a user to a group.
       description: Add a user to group.
       operationId: addUserToGroup
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -943,6 +976,7 @@ paths:
       summary: Add a machine user to group.
       description: Add a machine user to a group.
       operationId: addMachineUserToGroup
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -964,6 +998,7 @@ paths:
       summary: Remove a user from a group.
       description: Remove a user from a group.
       operationId: removeUserFromGroup
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -985,6 +1020,7 @@ paths:
       summary: Remove a machine user from a group.
       description: Remove a machine user from a group.
       operationId: removeMachineUserFromGroup
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -1006,6 +1042,7 @@ paths:
       summary: List the members of a group.
       description: List the members of a group.
       operationId: listGroupMembers
+      x-form-factors: public,private
       x-right: iam/listGroupMembers
       x-paginates: true
       x-paging-default-max-items: 100
@@ -1030,6 +1067,7 @@ paths:
       summary: List the groups that the user belongs to.
       description: List the groups that the user belongs to.
       operationId: listGroupsForUser
+      x-form-factors: public,private
       x-right: iam/listGroupsForActor
       x-paginates: true
       x-paging-default-max-items: 100
@@ -1054,6 +1092,7 @@ paths:
       summary: List the groups that the machine user belongs to.
       description: List the groups that the machine user belongs to.
       operationId: listGroupsForMachineUser
+      x-form-factors: public,private
       x-right: iam/listGroupsForActor
       x-paginates: true
       x-paging-default-max-items: 100
@@ -1078,6 +1117,7 @@ paths:
       summary: Assign a role to a group.
       description: Assign a role to a group. If the role is already assigned to the group the request will fail.
       operationId: assignGroupRole
+      x-form-factors: public,private
       x-right: iam/assignRole
       x-mutating: true
       parameters:
@@ -1100,6 +1140,7 @@ paths:
       summary: Unassign a role from a group.
       description: Unassign a role from a group. If the role is not currently assigned to the group the request will fail.
       operationId: unassignGroupRole
+      x-form-factors: public,private
       x-right: iam/unassignRole
       x-mutating: true
       parameters:
@@ -1122,6 +1163,7 @@ paths:
       summary: Assign a resource role to a group.
       description: Assign a resource role to a group. If the resource role is already assigned to the group the request will fail.
       operationId: assignGroupResourceRole
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -1143,6 +1185,7 @@ paths:
       summary: Unassign a resource role from a group.
       description: Unassign a resource role from a group. If the resource role is not currently assigned to the group the request will fail.
       operationId: unassignGroupResourceRole
+      x-form-factors: public,private
       x-mutating: true
       parameters:
         - name: input
@@ -1164,6 +1207,7 @@ paths:
       summary: Lists the group's assigned roles.
       description: Lists the group's assigned roles.
       operationId: listGroupAssignedRoles
+      x-form-factors: public,private
       x-right: iam/listAssignedRoles
       x-mutating: false
       parameters:
@@ -1186,6 +1230,7 @@ paths:
       summary: Lists a group's assigned resource roles.
       description: Lists a group's assigned resource roles.
       operationId: listGroupAssignedResourceRoles
+      x-form-factors: public,private
       x-right: iam/listAssignedResourceRoles
       x-mutating: false
       parameters:
@@ -2372,7 +2417,7 @@ definitions:
     properties:
       machineUserName:
         type: string
-        description: The name to use for the new machine user. The name should be an alpha numeric string, including '-' and '_', no longer than 128 characters long. Only one machine user with this name can be exist at a given time in an account.
+        description: The name to use for the new machine user. The name must be an alpha numeric string, including '-' and '_', cannot start with '__' (double underscore) and cannot be longer than 128 characters. Only one machine user with this name can exist in an account at a given time.
   CreateMachineUserResponse:
     type: object
     description: Response object for create machine user request.

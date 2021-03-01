@@ -268,7 +268,8 @@ definitions:
         description: The identity provider CRN used to interactively login. For Cloudera SSO the ID is 'crn:altus:iam:us-west-1:altus:samlProvider:cloudera-sso'. For identity provider connectors the connector's CRN is used.
       identityProviderSessionId:
         type: string
-        description: The identity provider session ID for this interactive login request. For SAML 2.0 identity federation this is the SessionIndex of the SAML AuthnResponse.
+        description: 'The identity provider session ID for this interactive login request. For SAML 2.0 identity federation this is the SessionIndex of the SAML AuthnResponse. (Deprecated: No replacement, as this was never available.)'
+        x-deprecated: true
       identityProviderUserId:
         type: string
         description: The user ID as indicated by the identity provider. The specific format and type of this identifier is determined by the IdP. For Cloudera SSO this is the email used to login.

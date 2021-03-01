@@ -49,6 +49,7 @@ from cdpcli.extensions.interactivelogin import LoginCommand
 from cdpcli.extensions.logout import LogoutCommand
 from cdpcli.extensions.paginate import add_pagination_params
 from cdpcli.extensions.paginate import check_should_enable_pagination
+from cdpcli.extensions.refdoc import RefdocCommand
 from cdpcli.formatter import get_formatter
 from cdpcli.help import OperationHelpCommand
 from cdpcli.help import ProviderHelpCommand
@@ -133,6 +134,7 @@ class CLIDriver(object):
         ConfigureCommand.add_command(commands)
         LoginCommand.add_command(commands)
         LogoutCommand.add_command(commands)
+        RefdocCommand.add_command(commands)
         return commands
 
     def _get_argument_table(self):

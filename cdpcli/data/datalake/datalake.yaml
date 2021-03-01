@@ -591,6 +591,9 @@ definitions:
       status:
         type: string
         description: The status of the datalake.
+      shape:
+        $ref: '#/definitions/DatalakeScaleType'
+        description: The shape of the datalake (either LIGHT_DUTY or MEDIUM_DUTY_HA).
       environmentCrn:
         type: string
         description: The CRN of the environment.

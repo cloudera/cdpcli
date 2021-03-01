@@ -45,6 +45,16 @@ def get_renderer():
         return PosixHelpRenderer()
 
 
+class NullRenderer(object):
+    """
+    A renderer that does not render anything. Use this when the goal is only
+    to populate the help command's doc object.
+    """
+
+    def render(self, contents):
+        pass
+
+
 class PagingHelpRenderer(object):
     PAGER = None
 

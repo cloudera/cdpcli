@@ -79,6 +79,7 @@ cdpcli/extensions/generatecliskeleton.py
 cdpcli/extensions/interactivelogin.py
 cdpcli/extensions/logout.py
 cdpcli/extensions/paginate.py
+cdpcli/extensions/refdoc.py
 cdpcli/extensions/writer.py
 cdpcli/extensions/configure/__init__.py
 cdpcli/extensions/configure/classify.py
