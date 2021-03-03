@@ -452,6 +452,9 @@ definitions:
       useOverlayNetwork:
         type: boolean
         description: Using an overlay network will save IP addresses in the VPC by using a private IP address range for Pods in the cluster.
+      usePrivateLoadBalancer:
+        type: boolean
+        description: Set up load balancer in private subnets -- make sure there is connectivity between your VPN and the VPC of CDW environment.
       awsOptions:
         description: Options for activating an AWS environment.
         $ref: '#/definitions/AwsActivationOptions'
