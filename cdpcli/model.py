@@ -241,7 +241,8 @@ class OperationModel(object):
 
     @CachedProperty
     def can_paginate(self):
-        return self._operation_data.get("x-paginates", False)
+        # A valid paginating operation always has x-paging-default-max-items
+        return "x-paging-default-max-items" in self._operation_data
 
     @CachedProperty
     def paging_input_token(self):

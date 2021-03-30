@@ -82,6 +82,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datalake/createGCPDatalake:
+    post:
+      summary: Creates an GCP Data Lake.
+      description: Creates an GCP Data Lake.
+      x-entitlement: CDP_GCP
+      operationId: createGCPDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateGCPDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateGCPDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datalake/listDatalakes:
     post:
       summary: Lists datalakes.
@@ -461,6 +482,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datalake/listDatalakeDiagnostics:
+    post:
+      summary: List recent Datalake diagnostics collections
+      description: List recent Datalake diagnostics collection
+      operationId: listDatalakeDiagnostics
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDatalakeDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDatalakeDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/cancelDatalakeDiagnostics:
+    post:
+      summary: Cancel running Datalake diagnostics collections
+      description: Cancel running Datalake diagnostics collection
+      operationId: cancelDatalakeDiagnostics
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CancelDatalakeDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelDatalakeDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datalake/collectCmDiagnostics:
     post:
       summary: Start DataLake Cloudera Manager based diagnostics collection
@@ -575,6 +638,13 @@ definitions:
       managedIdentity:
         type: string
         description: The managed identity used for the ID Broker instance.
+  GCPConfiguration:
+    type: object
+    description: GCP configuration.
+    properties:
+      serviceAccountEmail:
+        type: string
+        description: The email id of the service account used for the ID Broker instance.
   DatalakeDetails:
     type: object
     description: Details about a datalake
@@ -632,6 +702,9 @@ definitions:
       azureConfiguration:
         $ref: '#/definitions/AzureConfiguration'
         description: The Azure configuration.
+      gcpConfiguration:
+        $ref: '#/definitions/GCPConfiguration'
+        description: The GCP configuration.
       endpoints:
         $ref: '#/definitions/Endpoints'
         description: The exposed service api endpoints.
@@ -748,6 +821,19 @@ definitions:
       value:
         type: string
         description: The value of the tag.
+  DatalakeResourceGCPTagRequest:
+    type: object
+    description: A label that can be attached to GCP Data Lake resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The key of tag.
+      value:
+        type: string
+        description: The value of the tag.
   ListRuntimesRequest:
     type: object
     description: Request object for list datalake runtime versions.
@@ -801,6 +887,19 @@ definitions:
       storageLocation:
         type: string
         description: The storage location to use. The location has to be in the following format abfs://filesystem@storage-account-name.dfs.core.windows.net. The filesystem must already exist and the storage account must be StorageV2.
+  GCPConfigurationRequest:
+    type: object
+    description: Request object for GCP configuration.
+    required:
+      - serviceAccountEmail
+      - storageLocation
+    properties:
+      serviceAccountEmail:
+        type: string
+        description: Email id of the service account to be associated with the datalake IdBroker instance. This service account should have "token.creator" role for one or more storage accounts that has access to storage.
+      storageLocation:
+        type: string
+        description: The location of the GCS bucket to be used as storage. The location has to start with gs:// followed by the bucket name.
   CreateAWSDatalakeRequest:
     type: object
     description: Request object for create AWS datalake request.
@@ -875,6 +974,45 @@ definitions:
   CreateAzureDatalakeResponse:
     type: object
     description: Response object for create Azure datalake request.
+    required:
+      - datalake
+    properties:
+      datalake:
+        $ref: '#/definitions/Datalake'
+        description: The datalake.
+  CreateGCPDatalakeRequest:
+    type: object
+    description: Request object for create GCP Data Lake request.
+    required:
+      - datalakeName
+      - environmentName
+    properties:
+      datalakeName:
+        type: string
+        description: The datalake name. This name must be unique, must have between 5 and 100 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 100
+      environmentName:
+        type: string
+        description: The environment name or CRN.
+      cloudProviderConfiguration:
+        $ref: '#/definitions/GCPConfigurationRequest'
+        description: GCP configuration.
+      tags:
+        type: array
+        description: Tags that can be attached to GCP Data Lake resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
+        items:
+          $ref: '#/definitions/DatalakeResourceGCPTagRequest'
+      scale:
+        description: The scale of the datalake. Allowed values are "LIGHT_DUTY" or "MEDIUM_DUTY_HA". Defaults to "LIGHT_DUTY" if not set.
+        $ref: '#/definitions/DatalakeScaleType'
+        x-no-compatibility-guarantee: true
+      runtime:
+        type: string
+        description: Cloudera Runtime version.
+  CreateGCPDatalakeResponse:
+    type: object
+    description: Response object for create GCP Data Lake request.
     required:
       - datalake
     properties:
@@ -1483,6 +1621,15 @@ definitions:
         uniqueItems: true
         items:
           type: string
+      excludeHosts:
+        type: array
+        description: Array of host names (fqdn or IP address), collection will not run on the excluded hosts.
+        uniqueItems: true
+        items:
+          type: string
+      skipUnresponsiveHosts:
+        type: boolean
+        description: Skip unhealthy hosts from the diagnostics collection.
       includeSaltLogs:
         type: boolean
         description: Include salt minion/master/api system logs in the diagnostics collection.
@@ -1497,6 +1644,90 @@ definitions:
   CollectDatalakeDiagnosticsResponse:
     type: object
     description: Response object for collecting DataLake diagnostics.
+  ListDatalakeDiagnosticsRequest:
+    type: object
+    description: Request object for listing recent Datalake diagnostics collections.
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: CRN of the Datalake cluster.
+  ListDatalakeDiagnosticsResponse:
+    type: object
+    description: Response object for listing recent Datalake diagnostics collections.
+    properties:
+      collections:
+        type: array
+        description: description.
+        items:
+          $ref: '#/definitions/DatalakeDiagnosticsCollectionResponse'
+  DatalakeDiagnosticsCollectionResponse:
+    type: object
+    description: Response object for diagnostic collection flow details.
+    properties:
+      status:
+        type: string
+        description: Status of the diagnostics collection flow.
+        enum:
+          - RUNNING
+          - FAILED
+          - FINISHED
+          - CANCELLED
+      flowId:
+        type: string
+        description: Flow ID of the diagnostics collection flow.
+      flowState:
+        type: string
+        description: Current state of the diagnostics collection flow.
+      created:
+        type: string
+        format: date-time
+        description: Creation date of the diagnostics collection flow.
+      progressPercentage:
+        type: integer
+        description: Progress percentage of the diagnostics collection flow (maximum value if finished).
+        format: int32
+      collectionDetails:
+        $ref: '#/definitions/DatalakeDiagnosticsCollectionDetailsResponse'
+        description: Additional details about the diagnostics collection.
+  DatalakeDiagnosticsCollectionDetailsResponse:
+    type: object
+    description: Response object for diagnostic collection collection details.
+    properties:
+      case:
+        type: string
+        description: Case number for the diagnostics collection.
+      output:
+        type: string
+        description: Output destination of the diagnostics collection.
+      destination:
+        type: string
+        description: Destination type of the diagnostics collection.
+      description:
+        type: string
+        description: Description of the diagnostics collection.
+      accountId:
+        type: string
+        description: Account Id that was used for the diagnostics collection.
+      resourceCrn:
+        type: string
+        description: Crn of the cluster.
+      clusterVersion:
+        type: string
+        description: Version of the cluster that was used for the diagnostics collection.
+  CancelDatalakeDiagnosticsRequest:
+    type: object
+    description: Request object for cancel running Datalake diagnostics collections.
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: CRN of the Datalake cluster.
+  CancelDatalakeDiagnosticsResponse:
+    type: object
+    description: Response object for cancel running Datalake diagnostics collections.
   CollectCmDiagnosticsRequest:
     type: object
     description: Request object for collecting DataLake diagnostics.

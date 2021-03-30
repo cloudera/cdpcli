@@ -18,7 +18,7 @@ from codecs import open
 from os import path
 
 
-def read_long_description(release):
+def read_long_description():
     """
     Reads the long description of the package from the project README.md file.
     """
@@ -29,7 +29,7 @@ def read_long_description(release):
         return f.read()
 
 
-def get_requirements(release):
+def get_requirements():
     """
     Gets the prerequisite requirements for the package.
     """
@@ -76,7 +76,7 @@ def get_classifiers(release):
     return classifiers
 
 
-def get_entry_points(release):
+def get_entry_points():
     """
     Gets the entry points for the package.
     """

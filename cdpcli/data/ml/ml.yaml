@@ -625,6 +625,9 @@ definitions:
       enableMonitoring:
         type: boolean
         description: The boolean flag is used to enable mlonitoring. By default monitoring is disabled.
+      enableGovernance:
+        type: boolean
+        description: Enables Cloudera Machine Learning governance by integrating with Cloudera Atlas. By default, this flag is disabled.
       existingNFS:
         type: string
         description: Optionally use an existing NFS by providing the hostname and desired path (Azure and Private Cloud only).
@@ -636,6 +639,9 @@ definitions:
       nfsVersion:
         type: string
         description: The NFS Protocol version of the NFS server we are using for Azure and Private Cloud.
+      enableModelMetrics:
+        type: boolean
+        description: Enables the model metrics service for exporting metrics for models to a metrics store.
       existingDatabaseConfig:
         description: Optional configurations for an existing Postgres to export model metrics to.
         $ref: '#/definitions/ExistingDatabaseConfig'

@@ -26,7 +26,7 @@ setup(
     name='cdpcli',
     version=versioneer.get_version(),
     description='Cloudera CDP Command Line Interface',
-    long_description=setup_common.read_long_description(release),
+    long_description=setup_common.read_long_description(),
     long_description_content_type='text/markdown',
     url='https://console.cdp.cloudera.com/',
     license='Apache License 2.0',
@@ -34,7 +34,7 @@ setup(
     classifiers=setup_common.get_classifiers(release),
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
-    install_requires=setup_common.get_requirements(release),
-    entry_points=setup_common.get_entry_points(release),
+    install_requires=setup_common.get_requirements(),
+    entry_points=setup_common.get_entry_points(),
     cmdclass=versioneer.get_cmdclass(),
 )

@@ -82,6 +82,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/createGCPEnvironment:
+    post:
+      summary: Creates a new GCP environment by providing the cloud provider access and network information. A FreeIPA server will be automatically provisioned when an environment is created.
+      description: Creates a new GCP environment.
+      operationId: createGCPEnvironment
+      x-entitlement: CDP_GCP
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateGCPEnvironmentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateGCPEnvironmentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/createAWSCredential:
     post:
       summary: Creates a new AWS credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
@@ -120,6 +141,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CreateAzureCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/createGCPCredential:
+    post:
+      summary: Creates a new GCP credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
+      description: Creates a new GCP credential.
+      x-entitlement: CDP_GCP
+      operationId: createGCPCredential
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateGCPCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateGCPCredentialResponse'
         default:
           description: The default response on an error.
           schema:
@@ -796,6 +838,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/listFreeipaDiagnostics:
+    post:
+      summary: List recent FreeIPA diagnostics collections
+      description: List recent FreeIPA diagnostics collection
+      operationId: listFreeipaDiagnostics
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListFreeipaDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListFreeipaDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/cancelFreeipaDiagnostics:
+    post:
+      summary: Cancel running FreeIPA diagnostics collections
+      description: Cancel running FreeIPA diagnostics collection
+      operationId: cancelFreeipaDiagnostics
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CancelFreeipaDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelFreeipaDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/getAuditCredentialPrerequisites:
     post:
       summary: This API provides the audit credential prerequisites for the given cloud provider.
@@ -951,6 +1035,32 @@ definitions:
       description:
         type: string
         description: A description for the credential.
+  CreateGCPCredentialResponse:
+    type: object
+    description: Response object for a create GCP credential request.
+    required:
+      - credential
+    properties:
+      credential:
+        description: The credential object.
+        $ref: '#/definitions/Credential'
+  CreateGCPCredentialRequest:
+    type: object
+    description: Request object for a create GCP credential request.
+    required:
+      - credentialName
+      - credentialKey
+    properties:
+      credentialName:
+        type: string
+        description: The name of the credential.
+      credentialKey:
+        type: string
+        x-sensitive: true
+        description: The JSON key for the service account. Please use local path when using the CLI (e.g. file:///absolute/path/to/cred.json) to avoid exposing the keys in the command line history.
+      description:
+        type: string
+        description: A description for the credential.
   CreateAzureCredentialResponse:
     type: object
     description: Response object for a create Azure credential request.
@@ -988,6 +1098,10 @@ definitions:
         type: object
         description: The credential properties that closely related to those that have been created on Azure.
         $ref: '#/definitions/AzureCredentialProperties'
+      gcpCredentialProperties:
+        type: object
+        description: The credential properties that closely related to those that have been created on GCP.
+        $ref: '#/definitions/GCPCredentialProperties'
   AwsCredentialProperties:
     type: object
     description: The credential properties that closely related to those that have been created on AWS.
@@ -1008,6 +1122,13 @@ definitions:
       appId:
         type: string
         description: The ID of the created Azure app.
+  GCPCredentialProperties:
+    type: object
+    description: The credential properties that closely related to those that have created on GCP.
+    properties:
+      keyType:
+        type: string
+        description: The GCP credential key type. Json is the only supported key type.
   GetCredentialPrerequisitesRequest:
     type: object
     description: Request object for getting the credential prerequisites for the given cloud platform.
@@ -1105,6 +1226,17 @@ definitions:
         uniqueItems: true
         items:
           type: string
+      endpointAccessGatewayScheme:
+        type: string
+        description: The scheme for the endpoint gateway. PUBLIC creates an external endpoint that can be accessed over the Internet. Defaults to PRIVATE which restricts the traffic to be internal to the VPC / Vnet.
+        enum:
+          - PUBLIC
+          - PRIVATE
+      endpointAccessGatewaySubnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnets to use for endpoint access gateway.
       s3GuardTableName:
         type: string
         description: The name for the DynamoDB table backing S3Guard.
@@ -1157,6 +1289,19 @@ definitions:
       managedIdentity:
         type: string
         description: The managed identity associated with the logger. This identity should have Storage Blob Data Contributor role on the given storage account.
+  GcpLogStorageRequest:
+    type: object
+    description: GCP storage configuration for cluster and audit logs.
+    required:
+      - storageLocationBase
+      - serviceAccountEmail
+    properties:
+      storageLocationBase:
+        type: string
+        description: The Google storage bucket to use. This should be a gs:// url.
+      serviceAccountEmail:
+        type: string
+        description: Email id of the service account to be associated with the instances. This service account should have "storage.ObjectCreator" role on the given storage bucket.
   LogStorage:
     type: object
     description: Storage configuration for cluster and audit logs.
@@ -1186,6 +1331,16 @@ definitions:
           managedIdentity:
             type: string
             description: The managed identity associated with the logger. This identity should have Storage Blob Data Contributor role on the given storage account.
+      gcpDetails:
+        type: object
+        description: GCP-specific log storage configuration information.
+        properties:
+          storageLocationBase:
+            type: string
+            description: The storage location to use. This should be a gs:// url.
+          serviceAccountEmail:
+            type: string
+            description: Email ID of the service account associated with the logging instances.
   SecurityAccessRequest:
     type: object
     description: Security control configuration for FreeIPA and Datalake deployment. Choosing a CIDR will automatically create security groups. Alternatively existing security groups can be specified.
@@ -1199,6 +1354,18 @@ definitions:
       defaultSecurityGroupId:
         type: string
         description: Security group where all other hosts are placed. Mutually exclusive with cidr.
+  GcpSecurityAccessRequest:
+    type: object
+    description: Firewall rules for FreeIPA, Data Lake and Data Hub deployment.
+    properties:
+      securityGroupIdForKnox:
+        type: string
+        minLength: 1
+        description: Firewall rule for Knox hosts.
+      defaultSecurityGroupId:
+        type: string
+        minLength: 1
+        description: Firewall rule for other hosts.
   SecurityAccess:
     type: object
     description: Security control configuration for FreeIPA and Datalake deployment.
@@ -1224,6 +1391,15 @@ definitions:
   CreateAzureEnvironmentResponse:
     type: object
     description: Response object for a create Azure environment request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: Created environment object.
+  CreateGCPEnvironmentResponse:
+    type: object
+    description: Response object for a create GCP environment request.
     required:
       - environment
     properties:
@@ -1336,6 +1512,61 @@ definitions:
       createPrivateEndpoints:
         type: boolean
         description: When this is enabled, then Azure Postgres will be configured with Private Endpoint and a Private DNS Zone. When this is disabled, then Azure Service Endpoints will be created. The default value is disabled.
+  CreateGCPEnvironmentRequest:
+    type: object
+    description: Request object for a create GCP environment request.
+    required:
+      - environmentName
+      - credentialName
+      - region
+      - publicKey
+      - usePublicIp
+      - existingNetworkParams
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment. Must contain only lowercase letters, numbers and hyphens.
+      credentialName:
+        type: string
+        description: Name of the credential to use for the environment.
+      region:
+        type: string
+        description: The region of the environment.
+      publicKey:
+        type: string
+        description: Public SSH key string. The associated private key can be used to get root-level access to the Data Lake instance and Data Hub cluster instances.
+      usePublicIp:
+        type: boolean
+        description: Whether to associate public ip's to the resources within the network.
+      existingNetworkParams:
+        description: Parameters needed to use an existing VPC and Subnets. For now only existing network params is supported.
+        $ref: '#/definitions/ExistingGCPNetworkRequest'
+      securityAccess:
+        description: Firewall rules for FreeIPA, Data Lake and Data Hub deployment.
+        $ref: '#/definitions/GcpSecurityAccessRequest'
+      logStorage:
+        description: GCP storage configuration for cluster and audit logs.
+        $ref: '#/definitions/GcpLogStorageRequest'
+      description:
+        type: string
+        description: A description of the environment.
+      enableTunnel:
+        type: boolean
+        description: Whether to enable SSH tunnelling for the environment.
+      workloadAnalytics:
+        type: boolean
+        description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
+      reportDeploymentLogs:
+        type: boolean
+        description: When true, this will report additional diagnostic information back to Cloudera.
+      tags:
+        type: array
+        description: Tags that can be attached to GCP resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
+        items:
+          $ref: '#/definitions/GcpTagRequest'
+      proxyConfigName:
+        type: string
+        description: Name of the proxy config to use for the environment.
   ExistingAzureNetworkRequest:
     type: object
     description: Request object for creating an Azure environment using existing VNet and subnets.
@@ -1356,6 +1587,26 @@ definitions:
         uniqueItems: true
         items:
           type: string
+  ExistingGCPNetworkRequest:
+    type: object
+    description: Request object for creating an GCP environment using existing VPC and subnets.
+    required:
+      - networkName
+      - subnetNames
+      - sharedProjectId
+    properties:
+      networkName:
+        type: string
+        description: The name of the GCP VPC.
+      subnetNames:
+        type: array
+        description: One or more subnet names within the VPC. Google VPC's are global, please give subnets from single geographic region only to reduce latency.
+        uniqueItems: true
+        items:
+          type: string
+      sharedProjectId:
+        type: string
+        description: The ID of the Google project associated with the VPC.
   ChangeEnvironmentCredentialRequest:
     type: object
     description: Request object for a change environment credentials request.
@@ -1498,6 +1749,13 @@ definitions:
           s3GuardTableName:
             type: string
             description: The name for the DynamoDB table backing S3Guard.
+      gcpDetails:
+        type: object
+        description: GCP specific environment configuration information.
+        properties:
+          sharedProjectId:
+            type: string
+            description: ID of the Google project where the resources are created.
       reportDeploymentLogs:
         type: boolean
         description: When true, this will report additional diagnostic information back to Cloudera.
@@ -1547,12 +1805,26 @@ definitions:
         uniqueItems: true
         items:
           type: string
+      endpointAccessGatewayScheme:
+        type: string
+        description: The scheme for the endpoint gateway. PUBLIC indicates an external endpoint that can be accessed over the Internet.
+        enum:
+          - PUBLIC
+          - PRIVATE
+      endpointAccessGatewaySubnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnets to use for endpoint access gateway.
       aws:
         description: AWS network parameters.
         $ref: '#/definitions/NetworkAwsParams'
       azure:
         description: Azure network parameters.
         $ref: '#/definitions/NetworkAzureParams'
+      gcp:
+        description: GCP network parameters.
+        $ref: '#/definitions/NetworkGcpParams'
       networkCidr:
         type: string
         description: The range of private IPv4 addresses that resources will use under this network.
@@ -1604,6 +1876,22 @@ definitions:
       usePublicIp:
         type: boolean
         description: Whether to associate public ip's to the resources within the network.
+  NetworkGcpParams:
+    type: object
+    description: GCP network parameters.
+    required:
+      - networkName
+      - usePublicIp
+    properties:
+      networkName:
+        type: string
+        description: The name of the GCP VPC.
+      usePublicIp:
+        type: boolean
+        description: Whether to associate public ip's to the resources within the network.
+      sharedProjectId:
+        type: string
+        description: The ID of the Google project associated with the VPC.
   DeleteEnvironmentRequest:
     type: object
     description: Request object for a delete environment request.
@@ -2347,6 +2635,19 @@ definitions:
       value:
         type: string
         description: The associated value of the tag.
+  GcpTagRequest:
+    description: A label that can be attached to GCP resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
+    type: object
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The tag's name.
+      value:
+        type: string
+        description: The associated value of the tag.
   FreeipaDetails:
     description: Details of a FreeIPA cluster.
     type: object
@@ -2679,6 +2980,15 @@ definitions:
         uniqueItems: true
         items:
           type: string
+      excludeHosts:
+        type: array
+        description: Array of host names (fqdn or IP address), collection will not run on the excluded hosts.
+        uniqueItems: true
+        items:
+          type: string
+      skipUnresponsiveHosts:
+        type: boolean
+        description: Skip unhealthy hosts from the diagnostics collection.
       includeSaltLogs:
         type: boolean
         description: Include salt minion/master/api system logs in the diagnostics collection.
@@ -2693,6 +3003,90 @@ definitions:
   CollectFreeipaDiagnosticsResponse:
     type: object
     description: Response object for collecting FreeIPA diagnostics.
+  ListFreeipaDiagnosticsRequest:
+    type: object
+    description: Request object for listing recent FreeIPA diagnostics collections.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  ListFreeipaDiagnosticsResponse:
+    type: object
+    description: Response object for listing recent FreeIPA diagnostics collections.
+    properties:
+      collections:
+        type: array
+        description: description.
+        items:
+          $ref: '#/definitions/FreeipaDiagnosticsCollectionResponse'
+  FreeipaDiagnosticsCollectionResponse:
+    type: object
+    description: Response object for diagnostic collection flow details.
+    properties:
+      status:
+        type: string
+        description: Status of the diagnostics collection flow.
+        enum:
+          - RUNNING
+          - FAILED
+          - FINISHED
+          - CANCELLED
+      flowId:
+        type: string
+        description: Flow ID of the diagnostics collection flow.
+      flowState:
+        type: string
+        description: Current state of the diagnostics collection flow.
+      created:
+        type: string
+        format: date-time
+        description: Creation date of the diagnostics collection flow.
+      progressPercentage:
+        type: integer
+        description: Progress percentage of the diagnostics collection flow (maximum value if finished).
+        format: int32
+      collectionDetails:
+        $ref: '#/definitions/FreeipaDiagnosticsCollectionDetailsResponse'
+        description: Additional details about the diagnostics collection.
+  FreeipaDiagnosticsCollectionDetailsResponse:
+    type: object
+    description: Response object for diagnostic collection details.
+    properties:
+      case:
+        type: string
+        description: Case number for the diagnostics collection.
+      output:
+        type: string
+        description: Output destination of the diagnostics collection.
+      destination:
+        type: string
+        description: Destination type of the diagnostics collection.
+      description:
+        type: string
+        description: Description of the diagnostics collection.
+      accountId:
+        type: string
+        description: Account Id that was used for the diagnostics collection.
+      resourceCrn:
+        type: string
+        description: Crn of the Freeipa cluster.
+      clusterVersion:
+        type: string
+        description: Version of the cluster that was used for the diagnostics collection.
+  CancelFreeipaDiagnosticsRequest:
+    type: object
+    description: Request object for cancel running FreeIPA diagnostics collections.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name or CRN of the environment.
+  CancelFreeipaDiagnosticsResponse:
+    type: object
+    description: Response object for cancel running FreeIPA diagnostics collections.
   GetFreeipaLogDescriptorsRequest:
     type: object
     description: Request object for obtaining log descriptors. (that are used for diagnostics collection)

@@ -252,10 +252,14 @@ class CLIDriver(object):
 
     def _warn_for_non_public_release(self):
         if RELEASE != 'PUBLIC':
-            LOG.warn('You are running a {0} release of the CDP CLI, which '
+            if RELEASE == 'INTERNAL':
+                article = 'an'
+            else:
+                article = 'a'
+            LOG.warn('You are running {0} {1} release of the CDP CLI, which '
                      'has different capabilities from the standard public '
                      'release. Find the public release at: '
-                     'https://pypi.org/project/cdpcli/'.format(RELEASE))
+                     'https://pypi.org/project/cdpcli/'.format(article, RELEASE))
 
 
 class ServiceCommand(CLICommand):

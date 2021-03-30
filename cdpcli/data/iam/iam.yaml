@@ -48,7 +48,6 @@ paths:
       operationId: listUsers
       x-form-factors: public,private
       x-right: iam/listUsers
-      x-paginates: true
       x-paging-default-max-items: 100
       x-mutating: false
       parameters:
@@ -230,7 +229,6 @@ paths:
       operationId: listAccessKeys
       x-form-factors: public,private
       x-right: iam/listAccessKeys
-      x-paginates: true
       x-paging-default-max-items: 100
       x-mutating: false
       parameters:
@@ -255,6 +253,7 @@ paths:
       operationId: listRoles
       x-form-factors: public,private
       x-right: iam/listRoles
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -278,6 +277,7 @@ paths:
       operationId: listResourceRoles
       x-form-factors: public,private
       x-right: iam/listResourceRoles
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -434,6 +434,7 @@ paths:
       operationId: listUserAssignedRoles
       x-form-factors: public,private
       x-right: iam/listAssignedRoles
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -457,6 +458,7 @@ paths:
       operationId: listUserAssignedResourceRoles
       x-form-factors: public,private
       x-right: iam/listAssignedResourceRoles
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -570,6 +572,7 @@ paths:
       operationId: listMachineUserAssignedRoles
       x-form-factors: public,private
       x-right: iam/listAssignedRoles
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -593,6 +596,7 @@ paths:
       operationId: listMachineUserAssignedResourceRoles
       x-form-factors: public,private
       x-right: iam/listAssignedResourceRoles
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -616,6 +620,7 @@ paths:
       operationId: listResourceAssignees
       x-form-factors: public,private
       x-right: iam/listResourceAssignees
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -661,7 +666,6 @@ paths:
       operationId: listMachineUsers
       x-form-factors: public,private
       x-right: iam/listMachineUsers
-      x-paginates: true
       x-paging-default-max-items: 100
       x-mutating: false
       parameters:
@@ -751,6 +755,7 @@ paths:
       description: Lists SAML providers in CDP account.
       operationId: listSamlProviders
       x-right: iam/listSamlProviders
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -908,7 +913,6 @@ paths:
       operationId: listGroups
       x-form-factors: public,private
       x-right: iam/listGroups
-      x-paginates: true
       x-paging-default-max-items: 100
       x-mutating: false
       parameters:
@@ -1044,7 +1048,6 @@ paths:
       operationId: listGroupMembers
       x-form-factors: public,private
       x-right: iam/listGroupMembers
-      x-paginates: true
       x-paging-default-max-items: 100
       x-mutating: false
       parameters:
@@ -1069,7 +1072,6 @@ paths:
       operationId: listGroupsForUser
       x-form-factors: public,private
       x-right: iam/listGroupsForActor
-      x-paginates: true
       x-paging-default-max-items: 100
       x-mutating: false
       parameters:
@@ -1094,7 +1096,6 @@ paths:
       operationId: listGroupsForMachineUser
       x-form-factors: public,private
       x-right: iam/listGroupsForActor
-      x-paginates: true
       x-paging-default-max-items: 100
       x-mutating: false
       parameters:
@@ -1209,6 +1210,7 @@ paths:
       operationId: listGroupAssignedRoles
       x-form-factors: public,private
       x-right: iam/listAssignedRoles
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input
@@ -1232,6 +1234,7 @@ paths:
       operationId: listGroupAssignedResourceRoles
       x-form-factors: public,private
       x-right: iam/listAssignedResourceRoles
+      x-paging-default-max-items: 100
       x-mutating: false
       parameters:
         - name: input

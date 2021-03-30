@@ -103,6 +103,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/createGCPCluster:
+    post:
+      summary: Creates a GCP workload cluster.
+      description: Creates a GCP workload cluster.
+      x-entitlement: CDP_GCP
+      operationId: createGCPCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateGCPClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateGCPClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datahub/deleteCluster:
     post:
       summary: Deletes a workload cluster.
@@ -735,6 +756,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/listDatahubDiagnostics:
+    post:
+      summary: List recent Datahub diagnostics collections
+      description: List recent Datahub diagnostics collection
+      operationId: listDatahubDiagnostics
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDatahubDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDatahubDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/cancelDatahubDiagnostics:
+    post:
+      summary: Cancel running Datahub diagnostics collections
+      description: Cancel running Datahub diagnostics collection
+      operationId: cancelDatahubDiagnostics
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CancelDatahubDiagnosticsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelDatahubDiagnosticsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datahub/collectCmDiagnostics:
     post:
       summary: Start Datahub Cloudera Manager based diagnostics collection
@@ -1354,6 +1417,54 @@ definitions:
       recoveryMode:
         type: string
         description: Recovery mode for the instance group.
+  GCPInstanceGroupRequest:
+    type: object
+    description: Configurations for instance group
+    required:
+      - nodeCount
+      - instanceGroupName
+      - instanceGroupType
+      - instanceType
+      - rootVolumeSize
+      - attachedVolumeConfiguration
+    properties:
+      nodeCount:
+        type: integer
+        format: int32
+        description: Number of instances in the instance group
+      instanceGroupName:
+        type: string
+        description: The instance group name.
+      instanceGroupType:
+        type: string
+        description: The instance group type.
+      instanceType:
+        type: string
+        description: The cloud provider specific instance type to be used.
+      rootVolumeSize:
+        type: integer
+        format: int32
+        description: The root volume size.
+      attachedVolumeConfiguration:
+        type: array
+        items:
+          $ref: '#/definitions/AttachedVolumeRequest'
+        description: The attached volume configuration. This does not include root volume.
+      recipeNames:
+        type: array
+        items:
+          type: string
+        description: The names or CRNs of the recipes that would be applied to the instance group.
+      recoveryMode:
+        type: string
+        description: Recovery mode for the instance group.
+  DatahubDatabaseType:
+    type: string
+    description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+    enum:
+      - HA
+      - NON_HA
+      - NONE
   CreateAWSClusterRequest:
     type: object
     description: Request object for create AWS cluster request.
@@ -1392,7 +1503,7 @@ definitions:
         type: string
         description: JSON template to use for cluster creation. This is different from cluster template and would be removed in the future.
       datahubDatabase:
-        type: string
+        $ref: '#/definitions/DatahubDatabaseType'
         description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
   CreateAWSClusterResponse:
     type: object
@@ -1441,11 +1552,60 @@ definitions:
         type: string
         description: JSON template to use for cluster creation. This is different from cluster template and would be removed in the future.
       datahubDatabase:
-        type: string
+        $ref: '#/definitions/DatahubDatabaseType'
         description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
   CreateAzureClusterResponse:
     type: object
     description: Response object for create Azure cluster request.
+    required:
+      - cluster
+    properties:
+      cluster:
+        $ref: '#/definitions/Cluster'
+        description: The cluster.
+  CreateGCPClusterRequest:
+    type: object
+    description: Request object for create GCP cluster request.
+    properties:
+      clusterName:
+        type: string
+        description: The name of the cluster. This name must be unique, must have between 5 and 40 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 40
+      clusterDefinitionName:
+        type: string
+        description: The name or CRN of the cluster definition to use for cluster creation.
+      environmentName:
+        type: string
+        description: Name or CRN of the environment to use when creating the cluster. The environment must be a GCP environment.
+      clusterTemplateName:
+        type: string
+        description: Name or CRN of the cluster template to use for cluster creation.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/GCPInstanceGroupRequest'
+        description: Instance group details.
+      subnetName:
+        type: string
+        description: The subnet name.
+      image:
+        $ref: '#/definitions/ImageRequest'
+        description: The image to be used for cluster creation.
+      tags:
+        type: array
+        description: Tags that can be attached to GCP Data Hub resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
+        items:
+          $ref: '#/definitions/GCPDatahubResourceTagRequest'
+      requestTemplate:
+        type: string
+        description: JSON template to use for cluster creation. This is different from cluster template and would be removed in the future.
+      datahubDatabase:
+        $ref: '#/definitions/DatahubDatabaseType'
+        description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+  CreateGCPClusterResponse:
+    type: object
+    description: Response object for create GCP cluster request.
     required:
       - cluster
     properties:
@@ -1947,6 +2107,19 @@ definitions:
       value:
         type: string
         description: The value of the tag.
+  GCPDatahubResourceTagRequest:
+    type: object
+    description: A label that can be attached to GCP Data Hub resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The key of tag.
+      value:
+        type: string
+        description: The value of the tag.
   DatahubResourceTag:
     type: object
     description: Tag for a datahub resource.
@@ -2415,6 +2588,15 @@ definitions:
         uniqueItems: true
         items:
           type: string
+      excludeHosts:
+        type: array
+        description: Array of host names (fqdn or IP address), collection will not run on the excluded hosts.
+        uniqueItems: true
+        items:
+          type: string
+      skipUnresponsiveHosts:
+        type: boolean
+        description: Skip unhealthy hosts from the diagnostics collection.
       includeSaltLogs:
         type: boolean
         description: Include salt minion/master/api system logs in the diagnostics collection.
@@ -2429,6 +2611,90 @@ definitions:
   CollectDatahubDiagnosticsResponse:
     type: object
     description: Response object for collecting DataHub diagnostics.
+  ListDatahubDiagnosticsRequest:
+    type: object
+    description: Request object for listing recent Datahub diagnostics collections.
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: CRN of the DataHub cluster.
+  ListDatahubDiagnosticsResponse:
+    type: object
+    description: Response object for listing recent Datahub diagnostics collections.
+    properties:
+      collections:
+        type: array
+        description: description.
+        items:
+          $ref: '#/definitions/DatahubDiagnosticsCollectionResponse'
+  DatahubDiagnosticsCollectionResponse:
+    type: object
+    description: Response object for diagnostic collection flow details.
+    properties:
+      status:
+        type: string
+        description: Status of the diagnostics collection flow.
+        enum:
+          - RUNNING
+          - FAILED
+          - FINISHED
+          - CANCELLED
+      flowId:
+        type: string
+        description: Flow ID of the diagnostics collection flow.
+      flowState:
+        type: string
+        description: Current state of the diagnostics collection flow.
+      created:
+        type: string
+        format: date-time
+        description: Creation date of the diagnostics collection flow.
+      progressPercentage:
+        type: integer
+        description: Progress percentage of the diagnostics collection flow (maximum value if finished).
+        format: int32
+      collectionDetails:
+        $ref: '#/definitions/DatahubDiagnosticsCollectionDetailsResponse'
+        description: Additional details about the diagnostics collection.
+  DatahubDiagnosticsCollectionDetailsResponse:
+    type: object
+    description: Response object for diagnostic collection details.
+    properties:
+      case:
+        type: string
+        description: Case number for the diagnostics collection.
+      output:
+        type: string
+        description: Output destination of the diagnostics collection.
+      destination:
+        type: string
+        description: Destination type of the diagnostics collection.
+      description:
+        type: string
+        description: Description of the diagnostics collection.
+      accountId:
+        type: string
+        description: Account Id that was used for the diagnostics collection.
+      resourceCrn:
+        type: string
+        description: Crn of the cluster.
+      clusterVersion:
+        type: string
+        description: Version of the cluster that was used for the diagnostics collection.
+  CancelDatahubDiagnosticsRequest:
+    type: object
+    description: Request object for cancel running Datahub diagnostics collections.
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: CRN of the DataHub cluster.
+  CancelDatahubDiagnosticsResponse:
+    type: object
+    description: Response object for cancel running Datahub diagnostics collections.
   GetDatahubLogDescriptorsRequest:
     type: object
     description: Request object for obtaining log descriptors. (that are used for diagnostics collection)
