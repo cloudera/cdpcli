@@ -507,9 +507,6 @@ definitions:
         items:
           $ref: '#/definitions/ChartValueOverridesRequest'
         description: Chart overrides for enabling a service.
-      provisionerid:
-        type: string
-        description: If provided deployment will occur to a pre-provisioned cluster; also known as an 'unmanaged' cluster.
       whitelistIps:
         type: array
         items:

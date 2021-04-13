@@ -1360,6 +1360,9 @@ definitions:
       includeDatabase:
         type: boolean
         description: Restore the database backing HMS/Ranger services. If this option is not provided, the HMS/Ranger services are restored by default.
+      backupLocationOverride:
+        type: string
+        description: Backup location. When provided, will be used to lookup the backup.
   RestoreDatalakeResponse:
     type: object
     description: Response object to a request to perform restore of datalake.
@@ -1541,7 +1544,6 @@ definitions:
   UpgradeDatalakeResponse:
     type: object
     description: Response object for upgrade datalake request.
-    properties: {}
   DatalakeVmLogRequest:
     type: object
     description: Log descriptor, contains a path and label pair. Used for diagnostics collections.

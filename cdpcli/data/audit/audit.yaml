@@ -93,6 +93,7 @@ paths:
       description: Returns all audit log events that have a timestamp within the provided range (start is inclusive, end is exclusive) and, optionally, with the specified request ID and/or event source.
       operationId: listEvents
       x-right: audit/listAuditEvents
+      x-paging-default-max-items: 20
       x-api-rate-limit-group: AUDIT
       parameters:
         - name: input
@@ -195,9 +196,13 @@ definitions:
       pageSize:
         type: integer
         format: int32
+        minimum: 20
+        maximum: 50
+        x-paging-page-size: true
         description: The page size.
       pageToken:
         type: string
+        x-paging-input-token: true
         description: The page token.
       requestId:
         type: string
@@ -211,11 +216,13 @@ definitions:
     properties:
       auditEvents:
         type: array
+        x-paging-result: true
         items:
           $ref: '#/definitions/CdpAuditEvent'
         description: The audit events that satisfy the query.
       nextPageToken:
         type: string
+        x-paging-output-token: true
         description: The page token for requesting the next page of results.
   ApiRequestEvent:
     type: object
