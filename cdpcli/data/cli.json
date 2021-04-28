@@ -23,6 +23,13 @@
       "endpoint-url":{
          "help":"<p>Override command's default URL with the given URL. This is useful when temporarily calling a different CDP control plane.</p>"
       },
+      "form-factor":{
+         "choices":[
+            "public",
+            "private"
+         ],
+         "help":"<p>Explicitly specify the form factor of the control plane being called. When not given, the form factor is guessed based on the command's endpoint URL.</p>"
+      },
       "force-ipv4":{
          "hidden": true,
          "action":"store_true",

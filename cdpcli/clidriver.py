@@ -41,8 +41,14 @@ from cdpcli.compat import six
 from cdpcli.config import Config
 from cdpcli.endpoint import EndpointCreator
 from cdpcli.endpoint import EndpointResolver
+from cdpcli.exceptions import InvalidConfiguredFormFactor
+from cdpcli.exceptions import ProfileNotFound
+from cdpcli.exceptions import WrongOpFormFactorError
+from cdpcli.exceptions import WrongSvcFormFactorError
 from cdpcli.extensions.arguments import OverrideRequiredArgsArgument
 from cdpcli.extensions.cliinputjson import add_cli_input_json
+from cdpcli.extensions.configure.classify import ClassifyDeployment
+from cdpcli.extensions.configure.classify import DeploymentType
 from cdpcli.extensions.configure.configure import ConfigureCommand
 from cdpcli.extensions.generatecliskeleton import add_generate_skeleton
 from cdpcli.extensions.interactivelogin import LoginCommand
@@ -84,8 +90,9 @@ class CLIDriver(object):
         self._available_services = self._loader.list_available_services()
         self._command_table = self._build_command_table()
         self._argument_table = self._build_argument_table()
+        self._context = Context()
         self._client_creator = ClientCreator(self._loader,
-                                             Context(),
+                                             self._context,
                                              self._endpoint_creator,
                                              self._user_agent_header,
                                              self._response_parser_factory,
@@ -101,6 +108,7 @@ class CLIDriver(object):
         parsed_args, remaining = parser.parse_known_args(args)
         try:
             self._handle_top_level_args(parsed_args)
+            self._filter_command_table_for_form_factor(parsed_args)
             self._warn_for_old_python()
             self._warn_for_non_public_release()
             return command_table[parsed_args.command](
@@ -136,6 +144,68 @@ class CLIDriver(object):
         LogoutCommand.add_command(commands)
         RefdocCommand.add_command(commands)
         return commands
+
+    def _filter_command_table_for_form_factor(self, parsed_args):
+        """
+        Replaces services and operations in the command table that do not apply
+        to the current form factor with stubs that error out when called.
+        """
+
+        # Find the form factor based on:
+        # 1. the form factor explicitly specified by --form-factor, or else
+        # 2. the configured form factor, or else
+        # 3. the explicit endpoint URL, or else
+        # 4. the configured CDP endpoint URL.
+        if parsed_args.form_factor:
+            form_factor = parsed_args.form_factor
+        else:
+            try:
+                form_factor = self._context.get_scoped_config().get('form_factor', None)
+            except ProfileNotFound:
+                form_factor = None
+            valid_form_factors = [dt.value for dt in list(DeploymentType)]
+            if form_factor and form_factor not in valid_form_factors:
+                raise InvalidConfiguredFormFactor(
+                    form_factor=form_factor,
+                    valid_form_factors=valid_form_factors)
+            if not form_factor:
+                endpoint_url = parsed_args.endpoint_url
+                if not endpoint_url:
+                    try:
+                        endpoint_url = self._context.get_scoped_config().\
+                            get(EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME, None)
+                    except ProfileNotFound:
+                        endpoint_url = None
+                form_factor =\
+                    ClassifyDeployment(endpoint_url).get_deployment_type().value
+        LOG.debug("Current form factor is {}".format(form_factor))
+
+        for command in list(self._command_table.keys()):
+            try:
+                # If the service does not apply to the current form factor,
+                # filter it out.
+                service_model = self._command_table[command].service_model
+                service_form_factors = service_model.form_factors
+                if form_factor not in service_form_factors:
+                    self._command_table[command] =\
+                        FilteredServiceCommand(self, command, form_factor,
+                                               service_form_factors)
+                else:
+                    for operation_name in service_model.operation_names:
+                        # If the operation does not apply to the current form
+                        # factor, filter it out.
+                        operation_model = service_model.operation_model(operation_name)
+                        operation_form_factors = operation_model.form_factors
+                        if not operation_form_factors:
+                            operation_form_factors = service_form_factors
+                        if form_factor not in operation_form_factors:
+                            self._command_table[command].\
+                                filter_operation(operation_name, form_factor,
+                                                 operation_form_factors)
+
+            except AttributeError:
+                # not a service model, so available in all form factors
+                pass
 
     def _get_argument_table(self):
         return self._argument_table
@@ -263,6 +333,9 @@ class CLIDriver(object):
 
 
 class ServiceCommand(CLICommand):
+    """
+    A top-level CLI command, corresponding to an API service.
+    """
 
     def __init__(self, clidriver, name):
         self._clidriver = clidriver
@@ -335,6 +408,19 @@ class ServiceCommand(CLICommand):
         self._add_lineage(command_table)
         return command_table
 
+    def filter_operation(self, operation_name, form_factor, operation_form_factors):
+        """
+        Replace the named operation in this command's command table with a
+        filtered one.
+        """
+        command_table = self._get_command_table()
+        cli_name = xform_name(operation_name, '-')
+        command_table[cli_name] = FilteredServiceOperation(
+            name=cli_name,
+            parent_name=self._name,
+            form_factor=form_factor,
+            operation_form_factors=operation_form_factors)
+
     def _add_lineage(self, command_table):
         for command in command_table:
             command_obj = command_table[command]
@@ -356,6 +442,26 @@ class ServiceCommand(CLICommand):
         command_table['help'] = self.create_help_command()
         return ServiceArgParser(
             operations_table=command_table, service_name=self._name)
+
+
+class FilteredServiceCommand(ServiceCommand):
+    """
+    A stub service command that fails when run due to being under the wrong
+    CLI form factor.
+    """
+
+    def __init__(self, clidriver, name, form_factor, service_form_factors):
+        super().__init__(clidriver, name)
+        self._clidriver = clidriver
+        self._name = name
+        self._form_factor = form_factor
+        self._service_form_factors = service_form_factors
+
+    def __call__(self, client_creator, args, parsed_globals):
+        raise WrongSvcFormFactorError(
+            service_name=self._name,
+            form_factor=self._form_factor,
+            service_form_factors=', '.join(self._service_form_factors))
 
 
 class ServiceOperation(object):
@@ -540,6 +646,25 @@ class ServiceOperation(object):
                     parsed_globals) is False:
                 break
         return 0
+
+
+class FilteredServiceOperation(ServiceOperation):
+    """
+    A stub service operation that fails when run due to being under the wrong
+    CLI form factor.
+    """
+
+    def __init__(self, name, parent_name, form_factor, operation_form_factors):
+        super().__init__(name, parent_name, operation_caller=None, operation_model=None)
+        self._form_factor = form_factor
+        self._operation_form_factors = operation_form_factors
+
+    def __call__(self, client_creator, args, parsed_globals):
+        raise WrongOpFormFactorError(
+            operation_name=self._name,
+            service_name=self._parent_name,
+            form_factor=self._form_factor,
+            operation_form_factors=', '.join(self._operation_form_factors))
 
 
 class CLIOperationCaller(object):

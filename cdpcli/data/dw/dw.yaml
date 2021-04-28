@@ -648,6 +648,9 @@ definitions:
       autoscaling:
         description: Autoscaling settings for the Virtual Warehouse.
         $ref: '#/definitions/AutoscalingOptions'
+      config:
+        description: Configuration settings for the Virtual Warehouse.
+        $ref: '#/definitions/ServiceConfigReq'
   CreateVwResponse:
     type: object
     description: Response object for the createVw method.
@@ -1147,6 +1150,14 @@ definitions:
         additionalProperties:
           description: Application specific configurations.
           $ref: '#/definitions/ApplicationConfigResp'
+      ldapGroups:
+        type: array
+        items:
+          type: string
+        description: List of LDAP Groupnames to be enabled for auth.
+      enableSSO:
+        type: boolean
+        description: Should SSO be enabled for this VW.
   ServiceConfigReq:
     type: object
     description: Configurations for a service (DBC or VW)
@@ -1160,6 +1171,14 @@ definitions:
         additionalProperties:
           description: Application specific configurations.
           $ref: '#/definitions/ApplicationConfigReq'
+      ldapGroups:
+        type: array
+        items:
+          type: string
+        description: LDAP Groupnames to be enabled for auth.
+      enableSSO:
+        type: boolean
+        description: Should SSO be enabled for this VW.
   ServiceConfigDiff:
     type: object
     description: Differences between two service configurations.

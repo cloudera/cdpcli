@@ -160,7 +160,7 @@ class Loader(object):
                 yield path
 
     # lists potential service names in a given search path
-    # which is obtained by sallow listing of subdirectories
+    # which is obtained by shallow listing of subdirectories
     def _potential_services(self, path):
         for child in os.listdir(path):
             full_path = os.path.join(path, child)

@@ -64,6 +64,12 @@ CDP Private Key [None]: yyy
 Credentials are stored under the "default" profile in *$HOME/.cdp/credentials*,
 using the ini file format.
 
+```
+[default]
+cdp_access_key_id = xxx
+cdp_private_key = yyy
+```
+
 ### Profiles
 
 If you need to access the API as more than one user, set up a named profile for
@@ -73,12 +79,40 @@ each user. Each profile stores a separate set of credentials.
 $ cdp configure --profile my-other-user
 ```
 
+The credentials for a profile are stored in *$HOME/.cdp/credentials* under a
+section named for the profile.
+
 ### Credential Environment Variables
 
 An alternative to storing credentials in *$HOME/.cdp/credentials* is to pass
 them using the environment variables `CDP_ACCESS_KEY_ID` and `CDP_PRIVATE_KEY`.
 However, these variables are ignored when the `--profile` option is used when
 running the CLI (see below).
+
+### Base Endpoint URL and Form Factor
+
+The CLI may be used to access
+[CDP Private Cloud](https://docs.cloudera.com/cdp-private-cloud/latest/overview/topics/cdppvc-overview.html)
+control planes. Contact your control plane administrator to obtain the required
+base endpoint URL value for your installation. Set the value in
+*$HOME/.cdp/config*, another configuration file that uses the ini file format.
+Create a section named for the profile which should work with the private cloud
+control plane.
+
+```
+[profile private1]
+cdp_endpoint_url = https://cdp-private.example.com
+```
+
+The CLI guesses whether it is using CDP Public Cloud or CDP Private Cloud based
+on the base endpoint URL. If you find that it is guessing incorrectly, you can
+configure use of either *form factor* in *$HOME/.cdp/config*. Valid form factor
+values are "public" and "private".
+
+```
+[profile private1]
+form_factor = private
+```
 
 ## Running
 
@@ -121,6 +155,30 @@ profile by passing the `--profile` option.
 
 ```
 $ cdp --profile my-other-user iam get-user
+```
+
+### Base Endpoint URL and Form Factor
+
+By default, the CLI works with
+[CDP Public Cloud](https://docs.cloudera.com/cdp/latest/overview/topics/cdp-overview.html)
+and calculates API endpoints accordingly. If you are using CDP Private Cloud, be
+sure to provide the base endpoint URL for your private cloud control plane. You
+can do so by setting it in *$HOME/.cdp/config* for the desired profile, or
+through the `--endpoint-url` option, which supersedes the configuration.
+
+```
+$ cdp --endpoint-url https://other.cdp-private.example.com ...
+```
+
+The CLI guesses whether it is using CDP Public Cloud or CDP Private Cloud based
+on the base endpoint URL. If you find that it is guessing incorrectly, you can
+force use of either *form factor* by either setting it in *$HOME/.cdp/config*
+for the desired profile, or through the `--form-factor` option, which supersedes
+the configuration. Specifying a form factor does not alter the base endpoint URL
+ in use.
+
+```
+$ cdp --form-factor private ...
 ```
 
 ## License

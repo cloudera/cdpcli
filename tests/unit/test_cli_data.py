@@ -48,6 +48,7 @@ def test_cli_options_match_service_model_validator():
                              'no-verify-tls',
                              'ca-bundle',
                              'endpoint-url',
+                             'form-factor',
                              'force-ipv4',
                              'access-token',
                              'output',

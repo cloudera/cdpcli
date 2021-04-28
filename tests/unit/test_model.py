@@ -46,6 +46,10 @@ class TestServiceModel(unittest.TestCase):
         service_model = ServiceModel(self.model, 'myservice')
         self.assertEqual(service_model.products, ['ALTUS'])
 
+    def test_form_factors(self):
+        service_model = ServiceModel(self.model, 'myservice')
+        self.assertEqual(service_model.form_factors, ['public', 'private'])
+
     def test_endpoint_prefix(self):
         service_model = ServiceModel(self.model, 'myservice')
         self.assertEqual(service_model.endpoint_prefix, 'api')
@@ -91,6 +95,12 @@ class TestOperationModel(unittest.TestCase):
         self.assertEqual(operation_model.paging_input_token, None)
         self.assertEqual(operation_model.paging_output_token, None)
         self.assertEqual(operation_model.paging_result, None)
+
+    def test_form_factors(self):
+        operation_model = self.service_model.operation_model('describeDirectors')
+        self.assertIsNone(operation_model.form_factors)
+        operation_model = self.service_model.operation_model('deleteDirector')
+        self.assertEqual(operation_model.form_factors, ['public'])
 
     def test_operation_input(self):
         operation_model = self.service_model.operation_model('createDirector')

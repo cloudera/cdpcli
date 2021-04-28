@@ -5,8 +5,8 @@ import re
 
 
 class DeploymentType(enum.Enum):
-    PRIVATE_CLOUD = 'private-cloud'
-    PUBLIC_CLOUD = 'public-cloud'
+    PRIVATE_CLOUD = 'private'
+    PUBLIC_CLOUD = 'public'
 
 
 class ClassifyDeployment:

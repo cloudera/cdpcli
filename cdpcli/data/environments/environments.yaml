@@ -1255,6 +1255,9 @@ definitions:
       freeIpa:
         $ref: '#/definitions/AWSFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
+      image:
+        $ref: '#/definitions/FreeIpaImageRequest'
+        description: The FreeIPA image request for the environment
       tags:
         type: array
         description: Tags associated with the resources.
@@ -1498,6 +1501,9 @@ definitions:
       freeIpa:
         $ref: '#/definitions/AzureFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
+      image:
+        $ref: '#/definitions/FreeIpaImageRequest'
+        description: The FreeIPA image request for the environment
       tags:
         type: array
         description: Tags associated with the resources.
@@ -2622,6 +2628,20 @@ definitions:
         type: integer
         format: int32
         description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
+  FreeIpaImageRequest:
+    description: Request object for FreeIPA image.
+    type: object
+    required:
+      - catalog
+      - id
+    properties:
+      catalog:
+        type: string
+        description: Image catalog to use for FreeIPA image selection.
+        x-no-paramfile: true
+      id:
+        type: string
+        description: Image ID to use for creating FreeIPA instances.
   TagRequest:
     description: A label that can be attached to some resources.
     type: object

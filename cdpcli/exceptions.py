@@ -186,6 +186,14 @@ class ConfigParseError(CdpCLIError):
     fmt = 'Unable to parse config file: {path}'
 
 
+class InvalidConfiguredFormFactor(CdpCLIError):
+    """
+    The configured form factor is not a valid value.
+    """
+    fmt = ('The configured form factor {form_factor} is invalid. '
+           'Valid values are: {valid_form_factors}')
+
+
 class ClusterTerminatingError(CdpCLIError):
 
     """
@@ -256,3 +264,28 @@ class InteractiveLoginError(CdpCLIError):
     Login failed.
     """
     fmt = 'Login failed: {err_msg}.'
+
+
+class WrongSvcFormFactorError(CdpCLIError):
+
+    """
+    The service does not work under the current form factor.
+    """
+    fmt = ('The command {service_name} is not available under the {form_factor}'
+           ' CDP form factor. It is only available for these form factors: '
+           '{service_form_factors}. Check that your profile configuration '
+           'specifies the correct form factor, or that the endpoint URL in '
+           'profile configuration or on the command line points to the correct '
+           'control plane.')
+
+
+class WrongOpFormFactorError(CdpCLIError):
+
+    """
+    The operation does not work under the current form factor.
+    """
+    fmt = ('The subcommand {operation_name} under the command {service_name} is '
+           'not available under the {form_factor} CDP form factor. It is only '
+           'available for these form factors: {operation_form_factors}. Check '
+           'that your profile configuration or explicit endpoint URL points to '
+           'the correct control plane.')

@@ -283,6 +283,12 @@ class OperationModel(object):
         return None
 
     @CachedProperty
+    def form_factors(self):
+        if "x-form-factors" in self._operation_data:
+            return self._operation_data['x-form-factors'].split(',')
+        return None
+
+    @CachedProperty
     def input_shape(self):
         return self._service_model.resolve_shape_ref(
             "input", self._operation_data['parameters'][0]['schema'][REF_KEY])
@@ -345,6 +351,10 @@ class ServiceModel(object):
     @CachedProperty
     def products(self):
         return self._service_data.get("x-products", "ALTUS").split(',')
+
+    @CachedProperty
+    def form_factors(self):
+        return self._service_data.get("x-form-factors", "public").split(',')
 
 
 class DenormalizedStructureBuilder(object):
