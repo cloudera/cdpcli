@@ -391,9 +391,9 @@ definitions:
       eventBatches:
         type: array
         items:
-          $ref: '#/definitions/ArchiveAuditEventsBatchResponse'
+          $ref: '#/definitions/ArchiveBatch'
         description: The details about the batches of events archived.
-  ArchiveAuditEventsBatchResponse:
+  ArchiveBatch:
     type: object
     description: Information about a batch of audit events that were archived.
     properties:

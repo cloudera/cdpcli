@@ -1340,7 +1340,6 @@ definitions:
       - instanceGroupName
       - instanceGroupType
       - instanceType
-      - rootVolumeSize
       - attachedVolumeConfiguration
     properties:
       nodeCount:
@@ -1356,15 +1355,15 @@ definitions:
       instanceType:
         type: string
         description: The cloud provider specific instance type to be used.
-      rootVolumeSize:
-        type: integer
-        format: int32
-        description: The root volume size.
       attachedVolumeConfiguration:
         type: array
         items:
           $ref: '#/definitions/AttachedVolumeRequest'
         description: The attached volume configuration. This does not include root volume.
+      rootVolumeSize:
+        type: integer
+        format: int32
+        description: The root volume size.
       recipeNames:
         type: array
         items:
