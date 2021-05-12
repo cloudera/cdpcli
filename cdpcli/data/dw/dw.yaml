@@ -61,6 +61,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/dw/describeKubeconfig:
+    post:
+      summary: Get Kubeconfig for a Cloudera Data Warehouse cluster.
+      description: Get Kubeconfig for a Cloudera Data Warehouse cluster.
+      operationId: describeKubeconfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeKubeconfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeKubeconfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/dw/createCluster:
     post:
       x-no-compatibility-guarantee: true
@@ -440,6 +461,22 @@ definitions:
       cluster:
         description: The cluster.
         $ref: '#/definitions/ClusterSummary'
+  DescribeKubeconfigRequest:
+    type: object
+    description: Request object for the describeKubeconfig method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to describe.
+  DescribeKubeconfigResponse:
+    type: object
+    description: Response object for the describeKubeconfig method.
+    properties:
+      kubeconfig:
+        type: string
+        description: The kubeconfig.
   CreateClusterRequest:
     type: object
     description: Request object for the createCluster method.
@@ -651,6 +688,24 @@ definitions:
       config:
         description: Configuration settings for the Virtual Warehouse.
         $ref: '#/definitions/ServiceConfigReq'
+      tags:
+        type: array
+        description: Tags associated with the resources.
+        items:
+          $ref: '#/definitions/TagRequest'
+  TagRequest:
+    description: A key/value pair that can be attached to some resources.
+    type: object
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The tag's name.
+      value:
+        type: string
+        description: The associated value of the tag.
   CreateVwResponse:
     type: object
     description: Response object for the createVw method.
@@ -806,6 +861,24 @@ definitions:
         type: string
         format: date-time
         description: Creation date of Virtual Warehouse.
+      tags:
+        type: array
+        description: Tags associated with the resources.
+        items:
+          $ref: '#/definitions/TagResponse'
+  TagResponse:
+    description: A key/value pair attached to some resources.
+    type: object
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The tag's name.
+      value:
+        type: string
+        description: The associated value of the tag.
   DescribeConfigRequest:
     type: object
     description: Request object for the describeConfig method.

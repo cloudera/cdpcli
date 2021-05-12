@@ -403,7 +403,7 @@ definitions:
       eventCount:
         type: integer
         format: int64
-        description: The number of events archived.
+        description: The number of events archived. A negative number indicates that the count is not available.
       archiveId:
         type: string
         description: The archive ID of the batch.

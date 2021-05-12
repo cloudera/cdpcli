@@ -22,10 +22,10 @@ format in which newlines are replaced with \\n."""
 
 class ConfigValue(object):
 
-    def __init__(self, value, config_type, config_variable):
+    def __init__(self, value, source_type, source):
         self.value = value
-        self.config_type = config_type
-        self.config_variable = config_variable
+        self.source_type = source_type
+        self.source = source
 
     def mask_value(self):
         if self.value is NOT_SET:

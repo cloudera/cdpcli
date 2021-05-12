@@ -708,6 +708,9 @@ definitions:
       endpoints:
         $ref: '#/definitions/Endpoints'
         description: The exposed service api endpoints.
+      cloudStorageBaseLocation:
+        type: string
+        description: The base location for the cloud storage used for the datalake.
   InstanceGroup:
     type: object
     description: The type of the instance group which also contains the actual instance(s)

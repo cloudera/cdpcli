@@ -35,8 +35,8 @@ class TestConfigureListCommand(unittest.TestCase):
         self.configure_list(context, args=[], parsed_globals=None)
         rendered = stream.getvalue()
         self.assertRegexpMatches(rendered, 'profile\\s+<not set>')
-        self.assertRegexpMatches(rendered, 'access_key\\s+<not set>')
-        self.assertRegexpMatches(rendered, 'private_key\\s+<not set>')
+        self.assertRegexpMatches(rendered, 'cdp_access_key_id\\s+<not set>')
+        self.assertRegexpMatches(rendered, 'cdp_private_key\\s+<not set>')
 
     def test_configure_from_env(self):
         env_vars = {
@@ -75,9 +75,9 @@ class TestConfigureListCommand(unittest.TestCase):
         self.assertRegexpMatches(
             rendered, 'profile\\s+<not set>\\s+None\\s+None')
         self.assertRegexpMatches(
-            rendered, 'access_key\\s+\\*+y_id\\s+config-file')
+            rendered, 'cdp_access_key_id\\s+\\*+y_id\\s+config-file')
         self.assertRegexpMatches(
-            rendered, 'private_key\\s+\\*+tkey\\s+config-file')
+            rendered, 'cdp_private_key\\s+\\*+tkey\\s+config-file')
 
     def test_configure_from_multiple_sources(self):
         # Here the profile is from an env var, the
@@ -111,9 +111,9 @@ class TestConfigureListCommand(unittest.TestCase):
         # also checking that the access_key/private_key are masked
         # with '*' chars except for the last 4 chars.
         self.assertRegexpMatches(
-            rendered, r'access_key\s+\*+_key\s+foobar')
+            rendered, r'cdp_access_key_id\s+\*+_key\s+foobar')
         self.assertRegexpMatches(
-            rendered, r'private_key\s+\*+_key\s+foobar')
+            rendered, r'cdp_private_key\s+\*+_key\s+foobar')
 
     def test_profile_set_in_context(self):
         # this is not a known configuration so this is ignored.
@@ -136,6 +136,6 @@ class TestConfigureListCommand(unittest.TestCase):
         self.assertRegexpMatches(
             rendered, 'profile\\s+dev\\s+manual\\s+--profile')
         self.assertRegexpMatches(
-            rendered, r'access_key\s+\*+y_id\s+config-file')
+            rendered, r'cdp_access_key_id\s+\*+y_id\s+config-file')
         self.assertRegexpMatches(
-            rendered, r'private_key\s+\*+tkey\s+config-file')
+            rendered, r'cdp_private_key\s+\*+tkey\s+config-file')

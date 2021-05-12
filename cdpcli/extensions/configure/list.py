@@ -15,7 +15,11 @@
 # language governing permissions and limitations under the License.
 import sys
 
-from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, CDP_PRIVATE_KEY_KEY_NAME
+from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME,\
+    CDP_ENDPOINT_URL_KEY_NAME,\
+    CDP_PRIVATE_KEY_KEY_NAME,\
+    ENDPOINT_URL_KEY_NAME,\
+    FORM_FACTOR_KEY_NAME
 from cdpcli.extensions.commands import BasicCommand
 
 from . import ConfigValue, NOT_SET
@@ -24,26 +28,31 @@ from . import ConfigValue, NOT_SET
 class ConfigureListCommand(BasicCommand):
     NAME = 'list'
     DESCRIPTION = (
-        'List the CDP CLI configuration data.  This command will '
-        'show you the current configuration data.  For each configuration '
-        'item, it will show you the value, where the configuration value '
-        'was retrieved, and the configuration variable name.  For example, '
-        'if you provide the CDP access key in an environment variable, this '
-        'command will show you the key information you\'ve configured, '
-        'it will tell you that this value came from an environment '
-        'variable, and it will tell you the name of the environment '
-        'variable.\n'
+        'List CDP CLI configuration data. Each configuration item\'s name, '
+        'value, source type, and source location are listed. For example, if '
+        'you provide the CDP access key in an environment variable, this '
+        'command will list the access key value and its source as the '
+        'environment.\n'
     )
     SYNOPSIS = 'cdp configure list [--profile profile-name]'
     EXAMPLES = (
         'To show your current configuration values::\n'
         '\n'
         '  $ cdp configure list\n'
-        '        Name                    Value             Type    Location\n'
-        '        ----                    -----             ----    --------\n'
-        '     profile                <not set>             None    None\n'
-        '  access_key     ****************ABCD      config_file    ~/.cdp/config\n'
-        '  private_key    ****************ABCD      config_file    ~/.cdp/config\n'
+        '                Name                Value'
+        '              Source Type    Source\n'
+        '                ----                -----'
+        '              -----------    ------\n'
+        '             profile            <not set>'
+        '                     None    None\n'
+        '   cdp_access_key_id ****************ABCD  shared-credentials-file\n'
+        '     cdp_private_key ****************EFGH  shared-credentials-file\n'
+        '    cdp_endpoint_url            <not set>'
+        '                     None    None\n'
+        '        endpoint_url            <not set>'
+        '                     None    None\n'
+        '         form_factor            <not set>'
+        '                     None    None\n'
         '\n'
     )
 
@@ -54,9 +63,9 @@ class ConfigureListCommand(BasicCommand):
     def _run_main(self, client_creator, args, parsed_globals):
         context = client_creator.context
 
-        self._display_config_value(ConfigValue('Value', 'Type', 'Location'),
+        self._display_config_value(ConfigValue('Value', 'Source Type', 'Source'),
                                    'Name')
-        self._display_config_value(ConfigValue('-----', '----', '--------'),
+        self._display_config_value(ConfigValue('-----', '-----------', '------'),
                                    '----')
 
         if context.profile is not None:
@@ -66,13 +75,23 @@ class ConfigureListCommand(BasicCommand):
         self._display_config_value(profile, 'profile')
 
         access_key, private_key = self._lookup_credentials(context)
-        self._display_config_value(access_key, 'access_key')
-        self._display_config_value(private_key, 'private_key')
+        self._display_config_value(access_key, CDP_ACCESS_KEY_ID_KEY_NAME)
+        self._display_config_value(private_key, CDP_PRIVATE_KEY_KEY_NAME)
+
+        self._display_config_value(self._lookup_config(context,
+                                                       CDP_ENDPOINT_URL_KEY_NAME),
+                                   CDP_ENDPOINT_URL_KEY_NAME)
+        self._display_config_value(self._lookup_config(context, ENDPOINT_URL_KEY_NAME),
+                                   ENDPOINT_URL_KEY_NAME)
+        self._display_config_value(self._lookup_config(context, FORM_FACTOR_KEY_NAME),
+                                   FORM_FACTOR_KEY_NAME)
 
     def _display_config_value(self, config_value, config_name):
-        self._stream.write('%10s %24s %16s    %s\n' % (
-            config_name, config_value.value, config_value.config_type,
-            config_value.config_variable))
+        truncated_value = (config_value.value[:27] + '...')\
+            if len(config_value.value) > 30 else config_value.value
+        self._stream.write('%20s %30s %24s    %s\n' % (
+            config_name, truncated_value, config_value.source_type,
+            config_value.source))
 
     def _lookup_credentials(self, context):
         # First try it with _lookup_config.  It's possible

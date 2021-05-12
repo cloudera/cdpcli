@@ -1279,6 +1279,9 @@ definitions:
       instanceProfile:
         type: string
         description: The AWS instance profile that which contains the necessary permissions to access the S3 storage location.
+      backupStorageLocationBase:
+        type: string
+        description: The base location to store backup in S3. This should be an s3a:// url.
   AzureLogStorageRequest:
     type: object
     description: Azure storage configuration for cluster and audit logs.
@@ -1292,6 +1295,9 @@ definitions:
       managedIdentity:
         type: string
         description: The managed identity associated with the logger. This identity should have Storage Blob Data Contributor role on the given storage account.
+      backupStorageLocationBase:
+        type: string
+        description: The storage location to use. The location has to be in the following format abfs://filesystem@storage-account-name.dfs.core.windows.net. The filesystem must already exist and the storage account must be StorageV2.
   GcpLogStorageRequest:
     type: object
     description: GCP storage configuration for cluster and audit logs.
@@ -1305,6 +1311,9 @@ definitions:
       serviceAccountEmail:
         type: string
         description: Email id of the service account to be associated with the instances. This service account should have "storage.ObjectCreator" role on the given storage bucket.
+      backupStorageLocationBase:
+        type: string
+        description: The Google storage bucket to use. This should be a gs:// url.
   LogStorage:
     type: object
     description: Storage configuration for cluster and audit logs.
@@ -1344,6 +1353,43 @@ definitions:
           serviceAccountEmail:
             type: string
             description: Email ID of the service account associated with the logging instances.
+  BackupStorage:
+    type: object
+    description: Storage configuration for backup.
+    properties:
+      enabled:
+        type: boolean
+        description: Whether external backup storage is enabled. The default value is disabled.
+      awsDetails:
+        type: object
+        description: AWS-specific backup storage configuration information.
+        properties:
+          storageLocationBase:
+            type: string
+            description: The base location to store backup in S3. This should be an s3a:// url.
+          instanceProfile:
+            type: string
+            description: The AWS instance profile which contains the necessary permissions to access the S3 storage location.
+      azureDetails:
+        type: object
+        description: Azure-specific backup storage configuration information.
+        properties:
+          storageLocationBase:
+            type: string
+            description: The storage location to use. The location has to be in the following format abfs://filesystem@storage-account-name.dfs.core.windows.net.
+          managedIdentity:
+            type: string
+            description: The managed identity associated with the backup. This identity should have Storage Blob Data Contributor role on the given storage account.
+      gcpDetails:
+        type: object
+        description: GCP-specific backup storage configuration information.
+        properties:
+          storageLocationBase:
+            type: string
+            description: The storage location to use. This should be a gs:// url.
+          serviceAccountEmail:
+            type: string
+            description: Email ID of the service account associated with the backup instances.
   SecurityAccessRequest:
     type: object
     description: Security control configuration for FreeIPA and Datalake deployment. Choosing a CIDR will automatically create security groups. Alternatively existing security groups can be specified.
@@ -1729,6 +1775,9 @@ definitions:
       logStorage:
         description: Storage configuration for cluster and audit logs.
         $ref: '#/definitions/LogStorage'
+      backupStorage:
+        description: Storage configuration for backup.
+        $ref: '#/definitions/BackupStorage'
       authentication:
         description: SSH key for accessing cluster node instances.
         $ref: '#/definitions/Authentication'
