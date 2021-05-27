@@ -1871,6 +1871,7 @@ definitions:
         items:
           type: string
         description: The subnets to use for endpoint access gateway.
+        uniqueItems: true
       aws:
         description: AWS network parameters.
         $ref: '#/definitions/NetworkAwsParams'

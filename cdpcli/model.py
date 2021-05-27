@@ -295,8 +295,12 @@ class OperationModel(object):
 
     @CachedProperty
     def output_shape(self):
-        return self._service_model.resolve_shape_ref(
-            "output", self._operation_data['responses'][200]['schema'][REF_KEY])
+        if '200' in self._operation_data['responses']:
+            return self._service_model.resolve_shape_ref(
+                "output", self._operation_data['responses']['200']['schema'][REF_KEY])
+        else:
+            return self._service_model.resolve_shape_ref(
+                "output", self._operation_data['responses'][200]['schema'][REF_KEY])
 
 
 class ServiceModel(object):

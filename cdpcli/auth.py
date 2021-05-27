@@ -93,7 +93,8 @@ class V1Signer(object):
 
     def add_auth(self, request):
         if self.credentials is None:
-            raise NoCredentialsError
+            raise NoCredentialsError(
+                err_msg='Credentials not available for request signing')
         LOG.debug("Calculating signature using %s." % self.auth_method)
         LOG.debug('HTTP request method: %s', request.method)
         split = urlsplit(request.url)
@@ -206,7 +207,8 @@ class AccessTokenAuth:
 
     def add_auth(self, request):
         if self._credentials is None:
-            raise NoCredentialsError
+            raise NoCredentialsError(
+                err_msg='Credentials not available for request signing')
         if 'Authorization' in request.headers:
             raise Exception("Authorization found in headers!")
         request.headers['Authorization'] = self._credentials.access_token

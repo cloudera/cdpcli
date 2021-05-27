@@ -195,8 +195,8 @@ class EnvProvider(CredentialProvider):
                 if Ed25519v1Auth.detect_private_key(private_key):
                     private_key_value = private_key
                 else:
-                    LOG.debug("Private key at %s does not exist!" % private_key)
-                    raise NoCredentialsError()
+                    raise NoCredentialsError(
+                        err_msg='Private key file {} does not exist'.format(private_key))
             else:
                 private_key_value = open(private_key).read()
             return Credentials(access_key_id=access_key_id,
@@ -207,8 +207,9 @@ class EnvProvider(CredentialProvider):
                 self.environ, self._mapping[ACCESS_TOKEN])
             LOG.info('Found access token in environment variables.')
             if not AccessTokenAuth.is_access_token(access_token):
-                LOG.debug("Access token at %s does not exist!" % access_token)
-                raise NoCredentialsError()
+                LOG.debug('Invalid access token {}'.format(access_token))
+                raise NoCredentialsError(
+                    err_msg='Invalid access token (see debug log for value)')
             return Credentials(access_token=access_token,
                                method=self.METHOD)
         else:
@@ -268,14 +269,25 @@ class CredentialResolver(object):
         Goes through the credentials chain, returning the first ``Credentials``
         that could be loaded.
         """
+
+        # Grab this during the scan in case no credentials are available.
+        creds_expanded_path = None
+
         # First provider to return a non-None response wins.
         for provider in self.providers:
             LOG.debug("Looking for credentials via: %s", provider.METHOD)
+            if isinstance(provider, SharedCredentialProvider):
+                creds_expanded_path = provider.get_creds_expanded_path()
             creds = provider.load()
             if creds is not None:
                 return creds
 
-        raise NoCredentialsError()
+        err_msg = "No credentials found anywhere in chain"
+        if creds_expanded_path:
+            err_msg += ". The shared credentials file should be stored at {}"\
+                .format(creds_expanded_path)
+
+        raise NoCredentialsError(err_msg=err_msg)
 
 
 class AuthConfigFile(CredentialProvider):
@@ -293,8 +305,8 @@ class AuthConfigFile(CredentialProvider):
             return None
 
         if not os.path.isfile(self._conf):
-            LOG.debug("Conf file at %s does not exist!" % self._conf)
-            raise NoCredentialsError()
+            raise NoCredentialsError(
+                err_msg="Config file {} not found".format(self._conf))
         try:
             conf = json.loads(open(self._conf).read())
         except Exception:
@@ -329,13 +341,17 @@ class SharedCredentialProvider(CredentialProvider):
 
     def __init__(self, creds_filename, profile_name):
         self._creds_filename = creds_filename
+        self._creds_expanded_path = os.path.expanduser(creds_filename)
         self._profile_name = profile_name
+
+    def get_creds_expanded_path(self):
+        return self._creds_expanded_path
 
     def load(self):
         try:
             available_creds = raw_config_parse(self._creds_filename)
         except ConfigNotFound:
-            LOG.debug("Credentials file at %s does not exist!" % self._creds_filename)
+            LOG.debug("Shared credentials file {} not found".format(self._creds_filename))
             return None
         if self._profile_name in available_creds:
             config = available_creds[self._profile_name]

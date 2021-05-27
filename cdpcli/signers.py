@@ -52,7 +52,7 @@ class RequestSigner(object):
         # If there's no credentials provided (i.e credentials is None),
         # then we'll pass a value of "None" over to the auth classes,
         # which already handle the cases where no credentials have
-        # been provided.
+        # been provided (by failing ...).
         frozen_credentials = self._credentials.get_frozen_credentials()
         kwargs['credentials'] = frozen_credentials
         auth = cls(**kwargs)

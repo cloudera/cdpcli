@@ -121,7 +121,7 @@ class NoCredentialsError(CdpCLIError):
     """
     No credentials could be found.
     """
-    fmt = 'Unable to locate CDP credentials'
+    fmt = 'Unable to locate CDP credentials: {err_msg}.'
 
 
 class UnknownCredentialError(CdpCLIError):

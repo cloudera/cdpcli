@@ -87,6 +87,29 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/audit/getArchivingStatus:
+    post:
+      summary: Retrieve the status for an archive process.
+      description: 'Returns the current status for the request archive process. WARNING: This command is experimental and subject to backwards-incompatible change.'
+      operationId: getArchivingStatus
+      x-entitlement: AUDIT_ARCHIVING_API
+      x-right: audit/archiveAuditEvents
+      x-api-rate-limit-group: AUDIT
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetArchivingStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetArchivingStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/audit/listEvents:
     post:
       summary: List all audit events recorded in a specified time span, and optionally with a specified request ID and/or event source.
@@ -106,6 +129,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListEventsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/audit/listRecentArchiveRuns:
+    post:
+      summary: List recent archive runs.
+      description: Returns recent archive runs for a specified account.
+      operationId: listRecentArchiveRuns
+      x-right: audit/listRecentArchiveRuns
+      x-api-rate-limit-group: AUDIT
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListRecentArchiveRunsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListRecentArchiveRunsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -393,6 +438,34 @@ definitions:
         items:
           $ref: '#/definitions/ArchiveBatch'
         description: The details about the batches of events archived.
+      taskId:
+        type: string
+        description: The id representing an asynchronous task.
+  GetArchivingStatusRequest:
+    type: object
+    description: Request to get status for an archive process.
+    required:
+      - taskId
+    properties:
+      taskId:
+        type: string
+        description: The id representing an asynchronous task.
+  GetArchivingStatusResponse:
+    type: object
+    description: Information about a current archive process.
+    properties:
+      status:
+        description: The archive status.
+        $ref: '#/definitions/AsyncTaskStatus'
+      eventCount:
+        type: integer
+        format: int64
+        description: The number of events archived.
+      eventBatches:
+        type: array
+        items:
+          $ref: '#/definitions/ArchiveBatch'
+        description: The details about the batches of events archived.
   ArchiveBatch:
     type: object
     description: Information about a batch of audit events that were archived.
@@ -411,4 +484,69 @@ definitions:
         type: integer
         format: int64
         description: The archive timestamp of the batch.
+  ListRecentArchiveRunsRequest:
+    type: object
+    description: Request to list recent archive runs.
+    properties:
+      limit:
+        type: integer
+        format: int32
+        description: The maximum number of archive runs to return.
+  ListRecentArchiveRunsResponse:
+    type: object
+    description: The response from listing recent archive runs.
+    properties:
+      archiveRuns:
+        type: array
+        items:
+          $ref: '#/definitions/ArchiveRun'
+        description: The archive runs.
+  ArchiveRun:
+    type: object
+    description: The public model for an archive run.
+    properties:
+      accountId:
+        type: string
+        description: The account ID for the archive run.
+      runId:
+        type: string
+        description: The run ID for the archive run, which uniquely identifies the run.
+      archiveId:
+        type: string
+        description: The archive ID for the batch of events archived by the run.
+      status:
+        description: 'The status of the archive run: CREATED, SUCCEEDED, or FAILED.'
+        $ref: '#/definitions/ArchiveRunStatus'
+      summary:
+        type: string
+        description: A summary of the outcome of the run.
+      details:
+        type: string
+        description: Additional details about the run, such as a stack trace.
+      creationTimestamp:
+        type: string
+        format: date-time
+        description: The creation timestamp of the archive run.
+      archiveTimestamp:
+        type: string
+        format: date-time
+        description: The archive timestamp of the batch.
+  ArchiveRunStatus:
+    type: string
+    description: Archive run status.
+    enum:
+      - CREATED
+      - SUCCEEDED
+      - FAILED
+  AsyncTaskStatus:
+    type: string
+    description: Archive task status.
+    enum:
+      - OPEN
+      - COMPLETED
+      - FAILED
+      - CANCELED
+      - TERMINATED
+      - CONTINUED_AS_NEW
+      - TIMED_OUT
 x-audit: true
