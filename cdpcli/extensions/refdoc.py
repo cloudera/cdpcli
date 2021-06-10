@@ -115,6 +115,7 @@ class RefdocCommand(BasicCommand):
         # conversion.
         help_command.doc = ReSTDocument(target='html')
         help_command.renderer = NullRenderer()
+        help_command.include_man_fields = False
         help_command(client_creator, [], parsed_globals)
 
         # Create the directory for the document, if it doesn't already exist.

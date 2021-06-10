@@ -83,6 +83,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/dw/updateSshKey:
+    post:
+      summary: Update the SSH Key for a Cloudera Data Warehouse cluster
+      description: Update the SSH Key for a Cloudera Data Warehouse cluster
+      operationId: updateSshKey
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateSshKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateSshKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/dw/createCluster:
     post:
       x-no-compatibility-guarantee: true
@@ -478,6 +499,25 @@ definitions:
       kubeconfig:
         type: string
         description: The kubeconfig.
+  UpdateSshKeyRequest:
+    type: object
+    description: Request object for the updateSshKey method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to update the SSH Key.
+  UpdateSshKeyResponse:
+    type: object
+    description: Response object for the updateSshKey method.
+    properties:
+      status:
+        type: string
+        description: The status of the cluster.
+      message:
+        type: string
+        description: A message describing the outcome of the SSH Key update process.
   CreateClusterRequest:
     type: object
     description: Request object for the createCluster method.

@@ -20,10 +20,15 @@ from cdpcli import LIST_TYPE
 from cdpcli import MAP_TYPE
 from cdpcli import OBJECT_TYPE
 from cdpcli import SCALAR_TYPES
+from cdpcli import VERSION
 from cdpcli import xform_name
 from cdpcli.argprocess import ParamShorthandDocGen
 from cdpcli.extensions.paginate import add_paging_description
 from cdpcli.model import StringShape
+
+
+MANUAL_SECTION = '1'
+MANUAL_GROUP = 'CDP CLI'
 
 
 def _is_argument_hidden(argument):
@@ -34,6 +39,7 @@ def _is_argument_hidden(argument):
 
 def generate_doc(generator, help_command):
     generator.doc_title(help_command)
+    generator.doc_docinfo(help_command)
     generator.doc_description(help_command)
     generator.doc_synopsis_start(help_command)
     if help_command.arg_table:
@@ -92,6 +98,9 @@ class CLIDocumentGenerator(object):
             reference = 'cdp ' + reference
         doc.writeln('.. _cli:%s:' % reference)
         doc.style.h1(help_command.name)
+
+    def doc_docinfo(self, help_command):
+        pass
 
     def doc_description(self, help_command):
         doc = help_command.doc
@@ -287,6 +296,19 @@ class ServiceDocumentGenerator(CLIDocumentGenerator):
     def doc_options_end(self, help_command):
         pass
 
+    def doc_docinfo(self, help_command):
+        doc = help_command.doc
+        service_model = help_command.obj
+        doc.style.simple_field('subtitle', service_model.service_title)
+        service_version = service_model.service_version
+        # Goes away once each service has its own version number
+        if service_version == '__API_VERSION__':
+            service_version = VERSION
+        doc.style.simple_field('version', service_version)
+        if help_command.include_man_fields:
+            doc.style.simple_field('manual_section', MANUAL_SECTION)
+            doc.style.simple_field('manual_group', MANUAL_GROUP)
+
     def doc_description(self, help_command):
         doc = help_command.doc
         service_model = help_command.obj
@@ -339,6 +361,23 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
         for operation_name in operation_model.service_model.operation_names:
             d[operation_name] = xform_name(operation_name, '-')
         return d
+
+    def doc_docinfo(self, help_command):
+        doc = help_command.doc
+        operation_model = help_command.obj
+        # Internal commands like "configure" may lack these (see BasicDocHandler)
+        if hasattr(operation_model, 'summary'):
+            doc.style.simple_field('subtitle', operation_model.summary)
+        if hasattr(operation_model, 'service_model') and\
+                hasattr(operation_model.service_model, 'service_version'):
+            service_version = operation_model.service_model.service_version
+            # Goes away once each service has its own version number
+            if service_version == '__API_VERSION__':
+                service_version = VERSION
+            doc.style.simple_field('version', service_version)
+        if help_command.include_man_fields:
+            doc.style.simple_field('manual_section', MANUAL_SECTION)
+            doc.style.simple_field('manual_group', MANUAL_GROUP)
 
     def doc_description(self, help_command):
         doc = help_command.doc

@@ -121,6 +121,11 @@ class ReSTStyle(BaseStyle):
             link = title
         self.doc.write(':doc:`%s <%s>`' % (title, link))
 
+    def simple_field(self, field_name, field_value):
+        self.new_paragraph()
+        self.doc.write(':%s: %s' % (field_name, field_value))
+        self.new_paragraph()
+
     def _heading(self, s, border_char):
         border = border_char * len(s)
         self.new_paragraph()

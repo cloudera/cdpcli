@@ -1272,30 +1272,6 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
-  /iam/setWorkloadPasswordPolicy:
-    post:
-      summary: Set the workload password policy for the account.
-      description: Set the workload password for the account. Changes to the workload password policy only affect passwords that are set after the policy has been updated. By default, passwords never expire.
-      operationId: setWorkloadPasswordPolicy
-      x-no-compatibility-guarantee: true
-      x-right: iam/setWorkloadPasswordPolicy
-      x-entitlement: WORKLOAD_PASSWORD_POLICY
-      x-mutating: true
-      parameters:
-        - name: input
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/SetWorkloadPasswordPolicyRequest'
-      responses:
-        200:
-          description: Expected response to a valid request.
-          schema:
-            $ref: '#/definitions/SetWorkloadPasswordPolicyResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
   /iam/addSshPublicKey:
     post:
       summary: Adds an SSH public key for an actor.
@@ -1391,31 +1367,15 @@ definitions:
       message:
         type: string
         description: The error message.
-  WorkloadPasswordPolicy:
-    type: object
-    description: Information about the workload password policy for an account.
-    x-no-compatibility-guarantee: true
-    required:
-      - maxPasswordLifetimeDays
-    properties:
-      maxPasswordLifetimeDays:
-        type: integer
-        format: int32
-        description: The max lifetime, in days, of the password. If '0' passwords never expire.
   Account:
     type: object
     description: Information about a Cloudera CDP account.
     required:
       - clouderaSSOLoginEnabled
-      - workloadPasswordPolicy
     properties:
       clouderaSSOLoginEnabled:
         type: boolean
         description: Whether interactive login using Cloudera SSO is enabled.
-      workloadPasswordPolicy:
-        x-no-compatibility-guarantee: true
-        $ref: '#/definitions/WorkloadPasswordPolicy'
-        description: The workload password policy object.
   User:
     type: object
     description: Information about a Cloudera CDP user.
@@ -3025,20 +2985,6 @@ definitions:
   SetWorkloadPasswordResponse:
     type: object
     description: Response object for a set workload password request.
-  SetWorkloadPasswordPolicyRequest:
-    type: object
-    description: Request object for a set workload password policy request.
-    x-no-compatibility-guarantee: true
-    properties:
-      maxPasswordLifetimeDays:
-        type: integer
-        format: int32
-        minimum: 0
-        description: The max lifetime of passwords, in days. If set to '0' passwords never expires.
-  SetWorkloadPasswordPolicyResponse:
-    type: object
-    description: Response object for a set workload password policy request.
-    x-no-compatibility-guarantee: true
   AddSshPublicKeyRequest:
     type: object
     description: Request object for add user ssh public key.

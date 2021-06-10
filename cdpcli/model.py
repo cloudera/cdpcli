@@ -236,6 +236,10 @@ class OperationModel(object):
         return self._service_model
 
     @CachedProperty
+    def summary(self):
+        return self._operation_data["summary"]
+
+    @CachedProperty
     def documentation(self):
         return self._operation_data["description"]
 
@@ -314,6 +318,14 @@ class ServiceModel(object):
     @CachedProperty
     def service_name(self):
         return self._service_name
+
+    @CachedProperty
+    def service_version(self):
+        return self._service_data["info"]["version"]
+
+    @CachedProperty
+    def service_title(self):
+        return self._service_data["info"]["title"]
 
     @CachedProperty
     def documentation(self):

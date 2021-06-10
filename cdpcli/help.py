@@ -142,7 +142,7 @@ class WindowsHelpRenderer(PagingHelpRenderer):
 class HelpCommand(object):
     GeneratorClass = None
 
-    def __init__(self, obj, command_table, arg_table):
+    def __init__(self, obj, command_table, arg_table, include_man_fields=True):
         self.obj = obj
         if command_table is None:
             command_table = {}
@@ -150,6 +150,7 @@ class HelpCommand(object):
         if arg_table is None:
             arg_table = {}
         self.arg_table = arg_table
+        self.include_man_fields = include_man_fields
         self._subcommand_table = {}
         self._related_items = []
         self.renderer = get_renderer()
