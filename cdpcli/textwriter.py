@@ -770,6 +770,12 @@ class TextTranslator(nodes.NodeVisitor):
             self.body.append(node.astext())
         raise nodes.SkipNode
 
+    def visit_docinfo(self, node):
+        raise nodes.SkipNode
+
+    def visit_version(self, node):
+        raise nodes.SkipNode
+
     def _visit_admonition(self, node):
         self.new_state(2)
 

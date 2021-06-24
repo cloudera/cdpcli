@@ -444,6 +444,11 @@ definitions:
   ListServicesRequest:
     type: object
     description: Request object for ListServices method.
+    properties:
+      removeDeleted:
+        type: boolean
+        default: false
+        description: Filter out deleted CDE services from the list.
   EnableServiceRequest:
     type: object
     description: Request object for Enable Service method.
@@ -518,6 +523,10 @@ definitions:
         additionalProperties:
           type: string
           description: User defined labels that tag all provisioned cloud resources.
+      skipValidation:
+        type: boolean
+        description: Skip Validation check.
+        default: false
   EnableServiceResponse:
     type: object
     description: Response object for EnableService request.

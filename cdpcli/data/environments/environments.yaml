@@ -964,6 +964,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/deleteAuditCredential:
+    post:
+      summary: Deletes an audit credential.
+      description: Deletes an audit credential.
+      operationId: deleteAuditCredential
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteAuditCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteAuditCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -3268,3 +3289,15 @@ definitions:
       credential:
         description: The credential object.
         $ref: '#/definitions/Credential'
+  DeleteAuditCredentialRequest:
+    type: object
+    description: Request object for a delete audit credential request.
+    required:
+      - credentialName
+    properties:
+      credentialName:
+        type: string
+        description: The name or CRN of the credential.
+  DeleteAuditCredentialResponse:
+    type: object
+    description: Response object for a delete audit credential request.

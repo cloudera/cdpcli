@@ -533,14 +533,14 @@ definitions:
         description: The archive timestamp of the batch.
   ArchiveRunStatus:
     type: string
-    description: Archive run status.
+    description: "Archive run status.\n `CREATED` - Indicates that an archive run has been created but has not yet completed. `SUCCEEDED` - Indicates that an archive run completed successfully. `FAILED` - Indicates that an archive run failed."
     enum:
       - CREATED
       - SUCCEEDED
       - FAILED
   AsyncTaskStatus:
     type: string
-    description: Archive task status.
+    description: "Archive task status.\n `OPEN` - Task is still in progress `COMPLETED` - Task has completed successfully `FAILED` - Task has failed `CANCELED` - Task was canceled `TERMINATED` - Task as terminated `CONTINUED_AS_NEW` - Task was rerun as a new task `TIMED_OUT` - The task has timed out"
     enum:
       - OPEN
       - COMPLETED
