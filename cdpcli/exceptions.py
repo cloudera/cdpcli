@@ -289,3 +289,11 @@ class WrongOpFormFactorError(CdpCLIError):
            'available for these form factors: {operation_form_factors}. Check '
            'that your profile configuration or explicit endpoint URL points to '
            'the correct control plane.')
+
+
+class ExtensionImportError(CdpCLIError):
+
+    """
+    Failed to import CLI extension.
+    """
+    fmt = 'Failed to import CLI extension \'{ext_name}\': {err}.'

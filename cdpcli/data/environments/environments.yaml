@@ -1112,15 +1112,12 @@ definitions:
         type: string
         description: A description for the credential.
       awsCredentialProperties:
-        type: object
         description: The credential properties that closely related to those that have been created on AWS.
         $ref: '#/definitions/AwsCredentialProperties'
       azureCredentialProperties:
-        type: object
         description: The credential properties that closely related to those that have been created on Azure.
         $ref: '#/definitions/AzureCredentialProperties'
       gcpCredentialProperties:
-        type: object
         description: The credential properties that closely related to those that have been created on GCP.
         $ref: '#/definitions/GCPCredentialProperties'
   AwsCredentialProperties:
@@ -1836,7 +1833,6 @@ definitions:
         type: boolean
         description: When true, this will report additional diagnostic information back to Cloudera.
       freeipa:
-        type: object
         description: Details of FreeIPA instance associated with this environment.
         $ref: '#/definitions/FreeipaDetails'
       proxyConfig:
@@ -2787,6 +2783,9 @@ definitions:
       description:
         type: string
         description: A description for the proxy config.
+      noProxyHosts:
+        type: string
+        description: Comma-separated list of 'host[:port]' (can be a subdomain as well) and 'IP[:port]' entries that should not be proxied. Wildcards are not accepted. For example cloudera.com,192.168.1.1
       user:
         type: string
         description: The proxy user.
@@ -2818,6 +2817,9 @@ definitions:
       description:
         type: string
         description: A description for the proxy config.
+      noProxyHosts:
+        type: string
+        description: Comma-separated list of 'host[:port]' (can be a subdomain as well) and 'IP[:port]' entries that should not be proxied. Wildcards are not accepted. For example cloudera.com,192.168.1.1
       user:
         type: string
         description: The proxy user.

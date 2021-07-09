@@ -54,6 +54,7 @@ cdpcli/data/aliases.yaml
 cdpcli/data/cli.json
 cdpcli/data/release.txt
 cdpcli/data/audit/audit.yaml
+cdpcli/data/datacatalog/datacatalog.yaml
 cdpcli/data/datahub/datahub.yaml
 cdpcli/data/datalake/datalake.yaml
 cdpcli/data/de/de.yaml
@@ -75,6 +76,7 @@ cdpcli/extensions/__init__.py
 cdpcli/extensions/arguments.py
 cdpcli/extensions/cliinputjson.py
 cdpcli/extensions/commands.py
+cdpcli/extensions/dfx.py
 cdpcli/extensions/generatecliskeleton.py
 cdpcli/extensions/interactivelogin.py
 cdpcli/extensions/logout.py
@@ -117,6 +119,7 @@ tests/unit/extensions/test_cliinputjson.py
 tests/unit/extensions/test_generatecliskeleton.py
 tests/unit/extensions/test_interactivelogin.py
 tests/unit/extensions/test_logout.py
+tests/unit/extensions/test_operation_extension.py
 tests/unit/extensions/test_paginate.py
 tests/unit/extensions/test_writer.py
 tests/unit/extensions/configure/__init__.py

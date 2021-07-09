@@ -14,6 +14,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import importlib
 import logging
 import platform
 import socket
@@ -41,6 +42,7 @@ from cdpcli.compat import six
 from cdpcli.config import Config
 from cdpcli.endpoint import EndpointCreator
 from cdpcli.endpoint import EndpointResolver
+from cdpcli.exceptions import ExtensionImportError
 from cdpcli.exceptions import InvalidConfiguredFormFactor
 from cdpcli.exceptions import ProfileNotFound
 from cdpcli.exceptions import WrongOpFormFactorError
@@ -172,11 +174,11 @@ class CLIDriver(object):
                 endpoint_url = parsed_args.endpoint_url
                 if not endpoint_url:
                     try:
-                        endpoint_url = self._context.get_scoped_config().\
+                        endpoint_url = self._context.get_scoped_config(). \
                             get(EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME, None)
                     except ProfileNotFound:
                         endpoint_url = None
-                form_factor =\
+                form_factor = \
                     ClassifyDeployment(endpoint_url).get_deployment_type().value
         LOG.debug("Current form factor is {}".format(form_factor))
 
@@ -187,7 +189,7 @@ class CLIDriver(object):
                 service_model = self._command_table[command].service_model
                 service_form_factors = service_model.form_factors
                 if form_factor not in service_form_factors:
-                    self._command_table[command] =\
+                    self._command_table[command] = \
                         FilteredServiceCommand(self, command, form_factor,
                                                service_form_factors)
                 else:
@@ -199,7 +201,7 @@ class CLIDriver(object):
                         if not operation_form_factors:
                             operation_form_factors = service_form_factors
                         if form_factor not in operation_form_factors:
-                            self._command_table[command].\
+                            self._command_table[command]. \
                                 filter_operation(operation_name, form_factor,
                                                  operation_form_factors)
 
@@ -248,23 +250,23 @@ class CLIDriver(object):
         command_table['help'] = self._create_help_command()
         cli_data = self._get_cli_data()
         parser = MainArgParser(
-          command_table,
-          VERSION,
-          cli_data.get('description', None),
-          self._get_argument_table())
+            command_table,
+            VERSION,
+            cli_data.get('description', None),
+            self._get_argument_table())
         return parser
 
     def _create_cli_argument(self, option_name, option_params):
         return CustomArgument(
-          option_name,
-          help_text=option_params.get('help', ''),
-          dest=option_params.get('dest'),
-          default=option_params.get('default'),
-          action=option_params.get('action'),
-          required=option_params.get('required'),
-          choices=option_params.get('choices'),
-          cli_type_name=option_params.get('type'),
-          hidden=option_params.get('hidden', False))
+            option_name,
+            help_text=option_params.get('help', ''),
+            dest=option_params.get('dest'),
+            default=option_params.get('default'),
+            action=option_params.get('action'),
+            required=option_params.get('required'),
+            choices=option_params.get('choices'),
+            cli_type_name=option_params.get('type'),
+            hidden=option_params.get('hidden', False))
 
     def _handle_top_level_args(self, args):
         if args.profile:
@@ -511,6 +513,9 @@ class ServiceOperation(object):
         return self._arg_table
 
     def __call__(self, client_creator, args, parsed_globals):
+        # Handle extensions first, so OverrideRequiredArgs (CliInputJson,
+        # GenerateCliSkeleton, etc) could have a chance to run.
+        self._handle_extensions()
         # We need to handle overriding required arguments before we create
         # the parser as the parser will parse the arguments and decide which
         # argument is required before we have a chance to modify the argument
@@ -535,30 +540,7 @@ class ServiceOperation(object):
                                        parsed_globals)
         call_parameters = self._build_call_parameters(parsed_args,
                                                       self.arg_table)
-
-        # The TLS verification value can be a boolean or a CA_BUNDLE path. This
-        # is a little odd, but ultimately comes from the python HTTP requests
-        # library we're using.
-        tls_verification = parsed_globals.verify_tls
-        ca_bundle = getattr(parsed_globals, 'ca_bundle', None)
-        if parsed_globals.verify_tls and ca_bundle is not None:
-            tls_verification = ca_bundle
-
-        # Retrieve values passed for extra client configuration.
-        config_kwargs = {}
-        if parsed_globals.read_timeout is not None:
-            config_kwargs['read_timeout'] = int(parsed_globals.read_timeout)
-        if parsed_globals.connect_timeout is not None:
-            config_kwargs['connect_timeout'] = int(parsed_globals.connect_timeout)
-        config = Config(**config_kwargs)
-
-        client = client_creator.create_client(
-            self._operation_model.service_model.service_name,
-            parsed_globals.endpoint_url,
-            tls_verification,
-            client_creator.context.get_credentials(parsed_globals),
-            client_config=config)
-        return self._invoke_operation_callers(client,
+        return self._invoke_operation_callers(client_creator,
                                               call_parameters,
                                               parsed_args,
                                               parsed_globals)
@@ -632,14 +614,55 @@ class ServiceOperation(object):
                 cli_argument.override_required_args(argument_table, args)
                 self._operation_callers.insert(0, cli_argument)
 
+    def _handle_extensions(self):
+        if self._operation_model.extensions:
+            # Iterate in reversed order to keep the execution order:
+            # First extension should run first.
+            for ext_name in reversed(self._operation_model.extensions):
+                try:
+                    module = importlib.import_module('cdpcli.extensions.%s' % ext_name)
+                    register_func = getattr(module, 'register')
+                    register_func(self._operation_callers,
+                                  self._operation_model)
+                except Exception as err:
+                    raise ExtensionImportError(ext_name=ext_name, err=err)
+
     def _invoke_operation_callers(self,
-                                  client,
+                                  client_creator,
                                   call_parameters,
                                   parsed_args,
                                   parsed_globals):
+        def _create_client(service_name):
+            # The TLS verification value can be a boolean or a CA_BUNDLE path. This
+            # is a little odd, but ultimately comes from the python HTTP requests
+            # library we're using.
+            tls_verification = parsed_globals.verify_tls
+            ca_bundle = getattr(parsed_globals, 'ca_bundle', None)
+            if parsed_globals.verify_tls and ca_bundle is not None:
+                tls_verification = ca_bundle
+
+            # Retrieve values passed for extra client configuration.
+            config_kwargs = {}
+            if parsed_globals.read_timeout is not None:
+                config_kwargs['read_timeout'] = int(parsed_globals.read_timeout)
+            if parsed_globals.connect_timeout is not None:
+                config_kwargs['connect_timeout'] = int(parsed_globals.connect_timeout)
+            config = Config(**config_kwargs)
+
+            client = client_creator.create_client(
+                service_name,
+                parsed_globals.endpoint_url,
+                tls_verification,
+                client_creator.context.get_credentials(parsed_globals),
+                client_config=config)
+            return client
+
         for operation_caller in self._operation_callers:
+            # Create a new client for each operation_caller because parsed_args and
+            # parsed_globals could be changed in each iteration.
             if operation_caller.invoke(
-                    client,
+                    _create_client,
+                    self._operation_model.service_model.service_name,
                     self._operation_model.name,
                     call_parameters,
                     parsed_args,
@@ -670,11 +693,13 @@ class FilteredServiceOperation(ServiceOperation):
 class CLIOperationCaller(object):
 
     def invoke(self,
-               client,
+               client_creator,
+               service_name,
                operation_name,
                parameters,
                parsed_args,
                parsed_globals):
+        client = client_creator(service_name)
         py_operation_name = xform_name(operation_name)
         if client.can_paginate(py_operation_name) and parsed_globals.paginate:
             response = client.get_paginator(

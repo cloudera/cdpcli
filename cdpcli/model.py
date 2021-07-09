@@ -293,6 +293,12 @@ class OperationModel(object):
         return None
 
     @CachedProperty
+    def extensions(self):
+        if "x-extensions" in self._operation_data:
+            return self._operation_data['x-extensions'].split(',')
+        return None
+
+    @CachedProperty
     def input_shape(self):
         return self._service_model.resolve_shape_ref(
             "input", self._operation_data['parameters'][0]['schema'][REF_KEY])

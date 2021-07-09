@@ -532,7 +532,7 @@ definitions:
         description: Using an overlay network will save IP addresses in the VPC by using a private IP address range for Pods in the cluster.
       usePrivateLoadBalancer:
         type: boolean
-        description: Set up load balancer in private subnets -- make sure there is connectivity between your VPN and the VPC of CDW environment.
+        description: Set up load balancer with private IP address. In AWS it is created in private subnets. In Azure an internal load balancer gets created. Make sure there is connectivity between your client network and the network (VPC/VNet) where CDW environment is deployed.
       awsOptions:
         description: Options for activating an AWS environment.
         $ref: '#/definitions/AwsActivationOptions'
@@ -688,12 +688,12 @@ definitions:
         type: integer
         format: int32
         default: 1
-        description: Minimum number of available nodes.
+        description: Minimum number of available compute groups.
       maxClusters:
         type: integer
         format: int32
         default: 20
-        description: Maximum number of available nodes.
+        description: Maximum number of available compute groups.
   CreateVwRequest:
     type: object
     description: Request object for the createVw method.
@@ -1271,7 +1271,7 @@ definitions:
         description: List of LDAP Groupnames to be enabled for auth.
       enableSSO:
         type: boolean
-        description: Should SSO be enabled for this VW.
+        description: Should SSO be enabled for this VW. This cannot be changed later.
   ServiceConfigReq:
     type: object
     description: Configurations for a service (DBC or VW)
