@@ -1190,6 +1190,11 @@ definitions:
       policyJson:
         type: string
         description: The related policy json encoded in base64
+      policies:
+        type: array
+        description: The fine-grained policies related to each service.
+        items:
+          $ref: '#/definitions/CredentialGranularPolicyResponse'
   AzureCredentialPrerequisitesResponse:
     type: object
     description: Response object for getting Azure credential prerequisites.
@@ -1203,6 +1208,24 @@ definitions:
       roleDefinitionJson:
         type: string
         description: The related role definition json encoded in base64
+      policies:
+        type: array
+        description: The fine-grained policies related to each service.
+        items:
+          $ref: '#/definitions/CredentialGranularPolicyResponse'
+  CredentialGranularPolicyResponse:
+    type: object
+    description: Response object for the granular policy for the given service or experience.
+    required:
+      - service
+      - policyJson
+    properties:
+      service:
+        type: string
+        description: The name of the service that requires the given policy for resource management.
+      policyJson:
+        type: string
+        description: The policy JSON encoded in base64.
   CreateAWSEnvironmentRequest:
     type: object
     description: Request object for a create AWS environment request.
@@ -1263,7 +1286,7 @@ definitions:
         description: An description of the environment.
       enableTunnel:
         type: boolean
-        description: Whether to enable SSH tunnelling for the environment.
+        description: Whether to enable SSH tunneling for the environment.
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
@@ -1555,7 +1578,7 @@ definitions:
         description: An description of the environment.
       enableTunnel:
         type: boolean
-        description: Whether to enable SSH tunnelling for the environment.
+        description: Whether to enable SSH tunneling for the environment.
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
@@ -1622,7 +1645,7 @@ definitions:
         description: A description of the environment.
       enableTunnel:
         type: boolean
-        description: Whether to enable SSH tunnelling for the environment.
+        description: Whether to enable SSH tunneling for the environment.
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.

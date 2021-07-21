@@ -308,7 +308,6 @@ class Context(object):
         self._profile = None
         self._config = None
         self._profile_map = None
-        self._credentials = None
         # This is a dict that stores per context specific config variable
         # overrides via set_config_variable().
         self._context_instance_vars = {}
@@ -500,13 +499,7 @@ class Context(object):
     def get_credentials(self, parsed_globals=None):
         """
         Return the :class:`botocore.credential.Credential` object
-        associated with this session.  If the credentials have not
-        yet been loaded, this will attempt to load them.  If they
-        have already been loaded, this will return the cached
-        credentials.
-
+        associated with this session.
         """
-        if self._credentials is None:
-            resolver = credentials.create_credential_resolver(self, parsed_globals)
-            self._credentials = resolver.load_credentials()
-        return self._credentials
+        resolver = credentials.create_credential_resolver(self, parsed_globals)
+        return resolver.load_credentials()

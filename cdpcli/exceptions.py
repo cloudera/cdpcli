@@ -297,3 +297,11 @@ class ExtensionImportError(CdpCLIError):
     Failed to import CLI extension.
     """
     fmt = 'Failed to import CLI extension \'{ext_name}\': {err}.'
+
+
+class WorkloadServiceDiscoveryError(CdpCLIError):
+
+    """
+    The workload service-discovery failed.
+    """
+    fmt = 'Workload service-discovery error: {err_msg}.'

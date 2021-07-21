@@ -1091,6 +1091,12 @@ definitions:
       clusterTemplateCrn:
         type: string
         description: The CRN of the cluster template used for the cluster creation.
+      certificateExpirationState:
+        type: string
+        description: Indicates the certificate status on the cluster.
+        enum:
+          - VALID
+          - HOST_CERT_EXPIRING
   Recipe:
     type: object
     description: Information about a recipe.

@@ -82,6 +82,7 @@ cdpcli/extensions/interactivelogin.py
 cdpcli/extensions/logout.py
 cdpcli/extensions/paginate.py
 cdpcli/extensions/refdoc.py
+cdpcli/extensions/workload.py
 cdpcli/extensions/writer.py
 cdpcli/extensions/configure/__init__.py
 cdpcli/extensions/configure/classify.py
@@ -121,6 +122,7 @@ tests/unit/extensions/test_interactivelogin.py
 tests/unit/extensions/test_logout.py
 tests/unit/extensions/test_operation_extension.py
 tests/unit/extensions/test_paginate.py
+tests/unit/extensions/test_workload.py
 tests/unit/extensions/test_writer.py
 tests/unit/extensions/configure/__init__.py
 tests/unit/extensions/configure/test_classify.py

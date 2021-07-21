@@ -811,6 +811,12 @@ definitions:
       statusReason:
         type: string
         description: The reason for the status of the datalake.
+      certificateExpirationState:
+        type: string
+        description: Indicates the certificate status on the cluster.
+        enum:
+          - VALID
+          - HOST_CERT_EXPIRING
   DatalakeResourceTagRequest:
     type: object
     description: Tag for a datalake resource.
