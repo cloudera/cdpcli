@@ -59,6 +59,9 @@ definitions:
       datalake:
         type: string
         description: The Name or CRN of the Datalake.
+      enableHA:
+        type: boolean
+        description: Enables High Availability (HA) for datacatalog profilers (default value is false). The High Availability (HA) Profiler cluster provides failure resilience and scalability but incurs additional cost.
   LaunchProfilersResponse:
     type: object
     description: Profiler launch operation response.

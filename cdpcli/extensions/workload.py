@@ -37,8 +37,8 @@ class WorkloadServiceDiscovery(object):
                parameters,
                parsed_args,
                parsed_globals):
-        if parsed_globals.endpoint_url or parsed_globals.access_token:
-            # endpoint-url or access-token was explicitly set by user,
+        if parsed_globals.access_token:
+            # access-token was explicitly set by user,
             # skip the workload service-discovery
             LOG.debug('Skip workload service-discovery')
             return True

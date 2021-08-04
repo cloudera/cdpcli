@@ -76,21 +76,6 @@ class TestWorkloadExtension(unittest.TestCase):
         self.assertIsNone(parsed_globals.endpoint_url)
         self.assertIsNone(parsed_globals.access_token)
 
-    def test_service_discovery_skip_by_endpoint_url(self):
-        client_creator = Mock()
-        parsed_globals = Mock()
-        parsed_globals.endpoint_url = 'https://test.com'
-        parsed_globals.access_token = None
-        workload_service_discovery = WorkloadServiceDiscovery()
-        workload_service_discovery.invoke(client_creator,
-                                          'df-workload',
-                                          'mockOp',
-                                          {'environmentCrn': 'mockCrn'},
-                                          Mock(),
-                                          parsed_globals)
-        self.assertFalse(client_creator.called)
-        self.assertIsNone(parsed_globals.access_token)
-
     def test_service_discovery_skip_by_access_token(self):
         client_creator = Mock()
         parsed_globals = Mock()
@@ -150,7 +135,7 @@ class TestWorkloadExtension(unittest.TestCase):
                       'Unknown service name \'invalid\'.',
                       str(context.exception))
 
-    def test_service_discovery_no_crn(self):
+    def test_service_discovery_no_environment_crn(self):
         client_creator = Mock()
         parsed_globals = Mock(endpoint_url=None, access_token=None)
         workload_service_discovery = WorkloadServiceDiscovery()

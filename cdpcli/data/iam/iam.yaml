@@ -299,6 +299,7 @@ paths:
       summary: Set messages for an account.
       description: Set messages for an account.
       operationId: setAccountMessages
+      x-form-factors: public
       x-right: iam/setAccountMessages
       x-mutating: true
       parameters:
@@ -321,6 +322,7 @@ paths:
       summary: Get account messages.
       description: Get account messages.
       operationId: getAccountMessages
+      x-form-factors: public
       x-mutating: false
       parameters:
         - name: input
@@ -710,6 +712,7 @@ paths:
       summary: Creates a SAML provider in CDP.
       description: Creates a SAML provider in CDP.
       operationId: createSamlProvider
+      x-form-factors: public
       x-right: iam/createSamlProvider
       x-mutating: true
       parameters:
@@ -732,6 +735,7 @@ paths:
       summary: Deletes a SAML provider in CDP account.
       description: Deletes a SAML provider in CDP account.
       operationId: deleteSamlProvider
+      x-form-factors: public
       x-right: iam/deleteSamlProvider
       x-mutating: true
       parameters:
@@ -754,6 +758,7 @@ paths:
       summary: Lists SAML providers in CDP account.
       description: Lists SAML providers in CDP account.
       operationId: listSamlProviders
+      x-form-factors: public
       x-right: iam/listSamlProviders
       x-paging-default-max-items: 100
       x-mutating: false
@@ -777,6 +782,7 @@ paths:
       summary: Updates a SAML provider in CDP.
       description: Updates a SAML provider in CDP.
       operationId: updateSamlProvider
+      x-form-factors: public
       x-right: iam/updateSamlProvider
       x-mutating: true
       parameters:
@@ -799,6 +805,7 @@ paths:
       summary: Enables interactive login using Cloudera SSO for this account.
       description: Enables interactive login using Cloudera SSO for this account. This is a no-op if login using Cloudera SSO are already enabled.
       operationId: enableClouderaSSOLogin
+      x-form-factors: public
       x-right: iam/manageClouderaSSOLogin
       x-mutating: true
       parameters:
@@ -821,6 +828,7 @@ paths:
       summary: Disables interactive login using Cloudera SSO for this account.
       description: Disables interactive login using Cloudera SSO for this account. When disabled, only users who are designated account administrators will be able to use Cloudera SSO to interactively login to the CDP account. All other users will only be able to interactively login using SAML providers defined for the account. This is a no-op if login using Cloudera SSO are already disabled.
       operationId: disableClouderaSSOLogin
+      x-form-factors: public
       x-right: iam/manageClouderaSSOLogin
       x-mutating: true
       parameters:
@@ -1256,6 +1264,7 @@ paths:
       summary: Set the workload password for an actor.
       description: Set the workload password for an actor. This will be the actor's password in all Environments they have access to, including Environments they are given access to after setting the password. The password plaintext is not kept.
       operationId: setWorkloadPassword
+      x-form-factors: public
       x-mutating: true
       parameters:
         - name: input
@@ -1277,6 +1286,7 @@ paths:
       summary: Adds an SSH public key for an actor.
       description: Adds an SSH public key for an actor. The private key that corresponds to this public key can be used to SSH into any workload cluster that the actor is authorized to use.
       operationId: addSshPublicKey
+      x-form-factors: public
       x-mutating: true
       parameters:
         - name: input
@@ -1298,6 +1308,7 @@ paths:
       summary: Lists SSH public keys for an actor.
       description: Lists SSH public keys for an actor.
       operationId: listSshPublicKeys
+      x-form-factors: public
       x-mutating: false
       parameters:
         - name: input
@@ -1319,6 +1330,7 @@ paths:
       summary: Describes an SSH public key for an actor.
       description: Describe an SSH public key for an actor.
       operationId: describeSshPublicKey
+      x-form-factors: public
       x-mutating: false
       parameters:
         - name: input
@@ -1340,6 +1352,7 @@ paths:
       summary: Deletes an SSH public key for an actor.
       description: Delete an SSH public key for an actor.
       operationId: deleteSshPublicKey
+      x-form-factors: public
       x-mutating: true
       parameters:
         - name: input
