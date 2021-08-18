@@ -613,6 +613,10 @@ definitions:
       loadDemoData:
         type: boolean
         description: Load demo data into the Database Catalog?
+      imageVersion:
+        type: string
+        description: Version of the Database Catalog.
+        default: ''
   CreateDbcResponse:
     type: object
     description: Response object for the createDbc method.
@@ -715,6 +719,10 @@ definitions:
       name:
         type: string
         description: Name of the Virtual Warehouse.
+      imageVersion:
+        type: string
+        description: version of the Virtual Warehouse.
+        default: ''
       template:
         type: string
         description: Name of configuration template to use.

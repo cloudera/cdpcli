@@ -148,6 +148,28 @@ class TestParser(unittest.TestCase):
         response["body"] = json.dumps(body).encode(UTF8)
         return response
 
+    def _create_error_response_2(self, messages):
+        body = {}
+        body['errorMessages'] = messages
+        response = {}
+        response["status_code"] = 401
+        response["body"] = json.dumps(body).encode(UTF8)
+        return response
+
+    def _create_error_response_3(self, message):
+        body = {}
+        body['error'] = message
+        response = {}
+        response["status_code"] = 400
+        response["body"] = json.dumps(body).encode(UTF8)
+        return response
+
+    def _create_error_response_4(self, message):
+        response = {}
+        response["status_code"] = 409
+        response["body"] = message.encode(UTF8)
+        return response
+
     def _assert_same(self, v1, v2, path=""):
         if type(v1) is dict:
             for k in v1.keys():
@@ -272,3 +294,39 @@ class TestParser(unittest.TestCase):
         operation_model = self.service_model.operation_model('createDirector')
         parsed_response = self.parser.parse(response, operation_model.output_shape)
         self._validate_error_response(response, parsed_response)
+
+    def test_error_2(self):
+        response = self._create_error_response_2([
+            "YouMessedUpException",
+            "You, sir, have messed up."])
+        operation_model = self.service_model.operation_model('createDirector')
+        parsed_response = self.parser.parse(response, operation_model.output_shape)
+        self.assertEquals({
+            'error': {
+                'code': '',
+                'message': 'YouMessedUpException You, sir, have messed up.'}},
+            parsed_response)
+
+    def test_error_3(self):
+        response = self._create_error_response_3(
+            "YouMessedUpException "
+            "You, sir, have messed up.")
+        operation_model = self.service_model.operation_model('createDirector')
+        parsed_response = self.parser.parse(response, operation_model.output_shape)
+        self.assertEquals({
+            'error': {
+                'code': '',
+                'message': 'YouMessedUpException You, sir, have messed up.'}},
+            parsed_response)
+
+    def test_error_4(self):
+        response = self._create_error_response_4(
+            "YouMessedUpException "
+            "You, sir, have messed up.")
+        operation_model = self.service_model.operation_model('createDirector')
+        parsed_response = self.parser.parse(response, operation_model.output_shape)
+        self.assertEquals({
+            'error': {
+                'code': 'UNKNOWN_ERROR',
+                'message': 'YouMessedUpException You, sir, have messed up.'}},
+            parsed_response)

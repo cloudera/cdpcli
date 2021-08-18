@@ -32,8 +32,7 @@ def register(operation_callers, operation_model):
 class WorkloadServiceDiscovery(object):
     def invoke(self,
                client_creator,
-               service_name,
-               operation_name,
+               operation_model,
                parameters,
                parsed_args,
                parsed_globals):
@@ -44,6 +43,7 @@ class WorkloadServiceDiscovery(object):
             return True
 
         LOG.debug('Run workload service-discovery')
+        service_name = operation_model.service_model.service_name
         if not service_name:
             raise WorkloadServiceDiscoveryError(err_msg='Missing service name')
 
@@ -75,6 +75,9 @@ class WorkloadServiceDiscovery(object):
                   'endpoint_url=%s, access_token=%s...',
                   workload_url,
                   workload_access_token[0:16] if workload_access_token else None)
+
+        # Remove 'environmentCrn' from parameters because it is for service-discovery.
+        del parameters['environmentCrn']
 
         # The command processing is not finished, continue with other operation callers.
         return True

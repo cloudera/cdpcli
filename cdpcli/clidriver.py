@@ -401,9 +401,12 @@ class ServiceCommand(CLICommand):
             __import__('cdpcli.extensions.%s.register' % self._name,
                        fromlist=['register']).register(command_table)
         except ImportError as err:
-            py3_err = "No module named 'cdpcli.extensions.%s'" % self._name
+            py3_err_1 = "No module named 'cdpcli.extensions.%s'" % self._name
+            py3_err_2 = "No module named 'cdpcli.extensions.%s.register'" % self._name
             py2_err = "No module named %s.register" % self._name
-            if py2_err not in str(err) and py3_err not in str(err):
+            if py2_err not in str(err) and \
+               py3_err_1 not in str(err) and \
+               py3_err_2 not in str(err):
                 # Looks like a different error than missing extensions.
                 LOG.warn("Failed to import service (%s) extension: %s", self._name, err)
             pass
@@ -652,6 +655,7 @@ class ServiceOperation(object):
             client = client_creator.create_client(
                 service_name,
                 parsed_globals.endpoint_url,
+                parsed_globals.cdp_region,
                 tls_verification,
                 client_creator.context.get_credentials(parsed_globals),
                 client_config=config)
@@ -662,8 +666,7 @@ class ServiceOperation(object):
             # parsed_globals could be changed in each iteration.
             if operation_caller.invoke(
                     _create_client,
-                    self._operation_model.service_model.service_name,
-                    self._operation_model.name,
+                    self._operation_model,
                     call_parameters,
                     parsed_args,
                     parsed_globals) is False:
@@ -694,11 +697,12 @@ class CLIOperationCaller(object):
 
     def invoke(self,
                client_creator,
-               service_name,
-               operation_name,
+               operation_model,
                parameters,
                parsed_args,
                parsed_globals):
+        service_name = operation_model.service_model.service_name
+        operation_name = operation_model.name
         client = client_creator(service_name)
         py_operation_name = xform_name(operation_name)
         if client.can_paginate(py_operation_name) and parsed_globals.paginate:

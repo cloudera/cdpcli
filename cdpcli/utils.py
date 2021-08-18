@@ -19,6 +19,7 @@ import datetime
 import functools
 import re
 import signal
+import urllib.parse as urlparse
 
 from cdpcli import LIST_TYPE
 from cdpcli import MAP_TYPE
@@ -30,6 +31,10 @@ from dateutil.tz import tzutc
 
 # These are chars that do not need to be urlencoded based on rfc2986, section 2.3.
 SAFE_CHARS = '-._~'
+
+
+def is_absolute_url(url):
+    return bool(urlparse.urlparse(url).netloc)
 
 
 def get_service_module_name(service_model):

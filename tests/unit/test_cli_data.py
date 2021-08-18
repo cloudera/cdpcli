@@ -57,5 +57,6 @@ def test_cli_options_match_service_model_validator():
                              'cli-connect-timeout',
                              'no-paginate',
                              'auth-config',
-                             'profile']
+                             'profile',
+                             'cdp-region']
     assert_equal(sorted(cli_data['options'].keys()), sorted(validated_cli_options))

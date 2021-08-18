@@ -25,10 +25,17 @@ from cdpcli.utils import CachedProperty
 from cdpcli.utils import datetime2timestamp
 from cdpcli.utils import get_service_module_name
 from cdpcli.utils import instance_cache
+from cdpcli.utils import is_absolute_url
 from cdpcli.utils import parse_timestamp
 from cdpcli.utils import parse_to_aware_datetime
 from dateutil.tz import tzoffset, tzutc
 from tests import unittest
+
+
+class TestUrl(unittest.TestCase):
+    def test_is_absolute_url(self):
+        self.assertTrue(is_absolute_url('https://host.com/api/v1/test'))
+        self.assertFalse(is_absolute_url('/api/v1/test'))
 
 
 class TestTransformName(unittest.TestCase):

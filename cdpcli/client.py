@@ -34,7 +34,8 @@ from cdpcli.serialize import create_serializer
 from cdpcli.signers import RequestSigner
 from cdpcli.utils import get_service_module_name
 
-CDP_REQUEST_ID_HEADER = 'x-altus-request-id'
+ALTUS_REQUEST_ID_HEADER = 'x-altus-request-id'
+CDP_REQUEST_ID_HEADER = 'x-cdp-request-id'
 
 
 class ClientCreator(object):
@@ -60,6 +61,7 @@ class ClientCreator(object):
     def create_client(self,
                       service_name,
                       explicit_endpoint_url,
+                      region,
                       tls_verification,
                       credentials,
                       client_config=None):
@@ -67,6 +69,7 @@ class ClientCreator(object):
         cls = self._create_client_class(service_name, service_model)
         client_args = self._get_client_args(service_model,
                                             explicit_endpoint_url,
+                                            region,
                                             tls_verification,
                                             credentials,
                                             client_config)
@@ -88,6 +91,7 @@ class ClientCreator(object):
     def _get_client_args(self,
                          service_model,
                          explicit_endpoint_url,
+                         region,
                          tls_verification,
                          credentials,
                          client_config):
@@ -108,6 +112,7 @@ class ClientCreator(object):
             service_model,
             explicit_endpoint_url,
             self._context.get_scoped_config(),
+            region,
             self._response_parser_factory,
             tls_verification,
             (connect_timeout, read_timeout),
@@ -160,7 +165,8 @@ class ClientCreator(object):
             if args:
                 raise TypeError(
                     "%s() only accepts keyword arguments." % py_operation_name)
-            return self._make_api_call(operation_name, kwargs)
+            http, parsed_response = self.make_api_call(operation_name, kwargs)
+            return parsed_response
 
         _api_call.__name__ = str(py_operation_name)
         return _api_call
@@ -208,30 +214,52 @@ class BaseClient(object):
     def _service_model(self):
         return self.meta.service_model
 
-    def _make_api_call(self, operation_name, api_params):
+    def make_api_call(self, operation_name, api_params,
+                      allow_redirects=True):
         operation_model = self._service_model.operation_model(operation_name)
-        request_dict = self._convert_to_request_dict(
-            api_params, operation_model)
-        http, parsed_response = self._endpoint.make_request(
-            operation_model, request_dict, self._request_signer)
-        if http.status_code >= 300:
-            raise ClientError(
-                parsed_response,
-                operation_name,
-                self._service_model.service_name,
-                http.status_code,
-                http.headers.get(CDP_REQUEST_ID_HEADER, 'Unknown'))
-        else:
-            return parsed_response
+        request_dict = self._serializer.serialize_to_request(api_params, operation_model)
+        return self._make_request(operation_name, operation_model, request_dict,
+                                  allow_redirects)
 
-    def _convert_to_request_dict(self, api_params, operation_model):
-        request_dict = self._serializer.serialize_to_request(
-            api_params, operation_model)
+    def make_request(self, operation_name,
+                     method, url_path, headers, body,
+                     allow_redirects=True):
+        operation_model = self._service_model.operation_model(operation_name)
+        request_dict = {
+            'url_path': url_path,
+            'method': method,
+            'headers': headers,
+            'body': body
+        }
+        return self._make_request(operation_name, operation_model, request_dict,
+                                  allow_redirects)
+
+    def raise_error(self, operation_name, http, parsed_response):
+        request_id = http.headers.get(ALTUS_REQUEST_ID_HEADER) \
+            if ALTUS_REQUEST_ID_HEADER in http.headers \
+            else http.headers.get(CDP_REQUEST_ID_HEADER, 'Unknown')
+        raise ClientError(
+            parsed_response,
+            operation_name,
+            self._service_model.service_name,
+            http.status_code,
+            request_id)
+
+    def _make_request(self, operation_name, operation_model, request_dict,
+                      allow_redirects):
         prepare_request_dict(request_dict,
                              endpoint_url=self._endpoint.host,
                              user_agent_header=self._user_agent_header,
                              additional_headers=self._additional_headers)
-        return request_dict
+        http, parsed_response = self._endpoint.make_request(
+            operation_model, request_dict, self._request_signer,
+            allow_redirects=allow_redirects)
+        if allow_redirects and http.status_code >= 300:
+            self.raise_error(operation_name, http, parsed_response)
+        elif not allow_redirects and http.status_code >= 400:
+            self.raise_error(operation_name, http, parsed_response)
+        else:
+            return http, parsed_response
 
 
 class ClientMeta(object):

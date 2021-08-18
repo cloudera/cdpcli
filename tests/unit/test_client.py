@@ -28,6 +28,7 @@ import yaml
 
 
 USE_DEFAULT_ENDPOINT_URL = None
+DEFAULT_REGION = 'us-west-1'
 VERIFY_TLS = True
 CLIENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'client')
 
@@ -57,7 +58,8 @@ class TestClient(unittest.TestCase):
 
     def _create_client(self):
         return self.client_creator.create_client(
-            'thunderhead', USE_DEFAULT_ENDPOINT_URL, VERIFY_TLS, self.credentials)
+            'thunderhead', USE_DEFAULT_ENDPOINT_URL, DEFAULT_REGION,
+            VERIFY_TLS, self.credentials)
 
     def _get_request_params(self):
         self.assertTrue(self.endpoint.make_request.called)
@@ -146,6 +148,17 @@ class TestClient(unittest.TestCase):
         self.assertEqual(e.exception.response['error']['code'], 'test-code')
         self.assertEqual(e.exception.response['error']['message'], 'test-message')
 
+    def test_client_error_cdp_request_id(self):
+        client = self._create_client()
+        error = {'error': {'code': 'test-code', 'message': 'test-message'}}
+        mock_response = Mock(
+            status_code=400,
+            headers={'x-cdp-request-id': '0000000a-0000-0000-0000-000000000001'})
+        self.endpoint.make_request.return_value = (mock_response, error)
+        re = 'Request ID: 0000000a-0000-0000-0000-000000000001;'
+        with self.assertRaisesRegexp(ClientError, re):
+            client.describe_directors()
+
     def test_client_validates_params(self):
         client = self._create_client()
         with self.assertRaises(ParamValidationError):
@@ -160,3 +173,98 @@ class TestClient(unittest.TestCase):
         client = self._create_client()
         self.assertTrue(hasattr(client, 'describe_directors'))
         self.assertTrue(client.can_paginate('describe_directors'))
+
+    def test_make_request(self):
+        client = self._create_client()
+        response = {'foo': 'bar'}
+        self.endpoint.make_request.return_value = (Mock(status_code=200), response)
+        http, parsed_response = client.make_request('describeDirectors',
+                                                    'post',
+                                                    '/directors/describeDirectors',
+                                                    {'test': 'value'},
+                                                    b'body')
+        self.assertTrue(self.endpoint.make_request.called)
+        params = self._get_request_params()
+        self.assertEquals('post', params['method'])
+        self.assertEquals('/directors/describeDirectors', params['url_path'])
+        self.assertEquals(
+            'http://thunderhead.cloudera.altus.cloudera.com/directors/describeDirectors',
+            params['url'])
+        self.assertEquals('value', params['headers']['test'])
+        self.assertEquals(b'body', params['body'])
+        kwargs = self.endpoint.make_request.call_args[1]
+        self.assertEquals({'allow_redirects': True}, kwargs)
+        self.assertEquals(200, http.status_code)
+        self.assertEquals(response, parsed_response)
+
+    def test_make_request_get_request(self):
+        client = self._create_client()
+        client.make_request('describeDirectors', 'get', '/get_request_path', {}, None)
+        self.assertTrue(self.endpoint.make_request.called)
+        params = self._get_request_params()
+        self.assertEquals('get', params['method'])
+        self.assertEquals('/get_request_path', params['url_path'])
+        self.assertIsNone(params['body'])
+
+    def test_make_request_absolute_url(self):
+        client = self._create_client()
+        client.make_request('describeDirectors', 'post', 'https://host/path', {}, None)
+        self.assertTrue(self.endpoint.make_request.called)
+        params = self._get_request_params()
+        self.assertEquals('post', params['method'])
+        self.assertEquals('https://host/path', params['url_path'])
+
+    def test_make_request_no_redirects(self):
+        client = self._create_client()
+        client.make_request('describeDirectors', 'post', '/path', {}, None,
+                            allow_redirects=False)
+        self.assertTrue(self.endpoint.make_request.called)
+        kwargs = self.endpoint.make_request.call_args[1]
+        self.assertEquals({'allow_redirects': False}, kwargs)
+
+    def test_make_request_error_with_no_redirects(self):
+        client = self._create_client()
+        error = {'error': {'code': 'test-code', 'message': 'test-message'}}
+        mock_response = Mock(
+            status_code=400,
+            headers={'x-altus-request-id': '00000000-0000-0000-0000-000000000000'})
+        self.endpoint.make_request.return_value = (mock_response, error)
+        re = (
+            'An error occurred: test-message '
+            '\\(Status Code: 400; '
+            'Error Code: test-code; '
+            'Service: thunderhead; '
+            'Operation: describeDirectors; '
+            'Request ID: 00000000-0000-0000-0000-000000000000;\\)')
+        with self.assertRaisesRegexp(ClientError, re) as e:
+            client.make_request('describeDirectors',
+                                'post',
+                                '/directors/describeDirectors',
+                                {},
+                                None,
+                                allow_redirects=False)
+        self.assertEqual(e.exception.response['error']['code'], 'test-code')
+        self.assertEqual(e.exception.response['error']['message'], 'test-message')
+
+    def test_make_request_error(self):
+        client = self._create_client()
+        error = {'error': {'code': 'test-code', 'message': 'test-message'}}
+        mock_response = Mock(
+            status_code=400,
+            headers={'x-altus-request-id': '00000000-0000-0000-0000-000000000000'})
+        self.endpoint.make_request.return_value = (mock_response, error)
+        re = (
+            'An error occurred: test-message '
+            '\\(Status Code: 400; '
+            'Error Code: test-code; '
+            'Service: thunderhead; '
+            'Operation: describeDirectors; '
+            'Request ID: 00000000-0000-0000-0000-000000000000;\\)')
+        with self.assertRaisesRegexp(ClientError, re) as e:
+            client.make_request('describeDirectors',
+                                'post',
+                                '/directors/describeDirectors',
+                                {},
+                                None)
+        self.assertEqual(e.exception.response['error']['code'], 'test-code')
+        self.assertEqual(e.exception.response['error']['message'], 'test-message')

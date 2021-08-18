@@ -82,6 +82,21 @@ class TestEndpointFeatures(TestEndpointBase):
         kwargs = self.http_session.send.call_args[1]
         self.assertEqual(kwargs['timeout'], timeout_override)
 
+    def test_make_request(self):
+        self.endpoint.make_request(self.op, request_dict(), self.request_signer)
+        prepared_request = self.http_session.send.call_args[0][0]
+        self.http_session.send.assert_called_with(
+            prepared_request, verify=True, stream=False,
+            proxies={}, timeout=DEFAULT_TIMEOUT, allow_redirects=True)
+
+    def test_make_request_with_no_redirects(self):
+        self.endpoint.make_request(self.op, request_dict(), self.request_signer,
+                                   allow_redirects=False)
+        prepared_request = self.http_session.send.call_args[0][0]
+        self.http_session.send.assert_called_with(
+            prepared_request, verify=True, stream=False,
+            proxies={}, timeout=DEFAULT_TIMEOUT, allow_redirects=False)
+
     def test_make_request_with_proxies(self):
         proxies = {'http': 'http://localhost:8888'}
         self.endpoint.proxies = proxies
@@ -89,7 +104,7 @@ class TestEndpointFeatures(TestEndpointBase):
         prepared_request = self.http_session.send.call_args[0][0]
         self.http_session.send.assert_called_with(
             prepared_request, verify=True, stream=False,
-            proxies=proxies, timeout=DEFAULT_TIMEOUT)
+            proxies=proxies, timeout=DEFAULT_TIMEOUT, allow_redirects=True)
 
     def test_make_request_with_no_auth(self):
         self.endpoint.auth = None
@@ -239,6 +254,7 @@ class TestEndpointCreator(unittest.TestCase):
             self.service_model,
             explicit_endpoint_url=None,
             scoped_config={},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -250,6 +266,7 @@ class TestEndpointCreator(unittest.TestCase):
             self.cdp_service_model,
             explicit_endpoint_url=None,
             scoped_config={},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -262,6 +279,7 @@ class TestEndpointCreator(unittest.TestCase):
             self.cdp_service_model,
             explicit_endpoint_url=None,
             scoped_config={},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -269,12 +287,13 @@ class TestEndpointCreator(unittest.TestCase):
         self.assertEqual(endpoint.host,
                          'https://prefix.us-west-1.cdp.cloudera.com:443')
 
-    def test_creates_endpoint_with_configured_url(self):
+    def test_create_endpoint_with_configured_url(self):
         endpoint_url = 'https://endpoint.url'
         endpoint = self.creator.create_endpoint(
             self.service_model,
             explicit_endpoint_url=endpoint_url,
             scoped_config={},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -287,6 +306,7 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url='https://example.com',
             scoped_config={},
             timeout=123,
+            region='default',
             response_parser_factory=self.factory_patch,
             tls_verification=False,
             retry_handler=self.retry_handler)
@@ -299,6 +319,7 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url=None,
             scoped_config={"endpoint_url": endpoint_url,
                            "config1": "value1"},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -312,6 +333,7 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -325,6 +347,7 @@ class TestEndpointCreator(unittest.TestCase):
             self.service_model,
             explicit_endpoint_url=endpoint_url,
             scoped_config={},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -339,6 +362,7 @@ class TestEndpointCreator(unittest.TestCase):
             self.cdp_service_model,
             explicit_endpoint_url=endpoint_url,
             scoped_config={},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -353,6 +377,7 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url=None,
             scoped_config={"endpoint_url": endpoint_url,
                            "config1": "value1"},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -368,6 +393,7 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -380,6 +406,7 @@ class TestEndpointCreator(unittest.TestCase):
             self.service_model,
             explicit_endpoint_url=endpoint_url,
             scoped_config={},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -392,6 +419,7 @@ class TestEndpointCreator(unittest.TestCase):
             self.cdp_service_model,
             explicit_endpoint_url=endpoint_url,
             scoped_config={},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -405,6 +433,7 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url=None,
             scoped_config={"endpoint_url": endpoint_url,
                            "config1": "value1"},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -418,6 +447,7 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -431,6 +461,7 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
@@ -446,8 +477,61 @@ class TestEndpointCreator(unittest.TestCase):
             explicit_endpoint_url=None,
             scoped_config={"cdp_endpoint_url": endpoint_url,
                            "config1": "value1"},
+            region='default',
             timeout=123,
             response_parser_factory=self.factory_patch,
             tls_verification=False,
             retry_handler=self.retry_handler)
         self.assertEqual(endpoint.host, expected)
+
+    def test_create_endpoint_with_explicit_region_us_west_1(self):
+        endpoint_url = 'https://iamapi.us-west-1.altus.cloudera.com:443'
+        endpoint = self.creator.create_endpoint(
+            self.service_model,
+            explicit_endpoint_url=None,
+            scoped_config={},
+            region='us-west-1',
+            timeout=123,
+            response_parser_factory=self.factory_patch,
+            tls_verification=False,
+            retry_handler=self.retry_handler)
+        self.assertEqual(endpoint.host, endpoint_url)
+
+    def test_create_endpoint_with_explicit_region_eu_1(self):
+        endpoint_url = 'https://api.eu-1.cdp.cloudera.com:443'
+        endpoint = self.creator.create_endpoint(
+            self.service_model,
+            explicit_endpoint_url=None,
+            scoped_config={},
+            region='eu-1',
+            timeout=123,
+            response_parser_factory=self.factory_patch,
+            tls_verification=False,
+            retry_handler=self.retry_handler)
+        self.assertEqual(endpoint.host, endpoint_url)
+
+    def test_create_endpoint_with_region_from_config_us_west_1(self):
+        endpoint_url = 'https://api.us-west-1.cdp.cloudera.com:443'
+        endpoint = self.creator.create_endpoint(
+            self.cdp_service_model,
+            explicit_endpoint_url=None,
+            scoped_config={'cdp_region': 'us-west-1'},
+            region='default',
+            timeout=123,
+            response_parser_factory=self.factory_patch,
+            tls_verification=False,
+            retry_handler=self.retry_handler)
+        self.assertEqual(endpoint.host, endpoint_url)
+
+    def test_create_endpoint_with_region_from_config_eu_1(self):
+        endpoint_url = 'https://api.eu-1.cdp.cloudera.com:443'
+        endpoint = self.creator.create_endpoint(
+            self.cdp_service_model,
+            explicit_endpoint_url=None,
+            scoped_config={'cdp_region': 'eu-1'},
+            region='default',
+            timeout=123,
+            response_parser_factory=self.factory_patch,
+            tls_verification=False,
+            retry_handler=self.retry_handler)
+        self.assertEqual(endpoint.host, endpoint_url)

@@ -76,6 +76,16 @@
       },
       "profile":{
          "help": "<p>Use a specific profile from your credential file.</p>"
+      },
+      "cdp-region":{
+         "hidden": true,
+         "choices": [
+            "default",
+            "us-west-1",
+            "eu-1",
+            "ap-1"],
+         "default": "default",
+         "help": "<p>Specifies which CDP Region to send this command's request to.</p>"
       }
    }
 }

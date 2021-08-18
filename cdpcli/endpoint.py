@@ -54,26 +54,35 @@ class EndpointResolver(object):
     """A builder of endpoint URLs for Altus and CDP services. Used by EndpointCreator."""
     ENDPOINT_URL_KEY_NAME = 'endpoint_url'
     CDP_ENDPOINT_URL_KEY_NAME = 'cdp_endpoint_url'
+    CDP_REGION_KEY_NAME = 'cdp_region'
 
-    def _construct_altus_endpoint(self, service_name, scheme, port):
+    def _construct_altus_endpoint(self, service_name, scheme, region, port):
         """Construct a default base URL to an Altus service.
 
         :param service_name: service name, as referenced in its URLs
         :param scheme: URL scheme, e.g., 'https'
         :param port: service port
+        :param region: service region
         :returns: Altus service base URL
         """
-        return "%s://%sapi.us-west-1.altus.cloudera.com:%d" % (scheme, service_name, port)
+        if region in ['default', 'us-west-1']:
+            return "%s://%sapi.us-west-1.altus.cloudera.com:%d" % \
+                   (scheme, service_name, port)
+        else:
+            return "%s://api.%s.cdp.cloudera.com:%d" % (scheme, region, port)
 
-    def _construct_cdp_endpoint(self, scheme, prefix, port):
+    def _construct_cdp_endpoint(self, scheme, prefix, region, port):
         """Construct a default base URL to an CDP service.
 
         :param scheme: URL scheme, e.g., 'https'
         :param prefix: CDP API prefix used in URLs, e.g., 'api'
         :param port: service port
+        :param region: service region
         :returns: CDP service base URL
         """
-        return "%s://%s.us-west-1.cdp.cloudera.com:%d" % (scheme, prefix, port)
+        if region == 'default':
+            region = 'us-west-1'
+        return "%s://%s.%s.cdp.cloudera.com:%d" % (scheme, prefix, region, port)
 
     def _substitute_custom_endpoint(self, endpoint_url, value):
         """Applies string formatting for one %s value.
@@ -85,7 +94,7 @@ class EndpointResolver(object):
         return endpoint_url % (value)
 
     def resolve(self, service_name, prefix, products, explicit_endpoint_url, config,
-                scheme, port):
+                region, scheme, port):
         """Creates a fully-resolved URL for a service endpoint.
 
         :param service_name: Altus service name, as referenced in its URLs
@@ -93,6 +102,7 @@ class EndpointResolver(object):
         :param products: service products (ALTUS or CDP)
         :param explicit_endpoint_url: explicit endpoint URL which overrides any other
         :param config: CLI configuration
+        :param region: service region
         :param scheme: URL scheme, e.g., 'https'
         :param port: service port
         :returns: resolved URL for service endpoint
@@ -121,7 +131,12 @@ class EndpointResolver(object):
                                                             prefix)
                 else:
                     return endpoint_from_config
-            return self._construct_cdp_endpoint(scheme, prefix, port)
+            # Use the region from configuration if it is not explicitly specified.
+            if region == 'default':
+                region_from_config = config.get(EndpointResolver.CDP_REGION_KEY_NAME)
+                if region_from_config is not None:
+                    region = region_from_config
+            return self._construct_cdp_endpoint(scheme, prefix, region, port)
         else:
             # If an Altus endpoint base URL has been configured, use it, swapping in the
             # prefix if there is a spot for it. Otherwise, construct a default URL for
@@ -133,7 +148,12 @@ class EndpointResolver(object):
                                                             service_name)
                 else:
                     return endpoint_from_config
-            return self._construct_altus_endpoint(service_name, scheme, port)
+            # Use the region from configuration if it is not explicitly specified.
+            if region == 'default':
+                region_from_config = config.get(EndpointResolver.CDP_REGION_KEY_NAME)
+                if region_from_config is not None:
+                    region = region_from_config
+            return self._construct_altus_endpoint(service_name, scheme, region, port)
 
 
 class EndpointCreator(object):
@@ -150,6 +170,7 @@ class EndpointCreator(object):
                         service_model,
                         explicit_endpoint_url,
                         scoped_config,
+                        region,
                         response_parser_factory,
                         tls_verification,
                         timeout,
@@ -161,6 +182,7 @@ class EndpointCreator(object):
         :param service_model: ServiceModel holding service information
         :param explicit_endpoint_url: explicit endpoint URL which overrides any other
         :param scoped_config: CLI configuration
+        :param region: service region
         :param response_parser_factory: set in endpoint
         :param tls_verification: set in endpoint
         :param timeout: set in endpoint
@@ -170,6 +192,7 @@ class EndpointCreator(object):
         endpoint_url = \
             self._endpoint_resolver.resolve(explicit_endpoint_url=explicit_endpoint_url,
                                             config=scoped_config,
+                                            region=region,
                                             service_name=service_model.endpoint_name,
                                             prefix=service_model.endpoint_prefix,
                                             products=service_model.products,
@@ -213,8 +236,10 @@ class Endpoint(object):
     def __repr__(self):
         return '%s' % (self.host)
 
-    def make_request(self, operation_model, request_dict, request_signer):
-        return self._send_request(request_dict, operation_model, request_signer)
+    def make_request(self, operation_model, request_dict, request_signer,
+                     allow_redirects=True):
+        return self._send_request(request_dict, operation_model, request_signer,
+                                  allow_redirects)
 
     def create_request(self, params, operation_model, request_signer):
         request = create_request_object(params)
@@ -238,11 +263,12 @@ class Endpoint(object):
         self._encode_headers(request.headers)
         return request.prepare()
 
-    def _send_request(self, request_dict, operation_model, request_signer):
+    def _send_request(self, request_dict, operation_model, request_signer,
+                      allow_redirects=True):
         attempts = 1
         request = self.create_request(request_dict, operation_model, request_signer)
         success_response, exception = self._get_response(
-            request, operation_model, attempts)
+            request, operation_model, allow_redirects, attempts)
         while self._needs_retry(attempts, operation_model,
                                 success_response, exception):
             attempts += 1
@@ -257,13 +283,13 @@ class Endpoint(object):
                 operation_model=operation_model,
                 request_signer=request_signer)
             success_response, exception = self._get_response(
-                request, operation_model, attempts)
+                request, operation_model, allow_redirects, attempts)
         if exception is not None:
             raise exception
         else:
             return success_response
 
-    def _get_response(self, request, operation_model, attempts):
+    def _get_response(self, request, operation_model, allow_redirects, attempts):
         # This will return a tuple of (success_response, exception)
         # and success_response is itself a tuple of
         # (http_response, parsed_dict).
@@ -275,7 +301,8 @@ class Endpoint(object):
                 verify=self.tls_verification,
                 stream=False,
                 proxies=self.proxies,
-                timeout=self.timeout)
+                timeout=self.timeout,
+                allow_redirects=allow_redirects)
         except ConnectionError as e:
             # For a connection error, if it looks like it's a DNS
             # lookup issue, 99% of the time this is due to a misconfigured

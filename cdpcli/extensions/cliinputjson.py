@@ -48,8 +48,7 @@ class CliInputJSONArgument(OverrideRequiredArgsArgument):
 
     def invoke(self,
                client_creator,
-               service_name,
-               operation_name,
+               operation_model,
                parameters,
                parsed_args,
                parsed_globals):

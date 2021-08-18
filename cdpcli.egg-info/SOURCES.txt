@@ -76,11 +76,12 @@ cdpcli/extensions/__init__.py
 cdpcli/extensions/arguments.py
 cdpcli/extensions/cliinputjson.py
 cdpcli/extensions/commands.py
-cdpcli/extensions/dfx.py
+cdpcli/extensions/df.py
 cdpcli/extensions/generatecliskeleton.py
 cdpcli/extensions/interactivelogin.py
 cdpcli/extensions/logout.py
 cdpcli/extensions/paginate.py
+cdpcli/extensions/redirect.py
 cdpcli/extensions/refdoc.py
 cdpcli/extensions/workload.py
 cdpcli/extensions/writer.py
@@ -117,11 +118,13 @@ tests/unit/test_validate.py
 tests/unit/cdp/__init__.py
 tests/unit/extensions/__init__.py
 tests/unit/extensions/test_cliinputjson.py
+tests/unit/extensions/test_df.py
 tests/unit/extensions/test_generatecliskeleton.py
 tests/unit/extensions/test_interactivelogin.py
 tests/unit/extensions/test_logout.py
 tests/unit/extensions/test_operation_extension.py
 tests/unit/extensions/test_paginate.py
+tests/unit/extensions/test_redirect.py
 tests/unit/extensions/test_workload.py
 tests/unit/extensions/test_writer.py
 tests/unit/extensions/configure/__init__.py

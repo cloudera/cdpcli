@@ -123,11 +123,11 @@ class TestOperationExtension(unittest.TestCase):
     def test_operation_extensions_update_parsed_globals(self):
         # noinspection PyShadowingNames
         def _invoke_to_update_parsed_globals(client_creator,
-                                             service_name,
-                                             operation_name,
+                                             operation_model,
                                              parameters,
                                              parsed_args,
                                              parsed_globals):
+            service_name = operation_model.service_model.service_name
             client_creator(service_name)
             parsed_globals.endpoint_url = 'https://test.com/'
             parsed_globals.access_token = 'Bearer ABC'
@@ -135,11 +135,11 @@ class TestOperationExtension(unittest.TestCase):
 
         # noinspection PyShadowingNames
         def _mock_operation_caller_invoke(client_creator,
-                                          service_name,
-                                          operation_name,
+                                          operation_model,
                                           parameters,
                                           parsed_args,
                                           parsed_globals):
+            service_name = operation_model.service_model.service_name
             client_creator(service_name)
 
         extension_caller = Mock()
@@ -161,12 +161,12 @@ class TestOperationExtension(unittest.TestCase):
             self.assertTrue(operation_caller.invoke.called)
             self.assertEquals(1, operation_caller.invoke.call_count)
             args, kargs = operation_caller.invoke.call_args
-            client_creator, service_name, operation_name, parameters, parsed_args, \
-                parsed_globals = args
-            self.assertEquals('uploadData', operation_name)
+            client_creator, operation_model, parameters, parsed_args, parsed_globals = \
+                args
+            self.assertEquals('uploadData', operation_model.name)
             self.assertEquals('https://test.com/', parsed_globals.endpoint_url)
             self.assertEquals('Bearer ABC', parsed_globals.access_token)
             args, kargs = self.endpoint_creator.create_endpoint.call_args
-            service_model, endpoint_url, scoped_config, response_parser_factory, \
+            service_model, endpoint_url, scoped_config, region, response_parser_factory, \
                 tls_verification, timeout, retry_handler = args
             self.assertEquals('https://test.com/', endpoint_url)

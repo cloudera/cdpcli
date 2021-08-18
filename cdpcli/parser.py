@@ -52,7 +52,12 @@ class ResponseParser(object):
             body = dict(code='UNKNOWN_ERROR', message=message)
         error = {}
         error['code'] = body.get('code', '')
-        error['message'] = body.get('message', '')
+        if 'message' in body:
+            error['message'] = body.get('message', '')
+        elif 'error' in body:
+            error['message'] = body.get('error', '')
+        else:
+            error['message'] = ' '.join(body.get('errorMessages', []))
         return {'error': error}
 
     def _parse_shape(self, shape, value):

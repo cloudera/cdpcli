@@ -31,14 +31,15 @@ class TestWorkloadExtension(unittest.TestCase):
         iam_client = Mock()
         iam_client.generate_workload_auth_token = generate_workload_auth_token
         client_creator = Mock(return_value=iam_client)
+        operation_model = Mock(name='mockOp')
+        operation_model.service_model = Mock(service_name='df-workload')
         parameters = {'environmentCrn': 'mockCrn'}
         parsed_args = Mock()
         parsed_globals = Mock(endpoint_url=None, access_token=None)
 
         workload_service_discovery = WorkloadServiceDiscovery()
         ret = workload_service_discovery.invoke(client_creator,
-                                                'df-workload',
-                                                'mockOp',
+                                                operation_model,
                                                 parameters,
                                                 parsed_args,
                                                 parsed_globals)
@@ -60,14 +61,15 @@ class TestWorkloadExtension(unittest.TestCase):
         iam_client = Mock()
         iam_client.generate_workload_auth_token = Mock(return_value={})
         client_creator = Mock(return_value=iam_client)
+        operation_model = Mock(name='mockOp')
+        operation_model.service_model = Mock(service_name='df-workload')
         parameters = {'environmentCrn': 'mockCrn'}
         parsed_args = Mock()
         parsed_globals = Mock(endpoint_url=None, access_token=None)
 
         workload_service_discovery = WorkloadServiceDiscovery()
         ret = workload_service_discovery.invoke(client_creator,
-                                                'df-workload',
-                                                'mockOp',
+                                                operation_model,
                                                 parameters,
                                                 parsed_args,
                                                 parsed_globals)
@@ -78,13 +80,14 @@ class TestWorkloadExtension(unittest.TestCase):
 
     def test_service_discovery_skip_by_access_token(self):
         client_creator = Mock()
+        operation_model = Mock(name='mockOp')
+        operation_model.service_model = Mock(service_name='df-workload')
         parsed_globals = Mock()
         parsed_globals.endpoint_url = None
         parsed_globals.access_token = 'Bearer ABC'
         workload_service_discovery = WorkloadServiceDiscovery()
         workload_service_discovery.invoke(client_creator,
-                                          'df-workload',
-                                          'mockOp',
+                                          operation_model,
                                           {'environmentCrn': 'mockCrn'},
                                           Mock(),
                                           parsed_globals)
@@ -93,13 +96,14 @@ class TestWorkloadExtension(unittest.TestCase):
 
     def test_service_discovery_no_service_name(self):
         client_creator = Mock()
+        operation_model = Mock(name='mockOp')
+        operation_model.service_model = Mock(service_name=None)
         parsed_globals = Mock(endpoint_url=None, access_token=None)
         workload_service_discovery = WorkloadServiceDiscovery()
 
         with self.assertRaises(WorkloadServiceDiscoveryError) as context:
             workload_service_discovery.invoke(client_creator,
-                                              None,
-                                              'mockOp',
+                                              operation_model,
                                               {'environmentCrn': 'mockCrn'},
                                               Mock(),
                                               parsed_globals)
@@ -107,10 +111,11 @@ class TestWorkloadExtension(unittest.TestCase):
         self.assertIn('Workload service-discovery error: Missing service name.',
                       str(context.exception))
 
+        operation_model = Mock(name='mockOp')
+        operation_model.service_model = Mock(service_name='')
         with self.assertRaises(WorkloadServiceDiscoveryError) as context:
             workload_service_discovery.invoke(client_creator,
-                                              '',
-                                              'mockOp',
+                                              operation_model,
                                               {'environmentCrn': 'mockCrn'},
                                               Mock(),
                                               parsed_globals)
@@ -120,13 +125,14 @@ class TestWorkloadExtension(unittest.TestCase):
 
     def test_service_discovery_unknown_service_name(self):
         client_creator = Mock()
+        operation_model = Mock(name='mockOp')
+        operation_model.service_model = Mock(service_name='invalid')
         parsed_globals = Mock(endpoint_url=None, access_token=None)
         workload_service_discovery = WorkloadServiceDiscovery()
 
         with self.assertRaises(WorkloadServiceDiscoveryError) as context:
             workload_service_discovery.invoke(client_creator,
-                                              'invalid',
-                                              'mockOp',
+                                              operation_model,
                                               {'environmentCrn': 'mockCrn'},
                                               Mock(),
                                               parsed_globals)
@@ -137,13 +143,14 @@ class TestWorkloadExtension(unittest.TestCase):
 
     def test_service_discovery_no_environment_crn(self):
         client_creator = Mock()
+        operation_model = Mock(name='mockOp')
+        operation_model.service_model = Mock(service_name='df-workload')
         parsed_globals = Mock(endpoint_url=None, access_token=None)
         workload_service_discovery = WorkloadServiceDiscovery()
 
         with self.assertRaises(WorkloadServiceDiscoveryError) as context:
             workload_service_discovery.invoke(client_creator,
-                                              'df-workload',
-                                              'mockOp',
+                                              operation_model,
                                               {},
                                               Mock(),
                                               parsed_globals)
@@ -153,8 +160,7 @@ class TestWorkloadExtension(unittest.TestCase):
 
         with self.assertRaises(WorkloadServiceDiscoveryError) as context:
             workload_service_discovery.invoke(client_creator,
-                                              'df-workload',
-                                              'mockOp',
+                                              operation_model,
                                               {'environmentCrn': ''},
                                               Mock(),
                                               parsed_globals)
@@ -164,8 +170,7 @@ class TestWorkloadExtension(unittest.TestCase):
 
         with self.assertRaises(WorkloadServiceDiscoveryError) as context:
             workload_service_discovery.invoke(client_creator,
-                                              'df-workload',
-                                              'mockOp',
+                                              operation_model,
                                               {'environmentCrn': None},
                                               Mock(),
                                               parsed_globals)

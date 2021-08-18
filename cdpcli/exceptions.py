@@ -305,3 +305,20 @@ class WorkloadServiceDiscoveryError(CdpCLIError):
     The workload service-discovery failed.
     """
     fmt = 'Workload service-discovery error: {err_msg}.'
+
+
+class RedirectExtensionError(CdpCLIError):
+
+    """
+    The redirect extension failed.
+    """
+    fmt = 'The redirect extension failed: {err_msg}.'
+
+
+class DfExtensionError(CdpCLIError):
+
+    """
+    The DF extension failed.
+    """
+    fmt = ('The DF extension failed: {err_msg} '
+           'Service name: {service_name}, operation name: {operation_name}')

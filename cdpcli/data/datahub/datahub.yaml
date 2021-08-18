@@ -171,7 +171,6 @@ paths:
       summary: Get cluster service status.
       description: Gets the status of the services in a cluster.
       operationId: getClusterServiceStatus
-      x-right: datahub/read
       x-mutating: false
       parameters:
         - name: input
@@ -193,7 +192,6 @@ paths:
       summary: Get cluster host status.
       description: Gets the status of the hosts in a cluster.
       operationId: getClusterHostStatus
-      x-right: datahub/read
       x-mutating: false
       parameters:
         - name: input

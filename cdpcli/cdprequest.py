@@ -25,6 +25,7 @@ from cdpcli.compat import six
 from cdpcli.compat import urlsplit
 from cdpcli.compat import urlunsplit
 from cdpcli.exceptions import UnseekableStreamError
+from cdpcli.utils import is_absolute_url
 from requests import models
 from requests.sessions import REDIRECT_STATI
 from urllib3.connection import HTTPConnection
@@ -66,7 +67,11 @@ def prepare_request_dict(
         headers[name] = value
     if user_agent_header is not None:
         headers['User-Agent'] = user_agent_header
-    r['url'] = _urljoin(endpoint_url, r['url_path'])
+    url_path = r['url_path']
+    if is_absolute_url(url_path):
+        r['url'] = url_path
+    else:
+        r['url'] = _urljoin(endpoint_url, url_path)
 
 
 def create_request_object(request_dict):
