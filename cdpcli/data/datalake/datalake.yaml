@@ -1123,7 +1123,6 @@ definitions:
     description: Request object for repair datalake request.
     required:
       - datalakeName
-      - instanceGroupName
     properties:
       datalakeName:
         type: string

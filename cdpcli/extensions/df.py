@@ -45,8 +45,16 @@ class UploadFileToDf(CLIOperationCaller):
                                  operation_model,
                                  parameters,
                                  parsed_globals)
-        elif service_name == 'df-workload':
-            self._df_workload_operation()
+        elif service_name == 'df' and operation_name == 'uploadFlowVersion':
+            self._df_upload_flow_version(client_creator,
+                                         operation_model,
+                                         parameters,
+                                         parsed_globals)
+        elif service_name == 'dfworkload' and operation_name == 'uploadAsset':
+            self._df_workload_upload_asset(client_creator,
+                                           operation_model,
+                                           parameters,
+                                           parsed_globals)
         else:
             raise DfExtensionError(
                 err_msg='The operation is not supported.',
@@ -60,7 +68,7 @@ class UploadFileToDf(CLIOperationCaller):
         client = client_creator('df')
         operation_name = operation_model.name
         url = operation_model.http['requestUri']
-        method = "post"
+        method = 'post'
         headers = {
             'Content-Type': 'application/json',
             'Flow-Definition-Name': parameters.get('name', None),
@@ -72,8 +80,40 @@ class UploadFileToDf(CLIOperationCaller):
                                      method, url, headers, file_path)
         self._display_response(operation_name, response, parsed_globals)
 
-    def _df_workload_operation(self):
-        pass
+    def _df_upload_flow_version(self, client_creator, operation_model,
+                                parameters, parsed_globals):
+        client = client_creator('df')
+        operation_name = operation_model.name
+        url = operation_model.http['requestUri']
+        method = 'post'
+        headers = {
+            'Content-Type': 'application/json',
+            'Flow-Definition-Comments': parameters.get('comments', None)
+        }
+        file_path = parameters.get('file', None)
+        response = self._upload_file(client, operation_name,
+                                     method, url, headers, file_path)
+        self._display_response(operation_name, response, parsed_globals)
+
+    def _df_workload_upload_asset(self, client_creator, operation_model,
+                                  parameters, parsed_globals):
+        client = client_creator('dfworkload')
+        operation_name = operation_model.name
+        url = '/dfx/api/rpc-v1/deployments/upload-asset-content'
+        method = 'post'
+        headers = {
+            'Content-Type': 'application/octet-stream',
+            'Deployment-Request-Crn': parameters.get('deploymentRequestCrn', None),
+            'Deployment-Name': parameters.get('deploymentName', None),
+            'Asset-Update-Request-Crn': parameters.get('assetUpdateRequestCrn', None),
+            'Parameter-Group': parameters.get('parameterGroup', None),
+            'Parameter-Name': parameters.get('parameterName', None),
+            'File-Path': parameters.get('filePath', None),
+        }
+        file_path = parameters.get('filePath', None)
+        response = self._upload_file(client, operation_name,
+                                     method, url, headers, file_path)
+        self._display_response(operation_name, response, parsed_globals)
 
     def _upload_file(self, client, operation_name,
                      method, url, headers, file_path):

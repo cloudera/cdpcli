@@ -28,11 +28,6 @@ class TestDfExtension(unittest.TestCase):
         self.client = Mock()
         self.client.raise_error.side_effect = Exception('ClientError')
         self.client_creator = Mock(return_value=self.client)
-        self.operation_model = Mock()
-        self.operation_model.service_model = Mock(service_name='df')
-        self.operation_model.name = 'uploadFlow'
-        self.operation_model.http = {'method': 'post',
-                                     'requestUri': 'https://test.com/path/uploadFlow'}
         self.parsed_globals = Mock(output=None)
 
     def test_df_upload_flow(self):
@@ -44,13 +39,18 @@ class TestDfExtension(unittest.TestCase):
 
         self.client.make_request.side_effect = _make_request
 
+        operation_model = Mock()
+        operation_model.service_model = Mock(service_name='df')
+        operation_model.name = 'uploadFlow'
+        operation_model.http = {'method': 'post',
+                                'requestUri': 'https://test.com/path/uploadFlow'}
         parameters = {
             'name': 'flow_name',
             'description': 'flow_description',
             'comments': 'flow_comments',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
         upload_file_to_df = UploadFileToDf()
-        upload_file_to_df.invoke(self.client_creator, self.operation_model,
+        upload_file_to_df.invoke(self.client_creator, operation_model,
                                  parameters, None, self.parsed_globals)
 
         self.assertEqual(1, self.client.make_request.call_count)
@@ -80,11 +80,16 @@ class TestDfExtension(unittest.TestCase):
 
         self.client.make_request.side_effect = _make_request
 
+        operation_model = Mock()
+        operation_model.service_model = Mock(service_name='df')
+        operation_model.name = 'uploadFlow'
+        operation_model.http = {'method': 'post',
+                                'requestUri': 'https://test.com/path/uploadFlow'}
         parameters = {
             'name': 'flow_name',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
         upload_file_to_df = UploadFileToDf()
-        upload_file_to_df.invoke(self.client_creator, self.operation_model,
+        upload_file_to_df.invoke(self.client_creator, operation_model,
                                  parameters, None, self.parsed_globals)
 
         self.assertEqual(1, self.client.make_request.call_count)
@@ -102,6 +107,162 @@ class TestDfExtension(unittest.TestCase):
              b'"name":"Simple","comments":""},"parameterContexts":{},"flowEncoding'
              b'Version":"1.0"}'),
             body)
+
+    def test_df_upload_flow_version(self):
+        body_list = []
+
+        def _make_request(*args, **kwargs):
+            body_list.append(args[4].read())
+            return Mock(status_code=200), {}
+
+        self.client.make_request.side_effect = _make_request
+
+        operation_model = Mock()
+        operation_model.service_model = Mock(service_name='df')
+        operation_model.name = 'uploadFlowVersion'
+        operation_model.http = {'method': 'post',
+                                'requestUri': 'https://test.com/path/uploadFlowVersion'}
+        parameters = {
+            'flowCrn': 'flow_crn',
+            'comments': 'flow_comments',
+            'file': os.path.join(BASE_DIR, 'df.flow.json')}
+        upload_file_to_df = UploadFileToDf()
+        upload_file_to_df.invoke(self.client_creator, operation_model,
+                                 parameters, None, self.parsed_globals)
+
+        self.assertEqual(1, self.client.make_request.call_count)
+        args, kwargs = self.client.make_request.call_args
+        self.assertEqual('uploadFlowVersion', args[0])
+        self.assertEqual('post', args[1])
+        self.assertEqual('https://test.com/path/uploadFlowVersion', args[2])
+        self.assertEqual(
+            {'Content-Type': 'application/json',
+             'Flow-Definition-Comments': 'flow_comments'},
+            args[3])
+        body = body_list[0]
+        self.assertEqual(
+            (b'{"flowContents":{"identifier":"97047f2a-9d0d-3669-977e-9d022308feb9",'
+             b'"name":"Simple","comments":""},"parameterContexts":{},"flowEncoding'
+             b'Version":"1.0"}'),
+            body)
+
+    def test_df_upload_flow_version_no_optional_parameters(self):
+        body_list = []
+
+        def _make_request(*args, **kwargs):
+            body_list.append(args[4].read())
+            return Mock(status_code=200), {}
+
+        self.client.make_request.side_effect = _make_request
+
+        operation_model = Mock()
+        operation_model.service_model = Mock(service_name='df')
+        operation_model.name = 'uploadFlowVersion'
+        operation_model.http = {'method': 'post',
+                                'requestUri': 'https://test.com/path/uploadFlowVersion'}
+        parameters = {
+            'flowCrn': 'flow_crn',
+            'file': os.path.join(BASE_DIR, 'df.flow.json')}
+        upload_file_to_df = UploadFileToDf()
+        upload_file_to_df.invoke(self.client_creator, operation_model,
+                                 parameters, None, self.parsed_globals)
+
+        self.assertEqual(1, self.client.make_request.call_count)
+        args, kwargs = self.client.make_request.call_args
+        self.assertEqual('uploadFlowVersion', args[0])
+        self.assertEqual('post', args[1])
+        self.assertEqual('https://test.com/path/uploadFlowVersion', args[2])
+        self.assertEqual(
+            {'Content-Type': 'application/json'},
+            args[3])
+        body = body_list[0]
+        self.assertEqual(
+            (b'{"flowContents":{"identifier":"97047f2a-9d0d-3669-977e-9d022308feb9",'
+             b'"name":"Simple","comments":""},"parameterContexts":{},"flowEncoding'
+             b'Version":"1.0"}'),
+            body)
+
+    def test_df_workload_upload_asset(self):
+        body_list = []
+
+        def _make_request(*args, **kwargs):
+            body_list.append(args[4].read())
+            return Mock(status_code=200), {}
+
+        self.client.make_request.side_effect = _make_request
+
+        operation_model = Mock()
+        operation_model.service_model = Mock(service_name='dfworkload')
+        operation_model.name = 'uploadAsset'
+        operation_model.http = {'method': 'post',
+                                'requestUri': '/dfx/api/rpc-v1/deployments/uploadAsset'}
+        parameters = {
+            'environmentCrn': 'env_crn',
+            'parameterGroup': 'param_group',
+            'parameterName': 'param_name',
+            'deploymentRequestCrn': 'deployment_request_crn',
+            'deploymentName': 'deployment_name',
+            'assetUpdateRequestCrn': 'asset_update_request_crn',
+            'filePath': os.path.join(BASE_DIR, 'df-workload.asset.bin')}
+        upload_file_to_df = UploadFileToDf()
+        upload_file_to_df.invoke(self.client_creator, operation_model,
+                                 parameters, None, self.parsed_globals)
+
+        self.assertEqual(1, self.client.make_request.call_count)
+        args, kwargs = self.client.make_request.call_args
+        self.assertEqual('uploadAsset', args[0])
+        self.assertEqual('post', args[1])
+        self.assertEqual('/dfx/api/rpc-v1/deployments/upload-asset-content', args[2])
+        self.assertEqual(
+            {'Content-Type': 'application/octet-stream',
+             'Deployment-Request-Crn': 'deployment_request_crn',
+             'Deployment-Name': 'deployment_name',
+             'Asset-Update-Request-Crn': 'asset_update_request_crn',
+             'Parameter-Group': 'param_group',
+             'Parameter-Name': 'param_name',
+             'File-Path': os.path.join(BASE_DIR, 'df-workload.asset.bin')},
+            args[3])
+        body = body_list[0]
+        self.assertIsNotNone(body)
+        self.assertEqual(42, len(body))
+
+    def test_df_workload_upload_asset_no_optional_parameters(self):
+        body_list = []
+
+        def _make_request(*args, **kwargs):
+            body_list.append(args[4].read())
+            return Mock(status_code=200), {}
+
+        self.client.make_request.side_effect = _make_request
+
+        operation_model = Mock()
+        operation_model.service_model = Mock(service_name='dfworkload')
+        operation_model.name = 'uploadAsset'
+        operation_model.http = {'method': 'post',
+                                'requestUri': '/dfx/api/rpc-v1/deployments/uploadAsset'}
+        parameters = {
+            'environmentCrn': 'env_crn',
+            'parameterGroup': 'param_group',
+            'parameterName': 'param_name',
+            'filePath': os.path.join(BASE_DIR, 'df-workload.asset.bin')}
+        upload_file_to_df = UploadFileToDf()
+        upload_file_to_df.invoke(self.client_creator, operation_model,
+                                 parameters, None, self.parsed_globals)
+
+        self.assertEqual(1, self.client.make_request.call_count)
+        args, kwargs = self.client.make_request.call_args
+        self.assertEqual('uploadAsset', args[0])
+        self.assertEqual('post', args[1])
+        self.assertEqual('/dfx/api/rpc-v1/deployments/upload-asset-content', args[2])
+        self.assertEqual(
+            {'Content-Type': 'application/octet-stream',
+             'Parameter-Group': 'param_group',
+             'Parameter-Name': 'param_name',
+             'File-Path': os.path.join(BASE_DIR, 'df-workload.asset.bin')},
+            args[3])
+        body = body_list[0]
+        self.assertIsNotNone(body)
+        self.assertEqual(42, len(body))
 
     def test_operation_not_supported(self):
         operation_model = Mock()

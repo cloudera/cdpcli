@@ -16,7 +16,9 @@
 
 import os
 
-from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, CDP_PRIVATE_KEY_KEY_NAME
+from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, \
+                   CDP_PRIVATE_KEY_KEY_NAME, \
+                   CDP_REGION_KEY_NAME
 from cdpcli.compat import six
 from cdpcli.endpoint import EndpointResolver
 from cdpcli.extensions.configure import configure
@@ -36,6 +38,7 @@ class TestConfigureCommand(unittest.TestCase):
         self.global_args.profile = None
         self.precanned = PrecannedPrompter(access_key_id='new_access_key_id',
                                            private_key='new_private_key',
+                                           cdp_region=None,
                                            cdp_endpoint_url=None)
         self.context = FakeContext({'config_file': 'myconfigfile'})
         self.configure = configure.ConfigureCommand(prompter=self.precanned,
@@ -64,9 +67,10 @@ class TestConfigureCommand(unittest.TestCase):
         self.writer.update_config.assert_called_with(
             {}, 'myconfigfile')
 
-    def test_configure_command_with_cdp_endpoint_url(self):
+    def test_configure_command_with_new_values(self):
         self.precanned = PrecannedPrompter(access_key_id='new_access_key_id',
                                            private_key='new_private_key',
+                                           cdp_region='us-west-2',
                                            cdp_endpoint_url='http://foo.com')
         self.configure = configure.ConfigureCommand(prompter=self.precanned,
                                                     config_writer=self.writer)
@@ -79,7 +83,8 @@ class TestConfigureCommand(unittest.TestCase):
 
         # Non-credentials config is written to the config file.
         self.writer.update_config.assert_called_with(
-            {EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME: "http://foo.com"},
+            {CDP_REGION_KEY_NAME: "us-west-2",
+             EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME: "http://foo.com"},
             'myconfigfile')
 
     def test_same_values_are_not_changed(self):
@@ -96,6 +101,7 @@ class TestConfigureCommand(unittest.TestCase):
         # to write anything out to the config.
         self.precanned = PrecannedPrompter(access_key_id=None,
                                            private_key=None,
+                                           cdp_region=None,
                                            cdp_endpoint_url=None)
         self.configure = configure.ConfigureCommand(prompter=self.precanned,
                                                     config_writer=self.writer)
@@ -250,9 +256,10 @@ class TestConfigValueMasking(unittest.TestCase):
 
 class PrecannedPrompter(object):
 
-    def __init__(self, access_key_id, private_key, cdp_endpoint_url):
+    def __init__(self, access_key_id, private_key, cdp_region, cdp_endpoint_url):
         self._access_key_id = access_key_id
         self._private_key = private_key
+        self._cdp_region = cdp_region
         self._cdp_endpoint_url = cdp_endpoint_url
 
     def get_value(self, current_value, config_name, prompt_text=''):
@@ -260,6 +267,8 @@ class PrecannedPrompter(object):
             return self._access_key_id
         elif config_name == CDP_PRIVATE_KEY_KEY_NAME:
             return self._private_key
+        elif config_name == CDP_REGION_KEY_NAME:
+            return self._cdp_region
         elif config_name == EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME:
             return self._cdp_endpoint_url
         else:

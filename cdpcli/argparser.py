@@ -42,11 +42,13 @@ class CLIArgParser(argparse.ArgumentParser):
         """
         # converted value must be one of the choices (if specified)
         if action.choices is not None and value not in action.choices:
+            choice_max_len = len(max(action.choices, key=len))
+            column_width = max(choice_max_len, 40)
             msg = ['Invalid choice, valid choices are:\n']
             for i in range(len(action.choices))[::self.ChoicesPerLine]:
                 current = []
                 for choice in action.choices[i:i + self.ChoicesPerLine]:
-                    current.append('%-40s' % choice)
+                    current.append(('%-' + str(column_width) + 's') % choice)
                 msg.append(' | '.join(current))
             possible = get_close_matches(value, action.choices, cutoff=0.8)
             if possible:

@@ -12,6 +12,7 @@
 # language governing permissions and limitations under the License.
 
 import logging
+from urllib.parse import urljoin
 
 from cdpcli.exceptions import WorkloadServiceDiscoveryError
 
@@ -47,7 +48,7 @@ class WorkloadServiceDiscovery(object):
         if not service_name:
             raise WorkloadServiceDiscoveryError(err_msg='Missing service name')
 
-        if service_name == 'df-workload':
+        if service_name == 'dfworkload':
             workload_name = 'DF'
             environment_crn = parameters.get('environmentCrn', None)
             if not environment_crn:
@@ -66,18 +67,23 @@ class WorkloadServiceDiscovery(object):
 
         workload_url = response.get('endpointUrl', None)
         workload_access_token = response.get('token', None)
-
-        # Set the workload URL and access-token in parsed_globals, so the
-        # next CLI operation caller will use them to make the connection to workload.
-        parsed_globals.endpoint_url = workload_url
-        parsed_globals.access_token = workload_access_token
         LOG.debug('Workload service-discovery succeeded. '
                   'endpoint_url=%s, access_token=%s...',
                   workload_url,
                   workload_access_token[0:16] if workload_access_token else None)
 
-        # Remove 'environmentCrn' from parameters because it is for service-discovery.
-        del parameters['environmentCrn']
+        # remove path from the workload URL
+        if workload_url is not None:
+            workload_url = urljoin(workload_url, '/')
+        # add 'Bearer' prefix to access token
+        if workload_access_token is not None and \
+           not workload_access_token.startswith('Bearer '):
+            workload_access_token = 'Bearer ' + workload_access_token
+
+        # Set the workload URL and access-token in parsed_globals, so the
+        # next CLI operation caller will use them to make the connection to workload.
+        parsed_globals.endpoint_url = workload_url
+        parsed_globals.access_token = workload_access_token
 
         # The command processing is not finished, continue with other operation callers.
         return True

@@ -16,6 +16,7 @@
 import os
 
 from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME
+from cdpcli import CDP_ACCESS_TOKEN_KEY_NAME
 from cdpcli import CDP_PRIVATE_KEY_KEY_NAME
 from cdpcli import DEFAULT_PROFILE_NAME
 from cdpcli.extensions.commands import BasicCommand
@@ -44,6 +45,7 @@ class ConfigureSetCommand(BasicCommand):
     # Any variables specified in this list will be written to
     # the ~/.cdp/credentials file instead of ~/.cdp/config.
     _WRITE_TO_CREDS_FILE = [CDP_ACCESS_KEY_ID_KEY_NAME,
+                            CDP_ACCESS_TOKEN_KEY_NAME,
                             CDP_PRIVATE_KEY_KEY_NAME]
 
     def __init__(self, config_writer=None):

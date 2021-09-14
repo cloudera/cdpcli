@@ -16,7 +16,10 @@
 
 import os
 
-from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, CDP_PRIVATE_KEY_KEY_NAME
+from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, \
+                   CDP_ACCESS_TOKEN_KEY_NAME, \
+                   CDP_PRIVATE_KEY_KEY_NAME, \
+                   CDP_REGION_KEY_NAME
 from cdpcli.compat import compat_input
 from cdpcli.endpoint import EndpointResolver
 from cdpcli.exceptions import ProfileNotFound
@@ -73,6 +76,7 @@ class ConfigureCommand(BasicCommand):
         # (config_name, prompt_text)
         (CDP_ACCESS_KEY_ID_KEY_NAME, "CDP Access Key ID"),
         (CDP_PRIVATE_KEY_KEY_NAME, "CDP Private Key"),
+        (CDP_REGION_KEY_NAME, "CDP Region"),
         (EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME,
          "CDP Endpoint URL (blank for public cloud)")
     ]
@@ -115,7 +119,7 @@ class ConfigureCommand(BasicCommand):
             self._config_writer.update_config(new_values, config_filename)
 
     def _write_out_creds_file_values(self, context, new_values, profile_name):
-        # The access_key/private_key are now *always* written to the shared
+        # The access_key/private_key/access_token are now *always* written to the shared
         # credentials file (~/.cdp/credentials).
         credential_file_values = {}
         if CDP_ACCESS_KEY_ID_KEY_NAME in new_values:
@@ -124,6 +128,9 @@ class ConfigureCommand(BasicCommand):
         if CDP_PRIVATE_KEY_KEY_NAME in new_values:
             credential_file_values[CDP_PRIVATE_KEY_KEY_NAME] = new_values.pop(
                 CDP_PRIVATE_KEY_KEY_NAME)
+        if CDP_ACCESS_TOKEN_KEY_NAME in new_values:
+            credential_file_values[CDP_ACCESS_TOKEN_KEY_NAME] = new_values.pop(
+                CDP_ACCESS_TOKEN_KEY_NAME)
         if credential_file_values:
             if profile_name is not None:
                 credential_file_values['__section__'] = profile_name

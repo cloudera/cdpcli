@@ -145,6 +145,7 @@ class CLIDriver(object):
         LoginCommand.add_command(commands)
         LogoutCommand.add_command(commands)
         RefdocCommand.add_command(commands)
+        commands = OrderedDict(sorted(commands.items()))
         return commands
 
     def _filter_command_table_for_form_factor(self, parsed_args):
@@ -227,6 +228,7 @@ class CLIDriver(object):
 
     def get_service_model(self, service_name):
         service_data = self._loader.load_service_data(service_name)
+        service_data['paths'] = OrderedDict(sorted(service_data.get('paths', {}).items()))
         return ServiceModel(service_data, service_name=service_name)
 
     def _create_help_command(self):

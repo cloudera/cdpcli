@@ -257,7 +257,7 @@ definitions:
         description: CRN of the environment.
       tenantId:
         type: string
-        description: CDE tenant ID
+        description: CDP tenant ID.
       resources:
         description: Resources details of CDE Service.
         $ref: '#/definitions/ServiceResources'

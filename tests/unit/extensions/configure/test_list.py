@@ -14,7 +14,9 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, CDP_PRIVATE_KEY_KEY_NAME
+from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, \
+                   CDP_PRIVATE_KEY_KEY_NAME, \
+                   CDP_REGION_KEY_NAME
 from cdpcli.compat import six
 from cdpcli.extensions.configure.list import ConfigureListCommand
 import mock
@@ -29,12 +31,13 @@ class TestConfigureListCommand(unittest.TestCase):
         context = FakeContext(
             all_variables={'config_file': '/config/location'})
         context.full_config = {
-            'profiles': {'default': {'region': 'CDP_REGION'}}}
+            'profiles': {'default': {}}}
         stream = six.StringIO()
         self.configure_list = ConfigureListCommand(stream)
         self.configure_list(context, args=[], parsed_globals=None)
         rendered = stream.getvalue()
         self.assertRegexpMatches(rendered, 'profile\\s+<not set>')
+        self.assertRegexpMatches(rendered, 'cdp_region\\s+<not set>')
         self.assertRegexpMatches(rendered, 'cdp_access_key_id\\s+<not set>')
         self.assertRegexpMatches(rendered, 'cdp_private_key\\s+<not set>')
 
@@ -47,7 +50,7 @@ class TestConfigureListCommand(unittest.TestCase):
             environment_vars=env_vars)
         context.context_var_map = {'profile': (None, "PROFILE_ENV_VAR")}
         context.full_config = {
-            'profiles': {'default': {'region': 'CDP_REGION'}}}
+            'profiles': {'default': {}}}
         stream = six.StringIO()
         self.configure_list = ConfigureListCommand(stream)
         self.configure_list(context, args=[], parsed_globals=None)
@@ -56,24 +59,27 @@ class TestConfigureListCommand(unittest.TestCase):
             rendered, 'profile\\s+myprofilename\\s+env\\s+PROFILE_ENV_VAR')
 
     def test_configure_from_config_file(self):
-        # this is not a known configuration so this is ignored.
         config_file_vars = {
+            # this is not a known configuration so this is ignored.
             'foo': 'bar',
+            CDP_REGION_KEY_NAME: 'eu-1',
             CDP_ACCESS_KEY_ID_KEY_NAME: 'key_id',
             CDP_PRIVATE_KEY_KEY_NAME: 'mysecretkey'
         }
         context = FakeContext(
             all_variables={'config_file': '/config/location'},
             config_file_vars=config_file_vars)
-        context.context_var_map = {'region': ('region', "CDP_REGION")}
+        context.context_var_map = {'region': ()}
         context.full_config = {
-            'profiles': {'default': {'region': 'CDP_REGION'}}}
+            'profiles': {'default': {}}}
         stream = six.StringIO()
         self.configure_list = ConfigureListCommand(stream)
         self.configure_list(context, args=[], parsed_globals=None)
         rendered = stream.getvalue()
         self.assertRegexpMatches(
             rendered, 'profile\\s+<not set>\\s+None\\s+None')
+        self.assertRegexpMatches(
+            rendered, 'cdp_region\\s+eu-1\\s+config-file')
         self.assertRegexpMatches(
             rendered, 'cdp_access_key_id\\s+\\*+y_id\\s+config-file')
         self.assertRegexpMatches(
@@ -86,20 +92,23 @@ class TestConfigureListCommand(unittest.TestCase):
         env_vars = {
             'profile': 'myprofilename'
         }
+        config_file_vars = {
+            CDP_REGION_KEY_NAME: 'eu-1'
+        }
         credentials = mock.Mock()
         credentials.access_key_id = 'access_key'
         credentials.private_key = 'private_key'
+        credentials.access_token = None
         credentials.method = 'foobar'
         context = FakeContext(
             all_variables={'config_file': '/config/location'},
             environment_vars=env_vars,
-            config_file_vars={},
+            config_file_vars=config_file_vars,
             credentials=credentials)
         context.context_var_map = {
-            'region': ('region', 'CDP_REGION'),
             'profile': ('profile', 'CDP_DEFAULT_PROFILE')}
         context.full_config = {
-            'profiles': {'default': {'region': 'CDP_REGION'}}}
+            'profiles': {'default': {}}}
         stream = six.StringIO()
         self.configure_list = ConfigureListCommand(stream)
         self.configure_list(context, args=[], parsed_globals=None)
@@ -107,6 +116,9 @@ class TestConfigureListCommand(unittest.TestCase):
         # The profile came from an env var.
         self.assertRegexpMatches(
             rendered, 'profile\\s+myprofilename\\s+env\\s+CDP_DEFAULT_PROFILE')
+        # The cdp_region came from config file.
+        self.assertRegexpMatches(
+            rendered, 'cdp_region\\s+eu-1\\s+config-file')
         # The credentials came from 'foobar'.  Note how we're
         # also checking that the access_key/private_key are masked
         # with '*' chars except for the last 4 chars.
@@ -116,9 +128,10 @@ class TestConfigureListCommand(unittest.TestCase):
             rendered, r'cdp_private_key\s+\*+_key\s+foobar')
 
     def test_profile_set_in_context(self):
-        # this is not a known configuration so this is ignored.
         config_file_vars = {
+            # this is not a known configuration so this is ignored.
             'foo': 'bar',
+            CDP_REGION_KEY_NAME: 'eu-1',
             CDP_ACCESS_KEY_ID_KEY_NAME: 'key_id',
             CDP_PRIVATE_KEY_KEY_NAME: 'mysecretkey'
         }
@@ -126,15 +139,17 @@ class TestConfigureListCommand(unittest.TestCase):
             all_variables={'config_file': '/config/location'},
             config_file_vars=config_file_vars)
         context.profile = 'dev'
-        context.context_var_map = {'region': ('region', "CDP_REGION")}
+        context.context_var_map = {}
         context.full_config = {
-            'profiles': {'dev': {'region': 'CDP_REGION'}}}
+            'profiles': {'dev': {}}}
         stream = six.StringIO()
         self.configure_list = ConfigureListCommand(stream)
         self.configure_list(context, args=[], parsed_globals=None)
         rendered = stream.getvalue()
         self.assertRegexpMatches(
             rendered, 'profile\\s+dev\\s+manual\\s+--profile')
+        self.assertRegexpMatches(
+            rendered, 'cdp_region\\s+eu-1\\s+config-file')
         self.assertRegexpMatches(
             rendered, r'cdp_access_key_id\s+\*+y_id\s+config-file')
         self.assertRegexpMatches(

@@ -530,6 +530,9 @@ definitions:
       useOverlayNetwork:
         type: boolean
         description: Using an overlay network will save IP addresses in the VPC by using a private IP address range for Pods in the cluster.
+      whitelistIpCIDRs:
+        type: string
+        description: Comma separated list of IP address CIDRs to whitelist.
       usePrivateLoadBalancer:
         type: boolean
         description: Set up load balancer with private IP address. In AWS it is created in private subnets. In Azure an internal load balancer gets created. Make sure there is connectivity between your client network and the network (VPC/VNet) where CDW environment is deployed.
@@ -553,6 +556,12 @@ definitions:
         description: IDs of public AWS subnets where the cluster should be deployed.
         items:
           type: string
+      customEcrRepository:
+        type: string
+        description: URL for custom ECR repository
+      customAmiId:
+        type: string
+        description: Custom AMI ID.
   AzureActivationOptions:
     type: object
     description: Options for activating an Azure environment.
@@ -563,6 +572,18 @@ definitions:
       enableAZ:
         type: boolean
         description: Enables Azure Availability Zones for the cluster deployment.
+      vmGenerationType:
+        type: string
+        enum:
+          - Standard_E16_v3
+          - Standard_E16ds_v4
+        description: The generation type of the virtual machines used to create the environment.
+      logAnalyticsWorkspaceId:
+        type: string
+        description: Workspace ID for Azure log analytics.
+      dockerBridgeCidr:
+        type: string
+        description: Docker bridge CIDR range for deployment.
   CreateClusterResponse:
     type: object
     description: Response object for the createCluster method.

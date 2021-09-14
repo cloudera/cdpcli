@@ -323,6 +323,7 @@ class Context(object):
         # This is the shared credentials file.
         'credentials_file': (None, 'CDP_SHARED_CREDENTIALS_FILE',
                              '~/.cdp/credentials', None),
+        'cdp_region': ('cdp_region', None, None, None),
         'cdp_endpoint_url': ('cdp_endpoint_url', None, None, None),
         'endpoint_url': ('endpoint_url', None, None, None),
         'form_factor': ('form_factor', None, None, None),

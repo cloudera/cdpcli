@@ -26,13 +26,14 @@ class TestWorkloadExtension(unittest.TestCase):
         self.assertIsInstance(operation_callers[0], WorkloadServiceDiscovery)
 
     def test_service_discovery_df(self):
-        response = {'endpointUrl': 'workload-url', 'token': 'workload-access-token'}
+        response = {'endpointUrl': 'http://workload-host/path',
+                    'token': 'workload-access-token'}
         generate_workload_auth_token = Mock(return_value=response)
         iam_client = Mock()
         iam_client.generate_workload_auth_token = generate_workload_auth_token
         client_creator = Mock(return_value=iam_client)
         operation_model = Mock(name='mockOp')
-        operation_model.service_model = Mock(service_name='df-workload')
+        operation_model.service_model = Mock(service_name='dfworkload')
         parameters = {'environmentCrn': 'mockCrn'}
         parsed_args = Mock()
         parsed_globals = Mock(endpoint_url=None, access_token=None)
@@ -54,15 +55,15 @@ class TestWorkloadExtension(unittest.TestCase):
         args, kargs = generate_workload_auth_token.call_args
         self.assertEqual({'workloadName': 'DF', 'environmentCrn': 'mockCrn'}, kargs)
 
-        self.assertEqual('workload-url', parsed_globals.endpoint_url)
-        self.assertEqual('workload-access-token', parsed_globals.access_token)
+        self.assertEqual('http://workload-host/', parsed_globals.endpoint_url)
+        self.assertEqual('Bearer workload-access-token', parsed_globals.access_token)
 
     def test_service_discovery_no_response(self):
         iam_client = Mock()
         iam_client.generate_workload_auth_token = Mock(return_value={})
         client_creator = Mock(return_value=iam_client)
         operation_model = Mock(name='mockOp')
-        operation_model.service_model = Mock(service_name='df-workload')
+        operation_model.service_model = Mock(service_name='dfworkload')
         parameters = {'environmentCrn': 'mockCrn'}
         parsed_args = Mock()
         parsed_globals = Mock(endpoint_url=None, access_token=None)
@@ -81,7 +82,7 @@ class TestWorkloadExtension(unittest.TestCase):
     def test_service_discovery_skip_by_access_token(self):
         client_creator = Mock()
         operation_model = Mock(name='mockOp')
-        operation_model.service_model = Mock(service_name='df-workload')
+        operation_model.service_model = Mock(service_name='dfworkload')
         parsed_globals = Mock()
         parsed_globals.endpoint_url = None
         parsed_globals.access_token = 'Bearer ABC'
@@ -144,7 +145,7 @@ class TestWorkloadExtension(unittest.TestCase):
     def test_service_discovery_no_environment_crn(self):
         client_creator = Mock()
         operation_model = Mock(name='mockOp')
-        operation_model.service_model = Mock(service_name='df-workload')
+        operation_model.service_model = Mock(service_name='dfworkload')
         parsed_globals = Mock(endpoint_url=None, access_token=None)
         workload_service_discovery = WorkloadServiceDiscovery()
 

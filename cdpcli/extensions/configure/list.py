@@ -18,6 +18,7 @@ import sys
 from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME,\
     CDP_ENDPOINT_URL_KEY_NAME,\
     CDP_PRIVATE_KEY_KEY_NAME,\
+    CDP_REGION_KEY_NAME,\
     ENDPOINT_URL_KEY_NAME,\
     FORM_FACTOR_KEY_NAME
 from cdpcli.extensions.commands import BasicCommand
@@ -78,6 +79,8 @@ class ConfigureListCommand(BasicCommand):
         self._display_config_value(access_key, CDP_ACCESS_KEY_ID_KEY_NAME)
         self._display_config_value(private_key, CDP_PRIVATE_KEY_KEY_NAME)
 
+        self._display_config_value(self._lookup_config(context, CDP_REGION_KEY_NAME),
+                                   CDP_REGION_KEY_NAME)
         self._display_config_value(self._lookup_config(context,
                                                        CDP_ENDPOINT_URL_KEY_NAME),
                                    CDP_ENDPOINT_URL_KEY_NAME)

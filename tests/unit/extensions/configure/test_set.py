@@ -16,7 +16,9 @@
 
 import os
 
-from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, CDP_PRIVATE_KEY_KEY_NAME
+from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, \
+                   CDP_ACCESS_TOKEN_KEY_NAME, \
+                   CDP_PRIVATE_KEY_KEY_NAME
 from cdpcli.extensions.configure.set import ConfigureSetCommand
 import mock
 from tests import unittest
@@ -115,6 +117,15 @@ class TestConfigureSetCommand(unittest.TestCase):
         self.config_writer.update_config.assert_called_with(
             {'__section__': 'default',
              CDP_PRIVATE_KEY_KEY_NAME: 'foo'}, self.fake_credentials_filename)
+
+    def test_access_token_written_to_shared_credentials_file(self):
+        set_command = ConfigureSetCommand(self.config_writer)
+        set_command(self.context,
+                    args=[CDP_ACCESS_TOKEN_KEY_NAME, 'foo'],
+                    parsed_globals=None)
+        self.config_writer.update_config.assert_called_with(
+            {'__section__': 'default',
+             CDP_ACCESS_TOKEN_KEY_NAME: 'foo'}, self.fake_credentials_filename)
 
     def test_access_key_written_to_shared_credentials_file_profile(self):
         set_command = ConfigureSetCommand(self.config_writer)
