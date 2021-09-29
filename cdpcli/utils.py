@@ -17,6 +17,7 @@
 import contextlib
 import datetime
 import functools
+import importlib
 import re
 import signal
 import urllib.parse as urlparse
@@ -31,6 +32,29 @@ from dateutil.tz import tzutc
 
 # These are chars that do not need to be urlencoded based on rfc2986, section 2.3.
 SAFE_CHARS = '-._~'
+
+
+def import_module(module_name):
+    try:
+        return importlib.import_module(module_name)
+    except ImportError:
+        return None
+
+
+def get_extension_registers(name):
+    module = import_module('cdpcli.extensions.%s.register' % name)
+    if module is None:
+        module = import_module('cdpcli.extensions.%s' % name)
+    if module is None:
+        return None, None
+
+    register = getattr(module, 'register', None)
+    if register is not None:
+        return register, None
+
+    register_ext = getattr(module, 'register_extension', None)
+    register_cmd = getattr(module, 'register_command', None)
+    return register_ext, register_cmd
 
 
 def is_absolute_url(url):
@@ -95,6 +119,7 @@ def instance_cache(func):
         result = func(self, *args, **kwargs)
         self._instance_cache[cache_key] = result
         return result
+
     return _cache_guard
 
 
@@ -196,7 +221,7 @@ def datetime2timestamp(dt, default_timezone=None):
     d = dt.replace(tzinfo=None) - dt.utcoffset() - epoch
     if hasattr(d, "total_seconds"):
         return d.total_seconds()  # Works in Python 2.7+
-    return (d.microseconds + (d.seconds + d.days * 24 * 3600) * 10**6) / 10**6
+    return (d.microseconds + (d.seconds + d.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
 
 class ArgumentGenerator(object):
@@ -226,6 +251,7 @@ class ArgumentGenerator(object):
         print("Sample input for dataeng.createAWSCluster: %s" % sample_input)
 
     """
+
     def __init__(self):
         pass
 

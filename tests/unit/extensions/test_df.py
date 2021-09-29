@@ -14,7 +14,7 @@
 import os
 
 from cdpcli.exceptions import DfExtensionError
-from cdpcli.extensions.df import UploadFileToDf
+from cdpcli.extensions.df import DfExtension, upload_workload_asset
 from mock import Mock
 from tests import unittest
 
@@ -49,9 +49,9 @@ class TestDfExtension(unittest.TestCase):
             'description': 'flow_description',
             'comments': 'flow_comments',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
-        upload_file_to_df = UploadFileToDf()
-        upload_file_to_df.invoke(self.client_creator, operation_model,
-                                 parameters, None, self.parsed_globals)
+        df_extension = DfExtension()
+        df_extension.invoke(self.client_creator, operation_model,
+                            parameters, None, self.parsed_globals)
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
@@ -88,9 +88,9 @@ class TestDfExtension(unittest.TestCase):
         parameters = {
             'name': 'flow_name',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
-        upload_file_to_df = UploadFileToDf()
-        upload_file_to_df.invoke(self.client_creator, operation_model,
-                                 parameters, None, self.parsed_globals)
+        df_extension = DfExtension()
+        df_extension.invoke(self.client_creator, operation_model,
+                            parameters, None, self.parsed_globals)
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
@@ -126,9 +126,9 @@ class TestDfExtension(unittest.TestCase):
             'flowCrn': 'flow_crn',
             'comments': 'flow_comments',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
-        upload_file_to_df = UploadFileToDf()
-        upload_file_to_df.invoke(self.client_creator, operation_model,
-                                 parameters, None, self.parsed_globals)
+        df_extension = DfExtension()
+        df_extension.invoke(self.client_creator, operation_model,
+                            parameters, None, self.parsed_globals)
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
@@ -163,9 +163,9 @@ class TestDfExtension(unittest.TestCase):
         parameters = {
             'flowCrn': 'flow_crn',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
-        upload_file_to_df = UploadFileToDf()
-        upload_file_to_df.invoke(self.client_creator, operation_model,
-                                 parameters, None, self.parsed_globals)
+        df_extension = DfExtension()
+        df_extension.invoke(self.client_creator, operation_model,
+                            parameters, None, self.parsed_globals)
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
@@ -204,9 +204,9 @@ class TestDfExtension(unittest.TestCase):
             'deploymentName': 'deployment_name',
             'assetUpdateRequestCrn': 'asset_update_request_crn',
             'filePath': os.path.join(BASE_DIR, 'df-workload.asset.bin')}
-        upload_file_to_df = UploadFileToDf()
-        upload_file_to_df.invoke(self.client_creator, operation_model,
-                                 parameters, None, self.parsed_globals)
+        df_extension = DfExtension()
+        df_extension.invoke(self.client_creator, operation_model,
+                            parameters, None, self.parsed_globals)
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
@@ -245,9 +245,9 @@ class TestDfExtension(unittest.TestCase):
             'parameterGroup': 'param_group',
             'parameterName': 'param_name',
             'filePath': os.path.join(BASE_DIR, 'df-workload.asset.bin')}
-        upload_file_to_df = UploadFileToDf()
-        upload_file_to_df.invoke(self.client_creator, operation_model,
-                                 parameters, None, self.parsed_globals)
+        df_extension = DfExtension()
+        df_extension.invoke(self.client_creator, operation_model,
+                            parameters, None, self.parsed_globals)
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
@@ -268,12 +268,25 @@ class TestDfExtension(unittest.TestCase):
         operation_model = Mock()
         operation_model.service_model = Mock(service_name='foo')
         operation_model.name = 'uploadFlow'
-        upload_file_to_df = UploadFileToDf()
+        df_extension = DfExtension()
         with self.assertRaisesRegex(DfExtensionError,
                                     'The DF extension failed: '
                                     'The operation is not supported. '
                                     'Service name: foo, operation name: uploadFlow'):
-            upload_file_to_df.invoke(self.client_creator, operation_model,
-                                     None, None, None)
+            df_extension.invoke(self.client_creator, operation_model,
+                                None, None, None)
+        self.assertEqual(0, self.client.make_api_call.call_count)
+        self.assertEqual(0, self.client.make_request.call_count)
+
+    def test_upload_file_not_found(self):
+        parameters = {
+            'environmentCrn': 'env_crn',
+            'parameterGroup': 'param_group',
+            'parameterName': 'param_name',
+            'filePath': os.path.join(BASE_DIR, 'file-not-found')
+        }
+
+        with self.assertRaises(DfExtensionError):
+            upload_workload_asset(self.client, parameters)
         self.assertEqual(0, self.client.make_api_call.call_count)
         self.assertEqual(0, self.client.make_request.call_count)

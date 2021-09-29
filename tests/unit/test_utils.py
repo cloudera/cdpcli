@@ -23,6 +23,7 @@ from cdpcli.model import ServiceModel
 from cdpcli.utils import ArgumentGenerator
 from cdpcli.utils import CachedProperty
 from cdpcli.utils import datetime2timestamp
+from cdpcli.utils import get_extension_registers
 from cdpcli.utils import get_service_module_name
 from cdpcli.utils import instance_cache
 from cdpcli.utils import is_absolute_url
@@ -30,6 +31,29 @@ from cdpcli.utils import parse_timestamp
 from cdpcli.utils import parse_to_aware_datetime
 from dateutil.tz import tzoffset, tzutc
 from tests import unittest
+
+
+class TestExtension(unittest.TestCase):
+    def test_get_extension_registers(self):
+        reg_ext, reg_cmd = get_extension_registers('iam')
+        self.assertIsNone(reg_ext)
+        self.assertIsNone(reg_cmd)
+
+        reg_ext, reg_cmd = get_extension_registers('redirect')
+        self.assertIsNotNone(reg_ext)
+        self.assertIsNone(reg_cmd)
+
+        reg_ext, reg_cmd = get_extension_registers('workload')
+        self.assertIsNotNone(reg_ext)
+        self.assertIsNone(reg_cmd)
+
+        reg_ext, reg_cmd = get_extension_registers('df')
+        self.assertIsNotNone(reg_ext)
+        self.assertIsNotNone(reg_cmd)
+
+        reg_ext, reg_cmd = get_extension_registers('invalid')
+        self.assertIsNone(reg_ext)
+        self.assertIsNone(reg_cmd)
 
 
 class TestUrl(unittest.TestCase):

@@ -103,6 +103,28 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/createPrivateEnvironment:
+    post:
+      summary: Creates a new Private Cloud environment by providing the Cloudera Manager address and credentials.
+      description: Creates a new Private Cloud environment.
+      operationId: createPrivateEnvironment
+      x-form-factors: private
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePrivateEnvironmentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreatePrivateEnvironmentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/createAWSCredential:
     post:
       summary: Creates a new AWS credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
@@ -712,6 +734,50 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/getEnvironmentSetting:
+    post:
+      x-form-factors: private
+      summary: Read a configuration setting from the environment service.
+      description: Read a configuration setting from the environment service.
+      operationId: getEnvironmentSetting
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetEnvironmentSettingRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetEnvironmentSettingResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/setEnvironmentSetting:
+    post:
+      x-form-factors: private
+      summary: Read a configuration setting from the environment service.
+      description: Read a configuration setting from the environment service.
+      operationId: setEnvironmentSetting
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetEnvironmentSettingRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetEnvironmentSettingResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/setAccountTelemetry:
     post:
       summary: Set account level telemetry settings. (telemetry features and anonymization rules)
@@ -1307,6 +1373,87 @@ definitions:
       proxyConfigName:
         type: string
         description: Name of the proxy config to use for the environment.
+  CreatePrivateEnvironmentRequest:
+    type: object
+    description: Request object for a create private cloud environment request.
+    x-form-factors: private
+    required:
+      - environmentName
+      - address
+      - user
+      - authenticationToken
+      - clusterNames
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment. Must contain only lowercase letters, numbers and hyphens.
+      address:
+        x-no-paramfile: true
+        type: string
+        description: The address of the Cloudera Manager managing the Datalake cluster.
+      user:
+        type: string
+        description: User name for accessing the Cloudera Manager.
+      authenticationToken:
+        type: string
+        description: A string (text or json) used to authenticate to the Cloudera Manager.
+        x-sensitive: true
+      clusterNames:
+        type: array
+        description: The name of the cluster(s) to use as a Datalake for the environment.
+        items:
+          type: string
+      kubeConfig:
+        type: string
+        description: Name of credentials holding kubeconfig for access to the kubernetes cluster paired with this Environment.
+        x-sensitive: true
+      authenticationTokenType:
+        type: string
+        description: How to interpret the authenticationToken field. Defaults to CLEARTEXT_PASSWORD.
+        enum:
+          - CLEARTEXT_PASSWORD
+      namespacePrefix:
+        type: string
+        default: cdp
+        description: Prefix for all namespaces created by Cloudera Data Platform within this cluster.
+      domain:
+        type: string
+        description: default domain suffix to work workload applications to use.
+      platform:
+        type: string
+        default: OPENSHIFT
+        description: the K8s cluster type used for the environment.
+      dockerConfigJson:
+        type: string
+        description: docker pull secrets for the K8s cluster. This is expected to be a docker config json.
+        x-sensitive: true
+      dockerUserPass:
+        type: object
+        description: Alternative to dockerConfigJson.
+        required:
+          - username
+          - password
+          - server
+        properties:
+          username:
+            type: string
+            description: Docker username.
+          password:
+            type: string
+            description: Docker password.
+            x-sensitive: true
+          email:
+            type: string
+            description: Docker email.
+          server:
+            type: string
+            description: Docker Registry FQDN.
+      description:
+        type: string
+        description: An description of the environment.
+      storageClass:
+        type: string
+        description: An existing storage class on this kubernetes cluster. If not specified, the default storage class will be used.
   AwsLogStorageRequest:
     type: object
     required:
@@ -1490,6 +1637,16 @@ definitions:
   CreateGCPEnvironmentResponse:
     type: object
     description: Response object for a create GCP environment request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: Created environment object.
+  CreatePrivateEnvironmentResponse:
+    type: object
+    description: Response object for a create private cloud environment request.
+    x-form-factors: private
     required:
       - environment
     properties:
@@ -2906,6 +3063,52 @@ definitions:
   SetTelemetryFeaturesResponse:
     type: object
     description: Response object to enable environment level telemetry features.
+  GetEnvironmentSettingRequest:
+    x-form-factors: private
+    type: object
+    description: Request object to query environment configuration settings.
+    required:
+      - attrs
+    properties:
+      attrs:
+        type: array
+        items:
+          type: string
+        description: List of attributes to query settings for. Non-existant settings will be ignored.
+      environmentName:
+        type: string
+        description: The name or CRN of the environment. Empty to get system wide settings.
+  GetEnvironmentSettingResponse:
+    x-form-factors: private
+    type: object
+    properties:
+      settings:
+        type: object
+        additionalProperties:
+          type: string
+          description: Dictionary of settings found.
+        description: Dictionary of settings found.
+    description: Response object containing configuration settings.
+  SetEnvironmentSettingRequest:
+    x-form-factors: private
+    type: object
+    description: Request object to set environment configuration settings.
+    required:
+      - settings
+    properties:
+      settings:
+        type: object
+        additionalProperties:
+          type: string
+          description: Dictionary of settings to set.
+        description: Dictionary of settings to set.
+      environmentName:
+        type: string
+        description: The name or CRN of the environment. Empty to set system wide settings.
+  SetEnvironmentSettingResponse:
+    x-form-factors: private
+    type: object
+    description: Response object to set configuration.
   SetAccountTelemetryRequest:
     type: object
     description: Request object to enable environment level telemetry features.

@@ -30,6 +30,40 @@ def register(operation_callers, operation_model):
     operation_callers.insert(0, WorkloadServiceDiscovery())
 
 
+def set_workload_access_token(iam_client,
+                              parsed_globals,
+                              workload_name,
+                              environment_crn):
+    """
+    Set global Access Token and Endpoint URL for Workload and Environment CRN
+    """
+    req_params = {
+        'workloadName': workload_name,
+        'environmentCrn': environment_crn
+    }
+    response = iam_client.generate_workload_auth_token(**req_params)
+
+    workload_url = response.get('endpointUrl', None)
+    workload_access_token = response.get('token', None)
+    LOG.debug('Workload service-discovery succeeded. '
+              'endpoint_url=%s, access_token=%s...',
+              workload_url,
+              workload_access_token[0:16] if workload_access_token else None)
+
+    # remove path from the workload URL
+    if workload_url is not None:
+        workload_url = urljoin(workload_url, '/')
+    # add 'Bearer' prefix to access token
+    if workload_access_token is not None and \
+       not workload_access_token.startswith('Bearer '):
+        workload_access_token = 'Bearer ' + workload_access_token
+
+    # Set the workload URL and access-token in parsed_globals, so the
+    # next CLI operation caller will use them to make the connection to workload.
+    parsed_globals.endpoint_url = workload_url
+    parsed_globals.access_token = workload_access_token
+
+
 class WorkloadServiceDiscovery(object):
     def invoke(self,
                client_creator,
@@ -57,33 +91,9 @@ class WorkloadServiceDiscovery(object):
             raise WorkloadServiceDiscoveryError(
                 err_msg='Unknown service name \'%s\'' % service_name)
 
-        # send generateWorkloadAuthToken request which is defined in iam.yaml
         iam_client = client_creator('iam')
-        req_params = {
-            'workloadName': workload_name,
-            'environmentCrn': environment_crn
-        }
-        response = iam_client.generate_workload_auth_token(**req_params)
-
-        workload_url = response.get('endpointUrl', None)
-        workload_access_token = response.get('token', None)
-        LOG.debug('Workload service-discovery succeeded. '
-                  'endpoint_url=%s, access_token=%s...',
-                  workload_url,
-                  workload_access_token[0:16] if workload_access_token else None)
-
-        # remove path from the workload URL
-        if workload_url is not None:
-            workload_url = urljoin(workload_url, '/')
-        # add 'Bearer' prefix to access token
-        if workload_access_token is not None and \
-           not workload_access_token.startswith('Bearer '):
-            workload_access_token = 'Bearer ' + workload_access_token
-
-        # Set the workload URL and access-token in parsed_globals, so the
-        # next CLI operation caller will use them to make the connection to workload.
-        parsed_globals.endpoint_url = workload_url
-        parsed_globals.access_token = workload_access_token
+        set_workload_access_token(iam_client, parsed_globals, workload_name,
+                                  environment_crn)
 
         # The command processing is not finished, continue with other operation callers.
         return True

@@ -76,7 +76,6 @@ cdpcli/extensions/__init__.py
 cdpcli/extensions/arguments.py
 cdpcli/extensions/cliinputjson.py
 cdpcli/extensions/commands.py
-cdpcli/extensions/df.py
 cdpcli/extensions/generatecliskeleton.py
 cdpcli/extensions/interactivelogin.py
 cdpcli/extensions/logout.py
@@ -91,6 +90,9 @@ cdpcli/extensions/configure/configure.py
 cdpcli/extensions/configure/get.py
 cdpcli/extensions/configure/list.py
 cdpcli/extensions/configure/set.py
+cdpcli/extensions/df/__init__.py
+cdpcli/extensions/df/createdeployment.py
+cdpcli/extensions/df/register.py
 cdpcli/thirdparty/__init__.py
 cdpcli/thirdparty/six.py
 tests/unit/__init__.py
@@ -133,3 +135,5 @@ tests/unit/extensions/configure/test_configure.py
 tests/unit/extensions/configure/test_get.py
 tests/unit/extensions/configure/test_list.py
 tests/unit/extensions/configure/test_set.py
+tests/unit/extensions/df/__init__.py
+tests/unit/extensions/df/test_createdeployment.py

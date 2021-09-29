@@ -60,7 +60,7 @@ class TestOperationExtension(unittest.TestCase):
             service_operation(self.client_creator, [], self.parsed_globals)
         self.assertTrue(
             'Failed to import CLI extension \'invalid\': '
-            'No module named \'cdpcli.extensions.invalid\'' in str(context.exception))
+            'Not Found' in str(context.exception))
         self.assertFalse(operation_caller.invoke.called)
 
     def test_operation_replace_by_extension(self):

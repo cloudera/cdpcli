@@ -21,17 +21,42 @@ from cdpcli.exceptions import DfExtensionError
 LOG = logging.getLogger('cdpcli.extensions.df')
 
 
-def register(operation_callers, operation_model):
-    """
-    Register an extension to run before or after the CLI command.
-    To replace the original CLI caller:
-    * operation_callers.insert(0, ReplacementCaller())
-    * return False by the ReplacementCaller.invoke(...)
-    """
-    operation_callers.insert(0, UploadFileToDf())
+def get_expanded_file_path(file_path):
+    return os.path.expandvars(os.path.expanduser(file_path))
 
 
-class UploadFileToDf(CLIOperationCaller):
+def upload_workload_asset(client, parameters):
+    method = 'post'
+    url = '/dfx/api/rpc-v1/deployments/upload-asset-content'
+    file_path = parameters.get('filePath', None)
+    headers = {
+        'Content-Type': 'application/octet-stream',
+        'Deployment-Request-Crn': parameters.get('deploymentRequestCrn', None),
+        'Deployment-Name': parameters.get('deploymentName', None),
+        'Asset-Update-Request-Crn': parameters.get('assetUpdateRequestCrn', None),
+        'Parameter-Group': parameters.get('parameterGroup', None),
+        'Parameter-Name': parameters.get('parameterName', None),
+        'File-Path': file_path,
+    }
+    return upload_file(client, 'uploadAsset', method, url, headers, file_path)
+
+
+def upload_file(client, operation_name, method, url, headers, file_path):
+    headers = {k: v for k, v in headers.items() if v is not None}
+    expanded_file_path = get_expanded_file_path(file_path)
+    if os.path.exists(expanded_file_path):
+        with open(expanded_file_path, 'rb') as f:
+            http, parsed_response = client.make_request(
+                operation_name, method, url, headers, f)
+    else:
+        raise DfExtensionError(
+            err_msg='Path [{}] not found'.format(file_path),
+            service_name=client.service_model.service_name,
+            operation_name=operation_name)
+    return parsed_response
+
+
+class DfExtension(CLIOperationCaller):
     def invoke(self,
                client_creator,
                operation_model,
@@ -76,8 +101,8 @@ class UploadFileToDf(CLIOperationCaller):
             'Flow-Definition-Comments': parameters.get('comments', None)
         }
         file_path = parameters.get('file', None)
-        response = self._upload_file(client, operation_name,
-                                     method, url, headers, file_path)
+        response = upload_file(client, operation_name,
+                               method, url, headers, file_path)
         self._display_response(operation_name, response, parsed_globals)
 
     def _df_upload_flow_version(self, client_creator, operation_model,
@@ -91,35 +116,13 @@ class UploadFileToDf(CLIOperationCaller):
             'Flow-Definition-Comments': parameters.get('comments', None)
         }
         file_path = parameters.get('file', None)
-        response = self._upload_file(client, operation_name,
-                                     method, url, headers, file_path)
+        response = upload_file(client, operation_name,
+                               method, url, headers, file_path)
         self._display_response(operation_name, response, parsed_globals)
 
     def _df_workload_upload_asset(self, client_creator, operation_model,
                                   parameters, parsed_globals):
         client = client_creator('dfworkload')
         operation_name = operation_model.name
-        url = '/dfx/api/rpc-v1/deployments/upload-asset-content'
-        method = 'post'
-        headers = {
-            'Content-Type': 'application/octet-stream',
-            'Deployment-Request-Crn': parameters.get('deploymentRequestCrn', None),
-            'Deployment-Name': parameters.get('deploymentName', None),
-            'Asset-Update-Request-Crn': parameters.get('assetUpdateRequestCrn', None),
-            'Parameter-Group': parameters.get('parameterGroup', None),
-            'Parameter-Name': parameters.get('parameterName', None),
-            'File-Path': parameters.get('filePath', None),
-        }
-        file_path = parameters.get('filePath', None)
-        response = self._upload_file(client, operation_name,
-                                     method, url, headers, file_path)
+        response = upload_workload_asset(client, parameters)
         self._display_response(operation_name, response, parsed_globals)
-
-    def _upload_file(self, client, operation_name,
-                     method, url, headers, file_path):
-        headers = {k: v for k, v in headers.items() if v is not None}
-        file_path = os.path.expandvars(os.path.expanduser(file_path))
-        with open(file_path, 'rb') as f:
-            http, parsed_response = client.make_request(
-                operation_name, method, url, headers, f)
-        return parsed_response

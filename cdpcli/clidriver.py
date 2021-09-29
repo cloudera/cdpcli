@@ -14,7 +14,6 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-import importlib
 import logging
 import platform
 import socket
@@ -68,6 +67,7 @@ from cdpcli.paramfile import ParamFileVisitor
 from cdpcli.parser import ResponseParserFactory
 from cdpcli.retryhandler import create_retry_handler
 from cdpcli.translate import build_retry_config
+from cdpcli.utils import get_extension_registers
 import urllib3.util.connection as urllib3_connection
 
 LOG = logging.getLogger('cdpcli.clidriver')
@@ -399,19 +399,9 @@ class ServiceCommand(CLICommand):
                 parent_name=self._name,
                 operation_model=operation_model,
                 operation_caller=CLIOperationCaller())
-        try:
-            __import__('cdpcli.extensions.%s.register' % self._name,
-                       fromlist=['register']).register(command_table)
-        except ImportError as err:
-            py3_err_1 = "No module named 'cdpcli.extensions.%s'" % self._name
-            py3_err_2 = "No module named 'cdpcli.extensions.%s.register'" % self._name
-            py2_err = "No module named %s.register" % self._name
-            if py2_err not in str(err) and \
-               py3_err_1 not in str(err) and \
-               py3_err_2 not in str(err):
-                # Looks like a different error than missing extensions.
-                LOG.warn("Failed to import service (%s) extension: %s", self._name, err)
-            pass
+        register_ext, register_cmd = get_extension_registers(self._name)
+        if register_cmd is not None:
+            register_cmd(service_model, command_table)
         self._add_lineage(command_table)
         return command_table
 
@@ -624,13 +614,10 @@ class ServiceOperation(object):
             # Iterate in reversed order to keep the execution order:
             # First extension should run first.
             for ext_name in reversed(self._operation_model.extensions):
-                try:
-                    module = importlib.import_module('cdpcli.extensions.%s' % ext_name)
-                    register_func = getattr(module, 'register')
-                    register_func(self._operation_callers,
-                                  self._operation_model)
-                except Exception as err:
-                    raise ExtensionImportError(ext_name=ext_name, err=err)
+                register_ext, register_cmd = get_extension_registers(ext_name)
+                if register_ext is None:
+                    raise ExtensionImportError(ext_name=ext_name, err='Not Found')
+                register_ext(self._operation_callers, self._operation_model)
 
     def _invoke_operation_callers(self,
                                   client_creator,
