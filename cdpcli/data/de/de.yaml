@@ -57,6 +57,26 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/de/updateVc:
+    post:
+      summary: Update Cloudera Data Engineering (CDE) Virtual Cluster
+      description: Updates Cloudera Data Engineering (CDE) Virtual Cluster and returns details of updated CDE service.
+      operationId: updateVc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateVcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateVcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/de/describeService:
     post:
       summary: Describe Cloudera Data Engineering(CDE) Service
@@ -400,11 +420,17 @@ definitions:
       creationTime:
         type: string
         description: Time of creation of the virtual Cluster.
+      sparkVersion:
+        type: string
+        description: Spark version for the virtual cluster.
       chartValueOverrides:
         type: array
         items:
           $ref: '#/definitions/ChartValueOverridesResponse'
         description: Chart overrides for the Virtual Cluster.
+      accessControl:
+        description: Access control object for the Virtual Cluster.
+        $ref: '#/definitions/AccessControlResponse'
   VcResources:
     type: object
     properties:
@@ -441,6 +467,15 @@ definitions:
         type: string
         description: Space separated key value-pairs for overriding chart values. The key and the value must be separated using a colon(:) For eg- "airflow.enabled:true safari.enabled:true".
     description: Response object containing chart value overrides.
+  AccessControlResponse:
+    type: object
+    description: Response object containing access control information for a Virtual Cluster.
+    properties:
+      users:
+        description: Workload usernames of CDP users granted access to the Virtual Cluster.
+        type: array
+        items:
+          type: string
   ListServicesRequest:
     type: object
     description: Request object for ListServices method.
@@ -665,6 +700,15 @@ definitions:
         enum:
           - ALL
           - NONE
+      sparkVersion:
+        type: string
+        description: Spark version for the virtual cluster. Currently supported spark versions are 2.4.7 and 3.1.1. This feature is only supported in CDE-1.7.0 and beyond.
+        enum:
+          - SPARK2
+          - SPARK3
+      aclUsers:
+        description: Comma-separated Workload usernames of CDP users to be granted access to the Virtual Cluster.
+        type: string
   CreateVcResponse:
     type: object
     description: Response object for CreateVc method.
@@ -692,3 +736,26 @@ definitions:
       status:
         type: string
         description: status of virtual cluster deletion.
+  UpdateVcRequest:
+    type: object
+    description: Request object for updateVc method.
+    required:
+      - clusterId
+      - vcId
+    properties:
+      clusterId:
+        type: string
+        description: Cluster ID of the CDE service where Virtual Cluster was enabled.
+      vcId:
+        type: string
+        description: Virtual Cluster ID
+      aclUsers:
+        description: Comma-separated Workload usernames of CDP users to be granted access to the Virtual Cluster.
+        type: string
+  UpdateVcResponse:
+    type: object
+    description: Response object for updateVc method.
+    properties:
+      Vc:
+        description: Updated Virtual Cluster.
+        $ref: '#/definitions/VcDescription'

@@ -1258,6 +1258,10 @@ definitions:
       backupName:
         type: string
         description: The name of the backup.
+      closeDbConnections:
+        type: boolean
+        default: true
+        description: Close the database connections while performing backup. Default is true.
   BackupDatalakeResponse:
     type: object
     description: Response object to a request made for backup of datalake.

@@ -154,6 +154,10 @@ class CLIDriver(object):
         to the current form factor with stubs that error out when called.
         """
 
+        if parsed_args.command == 'refdoc':
+            # Do not filter out any command if it is to generate help documents.
+            return
+
         # Find the form factor based on:
         # 1. the form factor explicitly specified by --form-factor, or else
         # 2. the configured form factor, or else

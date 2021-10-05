@@ -307,7 +307,7 @@ class TestCreateDeployment(unittest.TestCase):
         cluster_size_name = 'MEDIUM'
         static_node_count = 2
         cfm_nifi_version = '1.14.0'
-        auto_flow_start = True
+        auto_start_flow = True
         parameters = {
             'serviceCrn': service_crn,
             'flowVersionCrn': flow_version_crn,
@@ -315,7 +315,7 @@ class TestCreateDeployment(unittest.TestCase):
             'clusterSizeName': cluster_size_name,
             'staticNodeCount': static_node_count,
             'cfmNifiVersion': cfm_nifi_version,
-            'autoFlowStart': auto_flow_start,
+            'autoStartFlow': auto_start_flow,
             'parameterGroups': [
                 {
                     'name': parameter_group_name,
@@ -435,7 +435,7 @@ class TestCreateDeployment(unittest.TestCase):
                     'clusterSizeName': cluster_size_name,
                     'staticNodeCount': static_node_count,
                     'cfmNifiVersion': cfm_nifi_version,
-                    'autoFlowStart': auto_flow_start,
+                    'autoStartFlow': auto_start_flow,
                     'parameterGroups': [
                         {
                             'name': parameter_group_name,

@@ -89,7 +89,7 @@ OPERATION_SHAPES = {
                 'type': 'string',
                 'description': 'The CFM NiFi version. Defaults to the latest version.'
             },
-            'autoFlowStart': {
+            'autoStartFlow': {
                 'type': 'boolean',
                 'description': 'Automatically start the flow.'
             },
@@ -382,9 +382,9 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             if autoScaleMaxNodes:
                 deployment_configuration['autoScaleMaxNodes'] = autoScaleMaxNodes
 
-        autoFlowStart = parameters.get('autoFlowStart', False)
-        if autoFlowStart:
-            deployment_configuration['autoFlowStart'] = autoFlowStart
+        autoStartFlow = parameters.get('autoStartFlow', False)
+        if autoStartFlow:
+            deployment_configuration['autoStartFlow'] = autoStartFlow
 
         cfmNifiVersion = parameters.get('cfmNifiVersion', None)
         if cfmNifiVersion:

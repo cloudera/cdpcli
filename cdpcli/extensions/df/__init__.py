@@ -65,12 +65,12 @@ class DfExtension(CLIOperationCaller):
                parsed_globals):
         service_name = operation_model.service_model.service_name
         operation_name = operation_model.name
-        if service_name == 'df' and operation_name == 'uploadFlow':
+        if service_name == 'df' and operation_name == 'importFlowDefinition':
             self._df_upload_flow(client_creator,
                                  operation_model,
                                  parameters,
                                  parsed_globals)
-        elif service_name == 'df' and operation_name == 'uploadFlowVersion':
+        elif service_name == 'df' and operation_name == 'importFlowDefinitionVersion':
             self._df_upload_flow_version(client_creator,
                                          operation_model,
                                          parameters,

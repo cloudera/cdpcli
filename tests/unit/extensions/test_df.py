@@ -41,9 +41,10 @@ class TestDfExtension(unittest.TestCase):
 
         operation_model = Mock()
         operation_model.service_model = Mock(service_name='df')
-        operation_model.name = 'uploadFlow'
-        operation_model.http = {'method': 'post',
-                                'requestUri': 'https://test.com/path/uploadFlow'}
+        operation_model.name = 'importFlowDefinition'
+        operation_model.http = {
+            'method': 'post',
+            'requestUri': 'https://test.com/path/importFlowDefinition'}
         parameters = {
             'name': 'flow_name',
             'description': 'flow_description',
@@ -55,9 +56,9 @@ class TestDfExtension(unittest.TestCase):
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
-        self.assertEqual('uploadFlow', args[0])
+        self.assertEqual('importFlowDefinition', args[0])
         self.assertEqual('post', args[1])
-        self.assertEqual('https://test.com/path/uploadFlow', args[2])
+        self.assertEqual('https://test.com/path/importFlowDefinition', args[2])
         self.assertEqual(
             {'Content-Type': 'application/json',
              'Flow-Definition-Name': 'flow_name',
@@ -82,9 +83,10 @@ class TestDfExtension(unittest.TestCase):
 
         operation_model = Mock()
         operation_model.service_model = Mock(service_name='df')
-        operation_model.name = 'uploadFlow'
-        operation_model.http = {'method': 'post',
-                                'requestUri': 'https://test.com/path/uploadFlow'}
+        operation_model.name = 'importFlowDefinition'
+        operation_model.http = {
+            'method': 'post',
+            'requestUri': 'https://test.com/path/importFlowDefinition'}
         parameters = {
             'name': 'flow_name',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
@@ -94,9 +96,9 @@ class TestDfExtension(unittest.TestCase):
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
-        self.assertEqual('uploadFlow', args[0])
+        self.assertEqual('importFlowDefinition', args[0])
         self.assertEqual('post', args[1])
-        self.assertEqual('https://test.com/path/uploadFlow', args[2])
+        self.assertEqual('https://test.com/path/importFlowDefinition', args[2])
         self.assertEqual(
             {'Content-Type': 'application/json',
              'Flow-Definition-Name': 'flow_name'},
@@ -119,9 +121,10 @@ class TestDfExtension(unittest.TestCase):
 
         operation_model = Mock()
         operation_model.service_model = Mock(service_name='df')
-        operation_model.name = 'uploadFlowVersion'
-        operation_model.http = {'method': 'post',
-                                'requestUri': 'https://test.com/path/uploadFlowVersion'}
+        operation_model.name = 'importFlowDefinitionVersion'
+        operation_model.http = {
+            'method': 'post',
+            'requestUri': 'https://test.com/path/importFlowDefinitionVersion'}
         parameters = {
             'flowCrn': 'flow_crn',
             'comments': 'flow_comments',
@@ -132,9 +135,9 @@ class TestDfExtension(unittest.TestCase):
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
-        self.assertEqual('uploadFlowVersion', args[0])
+        self.assertEqual('importFlowDefinitionVersion', args[0])
         self.assertEqual('post', args[1])
-        self.assertEqual('https://test.com/path/uploadFlowVersion', args[2])
+        self.assertEqual('https://test.com/path/importFlowDefinitionVersion', args[2])
         self.assertEqual(
             {'Content-Type': 'application/json',
              'Flow-Definition-Comments': 'flow_comments'},
@@ -157,9 +160,10 @@ class TestDfExtension(unittest.TestCase):
 
         operation_model = Mock()
         operation_model.service_model = Mock(service_name='df')
-        operation_model.name = 'uploadFlowVersion'
-        operation_model.http = {'method': 'post',
-                                'requestUri': 'https://test.com/path/uploadFlowVersion'}
+        operation_model.name = 'importFlowDefinitionVersion'
+        operation_model.http = {
+            'method': 'post',
+            'requestUri': 'https://test.com/path/importFlowDefinitionVersion'}
         parameters = {
             'flowCrn': 'flow_crn',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
@@ -169,9 +173,9 @@ class TestDfExtension(unittest.TestCase):
 
         self.assertEqual(1, self.client.make_request.call_count)
         args, kwargs = self.client.make_request.call_args
-        self.assertEqual('uploadFlowVersion', args[0])
+        self.assertEqual('importFlowDefinitionVersion', args[0])
         self.assertEqual('post', args[1])
-        self.assertEqual('https://test.com/path/uploadFlowVersion', args[2])
+        self.assertEqual('https://test.com/path/importFlowDefinitionVersion', args[2])
         self.assertEqual(
             {'Content-Type': 'application/json'},
             args[3])
@@ -194,8 +198,9 @@ class TestDfExtension(unittest.TestCase):
         operation_model = Mock()
         operation_model.service_model = Mock(service_name='dfworkload')
         operation_model.name = 'uploadAsset'
-        operation_model.http = {'method': 'post',
-                                'requestUri': '/dfx/api/rpc-v1/deployments/uploadAsset'}
+        operation_model.http = {
+            'method': 'post',
+            'requestUri': '/dfx/api/rpc-v1/deployments/uploadAsset'}
         parameters = {
             'environmentCrn': 'env_crn',
             'parameterGroup': 'param_group',
@@ -238,8 +243,9 @@ class TestDfExtension(unittest.TestCase):
         operation_model = Mock()
         operation_model.service_model = Mock(service_name='dfworkload')
         operation_model.name = 'uploadAsset'
-        operation_model.http = {'method': 'post',
-                                'requestUri': '/dfx/api/rpc-v1/deployments/uploadAsset'}
+        operation_model.http = {
+            'method': 'post',
+            'requestUri': '/dfx/api/rpc-v1/deployments/uploadAsset'}
         parameters = {
             'environmentCrn': 'env_crn',
             'parameterGroup': 'param_group',
@@ -267,12 +273,13 @@ class TestDfExtension(unittest.TestCase):
     def test_operation_not_supported(self):
         operation_model = Mock()
         operation_model.service_model = Mock(service_name='foo')
-        operation_model.name = 'uploadFlow'
+        operation_model.name = 'importFlowDefinition'
         df_extension = DfExtension()
         with self.assertRaisesRegex(DfExtensionError,
                                     'The DF extension failed: '
                                     'The operation is not supported. '
-                                    'Service name: foo, operation name: uploadFlow'):
+                                    'Service name: foo, '
+                                    'operation name: importFlowDefinition'):
             df_extension.invoke(self.client_creator, operation_model,
                                 None, None, None)
         self.assertEqual(0, self.client.make_api_call.call_count)

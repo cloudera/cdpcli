@@ -638,6 +638,18 @@ definitions:
         type: string
         description: Version of the Database Catalog.
         default: ''
+      isDefault:
+        type: boolean
+        description: Is this a Default Database Catalog?
+        default: false
+      tenantStorageRole:
+        type: string
+        description: Tenant Storage Role if the feature is enabled for the account.
+        default: ''
+      tenantStorageLocation:
+        type: string
+        description: Tenant Storage Location if the feature is enabled for the account.
+        default: ''
   CreateDbcResponse:
     type: object
     description: Response object for the createDbc method.

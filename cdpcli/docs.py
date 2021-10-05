@@ -64,6 +64,7 @@ def generate_doc(generator, help_command):
     generator.doc_subitems_end(help_command)
     generator.doc_examples(help_command)
     generator.doc_output(help_command)
+    generator.doc_form_factors(help_command)
     generator.doc_relateditems_start(help_command)
     if help_command.related_items:
         for related_item in sorted(help_command.related_items):
@@ -219,6 +220,9 @@ class CLIDocumentGenerator(object):
         pass
 
     def doc_output(self, help_command):
+        pass
+
+    def doc_form_factors(self, help_command):
         pass
 
 
@@ -614,3 +618,16 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
             fp = open(doc_path)
             for line in fp.readlines():
                 help_command.doc.write(line)
+
+    def doc_form_factors(self, help_command):
+        operation_model = help_command.obj
+        form_factors = getattr(operation_model, 'form_factors', None)
+        if not form_factors:
+            service_model = getattr(operation_model, 'service_model', None)
+            if service_model:
+                form_factors = getattr(service_model, 'form_factors', None)
+        if form_factors:
+            doc = help_command.doc
+            doc.style.h2('Form Factors')
+            doc.write(', '.join(form_factors))
+            doc.style.new_paragraph()
