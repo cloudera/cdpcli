@@ -1,2 +1,10 @@
-{audit: null, datacatalog: null, datahub: null, datalake: null, de: null, dw: null,
-  environments: null, iam: null, ml: null, opdb: null}
+audit: null
+datacatalog: null
+datahub: null
+datalake: null
+de: null
+dw: null
+environments: null
+iam: null
+ml: null
+opdb: null
