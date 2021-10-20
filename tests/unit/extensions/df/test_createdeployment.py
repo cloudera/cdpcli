@@ -169,7 +169,7 @@ class TestCreateDeployment(unittest.TestCase):
             },
             create_deployment_parameters[0])
 
-    def test_invoke_create_deployment_auto_scaling(self):
+    def test_invoke_create_deployment_auto_scaling_auto_start(self):
         self.maxDiff = 2000
         service_crn = 'SERVICE_CRN'
         flow_version_crn = 'FLOW_VERSION_CRN'
@@ -184,6 +184,7 @@ class TestCreateDeployment(unittest.TestCase):
             'autoScalingEnabled': True,
             'autoScaleMinNodes': auto_scale_min_nodes,
             'autoScaleMaxNodes': auto_scale_max_nodes,
+            'autoStartFlow': True,
             'parameterGroups': [],
             'kpis': []
         }
@@ -266,7 +267,8 @@ class TestCreateDeployment(unittest.TestCase):
                     'clusterSizeName': 'EXTRA_SMALL',
                     'autoScalingEnabled': True,
                     'autoScaleMinNodes': auto_scale_min_nodes,
-                    'autoScaleMaxNodes': auto_scale_max_nodes
+                    'autoScaleMaxNodes': auto_scale_max_nodes,
+                    'autoStartFlow': True
                 }
             },
             create_deployment_parameters[0])
@@ -305,14 +307,16 @@ class TestCreateDeployment(unittest.TestCase):
         }
 
         cluster_size_name = 'MEDIUM'
+        auto_scaling_enabled = False
         static_node_count = 2
         cfm_nifi_version = '1.14.0'
-        auto_start_flow = True
+        auto_start_flow = False
         parameters = {
             'serviceCrn': service_crn,
             'flowVersionCrn': flow_version_crn,
             'deploymentName': deployment_name,
             'clusterSizeName': cluster_size_name,
+            'autoScalingEnabled': auto_scaling_enabled,
             'staticNodeCount': static_node_count,
             'cfmNifiVersion': cfm_nifi_version,
             'autoStartFlow': auto_start_flow,
@@ -433,6 +437,7 @@ class TestCreateDeployment(unittest.TestCase):
                     'name': deployment_name,
                     'configurationVersion': 0,
                     'clusterSizeName': cluster_size_name,
+                    'autoScalingEnabled': auto_scaling_enabled,
                     'staticNodeCount': static_node_count,
                     'cfmNifiVersion': cfm_nifi_version,
                     'autoStartFlow': auto_start_flow,

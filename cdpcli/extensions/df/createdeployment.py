@@ -148,7 +148,8 @@ OPERATION_SHAPES = {
             },
             'value': {
                 'type': 'string',
-                'description': 'Value for the named parameter.'
+                'description': 'Value for the named parameter.',
+                'x-no-paramfile': 'true'
             },
             'assetReferences': {
                 'type': 'array',
@@ -370,9 +371,10 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             'staticNodeCount': parameters.get('staticNodeCount', 1)
         }
 
-        autoScalingEnabled = parameters.get('autoScalingEnabled', False)
-        if autoScalingEnabled:
+        autoScalingEnabled = parameters.get('autoScalingEnabled', None)
+        if autoScalingEnabled is not None:
             deployment_configuration['autoScalingEnabled'] = autoScalingEnabled
+        if autoScalingEnabled:
             del deployment_configuration['staticNodeCount']
 
             autoScaleMinNodes = parameters.get('autoScaleMinNodes', None)
@@ -382,8 +384,8 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             if autoScaleMaxNodes:
                 deployment_configuration['autoScaleMaxNodes'] = autoScaleMaxNodes
 
-        autoStartFlow = parameters.get('autoStartFlow', False)
-        if autoStartFlow:
+        autoStartFlow = parameters.get('autoStartFlow', None)
+        if autoStartFlow is not None:
             deployment_configuration['autoStartFlow'] = autoStartFlow
 
         cfmNifiVersion = parameters.get('cfmNifiVersion', None)
