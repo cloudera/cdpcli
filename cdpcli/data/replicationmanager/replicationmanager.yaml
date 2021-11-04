@@ -1,0 +1,1074 @@
+swagger: '2.0'
+x-endpoint-name: replicationmanager
+x-products: CDP
+x-form-factors: public
+x-cdp-releases: PUBLIC
+info:
+  version: __API_VERSION__
+  title: Cloudera Replication Manager Service
+  license:
+    name: Apache 2.0
+  description: Create and manage replication policies using Cloudera Replication Manager.
+  termsOfService: https://www.cloudera.com/legal/commercial-terms-and-conditions.html
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/v1/replicationmanager/listClusters:
+    post:
+      summary: Lists all clusters.
+      description: Provides a detailed list of all available clusters.
+      operationId: listClusters
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListClustersRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/ListClustersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/listClusterServiceStatuses:
+    post:
+      summary: Lists Cluster Service Statuses.
+      description: Provides a list of cluster service (e.g. HDFS, Hive, YARN, etc.) statuses.
+      operationId: listClusterServiceStatuses
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListClusterServiceStatusesRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/ListClusterServiceStatusesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/listAllCredentials:
+    post:
+      summary: Lists Cloud Credentials.
+      description: Provides a detailed list of cloud credentials across all available clusters.
+      operationId: listAllCredentials
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListAllCredentialsRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/ListAllCredentialsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/getCredentials:
+    post:
+      summary: Get Cloud Credentials from a Cluster.
+      description: Returns cloud credentials on a specific cluster.
+      operationId: getCredentials
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetCredentialsRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/GetCredentialsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/listPolicies:
+    post:
+      summary: Get All Replication Policies.
+      description: Provides a list of all replication policies across all available clusters.
+      operationId: listPolicies
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListPoliciesRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/ListPoliciesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/deletePolicy:
+    post:
+      summary: Delete Replication Policy.
+      description: Permanently deletes a specific replication policy.
+      operationId: deletePolicy
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeletePolicyRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/DeletePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/createPolicy:
+    post:
+      summary: Create a Replication Policy.
+      description: Creates a new replication policy with the given name on a specific cluster.
+      operationId: createPolicy
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePolicyRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/CreatePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/suspendPolicy:
+    post:
+      summary: Stop all replication tasks defined by the policy.
+      description: Stops all replication tasks defined by the policy. Replication will resume after activating the policy.
+      operationId: suspendPolicy
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SuspendPolicyRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/SuspendPolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/activatePolicy:
+    post:
+      summary: Resume all replication tasks defined by the policy.
+      description: Resumes all replication tasks defined by the policy if the policy is currently suspended.
+      operationId: activatePolicy
+      x-entitlement: DMX_API
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ActivatePolicyRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/ActivatePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Error:
+    type: object
+    description: An object returned on an error.
+    properties:
+      code:
+        type: string
+        description: The error code.
+      message:
+        type: string
+        description: The error message.
+  ListClustersRequest:
+    type: object
+    description: Request to list clusters.
+  ListClustersResponse:
+    type: object
+    description: Response object for list clusters request.
+    required:
+      - unreachableClusters
+      - clusters
+    properties:
+      unreachableClusters:
+        description: List of errors for unreachable clusters.
+        type: array
+        items:
+          $ref: '#/definitions/ApiError'
+      clusters:
+        type: array
+        description: List of clusters.
+        items:
+          $ref: '#/definitions/Cluster'
+  ListClusterServiceStatusesRequest:
+    type: object
+    description: Request object to list cluster statuses.
+  ListClusterServiceStatusesResponse:
+    type: object
+    description: Response object for listing of cluster statuses.
+    properties:
+      statuses:
+        type: array
+        description: List of statuses by cluster.
+        items:
+          $ref: '#/definitions/ClusterServiceStatuses'
+  ListAllCredentialsRequest:
+    type: object
+    description: Request object for listing all cloud credentials on all clusters.
+  ListAllCredentialsResponse:
+    type: object
+    description: Response object for list credentials request.
+    required:
+      - unreachableClusters
+      - credentials
+    properties:
+      unreachableClusters:
+        description: List of errors for unreachable clusters.
+        type: array
+        items:
+          $ref: '#/definitions/ApiError'
+      credentials:
+        description: List of credentials by cluster.
+        type: array
+        items:
+          $ref: '#/definitions/CredentialsResponse'
+  GetCredentialsRequest:
+    type: object
+    description: Request object to retrieve specific cloud credentials.
+    required:
+      - clusterCrn
+    properties:
+      clusterCrn:
+        description: CRN of the cluster where the credential is.
+        type: string
+      credentialName:
+        description: Name of the credential. If both name and Id are specified, the Id is considered.
+        type: string
+      credentialId:
+        description: Id of the credential. If both name and Id are specified, the Id is considered.
+        type: string
+  GetCredentialsResponse:
+    type: object
+    description: Response for credential request.
+    properties:
+      credentials:
+        type: array
+        description: List of credentials.
+        items:
+          $ref: '#/definitions/CredentialDetails'
+  ListPoliciesRequest:
+    type: object
+    description: Request object for listing all policies.
+  ListPoliciesResponse:
+    type: object
+    description: Response object for a list policies request.
+    required:
+      - unreachableClusters
+      - policyErrors
+      - policies
+    properties:
+      unreachableClusters:
+        description: List of errors for unreachable clusters.
+        type: array
+        items:
+          $ref: '#/definitions/ApiError'
+      policyErrors:
+        description: List of policy errors.
+        type: array
+        items:
+          $ref: '#/definitions/ApiError'
+      policies:
+        description: List of policies.
+        type: array
+        items:
+          $ref: '#/definitions/Policy'
+  DeletePolicyRequest:
+    type: object
+    description: Delete a replication policy.
+    required:
+      - clusterCrn
+      - policyName
+    properties:
+      clusterCrn:
+        type: string
+        description: CRN of the cluster where the policy is.
+      policyName:
+        type: string
+        description: Policy name to delete.
+  DeletePolicyResponse:
+    type: object
+    description: Response object for deletePolicy.
+  CreatePolicyRequest:
+    type: object
+    description: Create a replication policy.
+    required:
+      - clusterCrn
+      - policyName
+      - policyDefinition
+    properties:
+      clusterCrn:
+        type: string
+        description: CRN of the cluster where the policy will be created.
+      policyName:
+        type: string
+        description: Name of the new policy.
+      policyDefinition:
+        description: Policy definition.
+        $ref: '#/definitions/PolicyDefinition'
+  CreatePolicyResponse:
+    type: object
+    description: Response object for createPolicy.
+  SuspendPolicyRequest:
+    type: object
+    description: Suspend a replication policy.
+    required:
+      - clusterCrn
+      - policyName
+    properties:
+      clusterCrn:
+        type: string
+        description: CRN of the cluster where the policy is.
+      policyName:
+        type: string
+        description: Policy name to suspend.
+  SuspendPolicyResponse:
+    type: object
+    description: Response object for suspendPolicy.
+  ActivatePolicyRequest:
+    type: object
+    description: Activate a replication policy.
+    required:
+      - clusterCrn
+      - policyName
+    properties:
+      clusterCrn:
+        type: string
+        description: CRN of the cluster where the policy is.
+      policyName:
+        type: string
+        description: Policy name to resume.
+  ActivatePolicyResponse:
+    type: object
+    description: Response object for resumePolicy.
+  ApiError:
+    type: object
+    description: API error.
+    required:
+      - code
+      - message
+      - status
+    properties:
+      code:
+        type: integer
+        format: int32
+        description: Error code.
+      message:
+        description: Error message.
+        type: string
+      status:
+        description: Error status.
+        type: string
+      clusterUrl:
+        type: string
+        description: Cluster URL.
+      requestId:
+        description: Request ID.
+        type: string
+  ClusterServiceStatuses:
+    type: object
+    description: Describes the status of services running on a cluster.
+    required:
+      - clusterCrn
+      - serviceStatuses
+    properties:
+      clusterCrn:
+        description: Cluster CRN.
+        type: string
+      serviceStatuses:
+        description: List of service statuses.
+        type: array
+        items:
+          $ref: '#/definitions/ServiceInfo'
+  Cluster:
+    type: object
+    description: Describes a Datalake, Datahub or Classic cluster.
+    required:
+      - crn
+      - name
+      - dataCenter
+      - clusterType
+      - replicationEngineType
+      - clusterManagerType
+      - clusterManagerUrl
+      - clusterUrl
+    properties:
+      crn:
+        description: Cluster CRN.
+        type: string
+      name:
+        description: Cluster name.
+        type: string
+      dataCenter:
+        description: Cluster data center.
+        type: string
+      clusterType:
+        description: Cluster type.
+        type: string
+        enum:
+          - CLASSIC
+          - SDX
+          - DISTROX
+      replicationEngineType:
+        description: Replication engine type.
+        type: string
+        enum:
+          - CM
+          - DLM_ENGINE
+      clusterManagerType:
+        description: Cluster Manager type.
+        type: string
+        enum:
+          - CLOUDERA_MANAGER
+          - AMBARI
+      clusterManagerUrl:
+        description: Cluster Manager URL.
+        type: string
+      clusterUrl:
+        description: Cluster URL.
+        type: string
+      totalHosts:
+        description: Total hosts on the cluster.
+        type: integer
+        format: int32
+      location:
+        description: Cluster location.
+        $ref: '#/definitions/Location'
+      stackCrn:
+        description: Stack CRN.
+        type: string
+      description:
+        description: Cluster description.
+        type: string
+      stackMajorVersion:
+        description: Stack major version.
+        type: string
+      stackVersion:
+        description: Stack version.
+        type: string
+      uuid:
+        description: Cluster UUID from Cloudera Manager if the cluster has CM backend.
+        type: string
+      environmentCrn:
+        description: CRN of the cluster's environment.
+        type: string
+      knoxUrl:
+        description: Knox URL if the cluster was registered with one, null otherwise.
+        type: string
+      cloudAccountProvider:
+        description: Cloud account provider.
+        type: string
+        enum:
+          - AWS
+          - ADLS
+          - WASB
+          - ABFS
+          - GCS
+      cmName:
+        description: Cloudera Manager name.
+        type: string
+      codProperties:
+        description: Additional properties for operational databases.
+        $ref: '#/definitions/CodProperties'
+  Location:
+    type: object
+    description: Location object.
+    required:
+      - id
+      - country
+      - city
+      - latitude
+      - longitude
+    properties:
+      id:
+        description: Location ID.
+        type: integer
+        format: int64
+      country:
+        description: Country.
+        type: string
+      city:
+        description: City.
+        type: string
+      latitude:
+        description: Latitude.
+        type: number
+        format: double
+      longitude:
+        description: Longitude.
+        type: number
+        format: double
+  CodProperties:
+    type: object
+    description: Additional properties for operational databases.
+    properties:
+      operationalDatabaseName:
+        description: Name of the corresponding operational database..
+        type: string
+  CustomConfigs:
+    type: object
+    description: Custom key/value configurations.
+    required:
+      - name
+      - value
+      - confidential
+    properties:
+      name:
+        description: Name.
+        type: string
+      value:
+        description: Value.
+        type: string
+      confidential:
+        description: Whether the value is confidential.
+        type: boolean
+  CredentialsResponse:
+    type: object
+    description: Response object for cloud credentials.
+    required:
+      - clusterCrn
+      - clusterUrl
+      - replicationEngineType
+      - credentials
+    properties:
+      clusterCrn:
+        description: Cluster CRN.
+        type: string
+      clusterUrl:
+        description: Cluster URL.
+        type: string
+      replicationEngineType:
+        description: Replication engine type.
+        type: string
+        enum:
+          - CM
+          - DLMENGINE
+      credentials:
+        description: Cloud credentials.
+        $ref: '#/definitions/CredentialCollection'
+  CredentialCollection:
+    type: object
+    description: Cloud Credentials listing.
+    required:
+      - totalResults
+      - results
+      - credentials
+    properties:
+      totalResults:
+        description: Total number cloud credentials.
+        type: integer
+        format: int64
+      results:
+        description: Number of cloud credentials in the response.
+        type: integer
+        format: int64
+      credentials:
+        description: Cloud credential details.
+        type: array
+        items:
+          $ref: '#/definitions/CredentialDetails'
+  CredentialDetails:
+    type: object
+    description: Cloud credential details for by-name or by-id cloud credential request.
+    required:
+      - id
+      - name
+      - provider
+      - authType
+      - creationTime
+      - lastModifiedTime
+    properties:
+      id:
+        description: Credential id.
+        type: string
+      name:
+        description: Credential name.
+        type: string
+      provider:
+        description: Credential provider.
+        type: string
+      authType:
+        description: Authentication type.
+        type: string
+      creationTime:
+        description: Creation time.
+        type: string
+        format: date-time
+      lastModifiedTime:
+        description: Last modified time.
+        type: string
+        format: date-time
+      configs:
+        description: Configurations.
+        type: object
+        additionalProperties:
+          type: string
+      customConfigs:
+        description: Custom configurations.
+        type: array
+        items:
+          $ref: '#/definitions/CustomConfigs'
+  ServiceInfo:
+    type: object
+    description: Service status definition.
+    required:
+      - serviceName
+      - status
+    properties:
+      serviceName:
+        description: Service name.
+        type: string
+      status:
+        description: Service status.
+        type: string
+  Policy:
+    type: object
+    description: Replication policy definition.
+    required:
+      - policyId
+      - name
+      - type
+      - status
+      - frequency
+      - endTime
+      - jobs
+      - report
+    properties:
+      policyId:
+        description: Policy id.
+        type: string
+      name:
+        description: Policy name.
+        type: string
+      type:
+        description: Policy type.
+        type: string
+      status:
+        description: Current status of the policy.
+        type: string
+      frequency:
+        description: Frequency in seconds when the policy runs.
+        type: integer
+        format: int64
+      endTime:
+        description: End time of policy run or when it repeats.
+        type: string
+        format: date-time
+      jobs:
+        description: List of policy runs.
+        type: array
+        items:
+          $ref: '#/definitions/PolicyInstanceResponse'
+      report:
+        description: Policy report.
+        $ref: '#/definitions/PolicyReport'
+      description:
+        description: Policy description.
+        type: string
+      executionType:
+        description: Policy execution type.
+        type: string
+      sourceDataset:
+        description: Source dataset of replication.
+        type: array
+        items:
+          type: string
+      targetDataset:
+        description: Target dataset of replication.
+        type: array
+        items:
+          type: string
+      creationTime:
+        description: Policy creation time.
+        type: string
+        format: date-time
+      startTime:
+        description: Policy start time.
+        type: string
+        format: date-time
+      sourceCluster:
+        description: Source cluster of replication.
+        type: string
+      targetCluster:
+        description: Target cluster of replication if not cloud.
+        type: string
+      customProperties:
+        description: Custom replication properties.
+        type: object
+        additionalProperties:
+          type: string
+      plugins:
+        description: Plugins.
+        type: array
+        items:
+          type: string
+      nextRun:
+        description: Next expected run of the policy.
+        type: string
+      target:
+        description: Replication target details.
+        $ref: '#/definitions/TargetDetails'
+  PolicyInstanceResponse:
+    type: object
+    description: Policy execution details.
+    required:
+      - id
+      - policyId
+      - status
+      - startTime
+    properties:
+      id:
+        description: Policy instance command id.
+        type: string
+      policyId:
+        description: Policy id.
+        type: string
+      status:
+        description: Policy command status.
+        type: string
+      startTime:
+        description: Command start time.
+        type: string
+        format: date-time
+      endTime:
+        description: Command end time.
+        type: string
+        format: date-time
+      trackingInfo:
+        description: JSON data to track polciy status.
+        type: string
+      message:
+        description: Output of the policy command.
+        type: string
+      jobType:
+        description: Job type.
+        type: string
+      totalSteps:
+        description: Total number of steps.
+        type: integer
+        format: int32
+      completedSteps:
+        description: Number of completed steps.
+        type: integer
+        format: int32
+  PolicyReportDetails:
+    type: object
+    description: Policy report details.
+    required:
+      - status
+      - endTime
+    properties:
+      status:
+        description: Status of the command.
+        type: string
+      endTime:
+        description: End time.
+        type: string
+        format: date-time
+  PolicyReport:
+    type: object
+    description: Policy report.
+    properties:
+      lastSucceededInstance:
+        description: Last successful instance.
+        $ref: '#/definitions/PolicyReportDetails'
+      lastFailedInstance:
+        description: Last failed instance.
+        $ref: '#/definitions/PolicyReportDetails'
+  TargetDetails:
+    type: object
+    description: Target details.
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        description: Target's environment CRN.
+        type: string
+      warehouseCrn:
+        description: Target's warehouse CRN.
+        type: string
+  PolicyDefinition:
+    type: object
+    description: Policy creation request definition.
+    required:
+      - name
+      - type
+      - sourceDataset
+      - frequencyInSec
+    properties:
+      name:
+        description: Name of the new policy.
+        type: string
+      type:
+        description: Policy replication type.
+        type: string
+        enum:
+          - FS
+          - HIVE
+          - HBASE
+      sourceDataset:
+        description: Source dataset to replicate.
+        $ref: '#/definitions/SourceDataset'
+      frequencyInSec:
+        description: Policy's frequency in seconds.
+        type: integer
+        format: int64
+      targetDataset:
+        description: Dataset to replicate to.
+        type: string
+      cloudCredential:
+        description: Cloud credentials to use if replicating to Cloud.
+        type: string
+      sourceCluster:
+        description: 'Name of source cluster in the format: "dataCenterName$cluster name", for example "DC-Europe$My Source 42.'
+        type: string
+      targetCluster:
+        description: 'Name if destination cluster in the format: "dataCenterName$cluster name" "DC-US$My Destination 17".'
+        type: string
+      startTime:
+        description: Start time.
+        type: string
+        format: date-time
+      endTime:
+        description: End time.
+        type: string
+        format: date-time
+      distcpMaxMaps:
+        description: Maximum Map jobs to use for replication.
+        type: integer
+        format: int64
+      distcpMapBandwidth:
+        description: Maximum bandwidth to use for replication.
+        type: integer
+        format: int64
+      queueName:
+        description: YARN queue name if not default.
+        type: string
+      tdeSameKey:
+        description: TDE same key.
+        type: boolean
+      description:
+        description: Description of the policy.
+        type: string
+      enableSnapshotBasedReplication:
+        description: Enable snapshot based replication.
+        type: boolean
+      cloudEncryptionAlgorithm:
+        description: Cloud encryption algorithm.
+        type: string
+      cloudEncryptionKey:
+        description: Cloud encryption key.
+        type: string
+      plugins:
+        description: Plugins.
+        type: array
+        items:
+          type: string
+      hiveExternalTableBaseDirectory:
+        description: Hive external table base directory.
+        type: string
+      cmPolicySubmitUser:
+        description: CM policy submit user.
+        $ref: '#/definitions/CmPolicySubmitUser'
+  SourceDataset:
+    type: object
+    description: Extra properties for the source dataset.
+    properties:
+      hdfsArguments:
+        description: HDFS arguments for HDFS and Hive replication.
+        $ref: '#/definitions/HdfsArguments'
+      hiveArguments:
+        description: Arguments for Hive replication, null if HDFS replication.
+        $ref: '#/definitions/HiveArguments'
+  HdfsArguments:
+    type: object
+    description: Extra properties for HDFS.
+    required:
+      - path
+    properties:
+      path:
+        description: HDFS path.
+        type: string
+      replicationStrategy:
+        description: Replication strategy.
+        type: string
+        enum:
+          - DYNAMIC
+          - STATIC
+      errorHandling:
+        description: Error handling strategy.
+        $ref: '#/definitions/ErrorHandling'
+      preserve:
+        description: Properties to preserve.
+        $ref: '#/definitions/Preserve'
+      deletePolicy:
+        description: Deletion behavior.
+        type: string
+        enum:
+          - KEEP_DELETED_FILES
+          - DELETE_TO_TRASH
+          - DELETE_PERMANENTLY
+      alert:
+        description: Alerting behavior.
+        $ref: '#/definitions/Alert'
+      exclusionFilters:
+        description: Exclusion filters in glob format.
+        type: array
+        items:
+          type: string
+  ErrorHandling:
+    type: object
+    description: Error handling behavior.
+    required:
+      - skipChecksumChecks
+      - skipListingChecksumChecks
+      - abortOnError
+      - abortOnSnapshotDiffFailures
+    properties:
+      skipChecksumChecks:
+        description: Skip checksum checks.
+        type: boolean
+      skipListingChecksumChecks:
+        description: Skip checksum checks for copy-listing.
+        type: boolean
+      abortOnError:
+        description: Abort policy on error.
+        type: boolean
+      abortOnSnapshotDiffFailures:
+        description: Abort policy if there are snapshot diff failures.
+        type: boolean
+  Preserve:
+    type: object
+    description: Properties to preserve after replication.
+    required:
+      - blockSize
+      - replicationCount
+      - permissions
+      - extendedAttributes
+    properties:
+      blockSize:
+        description: Block size.
+        type: boolean
+      replicationCount:
+        description: Replication count.
+        type: boolean
+      permissions:
+        description: Permissions.
+        type: boolean
+      extendedAttributes:
+        description: Extended attributes.
+        type: boolean
+  Alert:
+    type: object
+    description: Cloudera Manager alerting behavior.
+    required:
+      - onFailure
+      - onStart
+      - onSuccess
+      - onAbort
+    properties:
+      onFailure:
+        description: Alert on failure.
+        type: boolean
+      onStart:
+        description: Alert on start.
+        type: boolean
+      onSuccess:
+        description: ALert on success.
+        type: boolean
+      onAbort:
+        description: Alert on abort.
+        type: boolean
+  HiveArguments:
+    type: object
+    description: Hive replication arguments.
+    properties:
+      databasesAndTables:
+        description: Scope of the replication.
+        type: array
+        items:
+          $ref: '#/definitions/HiveDatabaseAndTables'
+      sentryPermissions:
+        description: Include or exclude Sentry permissions.
+        type: string
+        enum:
+          - INCLUDE
+          - EXCLUDE
+      skipUrlPermissions:
+        description: Skip URL permissions.
+        type: boolean
+      numThreads:
+        description: Number of threads to use during replication.
+        type: integer
+        format: int64
+  HiveDatabaseAndTables:
+    type: object
+    description: Hive replication scope.
+    required:
+      - database
+    properties:
+      database:
+        description: Database to replicate.
+        type: string
+      tablesIncludeRegex:
+        description: Regex to match included tables.
+        type: string
+      tablesExcludeRegex:
+        description: Regex to match excluded tables.
+        type: string
+  CmPolicySubmitUser:
+    type: object
+    description: CM Policy submit user.
+    properties:
+      userName:
+        description: Username.
+        type: string
+      sourceUser:
+        description: Source user.
+        type: string

@@ -14,6 +14,7 @@
 
 import logging
 import os
+import urllib.parse as urlparse
 
 from cdpcli.clidriver import CLIOperationCaller
 from cdpcli.exceptions import DfExtensionError
@@ -88,18 +89,31 @@ class DfExtension(CLIOperationCaller):
         # The command processing is finished, do not run the original CLI caller.
         return False
 
+    def _encode_value(self, value):
+        if value:
+            return urlparse.quote(value)
+        return None
+
     def _df_upload_flow(self, client_creator, operation_model,
                         parameters, parsed_globals):
         client = client_creator('df')
         operation_name = operation_model.name
         url = operation_model.http['requestUri']
         method = 'post'
+
+        # Encode the name, description, and comments fields.
+        # The df api expects them to be URI encoded.
+        flowName = self._encode_value(parameters.get('name', None))
+        flowDescription = self._encode_value(parameters.get('description', None))
+        flowComment = self._encode_value(parameters.get('comments', None))
+
         headers = {
             'Content-Type': 'application/json',
-            'Flow-Definition-Name': parameters.get('name', None),
-            'Flow-Definition-Description': parameters.get('description', None),
-            'Flow-Definition-Comments': parameters.get('comments', None)
+            'Flow-Definition-Name': flowName,
+            'Flow-Definition-Description': flowDescription,
+            'Flow-Definition-Comments': flowComment
         }
+
         file_path = parameters.get('file', None)
         response = upload_file(client, operation_name,
                                method, url, headers, file_path)
@@ -111,9 +125,12 @@ class DfExtension(CLIOperationCaller):
         operation_name = operation_model.name
         url = operation_model.http['requestUri']
         method = 'post'
+
+        # Encode the comments fields, the df api expects them to be URI encoded.
+        flowComment = self._encode_value(parameters.get('comments', None))
         headers = {
             'Content-Type': 'application/json',
-            'Flow-Definition-Comments': parameters.get('comments', None)
+            'Flow-Definition-Comments': flowComment
         }
         file_path = parameters.get('file', None)
         response = upload_file(client, operation_name,

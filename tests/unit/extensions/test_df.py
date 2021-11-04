@@ -47,7 +47,7 @@ class TestDfExtension(unittest.TestCase):
             'requestUri': 'https://test.com/path/importFlowDefinition'}
         parameters = {
             'name': 'flow_name',
-            'description': 'flow_description',
+            'description': 'flow_description\nline 2',
             'comments': 'flow_comments',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
         df_extension = DfExtension()
@@ -62,7 +62,7 @@ class TestDfExtension(unittest.TestCase):
         self.assertEqual(
             {'Content-Type': 'application/json',
              'Flow-Definition-Name': 'flow_name',
-             'Flow-Definition-Description': 'flow_description',
+             'Flow-Definition-Description': 'flow_description%0Aline%202',
              'Flow-Definition-Comments': 'flow_comments'},
             args[3])
         body = body_list[0]
@@ -127,7 +127,7 @@ class TestDfExtension(unittest.TestCase):
             'requestUri': 'https://test.com/path/importFlowDefinitionVersion'}
         parameters = {
             'flowCrn': 'flow_crn',
-            'comments': 'flow_comments',
+            'comments': 'flow_comments\non 2 lines',
             'file': os.path.join(BASE_DIR, 'df.flow.json')}
         df_extension = DfExtension()
         df_extension.invoke(self.client_creator, operation_model,
@@ -140,7 +140,7 @@ class TestDfExtension(unittest.TestCase):
         self.assertEqual('https://test.com/path/importFlowDefinitionVersion', args[2])
         self.assertEqual(
             {'Content-Type': 'application/json',
-             'Flow-Definition-Comments': 'flow_comments'},
+             'Flow-Definition-Comments': 'flow_comments%0Aon%202%20lines'},
             args[3])
         body = body_list[0]
         self.assertEqual(

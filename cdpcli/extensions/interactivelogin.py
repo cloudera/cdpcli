@@ -20,6 +20,7 @@ import urllib.parse as urlparse
 import webbrowser
 
 from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, CDP_PRIVATE_KEY_KEY_NAME
+from cdpcli.endpoint import EndpointResolver
 from cdpcli.exceptions import InteractiveLoginError, MissingArgumentError, ProfileNotFound
 from cdpcli.extensions.commands import BasicCommand
 from cdpcli.extensions.configure import CREDENTIAL_FILE_COMMENT
@@ -231,11 +232,16 @@ class LoginCommand(BasicCommand):
 
     def _resolve_login_url(self, parsed_args, parsed_globals, config, return_url_port):
         # get the login URL from input parameter or config file.
-        login_url = parsed_args.login_url
-        if login_url is None:
-            login_url = config.get('login_url')
-        if login_url is None:
-            login_url = 'https://consoleauth.altus.cloudera.com/login'
+        endpoint_resolver = EndpointResolver()
+        login_url = endpoint_resolver.resolve(
+            explicit_endpoint_url=parsed_args.login_url,
+            config=config,
+            region=parsed_globals.cdp_region,
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
 
         # get the account-id and idp from:
         # 1) login URL

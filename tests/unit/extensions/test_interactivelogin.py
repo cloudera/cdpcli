@@ -112,6 +112,7 @@ class TestLoginCommand(unittest.TestCase):
         try:
             args = ['--account-id', 'test-account-guid', '--timeout', '1']
             parsed_globals = mock.Mock()
+            parsed_globals.cdp_region = None
             self.login(self.context, args=args, parsed_globals=parsed_globals)
         except InteractiveLoginError:
             pass

@@ -535,3 +535,124 @@ class TestEndpointCreator(unittest.TestCase):
             tls_verification=False,
             retry_handler=self.retry_handler)
         self.assertEqual(endpoint.host, endpoint_url)
+
+
+class TestEndpointResolver(unittest.TestCase):
+    def test_resolve_login_endpoint(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url=None,
+            config={},
+            region=None,
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint, 'https://consoleauth.altus.cloudera.com:443/login')
+
+    def test_resolve_login_endpoint_with_explicit_url(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url="http://explict.url/path?accountId=foo",
+            config={},
+            region=None,
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint, 'http://explict.url/path?accountId=foo')
+
+    def test_resolve_login_endpoint_with_login_url_from_config(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url=None,
+            config={'login_url': 'http://config.url/path?accountId=foo'},
+            region='eu-1',  # region is be ignored when using 'login_url' from config
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint, 'http://config.url/path?accountId=foo')
+
+    def test_resolve_login_endpoint_with_explicit_region_default(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url=None,
+            config={},
+            region='default',
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint, 'https://consoleauth.altus.cloudera.com:443/login')
+
+    def test_resolve_login_endpoint_with_explicit_region_us_west_1(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url=None,
+            config={},
+            region='us-west-1',
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint, 'https://consoleauth.altus.cloudera.com:443/login')
+
+    def test_resolve_login_endpoint_with_explicit_region_eu_1(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url=None,
+            config={},
+            region='eu-1',
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint,
+                         'https://console.eu-1.cdp.cloudera.com:443/consoleauth/login')
+
+    def test_resolve_login_endpoint_with_region_from_config_default(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url=None,
+            config={'cdp_region': 'default'},
+            region=None,
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint, 'https://consoleauth.altus.cloudera.com:443/login')
+
+    def test_resolve_login_endpoint_with_region_from_config_us_west_1(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url=None,
+            config={'cdp_region': 'us-west-1'},
+            region=None,
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint, 'https://consoleauth.altus.cloudera.com:443/login')
+
+    def test_resolve_login_endpoint_with_region_from_config_eu_1(self):
+        endpoint_resolver = EndpointResolver()
+        endpoint = endpoint_resolver.resolve(
+            explicit_endpoint_url=None,
+            config={'cdp_region': 'eu-1'},
+            region=None,
+            service_name='LOGIN',
+            prefix=None,
+            products=['CDP'],
+            scheme='https',
+            port=443)
+        self.assertEqual(endpoint,
+                         'https://console.eu-1.cdp.cloudera.com:443/consoleauth/login')

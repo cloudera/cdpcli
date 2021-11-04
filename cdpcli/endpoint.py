@@ -54,6 +54,7 @@ class EndpointResolver(object):
     """A builder of endpoint URLs for Altus and CDP services. Used by EndpointCreator."""
     ENDPOINT_URL_KEY_NAME = 'endpoint_url'
     CDP_ENDPOINT_URL_KEY_NAME = 'cdp_endpoint_url'
+    LOGIN_URL_KEY_NAME = 'login_url'
     CDP_REGION_KEY_NAME = 'cdp_region'
 
     def _construct_altus_endpoint(self, service_name, scheme, region, port):
@@ -72,7 +73,7 @@ class EndpointResolver(object):
             return "%s://api.%s.cdp.cloudera.com:%d" % (scheme, region, port)
 
     def _construct_cdp_endpoint(self, scheme, prefix, region, port):
-        """Construct a default base URL to an CDP service.
+        """Construct a default base URL to a CDP service.
 
         :param scheme: URL scheme, e.g., 'https'
         :param prefix: CDP API prefix used in URLs, e.g., 'api'
@@ -84,20 +85,64 @@ class EndpointResolver(object):
             region = 'us-west-1'
         return "%s://%s.%s.cdp.cloudera.com:%d" % (scheme, prefix, region, port)
 
-    def _substitute_custom_endpoint(self, endpoint_url, value):
+    def _construct_login_endpoint(self, scheme, region, port):
+        """Construct a login URL to a CDP service.
+
+        :param scheme: URL scheme, e.g., 'https'
+        :param port: service port
+        :param region: service region
+        :returns: CDP login URL
+        """
+        if region == 'default':
+            region = 'us-west-1'
+        if region == 'us-west-1':
+            return "%s://consoleauth.altus.cloudera.com:%d/login" % (scheme, port)
+        return "%s://console.%s.cdp.cloudera.com:%d/consoleauth/login" % \
+               (scheme, region, port)
+
+    def _substitute_custom_endpoint(self, endpoint_url, service_name, prefix, products):
         """Applies string formatting for one %s value.
 
-        :param endpoint_url: URL format string, expected to contain one %s
-        :param value: value to substitute into format string
+        :param endpoint_url: URL format string, either no %s or contains one %s
+        :param service_name: Altus service name, as referenced in its URLs.
+                             Or 'LOGIN' for login command
+        :param prefix: CDP API prefix used in URLs, e.g., 'api'
+        :param products: service products (ALTUS or CDP)
         :returns: formatted string
         """
-        return endpoint_url % (value)
+        # For an explicit endpoint URL, swap in the service name (Altus) or prefix
+        # (CDP) if there is a spot for it, and then return it.
+        if endpoint_url.count('%s') == 1:
+            if products == ['CDP']:
+                return endpoint_url % prefix
+            else:
+                return endpoint_url % service_name
+        else:
+            return endpoint_url
+
+    def _read_region_from_config(self, explicit_region, config):
+        """Reads region from config if it is not explicitly specified.
+
+        :param explicit_region: The explicitly specified region
+        :param config: CLI configuration
+        :return:
+        """
+        if explicit_region is None:
+            region = 'default'
+        else:
+            region = explicit_region
+        if region == 'default':
+            region_from_config = config.get(EndpointResolver.CDP_REGION_KEY_NAME)
+            if region_from_config is not None:
+                region = region_from_config
+        return region
 
     def resolve(self, service_name, prefix, products, explicit_endpoint_url, config,
                 region, scheme, port):
         """Creates a fully-resolved URL for a service endpoint.
 
-        :param service_name: Altus service name, as referenced in its URLs
+        :param service_name: Altus service name, as referenced in its URLs.
+                             Or 'LOGIN' for login command
         :param prefix: CDP API prefix used in URLs, e.g., 'api'
         :param products: service products (ALTUS or CDP)
         :param explicit_endpoint_url: explicit endpoint URL which overrides any other
@@ -108,17 +153,16 @@ class EndpointResolver(object):
         :returns: resolved URL for service endpoint
         """
         if explicit_endpoint_url is not None:
-            # For an explicit endpoint URL, swap in the service name (Altus) or prefix
-            # (CDP) if there is a spot for it, and then return it.
-            if explicit_endpoint_url.count('%s') == 1:
-                if products == ['CDP']:
-                    return self._substitute_custom_endpoint(explicit_endpoint_url,
-                                                            prefix)
-                else:
-                    return self._substitute_custom_endpoint(explicit_endpoint_url,
-                                                            service_name)
-            else:
-                return explicit_endpoint_url
+            return self._substitute_custom_endpoint(explicit_endpoint_url,
+                                                    service_name, prefix, products)
+
+        if service_name == 'LOGIN':
+            # Login endpoint
+            endpoint_from_config = config.get(EndpointResolver.LOGIN_URL_KEY_NAME)
+            if endpoint_from_config is not None:
+                return endpoint_from_config
+            region = self._read_region_from_config(region, config)
+            return self._construct_login_endpoint(scheme, region, port)
 
         if products == ['CDP']:
             # If a CDP endpoint base URL has been configured, use it, swapping in the
@@ -126,16 +170,9 @@ class EndpointResolver(object):
             # the prefix.
             endpoint_from_config = config.get(EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME)
             if endpoint_from_config is not None:
-                if endpoint_from_config.count('%s') == 1:
-                    return self._substitute_custom_endpoint(endpoint_from_config,
-                                                            prefix)
-                else:
-                    return endpoint_from_config
-            # Use the region from configuration if it is not explicitly specified.
-            if region == 'default':
-                region_from_config = config.get(EndpointResolver.CDP_REGION_KEY_NAME)
-                if region_from_config is not None:
-                    region = region_from_config
+                return self._substitute_custom_endpoint(endpoint_from_config,
+                                                        service_name, prefix, products)
+            region = self._read_region_from_config(region, config)
             return self._construct_cdp_endpoint(scheme, prefix, region, port)
         else:
             # If an Altus endpoint base URL has been configured, use it, swapping in the
@@ -143,16 +180,9 @@ class EndpointResolver(object):
             # the prefix.
             endpoint_from_config = config.get(EndpointResolver.ENDPOINT_URL_KEY_NAME)
             if endpoint_from_config is not None:
-                if endpoint_from_config.count('%s') == 1:
-                    return self._substitute_custom_endpoint(endpoint_from_config,
-                                                            service_name)
-                else:
-                    return endpoint_from_config
-            # Use the region from configuration if it is not explicitly specified.
-            if region == 'default':
-                region_from_config = config.get(EndpointResolver.CDP_REGION_KEY_NAME)
-                if region_from_config is not None:
-                    region = region_from_config
+                return self._substitute_custom_endpoint(endpoint_from_config,
+                                                        service_name, prefix, products)
+            region = self._read_region_from_config(region, config)
             return self._construct_altus_endpoint(service_name, scheme, region, port)
 
 

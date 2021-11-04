@@ -587,6 +587,50 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/checkEnvironmentConnectivity:
+    post:
+      summary: Checks connectivity to a new Private Cloud environment by trying to access the Cloudera Manager address with provided credentials.
+      description: Checks connectivity to a Private Cloud environment.
+      operationId: checkEnvironmentConnectivity
+      x-form-factors: private
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CheckEnvironmentConnectivityRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CheckEnvironmentConnectivityResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/checkKubernetesConnectivity:
+    post:
+      summary: Checks connectivity to a Kubernetes address with provided kubeconfig files.
+      description: Checks connectivity to a Kubernetes address with provided kubeconfig files.
+      operationId: checkKubernetesConnectivity
+      x-form-factors: private
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CheckKubernetesConnectivityRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CheckKubernetesConnectivityResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/getFreeipaStatus:
     post:
       summary: Get the status of the FreeIPA services
@@ -991,7 +1035,7 @@ paths:
   /api/v1/environments2/setAWSAuditCredential:
     post:
       summary: Creates or updates the AWS audit credential for the account. The credential is used for authorization to archive audit events to your cloud storage.
-      description: Creates or updates the AWS audit credential for the account.
+      description: Creates or updates the AWS audit credential for the account. The response will only contain details appropriate to AWS.
       operationId: setAWSAuditCredential
       x-mutating: true
       parameters:
@@ -1012,7 +1056,7 @@ paths:
   /api/v1/environments2/setAzureAuditCredential:
     post:
       summary: Creates or updates the Azure audit credential for the account. The credential is used for authorization to archive audit events to your cloud storage.
-      description: Creates or updates the Azure audit credential for the account.
+      description: Creates or updates the Azure audit credential for the account. The response will only contain details appropriate to Azure.
       operationId: setAzureAuditCredential
       x-mutating: true
       parameters:
@@ -1457,6 +1501,35 @@ definitions:
       storageClass:
         type: string
         description: An existing storage class on this kubernetes cluster. If not specified, the default storage class will be used.
+  CheckEnvironmentConnectivityRequest:
+    type: object
+    description: Request object to check connectivity to private cloud environment.
+    x-form-factors: private
+    required:
+      - address
+      - user
+      - authenticationToken
+    properties:
+      address:
+        type: string
+        description: The address of the Cloudera Manager managing the Datalake cluster.
+      user:
+        type: string
+        description: User name for accessing the Cloudera Manager.
+      authenticationToken:
+        type: string
+        description: A string (text or json) used to authenticate to the Cloudera Manager.
+        x-sensitive: true
+      authenticationTokenType:
+        type: string
+        description: How to interpret the authenticationToken field. Defaults to CLEARTEXT_PASSWORD.
+        enum:
+          - CLEARTEXT_PASSWORD
+      clusterNames:
+        type: array
+        description: The name of the cluster(s) to use as a Datalake for the environment.
+        items:
+          type: string
   AwsLogStorageRequest:
     type: object
     required:
@@ -1656,6 +1729,19 @@ definitions:
       environment:
         $ref: '#/definitions/Environment'
         description: Created environment object.
+  CheckEnvironmentConnectivityResponse:
+    type: object
+    description: Response object to check connectivity to private cloud environment.
+    x-form-factors: private
+    required:
+      - clusters
+    properties:
+      clusters:
+        type: array
+        description: List of discovered clusters
+        items:
+          $ref: '#/definitions/CdpCluster'
+          description: Discovered CdpCluster object.
   ListEnvironmentsRequest:
     type: object
     description: Request object for a list environments request.
@@ -2678,6 +2764,108 @@ definitions:
       - COMPLETED
       - FAILED
       - TIMEDOUT
+  ExposedService:
+    x-form-factors: private
+    description: Exposed CDP DC service object.
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of service.
+      type:
+        type: string
+        description: Type of service.
+      displayName:
+        type: string
+        description: Display name of service.
+      serviceUrl:
+        type: string
+        description: URL of service.
+      serviceVersion:
+        type: string
+        description: Version of service.
+      status:
+        type: string
+        description: Status of service.
+      serviceValidationMessages:
+        type: array
+        description: List of service validation message.
+        items:
+          $ref: '#/definitions/EnvValidation'
+  CdpCluster:
+    x-form-factors: private
+    description: Discovered CdpCluster object.
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of cluster.
+      displayName:
+        type: string
+        description: Display name of cluster.
+      cmUrl:
+        type: string
+        description: The Url to Cloudera Manager.
+      version:
+        type: string
+        description: Version of Cloudera Manager.
+      exposedServices:
+        type: array
+        description: List of exposed CDP DC services
+        items:
+          $ref: '#/definitions/ExposedService'
+      clusterValidationMessages:
+        type: array
+        description: List of cluster validation message.
+        items:
+          $ref: '#/definitions/EnvValidation'
+  EnvValidation:
+    x-form-factors: private
+    description: Object for validating services.
+    type: object
+    properties:
+      severity:
+        description: The level of validation severity.
+        type: string
+        enum:
+          - INFO
+          - WARNING
+          - ERROR
+      message:
+        type: string
+        description: Validation message.
+  CheckKubernetesConnectivityRequest:
+    x-form-factors: private
+    type: object
+    description: Request object for checking Kubernetes connectivity.
+    required:
+      - kubeConfig
+    properties:
+      kubeConfig:
+        type: string
+        description: Content of Kubernetes configuration file as a text blob in YAML format.
+        x-sensitive: true
+      format:
+        type: string
+        description: Format of Kubernetes configuration file. Defaults to YAML.
+        enum:
+          - YAML
+  CheckKubernetesConnectivityResponse:
+    x-form-factors: private
+    type: object
+    description: Response object for checking Kubernetes connectivity.
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        description: Status of Kubernetes cluster. Also indicates connectivity.
+        enum:
+          - SUCCESS
+          - FAILURE
+      message:
+        type: string
+        description: Message explaining the status. Used for Errors.
   GetFreeipaStatusRequest:
     type: object
     description: Request object for getting the status of the FreeIPA servers.
