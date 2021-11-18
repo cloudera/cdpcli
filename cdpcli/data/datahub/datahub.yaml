@@ -856,6 +856,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/upgradeCluster:
+    post:
+      summary: Upgrades the OS or data platform on a datahub cluster.
+      description: Upgrades the OS or data platform on a datahub cluster. You have the option to either specify one of 'imageId', 'runtime' or 'lockComponents' or both 'imageId' and 'lockComponents' or none of the parameters.
+      operationId: upgradeCluster
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -2799,3 +2820,82 @@ definitions:
   RenewCertificateResponse:
     type: object
     description: Response object for renew certificate request.
+  ImageComponentVersions:
+    type: object
+    description: Versions of the image components.
+    properties:
+      cm:
+        type: string
+        description: Version of CM.
+      cdp:
+        type: string
+        description: CDP version.
+      os:
+        type: string
+        description: OS name.
+      osPatchLevel:
+        type: string
+        description: OS patch level.
+  ImageInfo:
+    type: object
+    description: Basic information about an image.
+    properties:
+      imageName:
+        type: string
+        description: The name of the image.
+      imageId:
+        type: string
+        description: The id of the image.
+      imageCatalogName:
+        type: string
+        description: Name of the image catalog, the image is from.
+      created:
+        type: integer
+        format: int64
+        description: Image creation timestamp.
+      componentVersions:
+        $ref: '#/definitions/ImageComponentVersions'
+        description: Version of the image components.
+  UpgradeClusterRequest:
+    type: object
+    description: Request object to upgrade datahub.
+    required:
+      - clusterName
+    properties:
+      clusterName:
+        type: string
+        description: The name or CRN of the datahub.
+      imageId:
+        type: string
+        description: The id of an image to upgrade to.
+      runtime:
+        type: string
+        description: The runtime version to upgrade to.
+      lockComponents:
+        type: boolean
+        description: Perform an os upgrade only.
+      dryRun:
+        type: boolean
+        description: Checks the eligibility of an image to upgrade but do not perform the upgrade.
+      showAvailableImages:
+        type: boolean
+        description: Returns the list of images that are eligible for the upgrade.
+      showLatestAvailableImagePerRuntime:
+        type: boolean
+        description: Returns the latest image that is eligible for the upgrade for each runtime version with at least one available upgrade candidate.
+  UpgradeClusterResponse:
+    type: object
+    description: Response object for upgrade datahub request.
+    properties:
+      current:
+        $ref: '#/definitions/ImageInfo'
+        description: Information about the current image.
+      upgradeCandidates:
+        type: array
+        description: List of images and components to upgrade to.
+        items:
+          $ref: '#/definitions/ImageInfo'
+          description: Information about an image.
+      reason:
+        type: string
+        description: The reason why upgrade is not possible.

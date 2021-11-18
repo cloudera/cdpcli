@@ -138,3 +138,4 @@ tests/unit/extensions/configure/test_list.py
 tests/unit/extensions/configure/test_set.py
 tests/unit/extensions/df/__init__.py
 tests/unit/extensions/df/test_createdeployment.py
+tests/unit/extensions/df/test_upload_file.py

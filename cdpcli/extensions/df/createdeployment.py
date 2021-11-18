@@ -18,7 +18,7 @@ import logging
 import os
 
 from cdpcli.clidriver import CLIOperationCaller, ServiceOperation
-from cdpcli.exceptions import DfExtensionError
+from cdpcli.exceptions import ClientError, DfExtensionError
 from cdpcli.extensions.df import get_expanded_file_path, upload_workload_asset
 from cdpcli.extensions.workload import set_workload_access_token
 from cdpcli.model import ObjectShape, OperationModel, ShapeResolver
@@ -105,6 +105,36 @@ OPERATION_SHAPES = {
                 'description': 'Key Performance Indicators with associated alerts.',
                 'items': {
                     '$ref': '#/definitions/DeploymentKeyPerformanceIndicator'
+                }
+            },
+            'customNarConfiguration': {
+                'type': 'object',
+                'description': 'Custom NAR configuration properties',
+                'required': [
+                    'username',
+                    'password',
+                    'storageLocation',
+                    'configurationVersion'
+                ],
+                'properties': {
+                    'username': {
+                        'type': 'string',
+                        'description': 'Username for access to NAR storage location'
+                    },
+                    'password': {
+                        'type': 'string',
+                        'description': 'Password for access to NAR storage location',
+                        'x-sensitive': 'true'
+                    },
+                    'storageLocation': {
+                        'type': 'string',
+                        'description': 'Storage location containing custom NAR files',
+                        'x-no-paramfile': 'true'
+                    },
+                    'configurationVersion': {
+                        'type': 'integer',
+                        'description': 'Custom configuration version number'
+                    }
                 }
             }
         }
@@ -306,13 +336,16 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         """
         deployment_configuration = self._get_deployment_configuration(
                 deployment_request_crn, parameters)
-        create_deployment_parameters = {
-            'environmentCrn': environment_crn,
-            'deploymentConfiguration': deployment_configuration
-        }
-        LOG.debug('Create Deployment Parameters %s', create_deployment_parameters)
+
+        nar_configuration_crn = self._process_custom_nar_configuration(
+                df_workload_client, environment_crn, parameters)
+        if nar_configuration_crn:
+            deployment_configuration['customNarConfigurationCrn'] = nar_configuration_crn
+
+        deployment_configuration['environmentCrn'] = environment_crn
+        LOG.debug('Create Deployment Parameters %s', deployment_configuration)
         http, response = df_workload_client.make_api_call(
-                'createDeployment', create_deployment_parameters)
+                'createDeployment', deployment_configuration)
         deployment = response.get('deployment', {})
         deployment_crn = deployment.get('crn', None)
         create_response = {
@@ -344,18 +377,58 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         """
         Get Environment CRN using Service CRN
         """
-        request = {
-            'serviceCrn': service_crn
-        }
-        http, response = df_client.make_api_call('describeService', request)
-        service = response.get('service', {})
-        environment_crn = service.get('environmentCrn', None)
-        if environment_crn is None:
-            raise DfExtensionError(err_msg='Environment CRN not found for Service CRN',
-                                   service_name='df',
-                                   operation_name='describeService')
-        LOG.debug('Found Environment CRN [%s]', environment_crn)
-        return environment_crn
+        http, response = df_client.make_api_call(
+                'listDeployableServicesForNewDeployments', {})
+        services = response.get('services', [])
+
+        for service in services:
+            crn = service.get('crn', None)
+            if service_crn == crn:
+                environment_crn = service.get('environmentCrn', None)
+                LOG.debug('Found Environment CRN [%s]', environment_crn)
+                return environment_crn
+        raise DfExtensionError(err_msg='Environment CRN not found for Service CRN',
+                               service_name='df',
+                               operation_name='listDeployableServicesForNewDeployments')
+
+    def _process_custom_nar_configuration(self,
+                                          df_workload_client,
+                                          environment_crn,
+                                          parameters):
+        """
+        Process Custom NAR Configuration and return Custom NAR Configuration CRN
+        """
+        custom_nar_configuration = parameters.get('customNarConfiguration', None)
+        if custom_nar_configuration:
+            custom_nar_configuration['environmentCrn'] = environment_crn
+
+            default_parameters = {
+                'environmentCrn': environment_crn
+            }
+
+            try:
+                default_http, default_configuration = df_workload_client.make_api_call(
+                        'getDefaultCustomNarConfiguration', default_parameters)
+                custom_nar_configuration['crn'] = default_configuration.get('crn', None)
+                default_version = default_configuration.get('configurationVersion', None)
+                custom_nar_configuration['configurationVersion'] = default_version
+
+                http, response = df_workload_client.make_api_call(
+                        'updateCustomNarConfiguration', custom_nar_configuration)
+                crn = response.get('crn', None)
+                LOG.debug('Updated Custom NAR Configuration CRN [%s]', crn)
+                return crn
+            except ClientError as e:
+                if e.http_status_code == 404:
+                    http, response = df_workload_client.make_api_call(
+                            'createCustomNarConfiguration', custom_nar_configuration)
+                    crn = response.get('crn', None)
+                    LOG.debug('Created Custom NAR Configuration CRN [%s]', crn)
+                    return crn
+                else:
+                    raise
+        else:
+            return None
 
     def _get_deployment_configuration(self,
                                       deployment_request_crn,

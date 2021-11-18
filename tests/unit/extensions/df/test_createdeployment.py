@@ -100,14 +100,8 @@ class TestCreateDeployment(unittest.TestCase):
 
         def _df_make_api_call(*args, **kwargs):
             operation_name = args[0]
-            if operation_name == 'describeService':
-                service_response = {
-                    'service': {
-                        'crn': service_crn,
-                        'environmentCrn': environment_crn
-                    }
-                }
-                return (Mock(status_code=200), service_response)
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
             elif operation_name == 'initiateDeployment':
                 initiate_deployment_response = {
                     'deploymentRequestCrn': deployment_request_crn,
@@ -159,13 +153,11 @@ class TestCreateDeployment(unittest.TestCase):
         self.assertEquals(
             {
                 'environmentCrn': environment_crn,
-                'deploymentConfiguration': {
-                    'deploymentRequestCrn': deployment_request_crn,
-                    'name': deployment_name,
-                    'configurationVersion': 0,
-                    'clusterSizeName': 'EXTRA_SMALL',
-                    'staticNodeCount': 1
-                }
+                'deploymentRequestCrn': deployment_request_crn,
+                'name': deployment_name,
+                'configurationVersion': 0,
+                'clusterSizeName': 'EXTRA_SMALL',
+                'staticNodeCount': 1
             },
             create_deployment_parameters[0])
 
@@ -201,14 +193,8 @@ class TestCreateDeployment(unittest.TestCase):
 
         def _df_make_api_call(*args, **kwargs):
             operation_name = args[0]
-            if operation_name == 'describeService':
-                service_response = {
-                    'service': {
-                        'crn': service_crn,
-                        'environmentCrn': environment_crn
-                    }
-                }
-                return (Mock(status_code=200), service_response)
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
             elif operation_name == 'initiateDeployment':
                 initiate_deployment_response = {
                     'deploymentRequestCrn': deployment_request_crn,
@@ -260,16 +246,14 @@ class TestCreateDeployment(unittest.TestCase):
         self.assertEquals(
             {
                 'environmentCrn': environment_crn,
-                'deploymentConfiguration': {
-                    'deploymentRequestCrn': deployment_request_crn,
-                    'name': deployment_name,
-                    'configurationVersion': 0,
-                    'clusterSizeName': 'EXTRA_SMALL',
-                    'autoScalingEnabled': True,
-                    'autoScaleMinNodes': auto_scale_min_nodes,
-                    'autoScaleMaxNodes': auto_scale_max_nodes,
-                    'autoStartFlow': True
-                }
+                'deploymentRequestCrn': deployment_request_crn,
+                'name': deployment_name,
+                'configurationVersion': 0,
+                'clusterSizeName': 'EXTRA_SMALL',
+                'autoScalingEnabled': True,
+                'autoScaleMinNodes': auto_scale_min_nodes,
+                'autoScaleMaxNodes': auto_scale_max_nodes,
+                'autoStartFlow': True
             },
             create_deployment_parameters[0])
 
@@ -306,6 +290,13 @@ class TestCreateDeployment(unittest.TestCase):
             }
         }
 
+        custom_nar_configuration = {
+            'username': 'USER',
+            'password': 'PROTECTED',
+            'storageLocation': 's3a://bucket',
+            'configurationVersion': 0
+        }
+
         cluster_size_name = 'MEDIUM'
         auto_scaling_enabled = False
         static_node_count = 2
@@ -335,7 +326,8 @@ class TestCreateDeployment(unittest.TestCase):
             ],
             'kpis': [
                 kpi
-            ]
+            ],
+            'customNarConfiguration': custom_nar_configuration
         }
         parsed_args = {}
         parsed_globals = Mock()
@@ -343,20 +335,15 @@ class TestCreateDeployment(unittest.TestCase):
 
         environment_crn = 'ENVIRONMENT_CRN'
         deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        custom_nar_configuration_crn = 'NAR_CONFIGURATION_CRN'
         workload_url = 'https://localhost.localdomain/'
 
         initiate_request_parameters = []
 
         def _df_make_api_call(*args, **kwargs):
             operation_name = args[0]
-            if operation_name == 'describeService':
-                service_response = {
-                    'service': {
-                        'crn': service_crn,
-                        'environmentCrn': environment_crn
-                    }
-                }
-                return (Mock(status_code=200), service_response)
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
             elif operation_name == 'initiateDeployment':
                 initiate_deployment_response = {
                     'deploymentRequestCrn': deployment_request_crn,
@@ -378,6 +365,8 @@ class TestCreateDeployment(unittest.TestCase):
         create_deployment_parameters = []
         deployment_crn = 'DEPLOYMENT_CRN'
 
+        create_custom_nar_configuration_params = []
+
         def _df_workload_make_api_call(*args, **kwargs):
             operation_name = args[0]
             if operation_name == 'createDeployment':
@@ -388,6 +377,20 @@ class TestCreateDeployment(unittest.TestCase):
                 }
                 create_deployment_parameters.append(args[1])
                 return (Mock(status_code=200), create_response)
+            elif operation_name == 'getDefaultCustomNarConfiguration':
+                error = {
+                    'error': {
+                        'code': '404',
+                        'message': 'Not Found'
+                    }
+                }
+                raise ClientError(error, operation_name, 'dfworkload', 404, 'requestId')
+            elif operation_name == 'createCustomNarConfiguration':
+                create_custom_nar_configuration_params.append(args[1])
+                configuration_response = {
+                    'crn': custom_nar_configuration_crn
+                }
+                return (Mock(status_code=200), configuration_response)
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
         self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
@@ -432,38 +435,185 @@ class TestCreateDeployment(unittest.TestCase):
         self.assertEquals(
             {
                 'environmentCrn': environment_crn,
-                'deploymentConfiguration': {
-                    'deploymentRequestCrn': deployment_request_crn,
-                    'name': deployment_name,
-                    'configurationVersion': 0,
-                    'clusterSizeName': cluster_size_name,
-                    'autoScalingEnabled': auto_scaling_enabled,
-                    'staticNodeCount': static_node_count,
-                    'cfmNifiVersion': cfm_nifi_version,
-                    'autoStartFlow': auto_start_flow,
-                    'parameterGroups': [
-                        {
-                            'name': parameter_group_name,
-                            'parameters': [
-                                {
-                                    'name': parameter_name,
-                                    'assetReferences': [
-                                        {
-                                            'name': asset_reference_name,
-                                            'path': BASE_DIR,
-                                            'version': '0'
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    'kpis': [
-                        kpi
-                    ]
-                }
+                'deploymentRequestCrn': deployment_request_crn,
+                'name': deployment_name,
+                'configurationVersion': 0,
+                'clusterSizeName': cluster_size_name,
+                'staticNodeCount': static_node_count,
+                'cfmNifiVersion': cfm_nifi_version,
+                'autoStartFlow': auto_start_flow,
+                'autoScalingEnabled': auto_scaling_enabled,
+                'parameterGroups': [
+                    {
+                        'name': parameter_group_name,
+                        'parameters': [
+                            {
+                                'name': parameter_name,
+                                'assetReferences': [
+                                    {
+                                        'name': asset_reference_name,
+                                        'path': BASE_DIR,
+                                        'version': '0'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                'kpis': [
+                    kpi
+                ],
+                'customNarConfigurationCrn': custom_nar_configuration_crn
             },
             create_deployment_parameters[0])
+
+        custom_nar_configuration['environmentCrn'] = environment_crn
+        self.assertEquals(
+            custom_nar_configuration,
+            create_custom_nar_configuration_params[0]
+        )
+
+    def test_invoke_create_deployment_default_custom_nar_configuration_found(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+        custom_nar_configuration_crn = 'NAR_CONFIGURATION_CRN'
+
+        custom_nar_configuration = {
+            'username': 'UPDATED',
+            'password': 'PROTECTED',
+            'storageLocation': 's3a://bucket',
+            'configurationVersion': 1
+        }
+
+        default_custom_nar_configuration = {
+            'crn': custom_nar_configuration_crn,
+            'username': 'USER',
+            'password': 'PROTECTED',
+            'storageLocation': 's3a://bucket',
+            'configurationVersion': 1
+        }
+
+        cluster_size_name = 'MEDIUM'
+        auto_scaling_enabled = False
+        static_node_count = 2
+        cfm_nifi_version = '1.14.0'
+        auto_start_flow = False
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'clusterSizeName': cluster_size_name,
+            'autoScalingEnabled': auto_scaling_enabled,
+            'staticNodeCount': static_node_count,
+            'cfmNifiVersion': cfm_nifi_version,
+            'autoStartFlow': auto_start_flow,
+            'customNarConfiguration': custom_nar_configuration
+        }
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        initiate_request_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        create_deployment_parameters = []
+        deployment_crn = 'DEPLOYMENT_CRN'
+
+        create_custom_nar_configuration_params = []
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'createDeployment':
+                create_response = {
+                    'deployment': {
+                        'crn': deployment_crn
+                    }
+                }
+                create_deployment_parameters.append(args[1])
+                return (Mock(status_code=200), create_response)
+            elif operation_name == 'getDefaultCustomNarConfiguration':
+                return (Mock(status_code=200), default_custom_nar_configuration)
+            elif operation_name == 'updateCustomNarConfiguration':
+                create_custom_nar_configuration_params.append(args[1])
+                configuration_response = {
+                    'crn': custom_nar_configuration_crn
+                }
+                return (Mock(status_code=200), configuration_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        upload_parameters = []
+
+        def _df_workload_make_request(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'uploadAsset':
+                upload_parameters.append(args[3])
+                return (Mock(status_code=200), {})
+            else:
+                raise Exception('Unexpected make_request [' + operation_name + ']')
+        self.df_workload_client.make_request.side_effect = _df_workload_make_request
+
+        self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                      parameters, parsed_args, parsed_globals)
+
+        self.assertEquals(
+            {
+                'serviceCrn': service_crn,
+                'flowVersionCrn': flow_version_crn
+            },
+            initiate_request_parameters[0])
+
+        self.assertEquals('Bearer ' + token, parsed_globals.access_token)
+        self.assertEquals(workload_url, parsed_globals.endpoint_url)
+
+        self.assertEquals(
+            {
+                'environmentCrn': environment_crn,
+                'deploymentRequestCrn': deployment_request_crn,
+                'name': deployment_name,
+                'configurationVersion': 0,
+                'clusterSizeName': cluster_size_name,
+                'staticNodeCount': static_node_count,
+                'cfmNifiVersion': cfm_nifi_version,
+                'autoStartFlow': auto_start_flow,
+                'autoScalingEnabled': auto_scaling_enabled,
+                'customNarConfigurationCrn': custom_nar_configuration_crn
+            },
+            create_deployment_parameters[0])
+
+        custom_nar_configuration['environmentCrn'] = environment_crn
+        self.assertEquals(
+            custom_nar_configuration,
+            create_custom_nar_configuration_params[0]
+        )
 
     def test_invoke_create_deployment_initiate_error(self):
         self.maxDiff = 2000
@@ -485,14 +635,8 @@ class TestCreateDeployment(unittest.TestCase):
 
         def _df_make_api_call(*args, **kwargs):
             operation_name = args[0]
-            if operation_name == 'describeService':
-                service_response = {
-                    'service': {
-                        'crn': service_crn,
-                        'environmentCrn': environment_crn
-                    }
-                }
-                return (Mock(status_code=200), service_response)
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
             elif operation_name == 'initiateDeployment':
                 error_response = {
                     'error': {
@@ -537,14 +681,8 @@ class TestCreateDeployment(unittest.TestCase):
 
         def _df_make_api_call(*args, **kwargs):
             operation_name = args[0]
-            if operation_name == 'describeService':
-                service_response = {
-                    'service': {
-                        'crn': service_crn,
-                        'environmentCrn': environment_crn
-                    }
-                }
-                return (Mock(status_code=200), service_response)
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
             elif operation_name == 'initiateDeployment':
                 initiate_deployment_response = {
                     'deploymentRequestCrn': deployment_request_crn,
@@ -584,3 +722,14 @@ class TestCreateDeployment(unittest.TestCase):
         self.assertEqual(2, self.df_client.make_api_call.call_count)
         self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
         self.assertEqual(1, self.df_workload_client.make_api_call.call_count)
+
+    def _get_deployable_services(self, service_crn, environment_crn):
+        response = {
+            'services': [
+                {
+                    'crn': service_crn,
+                    'environmentCrn': environment_crn
+                }
+            ]
+        }
+        return (Mock(status_code=200), response)

@@ -17,7 +17,7 @@ import os
 import urllib.parse as urlparse
 
 from cdpcli.clidriver import CLIOperationCaller
-from cdpcli.exceptions import DfExtensionError
+from cdpcli.exceptions import CdpCLIError, DfExtensionError
 
 LOG = logging.getLogger('cdpcli.extensions.df')
 
@@ -52,7 +52,7 @@ def upload_file(client, operation_name, method, url, headers, file_path):
     else:
         raise DfExtensionError(
             err_msg='Path [{}] not found'.format(file_path),
-            service_name=client.service_model.service_name,
+            service_name=client.meta.service_model.service_name,
             operation_name=operation_name)
     return parsed_response
 
@@ -81,6 +81,12 @@ class DfExtension(CLIOperationCaller):
                                            operation_model,
                                            parameters,
                                            parsed_globals)
+        elif service_name == 'dfworkload' and operation_name == 'updateDeployment':
+            self._df_workload_update_deployment(client_creator,
+                                                operation_model,
+                                                parameters,
+                                                parsed_globals)
+            return True
         else:
             raise DfExtensionError(
                 err_msg='The operation is not supported.',
@@ -143,3 +149,105 @@ class DfExtension(CLIOperationCaller):
         operation_name = operation_model.name
         response = upload_workload_asset(client, parameters)
         self._display_response(operation_name, response, parsed_globals)
+
+    def _df_workload_update_deployment(self, client_creator, operation_model,
+                                       parameters, parsed_globals):
+        kpis = parameters.get('kpis', None)
+        if kpis:
+            self._process_kpis(kpis)
+
+        if self._has_asset_references(parameters):
+            df_workload_client = client_creator('dfworkload')
+
+            deployment_crn = parameters.get('deploymentCrn', None)
+            environment_crn = parameters.get('environmentCrn', None)
+            asset_update_request_crn = self._get_asset_update_request_crn(
+                    df_workload_client, environment_crn, deployment_crn)
+
+            LOG.debug('Asset Update Request CRN [%s]' % asset_update_request_crn)
+            parameters['assetUpdateRequestCrn'] = asset_update_request_crn
+
+            try:
+                self._upload_asset_references(
+                        df_workload_client, asset_update_request_crn, parameters)
+            except CdpCLIError:
+                df_workload_client.abort_asset_update_request(
+                    deploymentCrn=deployment_crn,
+                    environmentCrn=environment_crn,
+                    assetUpdateRequestCrn=asset_update_request_crn
+                )
+                raise
+
+    def _process_kpis(self, kpis):
+        """
+        Process Key Performance Indicators and set required unit properties
+        """
+        for kpi in kpis:
+            alert = kpi.get('alert', None)
+            if alert:
+                frequency_tolerance = alert.get('frequencyTolerance', None)
+                if frequency_tolerance:
+                    unit = frequency_tolerance['unit']
+                    id = unit['id']
+                    unit['label'] = id.capitalize()
+                    unit['abbreviation'] = id[:1].lower()
+
+    def _has_asset_references(self,
+                              parameters):
+        """
+        Evaluate Parameter Groups and Parameters for Asset References
+        """
+        parameter_groups = parameters.get('parameterGroups', None)
+        if parameter_groups:
+            for parameter_group in parameter_groups:
+                parameters = parameter_group['parameters']
+                for parameter in parameters:
+                    asset_references = parameter.get('assetReferences', None)
+                    if asset_references:
+                        for asset_ref in asset_references:
+                            asset_path = asset_ref.get('path', None)
+                            if asset_path:
+                                return True
+
+        return False
+
+    def _get_asset_update_request_crn(self,
+                                      df_workload_client,
+                                      environment_crn,
+                                      deployment_crn):
+        response = df_workload_client.create_asset_update_request(
+                deploymentCrn=deployment_crn,
+                environmentCrn=environment_crn
+        )
+        return response.get('assetUpdateRequestCrn', None)
+
+    def _upload_asset_references(self,
+                                 df_workload_client,
+                                 asset_update_request_crn,
+                                 parameters):
+        """
+        Process Parameter Groups and upload Asset References
+        """
+        parameter_groups = parameters.get('parameterGroups', None)
+        if parameter_groups:
+            for parameter_group in parameter_groups:
+                parameter_group_name = parameter_group['name']
+                parameters = parameter_group['parameters']
+                for parameter in parameters:
+                    asset_references = parameter.get('assetReferences', None)
+                    if asset_references:
+                        for asset_reference in asset_references:
+                            asset_path = asset_reference.get('path', None)
+                            if asset_path:
+                                asset_params = {
+                                    'assetUpdateRequestCrn': asset_update_request_crn,
+                                    'parameterGroup': parameter_group_name,
+                                    'parameterName': parameter.get('name', None),
+                                    'filePath': asset_path
+                                }
+                                upload_workload_asset(df_workload_client, asset_params)
+
+                                file_path = get_expanded_file_path(asset_path)
+                                path, name = os.path.split(file_path)
+                                asset_reference['name'] = name
+                                asset_reference['path'] = path

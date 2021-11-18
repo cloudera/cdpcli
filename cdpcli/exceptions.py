@@ -75,6 +75,7 @@ class ClientError(Exception):
             http_status_code=http_status_code,
             request_id=request_id)
         super(ClientError, self).__init__(msg)
+        self.http_status_code = http_status_code
         self.response = error_response
 
 

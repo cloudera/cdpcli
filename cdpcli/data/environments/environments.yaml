@@ -1898,6 +1898,9 @@ definitions:
       reportDeploymentLogs:
         type: boolean
         description: When true, this will report additional diagnostic information back to Cloudera.
+      freeIpa:
+        $ref: '#/definitions/GCPFreeIpaCreationRequest'
+        description: The FreeIPA creation request for the environment
       tags:
         type: array
         description: Tags that can be attached to GCP resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
@@ -3066,6 +3069,14 @@ definitions:
         type: integer
         format: int32
         description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
+  GCPFreeIpaCreationRequest:
+    description: Request object for creating FreeIPA in the environment.
+    type: object
+    properties:
+      instanceCountByGroup:
+        type: integer
+        format: int32
+        description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
   FreeIpaImageRequest:
     description: Request object for FreeIPA image.
     type: object
@@ -3156,7 +3167,7 @@ definitions:
         description: A description for the proxy config.
       noProxyHosts:
         type: string
-        description: Comma-separated list of 'host[:port]' (can be a subdomain as well) and 'IP[:port]' entries that should not be proxied. Wildcards are not accepted. For example cloudera.com,192.168.1.1
+        description: Comma-separated list of 'CIDR', '[.]host[:port]' (can be a subdomain as well) and 'IP[:port]' entries that should not be proxied. Wildcards are not accepted. For example .cloudera.com,192.168.1.1
       user:
         type: string
         description: The proxy user.
@@ -3190,7 +3201,7 @@ definitions:
         description: A description for the proxy config.
       noProxyHosts:
         type: string
-        description: Comma-separated list of 'host[:port]' (can be a subdomain as well) and 'IP[:port]' entries that should not be proxied. Wildcards are not accepted. For example cloudera.com,192.168.1.1
+        description: Comma-separated list of 'CIDR', '[.]host[:port]' (can be a subdomain as well) and 'IP[:port]' entries that should not be proxied. Wildcards are not accepted. For example .cloudera.com,192.168.1.1
       user:
         type: string
         description: The proxy user.

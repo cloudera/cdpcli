@@ -297,3 +297,143 @@ class TestDfExtension(unittest.TestCase):
             upload_workload_asset(self.client, parameters)
         self.assertEqual(0, self.client.make_api_call.call_count)
         self.assertEqual(0, self.client.make_request.call_count)
+
+    def test_kpis(self):
+        operation_model = Mock()
+        operation_model.name = 'updateDeployment'
+        operation_model.service_model = Mock(service_name='dfworkload')
+
+        frequencyUnit = {
+            'id': 'MINUTES'
+        }
+        frequencyUnitUpdated = {
+            'id': 'MINUTES',
+            'label': 'Minutes',
+            'abbreviation': 'm'
+        }
+        kpi = {
+            'metricId': 'cpuUtilization',
+            'alert': {
+                'thresholdMoreThan': {
+                    'unitId': 'percentage',
+                    'value': 75.5
+                },
+                'frequencyTolerance': {
+                    'unit': frequencyUnit,
+                    'value': 2.5
+                }
+            }
+        }
+        parameters = {
+            'kpis': [
+                kpi
+            ]
+        }
+
+        parsed_args = Mock()
+        parsed_globals = Mock()
+
+        extension = DfExtension()
+
+        result = extension.invoke(self.client_creator,
+                                  operation_model,
+                                  parameters,
+                                  parsed_args,
+                                  parsed_globals)
+        self.assertTrue(result)
+
+        self.assertEquals(
+            kpi['alert']['frequencyTolerance']['unit'],
+            frequencyUnitUpdated
+        )
+
+    def test_no_asset_references(self):
+        operation_model = Mock()
+        operation_model.name = 'updateDeployment'
+        operation_model.service_model = Mock(service_name='dfworkload')
+        parameters = {
+            'parameterGroups': [
+                {
+                    'parameters': [
+                        {
+                            'name': 'parameterName',
+                            'value': 'parameterValue'
+                        }
+                    ]
+                }
+            ]
+        }
+        parsed_args = Mock()
+        parsed_globals = Mock()
+
+        extension = DfExtension()
+
+        result = extension.invoke(self.client_creator,
+                                  operation_model,
+                                  parameters,
+                                  parsed_args,
+                                  parsed_globals)
+        self.assertTrue(result)
+
+    def test_asset_references_uploaded(self):
+        operation_model = Mock()
+        operation_model.name = 'updateDeployment'
+        operation_model.service_model = Mock(service_name='dfworkload')
+
+        deployment_crn = 'DEPLOYMENT_CRN'
+        asset_reference_name = 'df-workload.asset.bin'
+        asset_reference_file_path = os.path.join(BASE_DIR, asset_reference_name)
+        parameter_group_name = 'TestParameterGroup'
+        parameter_name = 'TestParameter'
+
+        parameters = {
+            'deploymentCrn': deployment_crn,
+            'parameterGroups': [
+                {
+                    'name': parameter_group_name,
+                    'parameters': [
+                        {
+                            'name': parameter_name,
+                            'assetReferences': [
+                                {
+                                    'path': asset_reference_file_path
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        parsed_args = Mock()
+        parsed_globals = Mock()
+
+        extension = DfExtension()
+
+        asset_update_request_crn = 'ASSET_UPDATE_REQUEST_CRN'
+        update_response = {
+            'assetUpdateRequestCrn': asset_update_request_crn
+        }
+        self.client.create_asset_update_request.return_value = update_response
+
+        self.client.make_request.return_value = (Mock(status_code=200), {})
+
+        result = extension.invoke(self.client_creator,
+                                  operation_model,
+                                  parameters,
+                                  parsed_args,
+                                  parsed_globals)
+        self.assertTrue(result)
+
+        found_request_crn = parameters.get('assetUpdateRequestCrn', None)
+        self.assertEquals(asset_update_request_crn, found_request_crn)
+
+        self.assertEquals(
+            {
+                'Content-Type': 'application/octet-stream',
+                'Asset-Update-Request-Crn': asset_update_request_crn,
+                'File-Path': asset_reference_file_path,
+                'Parameter-Group': parameter_group_name,
+                'Parameter-Name': parameter_name
+            },
+            self.client.make_request.call_args[0][3]
+        )
