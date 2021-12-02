@@ -929,11 +929,9 @@ definitions:
   HdfsArguments:
     type: object
     description: Extra properties for HDFS.
-    required:
-      - path
     properties:
       path:
-        description: HDFS path.
+        description: HDFS path. Mandatory for HDFS policies, otherwise optional.
         type: string
       replicationStrategy:
         description: Replication strategy.

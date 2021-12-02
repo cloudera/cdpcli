@@ -1374,7 +1374,7 @@ definitions:
         description: The name of the datalake to be restored. When backupId is not provided, the most recent successful backup on datalake with the provided name would be used.
       backupId:
         type: string
-        description: The ID of the backup to be used to perform a restore. The ID could refer to backup of any datalake in the same account. This is the only way to restore from a backup that was taken on a datalake with a different name.
+        description: The ID of the backup to be used to perform a restore. The ID could refer to backup of any datalake in the same account. This is the only way to restore from a backup that was taken on a datalake with a different name. This field is required if the --backup-location-override field is used.
       backupName:
         type: string
         description: The name of the backup. When provided, the restore will be performed using the latest successful backup whose name matches the parameter, and that was taken from the datalake that is being restored.
@@ -1383,7 +1383,7 @@ definitions:
         description: Restore the database backing HMS/Ranger services. If this option is not provided, the HMS/Ranger services are restored by default.
       backupLocationOverride:
         type: string
-        description: Backup location. When provided, will be used to lookup the backup.
+        description: Backup location. When provided, will be used to lookup the backup. If provided, the --backup-id parameter is required.
   RestoreDatalakeResponse:
     type: object
     description: Response object to a request to perform restore of datalake.
