@@ -423,6 +423,11 @@ definitions:
       - LOAD_BALANCER_UPDATE_IN_PROGRESS
       - LOAD_BALANCER_UPDATE_FINISHED
       - LOAD_BALANCER_UPDATE_FAILED
+      - UNREACHABLE
+      - NODE_FAILURE
+      - RECOVERY_IN_PROGRESS
+      - RECOVERY_REQUESTED
+      - RECOVERY_FAILED
   ListDatabasesRequest:
     type: object
     description: A request to list databases

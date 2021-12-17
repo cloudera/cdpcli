@@ -313,6 +313,12 @@ definitions:
         items:
           $ref: '#/definitions/ChartValueOverridesResponse'
         description: Chart overrides for the Virtual Cluster.
+      whitelistIps:
+        type: string
+        description: List of CIDRs that would be allowed to access kubernetes master API server.
+      subnets:
+        type: string
+        description: List of Subnet IDs of the CDP subnets used by the kubernetes worker node.
   ServiceResources:
     type: object
     description: Object to store resources for a CDE service.
@@ -562,6 +568,11 @@ definitions:
         type: boolean
         description: Skip Validation check.
         default: false
+      subnets:
+        type: array
+        items:
+          type: string
+        description: List of Subnet IDs of CDP subnets to use for the kubernetes worker node.
   EnableServiceResponse:
     type: object
     description: Response object for EnableService request.

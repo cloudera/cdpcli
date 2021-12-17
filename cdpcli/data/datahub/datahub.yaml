@@ -439,6 +439,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/replaceRecipes:
+    post:
+      summary: Replaces recipes for the given instance groups.
+      description: Replaces recipes for the given instance groups.
+      operationId: replaceRecipes
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ReplaceRecipesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ReplaceRecipesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datahub/listClusterDefinitions:
     post:
       summary: Lists cluster definitions. A cluster definition is a reusable template in JSON format that can be used for creating multiple Data Hub clusters with identical cloud provider settings.
@@ -1949,6 +1970,65 @@ definitions:
         items:
           $ref: '#/definitions/RecipeSummary'
         description: The recipes.
+  ReplaceRecipesRequest:
+    type: object
+    description: The request for replacing recipes.
+    required:
+      - datahub
+      - instanceGroupRecipes
+    properties:
+      datahub:
+        type: string
+        description: The name or CRN of the datahub.
+      instanceGroupRecipes:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroupRecipeRequest'
+        description: The list of instance group and recipe name pairs.
+  ReplaceRecipesResponse:
+    type: object
+    description: The response for replacing recipes.
+    properties:
+      attachedRecipes:
+        type: array
+        description: The list of recipes, which will be attached to the cluster.
+        items:
+          $ref: '#/definitions/InstanceGroupRecipeResponse'
+      detachedRecipes:
+        type: array
+        description: The list of recipes, which will be detached from the cluster.
+        items:
+          $ref: '#/definitions/InstanceGroupRecipeResponse'
+  InstanceGroupRecipeRequest:
+    type: object
+    description: Represents an instance group - recipe pair (by names) request.
+    required:
+      - instanceGroupName
+    properties:
+      instanceGroupName:
+        type: string
+        description: A valid instance/host group name. This name must be unique.
+      recipeNames:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+        description: Names of the recipes (empty is valid).
+  InstanceGroupRecipeResponse:
+    type: object
+    description: Represents an instance group - recipe pair (by names) response.
+    required:
+      - instanceGroupName
+    properties:
+      instanceGroupName:
+        type: string
+        description: A valid instance/host group name. This name must be unique.
+      recipeNames:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+        description: Names of the recipes (empty is valid).
   CreateClusterDefinitionRequest:
     type: object
     description: Request object for create cluster definition request.

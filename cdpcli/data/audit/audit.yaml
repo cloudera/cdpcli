@@ -42,6 +42,29 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/audit/batchEventsForArchiving:
+    post:
+      summary: Create batches of audit events to be archived.
+      description: 'Create batches of audit events to be archived. This is an asynchronous operation; use the task ID in the response to get the status of the operation. If automated archiving is configured, then this operation is disabled. NOTE: If an operation is currently in progress, another operation cannot be started.'
+      operationId: batchEventsForArchiving
+      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
+      x-right: audit/batchEventsForArchiving
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BatchEventsForArchivingRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/BatchEventsForArchivingResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/audit/configureArchiving:
     post:
       summary: Configures the audit system for archiving audit events to external cloud storage.
@@ -110,6 +133,28 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/audit/getBatchEventsForArchivingStatus:
+    post:
+      summary: Get the status of creating batches of audit events to be archived.
+      description: Get the status of creating batches of audit events to be archived. If automated archiving is configured, then this operation is disabled.
+      operationId: getBatchEventsForArchivingStatus
+      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
+      x-right: audit/getBatchEventsForArchivingStatus
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetBatchEventsForArchivingStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetBatchEventsForArchivingStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/audit/listEvents:
     post:
       summary: List all audit events recorded in a specified time span, and optionally with a specified request ID and/or event source.
@@ -129,6 +174,51 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListEventsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/audit/listEventsInArchiveBatch:
+    post:
+      summary: List events contained in a single archive batch.
+      description: List events contained in a single archive batch. The batch must not be marked as successfully archived already. A batch's events may be listed multiple times, as long as it is not marked as successfully archived. If automated archiving is configured, then this operation is disabled.
+      operationId: listEventsInArchiveBatch
+      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
+      x-right: audit/listEventsInArchiveBatch
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListEventsInArchiveBatchRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListEventsInArchiveBatchResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/audit/listOutstandingArchiveBatches:
+    post:
+      summary: List outstanding (unarchived) archive batches.
+      description: Lists archive batches that have not yet been marked as successfully archived. Their contents remain available for listing. If automated archiving is configured, then this operation is disabled.
+      operationId: listOutstandingArchiveBatches
+      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
+      x-right: audit/listOutstandingArchiveBatches
+      x-paging-default-max-items: 20
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListOutstandingArchiveBatchesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListOutstandingArchiveBatchesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -155,6 +245,29 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/audit/markArchiveBatchesAsSuccessful:
+    post:
+      summary: Mark archive batches as successful.
+      description: Mark archive batches as successful. After a batch is marked as successfully archived, it is not considered outstanding and its events may no longer be listed. If automated archiving is configured, then this operation is disabled.
+      operationId: markArchiveBatchesAsSuccessful
+      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
+      x-right: audit/markArchiveBatchesAsSuccessful
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MarkArchiveBatchesAsSuccessfulRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/MarkArchiveBatchesAsSuccessfulResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
 definitions:
   Error:
     type: object
@@ -466,6 +579,124 @@ definitions:
         items:
           $ref: '#/definitions/ArchiveBatch'
         description: The details about the batches of events archived.
+  BatchEventsForArchivingRequest:
+    type: object
+    description: Request to create batches of audit events for archiving.
+    required:
+      - fromTimestamp
+      - toTimestamp
+    properties:
+      fromTimestamp:
+        type: string
+        format: date-time
+        description: The beginning POSIX epoch time, in milliseconds, for the search range.
+      toTimestamp:
+        type: string
+        format: date-time
+        description: The ending POSIX epoch time, in milliseconds, for the search range.
+  BatchEventsForArchivingResponse:
+    type: object
+    description: Response from creating batches of audit events for archiving.
+    properties:
+      taskId:
+        type: string
+        description: The ID of the asynchronous task to monitor.
+  GetBatchEventsForArchivingStatusRequest:
+    type: object
+    description: Request to get the status of creating batches of audit events to be archived.
+    properties:
+      taskId:
+        type: string
+        description: The ID of the asynchronous task to monitor.
+  GetBatchEventsForArchivingStatusResponse:
+    type: object
+    description: Response from getting the status of creating batches of audit events to be archived.
+    properties:
+      status:
+        description: The task status.
+        $ref: '#/definitions/AsyncTaskStatus'
+      eventBatches:
+        type: array
+        items:
+          $ref: '#/definitions/ArchiveBatch'
+        description: The details about the created batches, if the task completed successfully.
+  ListOutstandingArchiveBatchesRequest:
+    type: object
+    description: Request to list outstanding archive batches.
+    properties:
+      fromTimestamp:
+        type: string
+        format: date-time
+        description: The beginning POSIX epoch time, in milliseconds, for the search range (inclusive).
+      toTimestamp:
+        type: string
+        format: date-time
+        description: The ending POSIX epoch time, in milliseconds, for the search range (exclusive).
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 20
+        maximum: 100
+        x-paging-page-size: true
+        description: The page size.
+      pageToken:
+        type: string
+        x-paging-input-token: true
+        description: The page token.
+  ListOutstandingArchiveBatchesResponse:
+    type: object
+    description: The response from listing outstanding archive batches.
+    properties:
+      eventBatches:
+        type: array
+        x-paging-result: true
+        items:
+          $ref: '#/definitions/ArchiveBatch'
+        description: The details about the outstanding batches of events.
+      nextPageToken:
+        type: string
+        x-paging-output-token: true
+        description: The page token for requesting the next page of results.
+  ListEventsInArchiveBatchRequest:
+    type: object
+    description: Request to list events contained in a single archive batch.
+    required:
+      - archiveId
+    properties:
+      archiveId:
+        type: string
+        description: The archive ID of the batch.
+  ListEventsInArchiveBatchResponse:
+    type: object
+    description: Response from listing events contained in a single archive batch.
+    properties:
+      auditEvents:
+        type: array
+        items:
+          $ref: '#/definitions/CdpAuditEvent'
+        description: The audit events in the archive batch.
+  MarkArchiveBatchesAsSuccessfulRequest:
+    type: object
+    description: Request to mark archive batches as successful.
+    properties:
+      archiveIds:
+        type: array
+        items:
+          type: string
+        description: The archive IDs of the batches to mark.
+  MarkArchiveBatchesAsSuccessfulResponse:
+    type: object
+    description: Response from marking archive batches as successful.
+    properties:
+      archiveIds:
+        type: array
+        items:
+          type: string
+        description: The archive IDs of the batches marked as successful.
+      archiveTimestamp:
+        type: string
+        format: date-time
+        description: The archive timestamp marked for each batch.
   ArchiveBatch:
     type: object
     description: Information about a batch of audit events that were archived.

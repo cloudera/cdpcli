@@ -1851,6 +1851,15 @@ definitions:
       createPrivateEndpoints:
         type: boolean
         description: When this is enabled, then Azure Postgres will be configured with Private Endpoint and a Private DNS Zone. When this is disabled, then Azure Service Endpoints will be created. The default value is disabled.
+      encryptionKeyUrl:
+        type: string
+        description: URL of the key which will be used to encrypt the Azure Managed Disks, if entitlement has been granted.
+        x-entitlement: CDP_CB_AZURE_DISK_SSE_WITH_CMK
+        x-no-paramfile: true
+      encryptionKeyResourceGroupName:
+        type: string
+        description: Name of the existing Azure resource group hosting the Azure Key Vault containing customer managed key which will be used to encrypt the Azure Managed Disks. It is required only when the entitlement is granted and the resource group of the key vault is different from the resource group in which the environment is to be created. Omitting it implies that, the key vault containing the encryption key is present in the same resource group where the environment would be created.
+        x-entitlement: CDP_CB_AZURE_DISK_SSE_WITH_CMK
   CreateGCPEnvironmentRequest:
     type: object
     description: Request object for a create GCP environment request.
