@@ -47,7 +47,6 @@ paths:
       summary: Create batches of audit events to be archived.
       description: 'Create batches of audit events to be archived. This is an asynchronous operation; use the task ID in the response to get the status of the operation. If automated archiving is configured, then this operation is disabled. NOTE: If an operation is currently in progress, another operation cannot be started.'
       operationId: batchEventsForArchiving
-      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
       x-right: audit/batchEventsForArchiving
       parameters:
         - name: input
@@ -138,7 +137,6 @@ paths:
       summary: Get the status of creating batches of audit events to be archived.
       description: Get the status of creating batches of audit events to be archived. If automated archiving is configured, then this operation is disabled.
       operationId: getBatchEventsForArchivingStatus
-      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
       x-right: audit/getBatchEventsForArchivingStatus
       parameters:
         - name: input
@@ -183,7 +181,6 @@ paths:
       summary: List events contained in a single archive batch.
       description: List events contained in a single archive batch. The batch must not be marked as successfully archived already. A batch's events may be listed multiple times, as long as it is not marked as successfully archived. If automated archiving is configured, then this operation is disabled.
       operationId: listEventsInArchiveBatch
-      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
       x-right: audit/listEventsInArchiveBatch
       parameters:
         - name: input
@@ -205,7 +202,6 @@ paths:
       summary: List outstanding (unarchived) archive batches.
       description: Lists archive batches that have not yet been marked as successfully archived. Their contents remain available for listing. If automated archiving is configured, then this operation is disabled.
       operationId: listOutstandingArchiveBatches
-      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
       x-right: audit/listOutstandingArchiveBatches
       x-paging-default-max-items: 20
       parameters:
@@ -250,7 +246,6 @@ paths:
       summary: Mark archive batches as successful.
       description: Mark archive batches as successful. After a batch is marked as successfully archived, it is not considered outstanding and its events may no longer be listed. If automated archiving is configured, then this operation is disabled.
       operationId: markArchiveBatchesAsSuccessful
-      x-entitlement: AUDIT_PULL_BASED_ARCHIVING
       x-right: audit/markArchiveBatchesAsSuccessful
       parameters:
         - name: input

@@ -711,6 +711,9 @@ definitions:
       cloudStorageBaseLocation:
         type: string
         description: The base location for the cloud storage used for the datalake.
+      enableRangerRaz:
+        type: boolean
+        description: Whether Ranger RAZ is enabled for the datalake.
   InstanceGroup:
     type: object
     description: The type of the instance group which also contains the actual instance(s)
@@ -811,6 +814,9 @@ definitions:
       statusReason:
         type: string
         description: The reason for the status of the datalake.
+      enableRangerRaz:
+        type: boolean
+        description: Whether Ranger RAZ is enabled for the datalake.
       certificateExpirationState:
         type: string
         description: Indicates the certificate status on the cluster.
@@ -943,6 +949,9 @@ definitions:
       image:
         $ref: '#/definitions/ImageRequest'
         description: The image to use for the datalake. This must not be set if the runtime parameter is provided.
+      enableRangerRaz:
+        type: boolean
+        description: Whether to enable Ranger RAZ for the datalake. Defaults to not being enabled.
   CreateAWSDatalakeResponse:
     type: object
     description: Response object for create AWS datalake request.
@@ -986,6 +995,9 @@ definitions:
       image:
         $ref: '#/definitions/ImageRequest'
         description: The image to use for the datalake. This must not be set if the runtime parameter is provided.
+      enableRangerRaz:
+        type: boolean
+        description: Whether to enable Ranger RAZ for the datalake. Defaults to not being enabled.
   CreateAzureDatalakeResponse:
     type: object
     description: Response object for create Azure datalake request.
@@ -1001,6 +1013,7 @@ definitions:
     required:
       - datalakeName
       - environmentName
+      - cloudProviderConfiguration
     properties:
       datalakeName:
         type: string
