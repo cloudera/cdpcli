@@ -1374,7 +1374,7 @@ paths:
       summary: Generates an authentication token for workload APIs.
       description: Generates an authentication token which is required for sending requests to workload APIs.
       operationId: generateWorkloadAuthToken
-      x-form-factors: public
+      x-form-factors: public,private
       x-mutating: false
       parameters:
         - name: input
@@ -1410,7 +1410,7 @@ definitions:
     properties:
       clouderaSSOLoginEnabled:
         type: boolean
-        description: Whether interactive login using Cloudera SSO is enabled.
+        description: Whether interactive login using Cloudera SSO is enabled for users who are not account administrators. Its default value is 'true'. When it is 'true', the account administrators, as well as non-administrator users can login through Cloudera SSO. When it is 'false', Cloudera SSO users who are not account administrators will not be able to login.
   User:
     type: object
     description: Information about a Cloudera CDP user.

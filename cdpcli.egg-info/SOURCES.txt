@@ -61,6 +61,7 @@ cdpcli/data/de/de.yaml
 cdpcli/data/dw/dw.yaml
 cdpcli/data/environments/environments.yaml
 cdpcli/data/iam/iam.yaml
+cdpcli/data/imagecatalog/imagecatalog.yaml
 cdpcli/data/ml/ml.yaml
 cdpcli/data/opdb/opdb.yaml
 cdpcli/data/replicationmanager/replicationmanager.yaml

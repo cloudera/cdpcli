@@ -157,6 +157,26 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/de/updateService:
+    post:
+      summary: Update Cloudera Data Engineering (CDE) Service
+      description: Returns update response consisting of operation ID that can be used to log update events.
+      operationId: updateService
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateServiceRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateServiceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/de/getKubeconfig:
     post:
       summary: Get Kubeconfig for the CDE service
@@ -580,6 +600,43 @@ definitions:
       service:
         description: Service details of the created service.
         $ref: '#/definitions/ServiceDescription'
+  UpdateServiceRequest:
+    type: object
+    description: Request object for UpdateService method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: Cluster ID of the service to update.
+      minimumInstances:
+        type: integer
+        format: int32
+        description: Minimum number of instances for the CDE service.
+      maximumInstances:
+        type: integer
+        format: int32
+        description: Maximum number of instances for the CDE service.
+      minimumSpotInstances:
+        type: integer
+        format: int32
+        description: Minimum number of spot instances for the CDE service.
+      maximumSpotInstances:
+        type: integer
+        format: int32
+        description: Maximum number of spot instances for the CDE service.
+      whitelistIps:
+        type: array
+        items:
+          type: string
+        description: List of CIDRs that would be allowed to access kubernetes master API server.
+  UpdateServiceResponse:
+    type: object
+    description: Response object for UpdateService request.
+    properties:
+      operationId:
+        type: string
+        description: The operation ID of the update request.
   ListServicesResponse:
     type: object
     description: Response object for ListServices method.

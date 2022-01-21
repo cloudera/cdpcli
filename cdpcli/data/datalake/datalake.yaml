@@ -584,6 +584,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datalake/setCatalog:
+    post:
+      summary: Sets a catalog for a DataLake.
+      description: Sets a catalog for a DataLake.
+      operationId: setCatalog
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetCatalogRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetCatalogResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/syncComponentVersionsFromCm:
+    post:
+      summary: Syncs component versions from CM after a failed upgrade.
+      description: Syncs component versions from CM after a failed upgrade.
+      x-no-compatibility-guarantee: true
+      operationId: syncComponentVersionsFromCm
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SyncComponentVersionsFromCmRequest'
+      responses:
+        200:
+          description: Expected response to a valid sync datahub CM component versions request.
+          schema:
+            $ref: '#/definitions/SyncComponentVersionsFromCmResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -1951,3 +1993,33 @@ definitions:
         type: string
         description: The name of the custom image catalog to use.
         default: cdp-default
+  SetCatalogRequest:
+    type: object
+    description: The request object to set catalog for a DataLake.
+    required:
+      - datalake
+      - catalogName
+    properties:
+      datalake:
+        type: string
+        description: The name or CRN of the affected DataLake.
+      catalogName:
+        type: string
+        description: The name of the catalog to be used.
+  SetCatalogResponse:
+    type: object
+    description: The response object to set catalog for a DataLake request.
+  SyncComponentVersionsFromCmRequest:
+    x-no-compatibility-guarantee: true
+    type: object
+    description: Datalake sync CM component versions request.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+  SyncComponentVersionsFromCmResponse:
+    x-no-compatibility-guarantee: true
+    type: object
+    description: Datalake sync CM component versions response.

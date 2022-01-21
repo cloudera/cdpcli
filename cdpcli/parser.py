@@ -30,10 +30,22 @@ class ResponseParser(object):
     def parse(self, response, shape):
         if response['status_code'] >= 301:
             return self._parse_error(response)
+        elif 'Content-Type' in response['headers'] and \
+             not self._is_json_response(response['headers']['Content-Type']):
+            return response['body']
         elif shape is None:
             return {}
         else:
             return self._parse_shape(shape, self._decode_body(response))
+
+    def _is_json_response(self, content_type):
+        if not content_type:
+            return False
+        if content_type == 'application/json':
+            return True
+        if content_type.startswith('application/json;'):
+            return True
+        return False
 
     def _decode_body(self, response):
         body = response['body']

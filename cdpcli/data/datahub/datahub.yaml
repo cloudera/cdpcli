@@ -898,6 +898,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/setCatalog:
+    post:
+      summary: Sets a catalog for a DataHub.
+      description: Sets a catalog for a DataHub.
+      operationId: setCatalog
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetCatalogRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetCatalogResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -2979,3 +3000,19 @@ definitions:
       reason:
         type: string
         description: The reason why upgrade is not possible.
+  SetCatalogRequest:
+    type: object
+    description: The request object to set catalog for a DataHub.
+    required:
+      - cluster
+      - catalogName
+    properties:
+      cluster:
+        type: string
+        description: The name or CRN of the affected DataHub cluster.
+      catalogName:
+        type: string
+        description: The name of the catalog to be used.
+  SetCatalogResponse:
+    type: object
+    description: The response object to set catalog for a DataHub request.
