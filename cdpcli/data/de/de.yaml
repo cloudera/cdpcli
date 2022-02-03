@@ -1,7 +1,7 @@
 swagger: '2.0'
 x-endpoint-name: de
 x-products: CDP
-x-form-factors: public
+x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
   version: __API_VERSION__

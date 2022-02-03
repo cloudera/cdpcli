@@ -363,6 +363,63 @@ definitions:
       eventSource:
         type: string
         description: The optional source service. If specified, only events associated with this event source are returned. The source must be the name of a service as enumerated in the CRN definition.
+      eventName:
+        type: string
+        description: The optional event name. If specified, only events with this name are returned.
+      actorCrn:
+        type: string
+        description: The optional actor CRN. If specified, only events with this CRN recorded for the actor identity are returned.
+      resultCode:
+        type: string
+        description: The optional result code. If specified, only events with this result code are returned. Events without a result code are not returned.
+      resultMessage:
+        type: string
+        description: The optional result message. If specified, only events with this result message are returned. Events without a result message are not returned.
+      apiRequestEventCriteria:
+        description: Optional additional filtering criteria for listing API request audit events.
+        $ref: '#/definitions/ApiRequestEventCriteria'
+      cdpServiceEventCriteria:
+        description: Optional additional filtering criteria for listing CDP service audit events.
+        $ref: '#/definitions/CdpServiceEventCriteria'
+      interactiveLoginEventCriteria:
+        description: Optional additional filtering criteria for listing interactive login audit events.
+        $ref: '#/definitions/InteractiveLoginEventCriteria'
+  ApiRequestEventCriteria:
+    type: object
+    description: Filter criteria for listing API request audit events.
+    properties:
+      sourceIPAddress:
+        type: string
+        description: The source IP address of the requester.
+      userAgent:
+        type: string
+        description: The user agent that made the API request.
+  CdpServiceEventCriteria:
+    type: object
+    description: Filter criteria for listing CDP service audit events.
+    properties:
+      resourceCrn:
+        type: string
+        description: The CRN of the resource operated on.
+  InteractiveLoginEventCriteria:
+    type: object
+    description: Filter criteria for listing interactive login audit events.
+    properties:
+      identityProviderUserId:
+        type: string
+        description: The user ID as indicated by the identity provider. The specific format and type of this identifier is determined by the IdP. For Cloudera SSO this is the email used to login.
+      email:
+        type: string
+        description: The email of the user as provided to CDP.
+      sourceIPAddress:
+        type: string
+        description: The source IP address from which the login request came.
+      firstName:
+        type: string
+        description: The first name of the user.
+      lastName:
+        type: string
+        description: The last name of the user.
   ListEventsResponse:
     type: object
     description: Response object for the ListEvents method.
@@ -456,6 +513,11 @@ definitions:
       userCrn:
         type: string
         description: The CDP user CRN for the user. This may be empty if the login failed.
+      filteredInvalidGroups:
+        type: array
+        items:
+          type: string
+        description: 'The groups that are invalid and filtered (ignored) during the interactive login through non Cloudera SSO IdP. It is a subset of the groups the user belongs to as received in CDP. It can be empty for any of the following reasons: 1) If the account is not entitled for this feature. 2) If the membership sync is off for the IdP used during the interactive login. 3) If all the groups were valid during login through non Cloudera SSO IdP. 4) If the login is performed through Cloudera SSO. 5) If the login fails before filtering invalid groups.'
   ActorIdentity:
     type: object
     description: Identity information about the actor that initiated an event. Only one of the fields in this message may be set.
