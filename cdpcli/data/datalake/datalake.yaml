@@ -584,6 +584,26 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datalake/recoverDatalake:
+    post:
+      summary: Recover datalake to the original version after a failed upgrade.
+      description: Recover datalake to the original version after a failed upgrade.
+      operationId: recoverDatalake
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RecoverDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid recover datalake request.
+          schema:
+            $ref: '#/definitions/RecoverDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datalake/setCatalog:
     post:
       summary: Sets a catalog for a DataLake.
@@ -1993,6 +2013,24 @@ definitions:
         type: string
         description: The name of the custom image catalog to use.
         default: cdp-default
+  RecoverDatalakeRequest:
+    type: object
+    description: Datalake recover request.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+      recoveryType:
+        type: string
+        description: The type of the recovery. The default value is RECOVER_WITHOUT_DATA.
+        enum:
+          - RECOVER_WITH_DATA
+          - RECOVER_WITHOUT_DATA
+  RecoverDatalakeResponse:
+    type: object
+    description: Datalake recover response.
   SetCatalogRequest:
     type: object
     description: The request object to set catalog for a DataLake.

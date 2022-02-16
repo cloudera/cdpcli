@@ -457,6 +457,9 @@ definitions:
       accessControl:
         description: Access control object for the Virtual Cluster.
         $ref: '#/definitions/AccessControlResponse'
+      smtpConfig:
+        description: SMTP Configurations for Airflow Email Alerts.
+        $ref: '#/definitions/SmtpConfigResponse'
   VcResources:
     type: object
     properties:
@@ -493,6 +496,68 @@ definitions:
         type: string
         description: Space separated key value-pairs for overriding chart values. The key and the value must be separated using a colon(:) For eg- "airflow.enabled:true safari.enabled:true".
     description: Response object containing chart value overrides.
+  SmtpConfigRequest:
+    type: object
+    description: SMTP config request object.
+    required:
+      - email
+      - host
+    properties:
+      email:
+        type: string
+        description: Sender's email address.
+      host:
+        type: string
+        description: SMTP host.
+      username:
+        type: string
+        description: SMTP username.
+      password:
+        type: string
+        description: SMTP password.
+        x-sensitive: true
+      port:
+        type: integer
+        format: int32
+        default: 25
+        description: SMTP port.
+      startTls:
+        type: boolean
+        default: true
+        description: Use SMTP STARTTLS command to encrypt the mail.
+      ssl:
+        type: boolean
+        default: false
+        description: Use SSL to secure the connection to the email server.
+  SmtpConfigResponse:
+    type: object
+    description: SMTP config response object
+    required:
+      - email
+      - host
+    properties:
+      email:
+        type: string
+        description: Sender's email address.
+      host:
+        type: string
+        description: SMTP host.
+      username:
+        type: string
+        description: SMTP username.
+      port:
+        type: integer
+        format: int32
+        default: 25
+        description: SMTP port.
+      startTls:
+        type: boolean
+        default: true
+        description: Use SMTP STARTTLS command to encrypt the mail.
+      ssl:
+        type: boolean
+        default: false
+        description: Use SSL to secure the connection to the email server.
   AccessControlResponse:
     type: object
     description: Response object containing access control information for a Virtual Cluster.
@@ -762,6 +827,9 @@ definitions:
         items:
           $ref: '#/definitions/ChartValueOverridesRequest'
         description: Chart overrides for creating a virtual cluster.
+      smtpConfigs:
+        $ref: '#/definitions/SmtpConfigRequest'
+        description: SMTP Configurations for Airflow Email Alerts.
       runtimeSpotComponent:
         type: string
         description: Used to describe where the Driver and the Executors would run. By default the Driver would run on on-demand instances and the Executors on spot instances. Setting it to ALL will run both the Driver and the Executors on spot instances whereas setting it to NONE should run both the Driver and the Executor on on-demand instances. Currently applicable for aws services only. Use this option only on services with spot instances enabled.

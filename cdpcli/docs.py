@@ -51,8 +51,10 @@ def generate_doc(generator, help_command):
         for arg_name in help_command.arg_table:
             if _is_argument_hidden(help_command.arg_table[arg_name]):
                 continue
+            generator.doc_option_start(arg_name, help_command)
             generator.doc_option(arg_name, help_command)
             generator.doc_option_example(arg_name, help_command)
+            generator.doc_option_end(arg_name, help_command)
     generator.doc_options_end(help_command)
     generator.doc_subitems_start(help_command)
     if help_command.command_table:
@@ -146,37 +148,21 @@ class CLIDocumentGenerator(object):
         self._documented_arg_groups = []
 
     def doc_options_start(self, help_command):
-        doc = help_command.doc
-        doc.style.h2('Options')
-        if not help_command.arg_table:
-            doc.write('*None*\n')
+        pass
 
-    def doc_options_end(self, help_command):
+    def doc_option_start(self, arg_name, help_command):
         pass
 
     def doc_option(self, arg_name, help_command):
-        doc = help_command.doc
-        argument = help_command.arg_table[arg_name]
-        if _is_argument_hidden(argument):
-            return
-        if argument.group_name in self._arg_groups:
-            if argument.group_name in self._documented_arg_groups:
-                # This arg is already documented so we can move on.
-                return
-            name = ' | '.join(
-                ['``%s``' % a.cli_name for a in
-                 self._arg_groups[argument.group_name]])
-            self._documented_arg_groups.append(argument.group_name)
-        else:
-            name = '``%s``' % argument.cli_name
-        doc.write('%s (%s)\n' % (name, argument.cli_type_name))
-        doc.style.indent()
-        doc.include_doc_string(argument.documentation)
-        self._document_enums(argument, doc)
-        doc.style.dedent()
-        doc.style.new_paragraph()
+        pass
 
     def doc_option_example(self, arg_name, help_command):
+        pass
+
+    def doc_option_end(self, arg_name, help_command):
+        pass
+
+    def doc_options_end(self, help_command):
         pass
 
     def doc_relateditems_start(self, help_command):
@@ -192,23 +178,6 @@ class CLIDocumentGenerator(object):
             text=related_item
         )
         doc.write('\n')
-
-    def _document_enums(self, argument, doc):
-        if hasattr(argument, 'argument_model'):
-            model = argument.argument_model
-            if isinstance(model, StringShape):
-                if model.enum:
-                    self._write_possible_values(doc, model.enum)
-                if model.supported_options:
-                    self._write_possible_values(doc, model.supported_options)
-
-    def _write_possible_values(self, doc, possible_values):
-        doc.style.new_paragraph()
-        doc.write('Possible values:')
-        doc.style.start_ul()
-        for value in possible_values:
-            doc.style.li('``%s``' % value)
-        doc.style.end_ul()
 
     def doc_subitems_start(self, help_command):
         pass
@@ -245,6 +214,9 @@ class ProviderDocumentGenerator(CLIDocumentGenerator):
         doc = help_command.doc
         doc.style.h2('Options')
 
+    def doc_option_start(self, arg_name, help_command):
+        pass
+
     def doc_option(self, arg_name, help_command):
         doc = help_command.doc
         argument = help_command.arg_table[arg_name]
@@ -256,6 +228,15 @@ class ProviderDocumentGenerator(CLIDocumentGenerator):
             for choice in argument.choices:
                 doc.style.li(choice)
             doc.style.end_ul()
+
+    def doc_option_example(self, arg_name, help_command):
+        pass
+
+    def doc_option_end(self, arg_name, help_command):
+        pass
+
+    def doc_options_end(self, help_command):
+        pass
 
     def doc_subitems_start(self, help_command):
         doc = help_command.doc
@@ -291,10 +272,16 @@ class ServiceDocumentGenerator(CLIDocumentGenerator):
     def doc_options_start(self, help_command):
         pass
 
+    def doc_option_start(self, arg_name, help_command):
+        pass
+
     def doc_option(self, arg_name, help_command):
         pass
 
     def doc_option_example(self, arg_name, help_command):
+        pass
+
+    def doc_option_end(self, arg_name, help_command):
         pass
 
     def doc_options_end(self, help_command):
@@ -495,6 +482,41 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
                 self._json_example(doc, member_model, stack)
                 need_comma = True
 
+    def doc_options_start(self, help_command):
+        doc = help_command.doc
+        doc.style.h2('Options')
+        if not help_command.arg_table:
+            doc.write('*None*\n')
+
+    def doc_option_start(self, arg_name, help_command):
+        pass
+
+    def doc_option(self, arg_name, help_command):
+        doc = help_command.doc
+        argument = help_command.arg_table[arg_name]
+        if _is_argument_hidden(argument):
+            return
+        if argument.group_name in self._arg_groups:
+            if argument.group_name in self._documented_arg_groups:
+                # This arg is already documented so we can move on.
+                return
+            name = ' | '.join(
+                ['``%s``' % a.cli_name for a in
+                 self._arg_groups[argument.group_name]])
+        else:
+            name = '``%s``' % argument.cli_name
+        doc.write('%s (%s)\n' % (name, argument.cli_type_name))
+        doc.style.indent()
+        doc.style.new_paragraph()
+        doc.include_doc_string(argument.documentation)
+        self._document_enums(argument, doc)
+        if hasattr(argument.argument_model, 'members'):
+            doc.style.new_paragraph()
+            for member_name, member_shape in argument.argument_model.members.items():
+                self.doc_member(doc, member_name, member_shape, stack=[])
+        doc.style.dedent()
+        doc.style.new_paragraph()
+
     def doc_option_example(self, arg_name, help_command):
         doc = help_command.doc
         cli_argument = help_command.arg_table[arg_name]
@@ -553,12 +575,16 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
             doc.style.end_codeblock()
             doc.style.new_paragraph()
 
-    def _write_possible_values(self, doc, possible_values):
-        doc.style.new_paragraph()
-        doc.write("Possible values:\n")
-        for value in possible_values:
-            doc.write("    %s\n" % value)
-        doc.write("\n")
+    def doc_option_end(self, arg_name, help_command):
+        argument = help_command.arg_table[arg_name]
+        if argument.group_name in self._arg_groups:
+            if argument.group_name in self._documented_arg_groups:
+                # This arg is already documented so we can move on.
+                return
+            self._documented_arg_groups.append(argument.group_name)
+
+    def doc_options_end(self, help_command):
+        pass
 
     def doc_output(self, help_command):
         doc = help_command.doc
@@ -569,44 +595,7 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
             doc.write('None')
         else:
             for member_name, member_shape in output_shape.members.items():
-                self._doc_member_for_output(doc, member_name, member_shape, stack=[])
-
-    def _doc_member_for_output(self, doc, member_name, member_shape, stack):
-        if member_shape.name in stack:
-            # Document the recursion once, otherwise just
-            # note the fact that it's recursive and return.
-            if stack.count(member_shape.name) > 1:
-                if member_shape.type_name == OBJECT_TYPE:
-                    doc.write('( ... recursive ... )')
-                return
-        stack.append(member_shape.name)
-        try:
-            self._do_doc_member_for_output(doc, member_name,
-                                           member_shape, stack)
-        finally:
-            stack.pop()
-
-    def _do_doc_member_for_output(self, doc, member_name, member_shape, stack):
-        docs = member_shape.documentation
-        if member_name:
-            doc.write('%s -> (%s)' % (member_name, member_shape.type_name))
-        else:
-            doc.write('(%s)' % member_shape.type_name)
-        doc.style.indent()
-        doc.style.new_paragraph()
-        doc.include_doc_string(docs)
-        doc.style.new_paragraph()
-        member_type_name = member_shape.type_name
-        if member_type_name == OBJECT_TYPE:
-            for sub_name, sub_shape in member_shape.members.items():
-                self._doc_member_for_output(doc, sub_name, sub_shape, stack)
-        elif member_type_name == LIST_TYPE:
-            self._doc_member_for_output(doc, '', member_shape.member, stack)
-        elif member_type_name == MAP_TYPE:
-            self._doc_member_for_output(doc, 'key', member_shape.key, stack)
-            self._doc_member_for_output(doc, 'value', member_shape.value, stack)
-        doc.style.dedent()
-        doc.style.new_paragraph()
+                self.doc_member(doc, member_name, member_shape, stack=[])
 
     def doc_examples(self, help_command):
         operation = help_command.command_lineage.replace('.', os.path.sep)
@@ -631,3 +620,57 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
             doc.style.h2('Form Factors')
             doc.write(', '.join(form_factors))
             doc.style.new_paragraph()
+
+    def doc_member(self, doc, member_name, member_shape, stack):
+        if member_shape.name in stack:
+            # Document the recursion once, otherwise just
+            # note the fact that it's recursive and return.
+            if stack.count(member_shape.name) > 1:
+                if member_shape.type_name == OBJECT_TYPE:
+                    doc.write('( ... recursive ... )')
+                return
+        stack.append(member_shape.name)
+        try:
+            self._do_doc_member(doc, member_name,
+                                member_shape, stack)
+        finally:
+            stack.pop()
+
+    def _do_doc_member(self, doc, member_name, member_shape, stack):
+        docs = member_shape.documentation
+        if member_name:
+            doc.write('%s -> (%s)' % (member_name, member_shape.type_name))
+        else:
+            doc.write('(%s)' % member_shape.type_name)
+        doc.style.indent()
+        doc.style.new_paragraph()
+        doc.include_doc_string(docs)
+        doc.style.new_paragraph()
+        member_type_name = member_shape.type_name
+        if member_type_name == OBJECT_TYPE:
+            for sub_name, sub_shape in member_shape.members.items():
+                self.doc_member(doc, sub_name, sub_shape, stack)
+        elif member_type_name == LIST_TYPE:
+            self.doc_member(doc, 'item', member_shape.member, stack)
+        elif member_type_name == MAP_TYPE:
+            self.doc_member(doc, 'key', member_shape.key, stack)
+            self.doc_member(doc, 'value', member_shape.value, stack)
+        doc.style.dedent()
+        doc.style.new_paragraph()
+
+    def _document_enums(self, argument, doc):
+        if hasattr(argument, 'argument_model'):
+            model = argument.argument_model
+            if isinstance(model, StringShape):
+                if model.enum:
+                    self._write_possible_values(doc, model.enum)
+                if model.supported_options:
+                    self._write_possible_values(doc, model.supported_options)
+
+    def _write_possible_values(self, doc, possible_values):
+        doc.style.new_paragraph()
+        doc.write('Possible values:')
+        doc.style.start_ul()
+        for value in possible_values:
+            doc.style.li('``%s``' % value)
+        doc.style.end_ul()
