@@ -54,6 +54,7 @@ def generate_doc(generator, help_command):
             generator.doc_option_start(arg_name, help_command)
             generator.doc_option(arg_name, help_command)
             generator.doc_option_example(arg_name, help_command)
+            generator.doc_option_form_factors(arg_name, help_command)
             generator.doc_option_end(arg_name, help_command)
     generator.doc_options_end(help_command)
     generator.doc_subitems_start(help_command)
@@ -159,6 +160,9 @@ class CLIDocumentGenerator(object):
     def doc_option_example(self, arg_name, help_command):
         pass
 
+    def doc_option_form_factors(self, arg_name, help_command):
+        pass
+
     def doc_option_end(self, arg_name, help_command):
         pass
 
@@ -232,6 +236,9 @@ class ProviderDocumentGenerator(CLIDocumentGenerator):
     def doc_option_example(self, arg_name, help_command):
         pass
 
+    def doc_option_form_factors(self, arg_name, help_command):
+        pass
+
     def doc_option_end(self, arg_name, help_command):
         pass
 
@@ -279,6 +286,9 @@ class ServiceDocumentGenerator(CLIDocumentGenerator):
         pass
 
     def doc_option_example(self, arg_name, help_command):
+        pass
+
+    def doc_option_form_factors(self, arg_name, help_command):
         pass
 
     def doc_option_end(self, arg_name, help_command):
@@ -575,6 +585,18 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
             doc.style.end_codeblock()
             doc.style.new_paragraph()
 
+    def doc_option_form_factors(self, arg_name, help_command):
+        doc = help_command.doc
+        argument = help_command.arg_table[arg_name]
+        if _is_argument_hidden(argument):
+            return
+        if argument.group_name in self._arg_groups:
+            if argument.group_name in self._documented_arg_groups:
+                # This arg is already documented so we can move on.
+                return
+        if argument.argument_model.form_factors is not None:
+            self._write_form_factors(doc, argument.argument_model.form_factors)
+
     def doc_option_end(self, arg_name, help_command):
         argument = help_command.arg_table[arg_name]
         if argument.group_name in self._arg_groups:
@@ -645,6 +667,8 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
         doc.style.indent()
         doc.style.new_paragraph()
         doc.include_doc_string(docs)
+        if member_shape.form_factors is not None:
+            self._write_form_factors(doc, member_shape.form_factors)
         doc.style.new_paragraph()
         member_type_name = member_shape.type_name
         if member_type_name == OBJECT_TYPE:
@@ -674,3 +698,9 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
         for value in possible_values:
             doc.style.li('``%s``' % value)
         doc.style.end_ul()
+
+    def _write_form_factors(self, doc, form_factors):
+        doc.style.new_paragraph()
+        doc.write('Form Factors: ')
+        doc.write(', '.join(form_factors))
+        doc.style.new_paragraph()

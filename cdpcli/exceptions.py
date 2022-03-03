@@ -292,6 +292,17 @@ class WrongOpFormFactorError(CdpCLIError):
            'the correct control plane.')
 
 
+class WrongArgFormFactorError(CdpCLIError):
+
+    """
+    The argument does not work under the current form factor.
+    """
+    fmt = ('The argument {arg_name} is not available under the {form_factor} '
+           'CDP form factor. It is only available for these form factors: '
+           '{arg_form_factors}. Check that your profile configuration '
+           'or explicit endpoint URL points to the correct control plane.')
+
+
 class ExtensionImportError(CdpCLIError):
 
     """

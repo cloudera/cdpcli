@@ -64,6 +64,7 @@ from cdpcli.help import ServiceHelpCommand
 from cdpcli.loader import Loader
 from cdpcli.model import ServiceModel
 from cdpcli.paramfile import ParamFileVisitor
+from cdpcli.paramformfactor import ParamFormFactorVisitor
 from cdpcli.parser import ResponseParserFactory
 from cdpcli.retryhandler import create_retry_handler
 from cdpcli.translate import build_retry_config
@@ -99,6 +100,7 @@ class CLIDriver(object):
                                              self._user_agent_header,
                                              self._response_parser_factory,
                                              self._retryhandler)
+        self._form_factor = None
 
     def main(self, args=None):
         if args is None:
@@ -109,8 +111,9 @@ class CLIDriver(object):
             args = ['help']
         parsed_args, remaining = parser.parse_known_args(args)
         try:
+            self._form_factor = self._get_form_factor(parsed_args)
             self._handle_top_level_args(parsed_args)
-            self._filter_command_table_for_form_factor(parsed_args)
+            self._filter_command_table_for_form_factor()
             self._warn_for_old_python()
             self._warn_for_non_public_release()
             return command_table[parsed_args.command](
@@ -148,15 +151,10 @@ class CLIDriver(object):
         commands = OrderedDict(sorted(commands.items()))
         return commands
 
-    def _filter_command_table_for_form_factor(self, parsed_args):
-        """
-        Replaces services and operations in the command table that do not apply
-        to the current form factor with stubs that error out when called.
-        """
-
+    def _get_form_factor(self, parsed_args):
         if parsed_args.command == 'refdoc':
             # Do not filter out any command if it is to generate help documents.
-            return
+            return None
 
         # Find the form factor based on:
         # 1. the form factor explicitly specified by --form-factor, or else
@@ -186,6 +184,19 @@ class CLIDriver(object):
                 form_factor = \
                     ClassifyDeployment(endpoint_url).get_deployment_type().value
         LOG.debug("Current form factor is {}".format(form_factor))
+        return form_factor
+
+    def _filter_command_table_for_form_factor(self):
+        """
+        Replaces services and operations in the command table that do not apply
+        to the current form factor with stubs that error out when called.
+        """
+        form_factor = self._form_factor
+
+        if form_factor is None:
+            # Do not filter out any command if form factor is None.
+            # For example: 'refdoc' command.
+            return
 
         for command in list(self._command_table.keys()):
             try:
@@ -234,6 +245,9 @@ class CLIDriver(object):
         service_data = self._loader.load_service_data(service_name)
         service_data['paths'] = OrderedDict(sorted(service_data.get('paths', {}).items()))
         return ServiceModel(service_data, service_name=service_name)
+
+    def get_form_factor(self):
+        return self._form_factor
 
     def _create_help_command(self):
         cli_data = self._get_cli_data()
@@ -399,13 +413,14 @@ class ServiceCommand(CLICommand):
             cli_name = xform_name(operation_name, '-')
             operation_model = service_model.operation_model(operation_name)
             command_table[cli_name] = ServiceOperation(
+                clidriver=self._clidriver,
                 name=cli_name,
                 parent_name=self._name,
                 operation_model=operation_model,
                 operation_caller=CLIOperationCaller())
         register_ext, register_cmd = get_extension_registers(self._name)
         if register_cmd is not None:
-            register_cmd(service_model, command_table)
+            register_cmd(self._clidriver, service_model, command_table)
         self._add_lineage(command_table)
         return command_table
 
@@ -417,6 +432,7 @@ class ServiceCommand(CLICommand):
         command_table = self._get_command_table()
         cli_name = xform_name(operation_name, '-')
         command_table[cli_name] = FilteredServiceOperation(
+            clidriver=self._clidriver,
             name=cli_name,
             parent_name=self._name,
             form_factor=form_factor,
@@ -472,7 +488,8 @@ class ServiceOperation(object):
     }
     DEFAULT_ARG_CLASS = CLIArgument
 
-    def __init__(self, name, parent_name, operation_caller, operation_model):
+    def __init__(self, clidriver, name, parent_name, operation_caller, operation_model):
+        self._clidriver = clidriver
         self._arg_table = None
         self._name = name
         # These is used so we can figure out what the proper event
@@ -538,7 +555,8 @@ class ServiceOperation(object):
                                        parsed_args,
                                        parsed_globals)
         call_parameters = self._build_call_parameters(parsed_args,
-                                                      self.arg_table)
+                                                      self.arg_table,
+                                                      self._clidriver.get_form_factor())
         return self._invoke_operation_callers(client_creator,
                                               call_parameters,
                                               parsed_args,
@@ -557,7 +575,7 @@ class ServiceOperation(object):
         # CLIArguments for values.
         parser.add_argument('help', nargs='?')
 
-    def _build_call_parameters(self, args, arg_table):
+    def _build_call_parameters(self, args, arg_table, form_factor):
         # We need to convert the args specified on the command
         # line as valid **kwargs we can hand to botocore.
         service_params = {}
@@ -570,6 +588,10 @@ class ServiceOperation(object):
                 value = parsed_args[py_name]
                 value = unpack_argument(arg_object, value)
                 arg_object.add_to_params(service_params, value)
+        # We run the ParamFormFactorVisitor over the input data to check
+        # the form factor for arguments.
+        ParamFormFactorVisitor(form_factor).visit(
+            service_params, self._operation_model.input_shape)
         # We run the ParamFileVisitor over the input data to resolve any
         # paramfile references in it.
         service_params = ParamFileVisitor().visit(
@@ -673,8 +695,9 @@ class FilteredServiceOperation(ServiceOperation):
     CLI form factor.
     """
 
-    def __init__(self, name, parent_name, form_factor, operation_form_factors):
-        super().__init__(name, parent_name, operation_caller=None, operation_model=None)
+    def __init__(self, clidriver, name, parent_name, form_factor, operation_form_factors):
+        super().__init__(clidriver, name, parent_name,
+                         operation_caller=None, operation_model=None)
         self._form_factor = form_factor
         self._operation_form_factors = operation_form_factors
 

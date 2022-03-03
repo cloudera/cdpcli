@@ -115,6 +115,12 @@ class Shape(object):
     def is_undocumented(self):
         return self._shape_data.get('x-deprecated', False)
 
+    @CachedProperty
+    def form_factors(self):
+        if "x-form-factors" in self._shape_data:
+            return self._shape_data['x-form-factors'].split(',')
+        return None
+
     def _get_shape(self, name, shape_data):
         if REF_KEY in shape_data:
             # Reference value type

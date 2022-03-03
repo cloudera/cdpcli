@@ -109,6 +109,7 @@ paths:
       description: Creates a GCP workload cluster.
       x-entitlement: CDP_GCP
       operationId: createGCPCluster
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -444,7 +445,7 @@ paths:
       summary: Replaces recipes for the given instance groups.
       description: Replaces recipes for the given instance groups.
       operationId: replaceRecipes
-      x-mutating: false
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -862,6 +863,7 @@ paths:
       summary: Rotate autotls certificates on the datahub's hosts
       description: Rotate autotls certificates on the datahub's hosts
       operationId: rotateAutoTlsCertificates
+      x-mutating: true
       parameters:
         - name: input
           in: body

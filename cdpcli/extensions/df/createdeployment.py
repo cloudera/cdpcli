@@ -267,8 +267,9 @@ OPERATION_SHAPES = {
 
 class CreateDeployment(ServiceOperation):
 
-    def __init__(self, service_model):
+    def __init__(self, clidriver, service_model):
         super(CreateDeployment, self).__init__(
+            clidriver=clidriver,
             name=OPERATION_CLI_NAME,
             parent_name=SERVICE_NAME,
             operation_model=CreateDeploymentOperationModel(service_model),

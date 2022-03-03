@@ -31,8 +31,9 @@ def register_extension(operation_callers, operation_model):
     operation_callers.insert(0, DfExtension())
 
 
-def register_command(service_model, command_table):
+def register_command(clidriver, service_model, command_table):
     """
     Register an additional command to run.
     """
-    command_table[CREATE_DEPLOYMENT_OPERATION_CLI_NAME] = CreateDeployment(service_model)
+    command_table[CREATE_DEPLOYMENT_OPERATION_CLI_NAME] = \
+        CreateDeployment(clidriver, service_model)

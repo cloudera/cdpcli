@@ -4,8 +4,9 @@ import os
 
 from cdpcli.argparser import ArgTableArgParser
 from cdpcli.argparser import ServiceArgParser
-from cdpcli.clidriver import ServiceOperation
+from cdpcli.clidriver import CLIDriver, ServiceOperation
 from cdpcli.model import ServiceModel
+from mock import Mock
 from tests import unittest
 import yaml
 
@@ -46,6 +47,7 @@ class TestArgTableArgParser(unittest.TestCase):
         model = yaml.safe_load(open(os.path.join(MODEL_DIR, 'service.yaml')))
         service_model = ServiceModel(model, 'servicename')
         service_operation = ServiceOperation(
+            Mock(spec=CLIDriver),
             'submit-spark-job',
             'dataeng',
             '',

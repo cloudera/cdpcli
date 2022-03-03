@@ -31,6 +31,7 @@ cdpcli/main.py
 cdpcli/model.py
 cdpcli/paginate.py
 cdpcli/paramfile.py
+cdpcli/paramformfactor.py
 cdpcli/parser.py
 cdpcli/retryhandler.py
 cdpcli/schema.py

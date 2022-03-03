@@ -324,7 +324,7 @@ class MockCLIDriverFactory(object):
     def _create_operation_command(self, clidriver, name, command):
         argument_table = self.create_argument_table(
             command.get('arguments', []))
-        operation = ServiceOperation(name, 'parent', None, MockModel())
+        operation = ServiceOperation(clidriver, name, 'parent', None, MockModel())
         operation._arg_table = argument_table
         return operation
 

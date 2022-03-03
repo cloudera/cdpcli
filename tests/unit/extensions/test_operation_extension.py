@@ -13,7 +13,7 @@
 
 import os
 
-from cdpcli.clidriver import ServiceOperation
+from cdpcli.clidriver import CLIDriver, ServiceOperation
 from cdpcli.client import ClientCreator
 from cdpcli.exceptions import ExtensionImportError
 from cdpcli.model import ServiceModel
@@ -52,6 +52,7 @@ class TestOperationExtension(unittest.TestCase):
     def test_invalid_operation_extension(self):
         operation_caller = Mock()
         service_operation = ServiceOperation(
+            Mock(spec=CLIDriver),
             'create-director',
             'directors',
             operation_caller,
@@ -74,6 +75,7 @@ class TestOperationExtension(unittest.TestCase):
         with patch('importlib.import_module', new=module_obj.get):
             operation_caller = Mock()
             service_operation = ServiceOperation(
+                Mock(spec=CLIDriver),
                 'upload-data',
                 'directors',
                 operation_caller,
@@ -106,6 +108,7 @@ class TestOperationExtension(unittest.TestCase):
         with patch('importlib.import_module', new=module_obj.get):
             operation_caller = Mock()
             service_operation = ServiceOperation(
+                Mock(spec=CLIDriver),
                 'inject-data',
                 'directors',
                 operation_caller,
@@ -153,6 +156,7 @@ class TestOperationExtension(unittest.TestCase):
             operation_caller = Mock()
             operation_caller.invoke.side_effect = _mock_operation_caller_invoke
             service_operation = ServiceOperation(
+                Mock(spec=CLIDriver),
                 'upload-data',
                 'directors',
                 operation_caller,
