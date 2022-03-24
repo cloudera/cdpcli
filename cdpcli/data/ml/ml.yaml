@@ -222,6 +222,69 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-skip-auditing: true
+  /api/v1/ml/modifyClusterInstanceGroup:
+    post:
+      summary: Modify Cloudera Machine Learning workspace cluster instance group.
+      description: Modify a Cloudera Machine Learning workspace cluster instance group.
+      operationId: modifyClusterInstanceGroup
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModifyClusterInstanceGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ModifyClusterInstanceGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/modifyClusterSecurity:
+    post:
+      summary: Modify Cloudera Machine Learning workspace cluster security.
+      description: Modify a Cloudera Machine Learning workspace cluster security.
+      operationId: modifyClusterSecurity
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModifyClusterSecurityRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ModifyClusterSecurityResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/modifyWorkspaceLoadBalancer:
+    post:
+      summary: Modify Cloudera Machine Learning workspace loadbalancer.
+      description: Modify a Cloudera Machine Learning workspace loadbalancer.
+      operationId: modifyWorkspaceLoadBalancer
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModifyWorkspaceLoadBalancerRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ModifyWorkspaceLoadBalancerResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/revokeWorkspaceAccess:
     post:
       summary: RevokeWorkspaceAccess Cloudera Machine Learning Workspace.
@@ -1056,4 +1119,70 @@ definitions:
         items:
           type: string
         description: The detail of the health info.
+  ModifyClusterInstanceGroupRequest:
+    type: object
+    description: Request object for ModifyClusterInstanceGroup.
+    required:
+      - workspaceCrn
+      - instanceGroupName
+      - min
+      - max
+    properties:
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace cluster to modify.
+      instanceGroupName:
+        type: string
+        description: The name of the instance group of the workspace cluster to modify.
+      min:
+        type: integer
+        format: int32
+        description: The desired autoscaling min of the workspace cluster instance group.
+      max:
+        type: integer
+        format: int32
+        description: The desired autoscaling min of the workspace cluster instance group.
+  ModifyClusterInstanceGroupResponse:
+    type: object
+    description: Response object for ModifyClusterInstanceGroup.
+  ModifyClusterSecurityRequest:
+    type: object
+    description: Request object for ModifyClusterSecurity.
+    required:
+      - workspaceCrn
+      - allowlistAuthorizedIPRanges
+      - authorizedIPRanges
+    properties:
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace cluster to modify.
+      allowlistAuthorizedIPRanges:
+        type: boolean
+        description: Whether to allow only authorized IP ranges given or all public IPs.
+      authorizedIPRanges:
+        type: array
+        items:
+          type: string
+        description: The allowlist of CIDR blocks which can access the API server.
+  ModifyClusterSecurityResponse:
+    type: object
+    description: Response object for ModifyClusterSecurity.
+  ModifyWorkspaceLoadBalancerRequest:
+    type: object
+    description: Request object for ModifyWorkspaceLoadBalancer.
+    required:
+      - workspaceCrn
+      - loadBalancerIPAllowLists
+    properties:
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace cluster to modify.
+      loadBalancerIPAllowLists:
+        type: array
+        items:
+          type: string
+        description: The allowlist of CIDR blocks which can access the loadbalancer.
+  ModifyWorkspaceLoadBalancerResponse:
+    type: object
+    description: Response object for ModifyWorkspaceLoadBalancer.
 x-audit: true

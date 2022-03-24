@@ -275,9 +275,10 @@ paths:
   /api/v1/datahub/renewCertificate:
     post:
       summary: Renew certificate on datahub cluster by name or CRN
-      description: Renew certificate on datahub cluster by name or CRN
+      description: Deprecated, please use renew-public-certificate command instead. Renew certificate on datahub cluster by name or CRN
       operationId: renewCertificate
       x-mutating: true
+      x-deprecated: true
       parameters:
         - name: input
           in: body
@@ -289,6 +290,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RenewCertificateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/renewPublicCertificate:
+    post:
+      summary: Renews public certificate on a Datahub cluster by name or CRN.
+      description: Renews public certificate on a Datahub cluster by name or CRN.
+      operationId: renewPublicCertificate
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RenewPublicCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RenewPublicCertificateResponse'
         default:
           description: The default response on an error.
           schema:
@@ -861,9 +883,10 @@ paths:
   /api/v1/datahub/rotateAutoTlsCertificates:
     post:
       summary: Rotate autotls certificates on the datahub's hosts
-      description: Rotate autotls certificates on the datahub's hosts
+      description: Deprecated, please use rotate-private-certificates command instead. Rotate autotls certificates on the datahub's hosts
       operationId: rotateAutoTlsCertificates
       x-mutating: true
+      x-deprecated: true
       parameters:
         - name: input
           in: body
@@ -875,6 +898,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RotateAutoTlsCertificatesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/rotatePrivateCertificates:
+    post:
+      summary: Rotates private certificates on the hosts of Datahub.
+      description: Rotates private certificates on the hosts of Datahub.
+      operationId: rotatePrivateCertificates
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RotatePrivateCertificatesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RotatePrivateCertificatesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -917,6 +961,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/SetCatalogResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/syncComponentVersionsFromCm:
+    post:
+      summary: Syncs component versions from CM after a failed upgrade.
+      description: Syncs component versions from CM after a failed upgrade.
+      operationId: syncComponentVersionsFromCm
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SyncComponentVersionsFromCmRequest'
+      responses:
+        200:
+          description: Expected response to a valid sync datahub CM component versions request.
+          schema:
+            $ref: '#/definitions/SyncComponentVersionsFromCmResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1573,6 +1638,9 @@ definitions:
       datahubDatabase:
         $ref: '#/definitions/DatahubDatabaseType'
         description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+      enableLoadBalancer:
+        type: boolean
+        description: Flag that decides whether to provision a load-balancer to front various service endpoints for the given datahub. This will typically be used for HA cluster shapes.
   CreateAWSClusterResponse:
     type: object
     description: Response object for create AWS cluster request.
@@ -1622,6 +1690,9 @@ definitions:
       datahubDatabase:
         $ref: '#/definitions/DatahubDatabaseType'
         description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+      enableLoadBalancer:
+        type: boolean
+        description: Flag that decides whether to provision a load-balancer to front various service endpoints for the given datahub. This will typically be used for HA cluster shapes.
   CreateAzureClusterResponse:
     type: object
     description: Response object for create Azure cluster request.
@@ -1845,6 +1916,7 @@ definitions:
   RenewCertificateRequest:
     type: object
     description: Request object for renew datahub certificate request.
+    x-deprecated: true
     required:
       - clusterName
     properties:
@@ -2724,9 +2796,15 @@ definitions:
       skipUnresponsiveHosts:
         type: boolean
         description: Skip unhealthy hosts from the diagnostics collection.
+      includeNginxReport:
+        type: boolean
+        description: Include Nginx report generated by GoAccess (if available).
       includeSaltLogs:
         type: boolean
         description: Include salt minion/master/api system logs in the diagnostics collection.
+      includeSarOutput:
+        type: boolean
+        description: Include SAR (System Activity Report) generated outputs in the diagnostics collection (if available).
       updatePackage:
         type: boolean
         default: false
@@ -2911,6 +2989,7 @@ definitions:
   RotateAutoTlsCertificatesRequest:
     type: object
     description: Request object to rotate autotls certificates on datahub's hosts.
+    x-deprecated: true
     required:
       - datahubName
     properties:
@@ -2920,9 +2999,11 @@ definitions:
   RotateAutoTlsCertificatesResponse:
     type: object
     description: Response object to rotate autotls certificates on datahub's hosts.
+    x-deprecated: true
   RenewCertificateResponse:
     type: object
     description: Response object for renew certificate request.
+    x-deprecated: true
   ImageComponentVersions:
     type: object
     description: Versions of the image components.
@@ -3018,3 +3099,39 @@ definitions:
   SetCatalogResponse:
     type: object
     description: The response object to set catalog for a DataHub request.
+  SyncComponentVersionsFromCmRequest:
+    type: object
+    description: Datahub sync CM component versions request.
+    required:
+      - datahubName
+    properties:
+      datahubName:
+        type: string
+        description: The name or CRN of the datahub.
+  SyncComponentVersionsFromCmResponse:
+    type: object
+    description: Datahub sync CM component versions response.
+  RotatePrivateCertificatesRequest:
+    type: object
+    description: Request object to rotate private certificates on the hosts of Datahub.
+    required:
+      - datahub
+    properties:
+      datahub:
+        type: string
+        description: The name or CRN of the datahub.
+  RotatePrivateCertificatesResponse:
+    type: object
+    description: Response object to rotate private certificates on the hosts of Datahub.
+  RenewPublicCertificateRequest:
+    type: object
+    description: Request object for renewing the Datahub public certificate.
+    required:
+      - datahub
+    properties:
+      datahub:
+        type: string
+        description: The name or CRN of the datahub.
+  RenewPublicCertificateResponse:
+    type: object
+    description: Response object for renew public certificate request.

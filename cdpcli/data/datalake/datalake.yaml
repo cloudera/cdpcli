@@ -191,8 +191,9 @@ paths:
   /api/v1/datalake/renewCertificate:
     post:
       summary: Renew certificate on Datalake cluster by name or CRN
-      description: Renew certificate on Datalake cluster by name or CRN
+      description: Deprecated, please use renew-public-certificate command instead. Renew certificate on Datalake cluster by name or CRN.
       operationId: renewCertificate
+      x-deprecated: true
       x-mutating: true
       parameters:
         - name: input
@@ -205,6 +206,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RenewCertificateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/renewPublicCertificate:
+    post:
+      summary: Renews public certificate on Datalake cluster by name or CRN.
+      description: Renews public certificate on Datalake cluster by name or CRN.
+      operationId: renewPublicCertificate
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RenewPublicCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RenewPublicCertificateResponse'
         default:
           description: The default response on an error.
           schema:
@@ -590,9 +612,10 @@ paths:
   /api/v1/datalake/rotateAutoTlsCertificates:
     post:
       summary: Rotate autotls certificates on the datalake's hosts
-      description: Rotate autotls certificates on the datalake's hosts
+      description: Deprecated, please use rotate-private-certificates command instead. Rotate autotls certificates on the datalake's hosts
       operationId: rotateAutoTlsCertificates
       x-mutating: true
+      x-deprecated: true
       parameters:
         - name: input
           in: body
@@ -604,6 +627,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RotateAutoTlsCertificatesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/rotatePrivateCertificates:
+    post:
+      summary: Rotates private certificates on the datalake's hosts.
+      description: Rotates private certificates on the datalake's hosts.
+      operationId: rotatePrivateCertificates
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RotatePrivateCertificatesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RotatePrivateCertificatesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1228,6 +1272,7 @@ definitions:
   RenewCertificateRequest:
     type: object
     description: Request object for renew datalake certificate request.
+    x-deprecated: true
     required:
       - datalakeName
     properties:
@@ -1378,6 +1423,15 @@ definitions:
         type: boolean
         default: true
         description: Close the database connections while performing backup. Default is true.
+      skipRangerHmsMetadata:
+        type: boolean
+        description: Skips the backup of the databases backing HMS/Ranger services. If this option is not provided, the HMS/Ranger services are backed up by default.
+      skipAtlasMetadata:
+        type: boolean
+        description: Skips the backup of the Atlas metadata. If this option is not provided, the Atlas metadata is backed up by default.
+      skipRangerAudits:
+        type: boolean
+        description: Skips the backup of the Ranger audits. If this option is not provided, Ranger audits are backed up by default.
   BackupDatalakeResponse:
     type: object
     description: Response object to a request made for backup of datalake.
@@ -1497,6 +1551,15 @@ definitions:
       includeDatabase:
         type: boolean
         description: DEPRECATED - The database is included in the restore by default. To skip it, use the --skip-database flag.
+      skipRangerHmsMetadata:
+        type: boolean
+        description: Skips the restore of the databases backing HMS/Ranger services. If this option is not provided, then by default the Atlas lineage will be restored if the backup used includes the Atlas lineage information.
+      skipAtlasMetadata:
+        type: boolean
+        description: Skips the restore of the Atlas metadata. If this option is not provided, then by default the Atlas metadata will be restored if the backup used includes the Atlas metadata.
+      skipRangerAudits:
+        type: boolean
+        description: Skips the restore of the Ranger audits. If this option is not provided, then by default the Ranger audits will be restored if the backup used includes the Ranger audits.
       backupLocationOverride:
         type: string
         description: Backup location. When provided, will be used to lookup the backup. If provided, the --backup-id parameter is required.
@@ -1845,9 +1908,15 @@ definitions:
       skipUnresponsiveHosts:
         type: boolean
         description: Skip unhealthy hosts from the diagnostics collection.
+      includeNginxReport:
+        type: boolean
+        description: Include Nginx report generated by GoAccess (if available).
       includeSaltLogs:
         type: boolean
         description: Include salt minion/master/api system logs in the diagnostics collection.
+      includeSarOutput:
+        type: boolean
+        description: Include SAR (System Activity Report) generated outputs in the diagnostics collection (if available).
       updatePackage:
         type: boolean
         default: false
@@ -2032,6 +2101,7 @@ definitions:
   RotateAutoTlsCertificatesRequest:
     type: object
     description: Request object to rotate autotls certificates on datalake's hosts.
+    x-deprecated: true
     required:
       - datalakeName
     properties:
@@ -2041,9 +2111,11 @@ definitions:
   RotateAutoTlsCertificatesResponse:
     type: object
     description: Response object to rotate autotls certificates on datalake's hosts.
+    x-deprecated: true
   RenewCertificateResponse:
     type: object
     description: Response object for renew certificate request.
+    x-deprecated: true
   ImageRequest:
     description: The image request for the datalake. This must not be set if the runtime parameter is provided. The image ID parameter is required if this is present, but the image catalog name is optional, defaulting to 'cdp-default' if not present.
     type: object
@@ -2164,3 +2236,27 @@ definitions:
     x-no-compatibility-guarantee: true
     type: object
     description: Datalake sync CM component versions response.
+  RotatePrivateCertificatesRequest:
+    type: object
+    description: Request object to rotate private certificates on datalake's hosts.
+    required:
+      - datalake
+    properties:
+      datalake:
+        type: string
+        description: The name or CRN of the datalake.
+  RotatePrivateCertificatesResponse:
+    type: object
+    description: Response object to rotate private certificates on datalake's hosts.
+  RenewPublicCertificateRequest:
+    type: object
+    description: Request object to renew the public certificate for Datalake.
+    required:
+      - datalake
+    properties:
+      datalake:
+        type: string
+        description: The name or CRN of the datalake.
+  RenewPublicCertificateResponse:
+    type: object
+    description: Response object for renew public certificate request.

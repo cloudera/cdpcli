@@ -869,7 +869,7 @@ definitions:
         description: 'Name of source cluster in the format: "dataCenterName$cluster name", for example "DC-Europe$My Source 42.'
         type: string
       targetCluster:
-        description: 'Name if destination cluster in the format: "dataCenterName$cluster name" "DC-US$My Destination 17".'
+        description: 'Name of destination cluster in the format: "dataCenterName$cluster name", for example "DC-US$My Destination 17".'
         type: string
       startTime:
         description: Start time.

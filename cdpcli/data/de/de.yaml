@@ -701,7 +701,8 @@ definitions:
     properties:
       operationId:
         type: string
-        description: The operation ID of the update request.
+        description: Deprecated. The operation ID of the update request.
+        x-deprecated: true
   ListServicesResponse:
     type: object
     description: Response object for ListServices method.
