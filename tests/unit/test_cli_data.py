@@ -58,5 +58,6 @@ def test_cli_options_match_service_model_validator():
                              'no-paginate',
                              'auth-config',
                              'profile',
-                             'cdp-region']
+                             'cdp-region',
+                             'ensure-ascii']
     assert_equal(sorted(cli_data['options'].keys()), sorted(validated_cli_options))

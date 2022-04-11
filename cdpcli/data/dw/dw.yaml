@@ -85,6 +85,7 @@ paths:
       x-mutating: false
   /api/v1/dw/updateSshKey:
     post:
+      x-form-factors: public
       summary: Update the SSH Key for a Cloudera Data Warehouse cluster
       description: Update the SSH Key for a Cloudera Data Warehouse cluster
       operationId: updateSshKey
@@ -99,6 +100,31 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateSshKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/renewCertificates:
+    post:
+      summary: Renew certificates for a Cloudera Data Warehouse Azure cluster.
+      description: Renew certificate for a Cloudera Data Warehouse Azure cluster.
+      operationId: renewCertificates
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RenewCertificatesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RenewCertificatesResponse'
+        405:
+          description: Operation not allowed on non-Azure clusters.
+          schema:
+            $ref: '#/definitions/Error'
         default:
           description: The default response on an error.
           schema:
@@ -148,6 +174,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/dw/updateCluster:
+    post:
+      x-mutating: true
+      summary: Updates the Cloudera Data Warehouse cluster.
+      description: Update the Cloudera Data Warehouse cluster.
+      operationId: updateCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/createDbc:
     post:
       x-no-compatibility-guarantee: true
@@ -236,6 +283,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/dw/restartDbc:
+    post:
+      x-mutating: true
+      summary: Restart a Database Catalog.
+      description: Restart a Database Catalog.
+      operationId: restartDbc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestartDbcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestartDbcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/createVw:
     post:
       x-no-compatibility-guarantee: true
@@ -320,6 +388,91 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/restartVw:
+    post:
+      x-mutating: true
+      summary: Restart a Virtual Warehouse.
+      description: Restart a Virtual Warehouse.
+      operationId: restartVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestartVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestartVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/startVw:
+    post:
+      x-mutating: true
+      summary: Starts a paused Virtual Warehouse.
+      description: Starts a paused Virtual Warehouse. Has no effect if the VW is already started.
+      operationId: startVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/pauseVw:
+    post:
+      x-mutating: true
+      summary: Pauses a running Virtual Warehouse.
+      description: Pauses a running Virtual Warehouse. Has no effect if the VW is already paused.
+      operationId: pauseVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PauseVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/PauseVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listLatestVersions:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: false
+      summary: Lists the latest version of the product (if available) for all catalogs in the environment.
+      description: Lists the latest version of the product (if available) for all catalogs in the environment.
+      operationId: listLatestVersions
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListLatestVersionsRequest'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ListLatestVersionsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -456,6 +609,174 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/dw/addUser:
+    post:
+      x-mutating: true
+      summary: Adds the given user to the cluster.
+      description: Adds the given user to the cluster. Please note that the user must pre-exist.
+      operationId: addUser
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AddUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AddUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/deleteUser:
+    post:
+      x-mutating: true
+      summary: Deletes the given user from the cluster.
+      description: Deletes the given user from the cluster. Please note that the user itself won't be deleted, only removed from the cluster.
+      operationId: deleteUser
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteUserRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteUserResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listUsers:
+    post:
+      x-mutating: false
+      summary: Lists the users who have access to the cluster.
+      description: Lists the users who have access to the cluster.
+      operationId: listUsers
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListUsersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListUsersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/upgradeDbc:
+    post:
+      x-mutating: true
+      summary: Upgrades the Database Catalog to a compatible version.
+      description: Upgrades the Database Catalog to a compatible version.
+      operationId: upgradeDbc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeDbcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeDbcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/upgradeVw:
+    post:
+      x-mutating: true
+      summary: Upgrades the Virtual Warehouse to a compatible version.
+      description: Upgrades the Virtual Warehouse to a compatible version.
+      operationId: upgradeVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/getUpgradeVwVersions:
+    post:
+      x-mutating: false
+      summary: Gets the latest version and latest compatible version for Virtual Warehouse.
+      description: Gets the latest version and latest compatible version for Virtual Warehouse.
+      operationId: getUpgradeVwVersions
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetUpgradeVwVersionsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetUpgradeVwVersionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/getUpgradeDbcVersions:
+    post:
+      x-mutating: false
+      summary: Gets the latest version and latest compatible version for Database Catalog.
+      description: Gets the latest version and latest compatible version for Database Catalog.
+      operationId: getUpgradeDbcVersions
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetUpgradeDbcVersionsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetUpgradeDbcVersionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/healthCheck:
+    post:
+      x-mutating: false
+      summary: Check the health of the API.
+      description: Check the health of the API.
+      operationId: healthCheck
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/HealthCheckRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/HealthCheckResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -518,6 +839,18 @@ definitions:
       message:
         type: string
         description: A message describing the outcome of the SSH Key update process.
+  RenewCertificatesRequest:
+    type: object
+    description: Request object for the renewCertificates method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Azure cluster to renew certificates for.
+  RenewCertificatesResponse:
+    type: object
+    description: Response object for the renewCertificates method.
   CreateClusterRequest:
     type: object
     description: Request object for the createCluster method.
@@ -572,6 +905,10 @@ definitions:
       enableAZ:
         type: boolean
         description: Enables Azure Availability Zones for the cluster deployment.
+      enableSpotInstances:
+        type: boolean
+        description: Enable Spot instances for compute workloads
+        default: false
       vmGenerationType:
         type: string
         enum:
@@ -584,6 +921,25 @@ definitions:
       dockerBridgeCidr:
         type: string
         description: Docker bridge CIDR range for deployment.
+      enableUDR:
+        type: boolean
+        description: Enable user defined routing for the cluster deployment.
+        default: false
+      enablePrivateSQL:
+        type: boolean
+        description: Enables private SQL for the cluster deployment.
+        default: false
+      privateDNSZoneAKS:
+        type: string
+        description: Private DNS zone AKS resource ID.
+      enablePrivateAks:
+        type: boolean
+        description: Enable Azure Private AKS mode.
+        default: false
+      enableUptimeSLA:
+        type: boolean
+        description: Enable uptime SLA for Kubernetes API server.
+        default: false
   CreateClusterResponse:
     type: object
     description: Response object for the createCluster method.
@@ -606,6 +962,57 @@ definitions:
   DeleteClusterResponse:
     type: object
     description: Response object for the deleteCluster method.
+  UpdateClusterRequest:
+    type: object
+    description: Request object for the updateCluster method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to update.
+      description:
+        type: string
+        description: Cluster description.
+      whitelistIpCIDRs:
+        type: array
+        items:
+          type: string
+        description: List of IP address CIDRs to whitelist.
+      awsUpdate:
+        type: object
+        description: Additional properties for AWS clusters.
+        properties:
+          externalBuckets:
+            type: object
+            description: External bucket definition.
+            additionalProperties:
+              description: External bucket access info.
+              $ref: '#/definitions/ExternalBucketAccessInfo'
+      azureUpdate:
+        type: object
+        description: Additional properties for Azure clusters.
+        properties:
+          renewCertificate:
+            type: boolean
+            default: false
+            description: Renew Azure cluster certificate.
+  ExternalBucketAccessInfo:
+    type: object
+    description: External bucket definition.
+    properties:
+      accessMode:
+        type: string
+        description: Specifies whether the external bucket will be added in read-only or read-write mode.
+        enum:
+          - READ
+          - READWRITE
+      kmsCmkArn:
+        type: string
+        description: Enable server side encryption with the specified KMS CMK ARN. If the value is empty or unspecified, default server side encryption will be used when the access mode is read-write. Otherwise this value is ignored.
+  UpdateClusterResponse:
+    type: object
+    description: Response object for the updateCluster method.
   ListClustersRequest:
     type: object
     description: Request object for the listClusters method.
@@ -711,6 +1118,22 @@ definitions:
   DeleteDbcResponse:
     type: object
     description: Response object for the deleteDbc method.
+  RestartDbcRequest:
+    type: object
+    description: Request object for the restartDbc method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog to delete.
+  RestartDbcResponse:
+    type: object
+    description: Response object for the restartDbc method.
   VwType:
     type: string
     enum:
@@ -865,6 +1288,22 @@ definitions:
       machineUsername:
         type: string
         description: Username for machine users.
+  RestartVwRequest:
+    type: object
+    description: Request object for the restartVw method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Virtual Warehouse's cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse to delete.
+  RestartVwResponse:
+    type: object
+    description: Response object for the restartVw method.
   ClusterSummary:
     type: object
     description: A Cloudera Data Warehouse cluster.
@@ -1350,4 +1789,251 @@ definitions:
         additionalProperties:
           description: Differences between the application specific configurations.
           $ref: '#/definitions/ApplicationConfigDiff'
+  StartVwRequest:
+    type: object
+    description: The request object for the startVw method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Virtual Warehouse cluster.
+      vwId:
+        type: string
+        description: The ID of the Virtual Warehouse.
+  StartVwResponse:
+    type: object
+    description: The response object for the startVw method.
+  PauseVwRequest:
+    type: object
+    description: The request object for the pauseVw method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Virtual Warehouse cluster.
+      vwId:
+        type: string
+        description: The ID of the Virtual Warehouse.
+  PauseVwResponse:
+    type: object
+    description: The response object for the pauseVw method.
+  AddUserRequest:
+    type: object
+    description: Request object for the addUser method.
+    required:
+      - clusterId
+      - userId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to which the user must be added.
+      userId:
+        type: string
+        description: A cloud based unique identifier of the user (ARN for AWS users, groupId for Azure users).
+  AddUserResponse:
+    type: object
+    description: Response object for the addUser method.
+  DeleteUserRequest:
+    type: object
+    description: Request object for the deleteUser method.
+    required:
+      - clusterId
+      - userId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster from which the user must be deleted.
+      userId:
+        type: string
+        description: A cloud based unique identifier of the user (ARN for AWS users, groupId for Azure users).
+  DeleteUserResponse:
+    type: object
+    description: Response object for the deleteUser method.
+  ListUsersRequest:
+    type: object
+    description: Request object for the listUsers method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster for which the users must be retrieved.
+  ListUsersResponse:
+    type: object
+    description: Response object for the listUsers method.
+    properties:
+      users:
+        type: array
+        items:
+          $ref: '#/definitions/CloudUserReference'
+        description: The list of users allowed to access the given cluster.
+  CloudUserReference:
+    type: object
+    description: Cloud user definition object.
+    required:
+      - userId
+    properties:
+      userId:
+        type: string
+        description: A cloud based unique identifier of the user (ARN for AWS users, groupId for Azure users).
+  ListLatestVersionsResponse:
+    type: object
+    description: Response object of the listLatestVersions call.
+    properties:
+      idToLatestVersionsMap:
+        type: object
+        description: Map containing the latest image versions for each Virtual Warehouse found in the cluster.
+        additionalProperties:
+          type: string
+  ListLatestVersionsRequest:
+    type: object
+    description: Request object of the listLatestVersions call.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster from which the version information must be collected.
+  UpgradeDbcRequest:
+    type: object
+    description: Request object for the upgradeDbc method.
+    required:
+      - clusterId
+      - dbcId
+      - imageVersion
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: The ID of the Database Catalog.
+      imageVersion:
+        type: string
+        description: The version to which the Database Catalog should be upgraded.
+  UpgradeDbcResponse:
+    type: object
+    description: Response object of the upgradeDbc call.
+    properties:
+      status:
+        type: string
+        description: 'The upgrade status. Possible values are: Upgrading, Error, Failed.'
+      message:
+        type: string
+        description: The Upgrade message.
+      timedOut:
+        type: boolean
+        description: True if the upgrade timed out, false or omitted otherwise.
+      serviceUnhealthy:
+        type: boolean
+        description: True, if the service is in unhealthy state, false or omitted otherwise.
+  UpgradeVwRequest:
+    type: object
+    description: Request object for the upgradeVw method.
+    required:
+      - clusterId
+      - vwId
+      - dbcId
+      - imageVersion
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Virtual Warehouse's cluster.
+      vwId:
+        type: string
+        description: The ID of the Virtual Warehouse.
+      dbcId:
+        type: string
+        description: The ID of Database Catalog that the Virtual Warehouse is attached to.
+      imageVersion:
+        type: string
+        description: The version to which the Virtual Warehouse should be upgraded.
+  UpgradeVwResponse:
+    type: object
+    description: Response object for the upgradeVw method.
+    properties:
+      status:
+        type: string
+        description: 'The upgrade status. Possible values are: Upgrading, Error, Failed.'
+      message:
+        type: string
+        description: The upgrade message.
+      timedOut:
+        type: boolean
+        description: True if the upgrade timed out, false or omitted otherwise.
+      serviceUnhealthy:
+        type: boolean
+        description: True, if the service is in unhealthy state, false or omitted otherwise.
+  GetUpgradeVwVersionsRequest:
+    type: object
+    description: Request object for the getUpgradeVwVersions method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Virtual Warehouse's cluster.
+      vwId:
+        type: string
+        description: The ID of the Virtual Warehouse.
+  GetUpgradeVwVersionsResponse:
+    type: object
+    description: Response object for the getUpgradeVwVersions method.
+    properties:
+      latestVersion:
+        type: string
+        description: The latest available CDW version.
+      compatibleVersion:
+        type: string
+        description: The latest compatible CDW version.
+      latestCDPVersion:
+        type: string
+        description: The latest available CDP version.
+      compatibleCDPVersion:
+        type: string
+        description: The latest compatible CDP version.
+  GetUpgradeDbcVersionsRequest:
+    type: object
+    description: Request object for the getUpgradeDbcVersions method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: The ID of the Database Catalog.
+  GetUpgradeDbcVersionsResponse:
+    type: object
+    description: Response object for the getUpgradeDbcVersions method.
+    properties:
+      latestVersion:
+        type: string
+        description: The latest available CDW version.
+      compatibleVersion:
+        type: string
+        description: The latest compatible CDW version.
+      latestCDPVersion:
+        type: string
+        description: The latest available CDP version.
+      compatibleCDPVersion:
+        type: string
+        description: The latest compatible CDP version.
+  HealthCheckRequest:
+    type: object
+    description: Request object for the healthCheck method.
+  HealthCheckResponse:
+    type: object
+    description: Response object for the healthCheck method.
+    properties:
+      message:
+        type: string
+        description: HealthCheck status text.
 x-audit: true

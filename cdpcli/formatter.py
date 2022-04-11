@@ -73,8 +73,11 @@ class JSONFormatter(FullyBufferedFormatter):
         # that out to the user but other "falsey" values like an empty
         # dictionary should be printed.
         if response != {}:
+            ensure_ascii = self._args.ensure_ascii
+            if ensure_ascii is None:
+                ensure_ascii = False
             json.dump(response, stream, indent=4, default=json_encoder,
-                      ensure_ascii=False)
+                      ensure_ascii=ensure_ascii)
             stream.write('\n')
 
 

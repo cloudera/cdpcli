@@ -1,57 +1,58 @@
 {
-   "description":"The Cloudera CDP Command Line Interface is a unified tool to manage your CDP services.",
-   "synopsis":"cdp [options] <command> <subcommand> [parameters]",
-   "help_usage":"Use *cdp command help* for information on a specific command, and *cdp command subcommand help* for information on a specific subcommand.",
-   "options":{
-      "version":{
-         "action":"version",
-         "help":"<p>Display the version of this tool.</p>"
+   "description": "The Cloudera CDP Command Line Interface is a unified tool to manage your CDP services.",
+   "synopsis": "cdp [options] <command> <subcommand> [parameters]",
+   "help_usage": "Use *cdp command help* for information on a specific command, and *cdp command subcommand help* for information on a specific subcommand.",
+   "options": {
+      "version": {
+         "action": "version",
+         "help": "<p>Display the version of this tool.</p>"
       },
-      "debug":{
-         "action":"store_true",
-         "help":"<p>Turn on debug logging.</p>"
+      "debug": {
+         "action": "store_true",
+         "help": "<p>Turn on debug logging.</p>"
       },
-      "no-verify-tls":{
-         "action":"store_false",
-         "dest":"verify_tls",
-         "help":"<p>By default, the CDP CLI uses TLS when communicating with CDP services. For each TLS connection, the CDP CLI will verify TLS certificates. This option overrides the default behavior of verifying TLS certificates.</p>"
+      "no-verify-tls": {
+         "action": "store_false",
+         "dest": "verify_tls",
+         "help": "<p>By default, the CDP CLI uses TLS when communicating with CDP services. For each TLS connection, the CDP CLI will verify TLS certificates. This option overrides the default behavior of verifying TLS certificates.</p>"
       },
-      "ca-bundle":{
-         "dest":"ca_bundle",
-         "help":"<p>The CA certificate bundle to use when verifying TLS certificates. Overrides any config and environment settings.</p>"
+      "ca-bundle": {
+         "dest": "ca_bundle",
+         "help": "<p>The CA certificate bundle to use when verifying TLS certificates. Overrides any config and environment settings.</p>"
       },
-      "endpoint-url":{
-         "help":"<p>Override command's default URL with the given URL. This is useful when temporarily calling a different CDP control plane.</p>"
+      "endpoint-url": {
+         "help": "<p>Override command's default URL with the given URL. This is useful when temporarily calling a different CDP control plane.</p>"
       },
-      "form-factor":{
-         "choices":[
+      "form-factor": {
+         "choices": [
             "public",
             "private"
          ],
-         "help":"<p>Explicitly specify the form factor of the control plane being called. When not given, the form factor is guessed based on the command's endpoint URL.</p>"
+         "help": "<p>Explicitly specify the form factor of the control plane being called. When not given, the form factor is guessed based on the command's endpoint URL.</p>"
       },
-      "force-ipv4":{
+      "force-ipv4": {
          "hidden": true,
-         "action":"store_true",
-         "help":"<p>Force connections to only use IPv4.</p>"
+         "action": "store_true",
+         "help": "<p>Force connections to only use IPv4.</p>"
       },
-      "access-token":{
+      "access-token": {
          "hidden": true,
-         "help":"<p>Override command's authentication token.</p>"
+         "help": "<p>Override command's authentication token.</p>"
       },
-      "output":{
-         "choices":[
+      "output": {
+         "choices": [
             "json",
             "text",
             "table"
          ],
-         "help":"<p>The formatting style for command output.</p>"
+         "help": "<p>The formatting style for command output.</p>"
       },
       "color": {
          "choices": [
             "on",
             "off",
-            "auto"],
+            "auto"
+         ],
          "default": "auto",
          "help": "<p>Turn on/off color output.</p>"
       },
@@ -65,27 +66,33 @@
          "type": "integer",
          "help": "<p>The maximum socket connect time in seconds. If the value is set to 0, the socket connect will be blocking and not timeout.</p>"
       },
-      "no-paginate":{
-         "action":"store_false",
-         "help":"<p>Disable automatic pagination.</p>",
-         "dest":"paginate"
+      "no-paginate": {
+         "action": "store_false",
+         "help": "<p>Disable automatic pagination.</p>",
+         "dest": "paginate"
       },
-      "auth-config":{
-         "help":"<p>Specify the path to the client authentication configuration.</p>",
-         "dest":"auth_config"
+      "auth-config": {
+         "help": "<p>Specify the path to the client authentication configuration.</p>",
+         "dest": "auth_config"
       },
-      "profile":{
+      "profile": {
          "help": "<p>Use a specific profile from your credential file.</p>"
       },
-      "cdp-region":{
+      "cdp-region": {
          "hidden": true,
          "choices": [
             "default",
             "us-west-1",
             "eu-1",
-            "ap-1"],
+            "ap-1"
+         ],
          "default": "default",
          "help": "<p>Specifies which CDP Region to send this command's request to.</p>"
+      },
+      "ensure-ascii": {
+        "hidden": true,
+        "action": "store_true",
+        "help": "<p>Escape all non-ASCII characters in the output with \\uXXXX sequences when the output is in JSON format.</p>"
       }
    }
 }

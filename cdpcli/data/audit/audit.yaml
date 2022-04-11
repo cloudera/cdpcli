@@ -646,11 +646,11 @@ definitions:
       fromTimestamp:
         type: string
         format: date-time
-        description: The beginning POSIX epoch time, in milliseconds, for the search range.
+        description: The beginning timestamp for the search range.
       toTimestamp:
         type: string
         format: date-time
-        description: The ending POSIX epoch time, in milliseconds, for the search range.
+        description: The ending timestamp for the search range.
   BatchEventsForArchivingResponse:
     type: object
     description: Response from creating batches of audit events for archiving.
@@ -684,11 +684,11 @@ definitions:
       fromTimestamp:
         type: string
         format: date-time
-        description: The beginning POSIX epoch time, in milliseconds, for the search range (inclusive).
+        description: The beginning timestamp for the search range (inclusive).
       toTimestamp:
         type: string
         format: date-time
-        description: The ending POSIX epoch time, in milliseconds, for the search range (exclusive).
+        description: The ending timestamp for the search range (exclusive).
       pageSize:
         type: integer
         format: int32

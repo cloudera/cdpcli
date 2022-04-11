@@ -1072,7 +1072,7 @@ definitions:
         x-no-compatibility-guarantee: true
       tags:
         type: array
-        description: Tags to be added to Datalake related resources.
+        description: Tags to be added to Data Lake related resources.
         items:
           $ref: '#/definitions/DatalakeResourceTagRequest'
       runtime:
@@ -1123,7 +1123,7 @@ definitions:
         x-no-compatibility-guarantee: true
       tags:
         type: array
-        description: Tags to be added to Datalake related resources.
+        description: Tags to be added to Data Lake related resources.
         items:
           $ref: '#/definitions/DatalakeResourceTagRequest'
       runtime:
@@ -1444,6 +1444,7 @@ definitions:
       - startTime
       - endTime
       - backupLocation
+      - operationStates
     properties:
       accountId:
         type: string
@@ -1469,6 +1470,12 @@ definitions:
       backupLocation:
         type: string
         description: Location of the backup to be used to perform restore.
+      operationStates:
+        $ref: '#/definitions/InternalBackupRestoreState'
+        description: Provides the details of the internal state of each operation.
+      runtimeVersion:
+        type: string
+        description: The runtime version of the datalake when the backup was taken.
       backupName:
         type: string
         description: Name of the backup.
@@ -1502,6 +1509,7 @@ definitions:
       - startTime
       - endTime
       - backupLocation
+      - operationStates
     properties:
       accountId:
         type: string
@@ -1527,6 +1535,12 @@ definitions:
       backupLocation:
         type: string
         description: Location of the backup to be used to perform restore.
+      operationStates:
+        $ref: '#/definitions/InternalBackupRestoreState'
+        description: Provides the details of the internal state of each operation.
+      runtimeVersion:
+        type: string
+        description: The runtime version of the datalake when the backup was taken.
       backupName:
         type: string
         description: Name of the backup.
@@ -1576,6 +1590,7 @@ definitions:
       - startTime
       - endTime
       - backupLocation
+      - operationStates
     properties:
       accountId:
         type: string
@@ -1604,12 +1619,18 @@ definitions:
       backupLocation:
         type: string
         description: Location of the backup to be used to perform restore.
+      operationStates:
+        $ref: '#/definitions/InternalBackupRestoreState'
+        description: Provides the details of the internal state of each operation.
       backupName:
         type: string
         description: Name of the backup.
       failureReason:
         type: string
         description: Reason for the failure.
+      runtimeVersion:
+        type: string
+        description: The runtime version of the datalake when the restore was initiated.
   RestoreDatalakeStatusRequest:
     type: object
     description: Request object to get the status of a restore operation.
@@ -1635,6 +1656,7 @@ definitions:
       - startTime
       - endTime
       - backupLocation
+      - operationStates
     properties:
       accountId:
         type: string
@@ -1663,12 +1685,18 @@ definitions:
       backupLocation:
         type: string
         description: Location of the backup to be used to perform restore.
+      operationStates:
+        $ref: '#/definitions/InternalBackupRestoreState'
+        description: Provides the details of the internal state of each operation.
       backupName:
         type: string
         description: Name of the backup.
       failureReason:
         type: string
         description: Reason for the failure.
+      runtimeVersion:
+        type: string
+        description: The runtime version of the datalake when the restore was initiated.
   ListDatalakeBackupsRequest:
     type: object
     description: Request object to get the list of backup operations performed on a datalake.
@@ -1732,6 +1760,107 @@ definitions:
       failureReason:
         type: string
         description: Reason for the failure.
+  InternalBackupRestoreState:
+    type: object
+    description: Object representing the state of each service running a backup.
+    required:
+      - adminOperations
+      - hbase
+      - solr
+      - database
+    properties:
+      adminOperations:
+        $ref: '#/definitions/AdminOperationsBackupRestoreState'
+        description: Admin operations executed via Cloudera Manager for starting and stopping services.
+      hbase:
+        $ref: '#/definitions/HbaseBackupRestoreState'
+        description: Hbase operations to backup or restore Atlas metadata tables.
+      solr:
+        $ref: '#/definitions/SolrBackupRestoreState'
+        description: Solr operations to backup up the edge, fulltext, ranger_audit, and vertex tables, or to delete/restore those tables.
+      database:
+        $ref: '#/definitions/DatabaseBackupRestoreState'
+        description: Postgres operations to backup or restore the data lake metadata.
+  AdminOperationsBackupRestoreState:
+    type: object
+    description: The state of Cloudera Manager admin operations.
+    required:
+      - stopServices
+      - startServices
+    properties:
+      stopServices:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the stop services operation that is triggered before the backup/restore is started.
+      startServices:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the start services operation this is triggered after the backup/restore is complete.
+  HbaseBackupRestoreState:
+    type: object
+    description: The state of each HBase backup/restore operation.
+    required:
+      - atlasEntityAuditEventTable
+      - atlasJanusTable
+    properties:
+      atlasEntityAuditEventTable:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the ATLAS_ENTITY_AUDIT_EVENTS_TABLE backup/restore.
+      atlasJanusTable:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the ATLAS_JANUS_TABLE backup/restore.
+  SolrBackupRestoreState:
+    type: object
+    description: The state of each Solr backup/restore operation.
+    required:
+      - edgeIndexCollection
+      - fulltextIndexCollection
+      - rangerAuditsCollection
+      - vertexIndexCollection
+    properties:
+      edgeIndexCollection:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the EDGE_INDEX_COLLECTION backup/restore.
+      fulltextIndexCollection:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the FULLTEXT_INDEX_COLLECTION backup/restore.
+      rangerAuditsCollection:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the RANGER_AUDITS_COLLECTION backup/restore.
+      vertexIndexCollection:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the VERTEX_INDEX_COLLECTION backup/restore.
+      edgeIndexCollectionDelete:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the EDGE_INDEX_COLLECTION deletion, which is done before a restore.
+      fulltextIndexCollectionDelete:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the FULLTEXT_INDEX_COLLECTION deletion, which is done before a restore.
+      rangerAuditsCollectionDelete:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the RANGER_AUDITS_COLLECTION deletion, which is done before a restore.
+      vertexIndexCollectionDelete:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the VERTEX_INDEX_COLLECTION deletion, which is done before a restore.
+  DatabaseBackupRestoreState:
+    type: object
+    description: The state of the database backup/restore operation.
+    required:
+      - database
+    properties:
+      database:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: The status of the database backup/restore.
+  BackupRestoreOperationStatus:
+    type: object
+    description: Contains the status and failure reason of an operation.
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        description: The status of the backup or restore operation.
+      failureReason:
+        type: string
+        description: The failure reason if the operation was not successful.
   ImageComponentVersions:
     type: object
     description: Versions of the image components

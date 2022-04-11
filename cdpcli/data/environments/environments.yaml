@@ -632,6 +632,28 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/checkDatabaseConnectivity:
+    post:
+      summary: Checks Database connectivity based on the input parameters.
+      description: Checks Database connectivity based on the input parameters.
+      operationId: checkDatabaseConnectivity
+      x-form-factors: private
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CheckDatabaseConnectivityRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CheckDatabaseConnectivityResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/checkKubernetesConnectivity:
     post:
       summary: Checks connectivity to a Kubernetes address with provided kubeconfig files.
@@ -1401,7 +1423,7 @@ definitions:
         type: string
         description: The region of the environment.
       securityAccess:
-        description: Security control for FreeIPA and Datalake deployment.
+        description: Security control for FreeIPA and Data Lake deployment.
         $ref: '#/definitions/SecurityAccessRequest'
       authentication:
         description: SSH authentication information for accessing cluster node instances. Users with access to this authentication information have root level access to the Data Lake and Data Hub cluster instances.
@@ -1417,7 +1439,7 @@ definitions:
         description: The Amazon VPC ID. Mutually exclusive with networkCidr.
       subnetIds:
         type: array
-        description: One or more subnet ids within the VPC. Mutually exclusive with networkCidr.
+        description: One or more subnet IDs within the VPC. Mutually exclusive with networkCidr.
         uniqueItems: true
         items:
           type: string
@@ -1429,7 +1451,7 @@ definitions:
         description: Whether to create service endpoints or not.
       endpointAccessGatewayScheme:
         type: string
-        description: The scheme for the endpoint gateway. PUBLIC creates an external endpoint that can be accessed over the Internet. Defaults to PRIVATE which restricts the traffic to be internal to the VPC / Vnet.
+        description: The scheme for the endpoint gateway. PUBLIC creates an external endpoint that can be accessed over the Internet. Defaults to PRIVATE which restricts the traffic to be internal to the VPC.
         enum:
           - PUBLIC
           - PRIVATE
@@ -1849,7 +1871,7 @@ definitions:
         type: string
         description: Public SSH key string. The associated private key can be used to get root-level access to the Data Lake instance and Data Hub cluster instances.
       securityAccess:
-        description: Security control for FreeIPA and Datalake deployment.
+        description: Security control for FreeIPA and Data Lake deployment.
         $ref: '#/definitions/SecurityAccessRequest'
       usePublicIp:
         type: boolean
@@ -2176,7 +2198,7 @@ definitions:
         description: SSH key for accessing cluster node instances.
         $ref: '#/definitions/Authentication'
       securityAccess:
-        description: Security control for FreeIPA and Datalake deployment.
+        description: Security control for FreeIPA and Data Lake deployment.
         $ref: '#/definitions/SecurityAccess'
       description:
         type: string
@@ -2973,6 +2995,49 @@ definitions:
       message:
         type: string
         description: Message explaining the status. Used for Errors.
+  CheckDatabaseConnectivityRequest:
+    x-form-factors: private
+    type: object
+    description: Request object for checking Database connectivity.
+    required:
+      - host
+      - port
+      - name
+      - username
+      - password
+    properties:
+      host:
+        type: string
+        description: Host value.
+      port:
+        type: integer
+        format: int32
+        description: Port value.
+      name:
+        type: string
+        description: Database name value.
+      username:
+        type: string
+        description: Username value.
+      password:
+        type: string
+        description: Password value.
+  CheckDatabaseConnectivityResponse:
+    x-form-factors: private
+    type: object
+    description: Response object for checking Database connectivity.
+    required:
+      - result
+    properties:
+      result:
+        type: string
+        description: Result of the connectivity check.
+        enum:
+          - SUCCESS
+          - FAILURE
+      message:
+        type: string
+        description: Message explaining the result.
   GetFreeipaStatusRequest:
     type: object
     description: Request object for getting the status of the FreeIPA servers.

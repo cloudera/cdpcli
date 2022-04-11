@@ -336,6 +336,9 @@ definitions:
       whitelistIps:
         type: string
         description: List of CIDRs that would be allowed to access kubernetes master API server.
+      loadbalancerAllowlist:
+        type: string
+        description: Comma-separated CIDRs that would be allowed to access the load balancer.
       subnets:
         type: string
         description: List of Subnet IDs of the CDP subnets used by the kubernetes worker node.
@@ -643,6 +646,11 @@ definitions:
         items:
           type: string
         description: List of CIDRs that would be allowed to access kubernetes master API server.
+      loadbalancerAllowlist:
+        type: array
+        items:
+          type: string
+        description: List of CIDRs that would be allowed to access the load balancer.
       tags:
         type: object
         description: User defined labels that tag all provisioned cloud resources.
@@ -695,6 +703,11 @@ definitions:
         items:
           type: string
         description: List of CIDRs that would be allowed to access kubernetes master API server.
+      loadbalancerAllowlist:
+        type: array
+        items:
+          type: string
+        description: List of CIDRs that would be allowed to access the load balancer.
   UpdateServiceResponse:
     type: object
     description: Response object for UpdateService request.

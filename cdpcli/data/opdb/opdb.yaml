@@ -467,7 +467,7 @@ definitions:
       creationDate:
         type: string
         format: date-time
-        description: The creation time of the database in UTC
+        description: The creation time of the database
       status:
         description: Status of the database creation
         $ref: '#/definitions/StatusType'

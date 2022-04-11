@@ -1110,7 +1110,7 @@ definitions:
       updatedAt:
         type: string
         format: date-time
-        description: The unix timestamp for the heartbeat.
+        description: The timestamp for the heartbeat.
       message:
         type: string
         description: The message to show for the health info.

@@ -9,7 +9,7 @@ info:
   title: Image catalog service
   license:
     name: Apache 2.0
-  description: Service for managing custom VM images.
+  description: Service for managing custom image catalogs and their associated Cloudera Runtime and FreeIPA images.
   termsOfService: https://www.cloudera.com/legal/commercial-terms-and-conditions.html
 schemes:
   - https
@@ -21,7 +21,7 @@ paths:
   /api/v1/imagecatalog/createCustomCatalog:
     post:
       summary: Create custom image catalog
-      description: Creates a new image catalog for runtime and freeipa images.
+      description: Creates a new image catalog for Cloudera Runtime and FreeIPA images.
       operationId: createCustomCatalog
       parameters:
         - name: input
@@ -60,8 +60,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/imagecatalog/deleteFreeipaImage:
     post:
-      summary: Delete image
-      description: Deletes a freeipa image from a given catalog
+      summary: Delete FreeIPA image
+      description: Deletes a FreeIPA image from a given catalog.
       operationId: deleteFreeipaImage
       parameters:
         - name: input
@@ -80,8 +80,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/imagecatalog/deleteRuntimeImage:
     post:
-      summary: Delete image
-      description: Deletes a runtime image from a given catalog
+      summary: Delete Cloudera Runtime image
+      description: Deletes a Cloudera Runtime image from a given catalog.
       operationId: deleteRuntimeImage
       parameters:
         - name: input
@@ -121,7 +121,7 @@ paths:
   /api/v1/imagecatalog/describeCustomImage:
     post:
       summary: Describe custom image
-      description: Retrieves data about a specific image from a specific catalog
+      description: Retrieves data about a specific image from a given catalog.
       operationId: describeCustomImage
       parameters:
         - name: input
@@ -141,7 +141,7 @@ paths:
   /api/v1/imagecatalog/describeDefaultImage:
     post:
       summary: Describe default image
-      description: Retrieves an image directly by id from the default catalog
+      description: Retrieves an image directly by id from the default catalog.
       operationId: describeDefaultImage
       parameters:
         - name: input
@@ -161,7 +161,7 @@ paths:
   /api/v1/imagecatalog/findDefaultImage:
     post:
       summary: Find default image
-      description: Retrieves an image based on the filters from the default catalog
+      description: Retrieves an image based on the filters from the default catalog.
       operationId: findDefaultImage
       parameters:
         - name: input
@@ -181,7 +181,7 @@ paths:
   /api/v1/imagecatalog/listCustomCatalogs:
     post:
       summary: List custom image catalogs
-      description: Lists all the runtime/freeipa image catalogs accessible for the user.
+      description: Lists all the Cloudera Runtime/FreeIPA image catalogs accessible for the user.
       operationId: listCustomCatalogs
       parameters:
         - name: input
@@ -200,8 +200,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/imagecatalog/setFreeipaImage:
     post:
-      summary: Add or update image
-      description: Adds or updates a freeipa image in the catalog.
+      summary: Add or update FreeIPA image
+      description: Adds or updates a FreeIPA image in the catalog.
       operationId: setFreeipaImage
       parameters:
         - name: input
@@ -220,8 +220,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/imagecatalog/setRuntimeImage:
     post:
-      summary: Add or update image
-      description: Adds or updates a runtime image in the catalog.
+      summary: Add or update Cloudera Runtime image
+      description: Adds or updates a Cloudera Runtime image in the catalog.
       operationId: setRuntimeImage
       parameters:
         - name: input
@@ -251,7 +251,7 @@ definitions:
         description: The error message.
   CreateCustomCatalogRequest:
     type: object
-    description: Create custom image catalog request
+    description: The request object to create a custom image catalog.
     required:
       - catalogName
     properties:
@@ -263,10 +263,10 @@ definitions:
         description: Image catalog description
   CreateCustomCatalogResponse:
     type: object
-    description: Create custom image catalog response
+    description: The response object returned in case the custom image catalog has been successfully created.
   DeleteCustomCatalogRequest:
     type: object
-    description: Delete custom image catalog request
+    description: The request object to delete a custom image catalog.
     required:
       - catalogName
     properties:
@@ -275,13 +275,13 @@ definitions:
         description: Image catalog name
   DeleteCustomCatalogResponse:
     type: object
-    description: Delete custom image catalog response
+    description: The response object returned in case of successful custom image catalog deletion.
   ListCustomCatalogsRequest:
     type: object
-    description: List custom image catalog request
+    description: The request object to list the registered custom image catalogs.
   ListCustomCatalogsResponse:
     type: object
-    description: List of registered image catalogs
+    description: The response object for the list of registered image catalogs.
     properties:
       imageCatalogs:
         type: array
@@ -290,30 +290,30 @@ definitions:
         description: The list of registered image catalogs
   CustomImageCatalog:
     type: object
-    description: Basic image catalog data
+    description: Basic image catalog data.
     properties:
       name:
         type: string
-        description: Image Catalog name
+        description: Image catalog name
       description:
         type: string
         description: Image catalog description
   DescribeCustomCatalogRequest:
     type: object
-    description: Request to retrieved data about a custom catalog
+    description: The request object to retrieve data about a custom catalog.
     required:
       - catalogName
     properties:
       catalogName:
         type: string
-        description: Image Catalog name
+        description: Image catalog name
   DescribeCustomCatalogResponse:
     type: object
-    description: Representing data of a single catalog
+    description: The response object holding the retrieved data of a custom catalog.
     properties:
       catalogName:
         type: string
-        description: Image Catalog name
+        description: Image catalog name
       description:
         type: string
         description: Image catalog description
@@ -324,7 +324,7 @@ definitions:
         description: Detailed information of the images contained within
   SetRuntimeImageRequest:
     type: object
-    description: Adds or updates a runtime image in a catalog
+    description: The request object to add or update a Cloudera Runtime image in a catalog.
     required:
       - catalogName
       - sourceImageId
@@ -332,10 +332,10 @@ definitions:
     properties:
       catalogName:
         type: string
-        description: Image Catalog name
+        description: Image catalog name
       sourceImageId:
         type: string
-        description: UUID of the image customized by the current image.
+        description: UUID of the image customized by the current image
       vmImages:
         type: array
         items:
@@ -343,14 +343,14 @@ definitions:
         description: List of images
       imageId:
         type: string
-        description: Image UUID. If this is empty, a randomly generated UUID is used.
+        description: Image UUID. If this is empty, a randomly generated UUID is used
       baseParcelUrl:
         type: string
         description: Base parcel URL
         x-no-paramfile: true
   SetFreeipaImageRequest:
     type: object
-    description: Adds or updates a FreeIPA image in a catalog
+    description: The request object to add or update a FreeIPA image in a catalog.
     required:
       - catalogName
       - sourceImageId
@@ -358,10 +358,10 @@ definitions:
     properties:
       catalogName:
         type: string
-        description: Image Catalog name
+        description: Image catalog name
       sourceImageId:
         type: string
-        description: UUID of the image customized by the current image.
+        description: UUID of the image customized by the current image
       vmImages:
         type: array
         items:
@@ -369,7 +369,7 @@ definitions:
         description: List of images
       imageId:
         type: string
-        description: Image UUID. If this is empty, a randomly generated UUID is used.
+        description: Image UUID. If this is empty, a randomly generated UUID is used
       baseParcelUrl:
         type: string
         description: Base parcel URL
@@ -390,74 +390,74 @@ definitions:
         x-no-paramfile: true
   SetRuntimeImageResponse:
     type: object
-    description: Adds or updates runtime image response
+    description: The response object holding data about the added or updated Cloudera Runtime image.
     properties:
       imageId:
         type: string
         description: Image UUID
   SetFreeipaImageResponse:
     type: object
-    description: Adds or updates freeipa image response
+    description: The response object holding data about the added or updated FreeIPA image.
     properties:
       imageId:
         type: string
         description: Image UUID
   DeleteRuntimeImageRequest:
     type: object
-    description: Deletes runtime image from a catalog request
+    description: The request object to delete Cloudera Runtime image from a catalog.
     required:
       - catalogName
       - imageId
     properties:
       catalogName:
         type: string
-        description: Image Catalog name
+        description: Image catalog name
       imageId:
         type: string
         description: Image UUID
   DeleteFreeipaImageRequest:
     type: object
-    description: Deletes FreeIPA image from a catalog request
+    description: The request object to delete FreeIPA image from a catalog.
     required:
       - catalogName
       - imageId
     properties:
       catalogName:
         type: string
-        description: Image Catalog name
+        description: Image catalog name
       imageId:
         type: string
         description: Image UUID
   DeleteRuntimeImageResponse:
     type: object
-    description: Deletes runtime image from a catalog response
+    description: The response object returned in case the Cloudera Runtime image has been successfully removed from the catalog.
     properties:
       imageId:
         type: string
         description: Image UUID
   DeleteFreeipaImageResponse:
     type: object
-    description: Deletes image from a catalog response
+    description: The response object returned in case the FreeIPA image has been successfully removed from the catalog.
     properties:
       imageId:
         type: string
         description: Image UUID
   DescribeCustomImageRequest:
     type: object
-    description: Request to retrieve data of an image from the given catalog
+    description: The request object to retrieve data of an image from the given catalog.
     required:
       - catalogName
       - imageId
     properties:
       catalogName:
         type: string
-        description: Image Catalog name
+        description: Image catalog name
       imageId:
         type: string
         description: Image UUID
   DescribeCustomImageResponse:
     type: object
-    description: Contains data of an image retrieved from the given catalog
+    description: The response object holding the data of the image retrieved from the given custom catalog.
     properties:
       imageId:
         type: string
@@ -494,20 +494,20 @@ definitions:
         description: List of images
   VmImageProvider:
     type: string
-    description: "Object representing a valid cloud provider name\n `AWS` - The image is an AWS VM image `AZURE` - The image is an Azure VM image `GCP` - The image is a GCP VM image"
+    description: "Object representing a valid cloud provider name.\n `AWS` - The image is an AWS VM image `AZURE` - The image is an Azure VM image `GCP` - The image is a GCP VM image"
     enum:
       - AWS
       - AZURE
       - GCP
   VmImageType:
     type: string
-    description: "Object representing a valid VM image type\n `FREEIPA` - FreeIPA image `RUNTIME` - Runtime image"
+    description: "Object representing a valid VM image type.\n `FREEIPA` - FreeIPA image `RUNTIME` - Cloudera Runtime image"
     enum:
       - FREEIPA
       - RUNTIME
   FindDefaultImageRequest:
     type: object
-    description: Model for filter data that is used for retrieving an image from the default image catalog.
+    description: The request object to filter data that is used for retrieving an image from the default image catalog.
     properties:
       provider:
         description: Cloud provider - either AWS, AZURE or GCP
@@ -520,7 +520,7 @@ definitions:
         description: Cloudera runtime version
   FindDefaultImageResponse:
     type: object
-    description: Model for holding data about an image retrieved from the default image catalog.
+    description: The response object for holding data about an image retrieved from the default image catalog.
     properties:
       imageId:
         type: string
@@ -532,7 +532,7 @@ definitions:
         description: List of images
   DescribeDefaultImageRequest:
     type: object
-    description: Model used for retrieving an image from the default image catalog.
+    description: The request object to retrieve an image from the default image catalog.
     required:
       - imageId
     properties:
@@ -541,7 +541,7 @@ definitions:
         description: Image UUID
   DescribeDefaultImageResponse:
     type: object
-    description: Model for holding data about an image retrieved from the default image catalog.
+    description: The response object for holding data about an image retrieved from the default image catalog.
     properties:
       imageId:
         type: string
