@@ -845,6 +845,7 @@ paths:
       summary: Start Datahub Cloudera Manager based diagnostics collection
       description: Start Datahub Cloudera Manager based diagnostics collection
       operationId: collectCmDiagnostics
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -865,6 +866,7 @@ paths:
       summary: Gather Cloudera Manager roles that can be used for filtering in CM based diagnostics collection.
       description: Gather Cloudera Manager roles that can be used for filtering in CM based diagnostics collection.
       operationId: getCmRoles
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -1915,7 +1917,7 @@ definitions:
     description: Response object for retry cluster request.
   RenewCertificateRequest:
     type: object
-    description: Request object for renew datahub certificate request.
+    description: Request object for renew datahub certificate request, deprecated.
     x-deprecated: true
     required:
       - clusterName
@@ -2988,7 +2990,7 @@ definitions:
           $ref: '#/definitions/DatahubVmLogResponse'
   RotateAutoTlsCertificatesRequest:
     type: object
-    description: Request object to rotate autotls certificates on datahub's hosts.
+    description: Request object to rotate autotls certificates on datahub's hosts, deprecated.
     x-deprecated: true
     required:
       - datahubName
@@ -2998,11 +3000,11 @@ definitions:
         description: The name or CRN of the datahub.
   RotateAutoTlsCertificatesResponse:
     type: object
-    description: Response object to rotate autotls certificates on datahub's hosts.
+    description: Response object to rotate autotls certificates on datahub's hosts, deprecated.
     x-deprecated: true
   RenewCertificateResponse:
     type: object
-    description: Response object for renew certificate request.
+    description: Response object for renew certificate request, deprecated.
     x-deprecated: true
   ImageComponentVersions:
     type: object

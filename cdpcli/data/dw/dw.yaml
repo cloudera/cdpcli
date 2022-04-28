@@ -872,9 +872,11 @@ definitions:
       awsOptions:
         description: Options for activating an AWS environment.
         $ref: '#/definitions/AwsActivationOptions'
+        x-form-factors: public
       azureOptions:
         description: Options for activating an Azure environment.
         $ref: '#/definitions/AzureActivationOptions'
+        x-form-factors: public
   AwsActivationOptions:
     type: object
     description: Options for activating an AWS environment.
@@ -1644,6 +1646,10 @@ definitions:
   ConfigBlockReq:
     type: object
     description: A piece of configuration stored in the same place (e.g. same file or environment variables).
+    required:
+      - id
+      - format
+      - content
     properties:
       id:
         type: string

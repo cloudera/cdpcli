@@ -574,6 +574,7 @@ paths:
       summary: Start DataLake Cloudera Manager based diagnostics collection
       description: Start Datalake Cloudera Manager based diagnostics collection
       operationId: collectCmDiagnostics
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -594,6 +595,7 @@ paths:
       summary: Gather Cloudera Manager roles that can be used for filtering in CM based diagnostics collection.
       description: Gather Cloudera Manager roles that can be used for filtering in CM based diagnostics collection.
       operationId: getCmRoles
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -648,6 +650,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RotatePrivateCertificatesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/resizeDatalake:
+    post:
+      summary: Resizes the given datalake to the given target size. Currently, the only valid use of this is for resizing a light duty datalake to a medium duty datalake.
+      description: Resizes the datalake to the given size.
+      operationId: resizeDatalake
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ResizeDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid resize datalake request.
+          schema:
+            $ref: '#/definitions/ResizeDatalakeResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1271,7 +1294,7 @@ definitions:
         description: The datalake.
   RenewCertificateRequest:
     type: object
-    description: Request object for renew datalake certificate request.
+    description: Request object for renew datalake certificate request, deprecated.
     x-deprecated: true
     required:
       - datalakeName
@@ -1377,7 +1400,7 @@ definitions:
         description: The host health summary.
   StartDatalakeRequest:
     type: object
-    description: Request object to start a datalake.
+    description: Request object to start a datalake, deprecated.
     x-deprecated: true
     required:
       - datalakeName
@@ -1387,11 +1410,11 @@ definitions:
         description: The name or CRN of the datalake.
   StartDatalakeResponse:
     type: object
-    description: Response object of starting a datalake.
+    description: Response object of starting a datalake, deprecated.
     x-deprecated: true
   StopDatalakeRequest:
     type: object
-    description: Request object to stop a datalake.
+    description: Request object to stop a datalake, deprecated.
     x-deprecated: true
     required:
       - datalakeName
@@ -1401,7 +1424,7 @@ definitions:
         description: The name or CRN of the datalakeName.
   StopDatalakeResponse:
     type: object
-    description: Response object of stopping a datalake.
+    description: Response object of stopping a datalake, deprecated.
     x-deprecated: true
   BackupDatalakeRequest:
     type: object
@@ -2229,7 +2252,7 @@ definitions:
           $ref: '#/definitions/DatalakeVmLogResponse'
   RotateAutoTlsCertificatesRequest:
     type: object
-    description: Request object to rotate autotls certificates on datalake's hosts.
+    description: Request object to rotate autotls certificates on datalake's hosts, deprecated.
     x-deprecated: true
     required:
       - datalakeName
@@ -2239,11 +2262,11 @@ definitions:
         description: The name or CRN of the datalake.
   RotateAutoTlsCertificatesResponse:
     type: object
-    description: Response object to rotate autotls certificates on datalake's hosts.
+    description: Response object to rotate autotls certificates on datalake's hosts, deprecated.
     x-deprecated: true
   RenewCertificateResponse:
     type: object
-    description: Response object for renew certificate request.
+    description: Response object for renew certificate request, deprecated.
     x-deprecated: true
   ImageRequest:
     description: The image request for the datalake. This must not be set if the runtime parameter is provided. The image ID parameter is required if this is present, but the image catalog name is optional, defaulting to 'cdp-default' if not present.
@@ -2258,6 +2281,46 @@ definitions:
         type: string
         description: The name of the custom image catalog to use.
         default: cdp-default
+  ResizeDatalakeRequest:
+    type: object
+    description: Datalake resize request.
+    required:
+      - datalakeName
+      - targetSize
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+      targetSize:
+        type: string
+        description: The target size for the datalake.
+        enum:
+          - MEDIUM_DUTY_HA
+  ResizeDatalakeResponse:
+    type: object
+    description: Datalake resize response.
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the datalake. This will remain the same for the datalake created by the resize process.
+      datalakeCrn:
+        type: string
+        description: The CRN of the datalake. This will remain the same for the datalake created by the resize process.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment the datalake is attached to. This will remain the same for the datalake created by the resize process.
+      runtime:
+        type: string
+        description: The runtime of the datalake. This will remain the same for the datalake created by the resize process.
+      status:
+        type: string
+        description: The current status of the datalake.
+      statusReason:
+        type: string
+        description: The reason for the current status of the datalake.
+      cloudbreakVersion:
+        type: string
+        description: The Cloudbreak version used to create the datalake.
   ReplaceRecipesRequest:
     type: object
     description: The request for replacing recipes.

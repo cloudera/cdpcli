@@ -25,7 +25,7 @@ import cdpcli.credentials
 from cdpcli.exceptions import NoCredentialsError
 import mock
 from tests import unittest
-from tests.unit import ED25519_KEY, RSA_KEY
+from tests.unit import ECDSA_KEY, ED25519_KEY, RSA_KEY
 
 
 EXPECTED_RSA_SIG = \
@@ -37,6 +37,11 @@ EXPECTED_RSA_SIG = \
 
 EXPECTED_ED25519_SIG = \
     'et_Ueu_w3QuQbqvDdwy9aT8HLzsXBdJfRRRHe4fEK_RZ-qR-xvM35XG8J8q-YMz70GunK82JoSt5ztz0lAuCBg=='  # noqa
+
+EXPECTED_ECDSA_SIG = \
+    'MIGIAkIBPOgngVp4-uyWzLTCKcsCBeYezoedjN-Tj2KI78aIn6huJEJwG-6ZiVcEyO-mI1wN' \
+    'tbVu7H-iQDMPFKyBdpezjxYCQgEY32q1WTQUPHj_JNYN33QhCMPjJHIaBcHTdMp0SO3iVzLD' \
+    'Xi1MmHoMGsIYnUq3Q8Y1Z5JiyFr0NO6XzfnrF_OYCQ=='
 
 
 class BaseTestWithFixedDate(unittest.TestCase):
@@ -203,6 +208,58 @@ class TestED25519V1(unittest.TestCase):
                          json_metadata['access_key_id'])
         self.assertEqual("ed25519v1",
                          json_metadata['auth_method'])
+
+
+class TestECDSAV1(unittest.TestCase):
+    """
+    We're not retesting aspects that are identical to what RSA tests cover
+    """
+
+    def setUp(self):
+        access_key_id = 'ABCD-EFGH-IJKL-MNOP-QRST'
+        self.credentials = cdpcli.credentials.Credentials(
+            access_key_id=access_key_id,
+            private_key=ECDSA_KEY,
+            method='test')
+        self.ecdsav1 = cdpcli.auth.ECDSAv1Auth(self.credentials)
+        self.date_mock = mock.patch('cdpcli.auth.formatdate')
+        self.formatdate = self.date_mock.start()
+        self.formatdate.return_value = 'Thu, 17 Nov 2005 18:49:58 GMT'
+
+    def tearDown(self):
+        self.date_mock.stop()
+
+    def test_no_credentials_raises_error(self):
+        ecdsav1 = cdpcli.auth.ECDSAv1Auth(None)
+        with self.assertRaises(NoCredentialsError):
+            ecdsav1.add_auth("pass someting")
+
+    def test_put(self):
+        http_headers = HTTPHeaders.from_dict({})
+        split = urlsplit('/foo/bar')
+        cs = self.ecdsav1._canonical_string('PUT', split, http_headers)
+        expected_canonical = "PUT\n\nThu, 17 Nov 2005 18:49:58 GMT\n/foo/bar\necdsav1"
+        self.assertEqual(expected_canonical, cs)
+        sig = self.ecdsav1._get_signature('PUT', split, HTTPHeaders.from_dict({}))
+        self.assertEqual(EXPECTED_ECDSA_SIG, sig)
+
+    def test_auth_header_string(self):
+        http_headers = HTTPHeaders.from_dict({})
+        split = urlsplit('/foo/bar')
+        sig = self.ecdsav1._get_signature('PUT', split, http_headers)
+        self.assertEqual(EXPECTED_ECDSA_SIG, sig)
+
+        auth_header_string = self.ecdsav1._get_signature_header(sig)
+        expected_metadata = 'eyJhY2Nlc3Nfa2V5X2lkIjogIkFCQ0QtRUZHSC1JSktMLU1O' \
+                            'T1AtUVJTVCIsICJhdXRoX21ldGhvZCI6ICJlY2RzYXYxIn0='
+        metadata, sig = auth_header_string.split(".")
+        self.assertEqual(expected_metadata, metadata)
+        self.assertEqual(EXPECTED_ECDSA_SIG, sig)
+
+        json_metadata = json.loads(
+            urlsafe_b64decode(metadata.encode('utf-8')).decode('utf-8'))
+        self.assertEqual(self.credentials.access_key_id, json_metadata['access_key_id'])
+        self.assertEqual("ecdsav1", json_metadata['auth_method'])
 
 
 class TestAccessToken(unittest.TestCase):

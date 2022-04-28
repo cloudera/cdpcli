@@ -21,6 +21,7 @@ import uuid
 from cdpcli import credentials, DEFAULT_PROFILE_NAME
 from cdpcli import xform_name
 from cdpcli.auth import AccessTokenAuth
+from cdpcli.auth import ECDSAv1Auth
 from cdpcli.auth import Ed25519v1Auth
 from cdpcli.auth import RSAv1Auth
 from cdpcli.cdprequest import prepare_request_dict
@@ -121,6 +122,8 @@ class ClientCreator(object):
             auth_method = AccessTokenAuth.AUTH_METHOD_NAME
         elif Ed25519v1Auth.detect_private_key(credentials.private_key):
             auth_method = Ed25519v1Auth.AUTH_METHOD_NAME
+        elif ECDSAv1Auth.detect_private_key(credentials.private_key):
+            auth_method = ECDSAv1Auth.AUTH_METHOD_NAME
         else:
             auth_method = RSAv1Auth.AUTH_METHOD_NAME
         additional_headers = dict()

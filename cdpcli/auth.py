@@ -16,6 +16,7 @@
 
 from base64 import b64decode, urlsafe_b64encode
 from email.utils import formatdate
+import hashlib
 import logging
 
 from asn1crypto import keys, pem
@@ -23,6 +24,8 @@ from cdpcli.compat import json
 from cdpcli.compat import OrderedDict
 from cdpcli.compat import urlsplit
 from cdpcli.exceptions import NoCredentialsError
+from ecdsa import SigningKey
+from ecdsa.util import sigencode_der
 from pure25519 import eddsa
 import rsa
 
@@ -199,6 +202,74 @@ class RSAv1Auth(V1Signer):
         return signature
 
 
+class ECDSAv1Auth(V1Signer):
+    """
+    ECDSA signing with a SHA-512 hash returning a base64 encoded signature.
+    """
+    AUTH_METHOD_NAME = 'ecdsav1'
+
+    def __init__(self, credentials):
+        super(ECDSAv1Auth, self).__init__(credentials, self.AUTH_METHOD_NAME)
+
+    @staticmethod
+    def _parse_private_key(private_key, error_message="Failed to import private key."):
+        """
+        Parse the ECDSA private key.
+        :param private_key: The private key.
+        :return: The SigningKey.
+        :raise: Exception if the private key can not be parsed.
+        """
+        try:
+            # We expect the private key to be a PKCS8 pem formatted string.
+            pem_bytes = private_key.encode('utf-8')
+            if pem.detect(pem_bytes):
+                _, _, der_bytes = pem.unarmor(pem_bytes)
+                # In PKCS8 the key is wrapped in a container that describes it
+                info = keys.PrivateKeyInfo.load(der_bytes, strict=True)
+                # Directly unwrap the private key. The asn1crypto library stopped
+                # offering an API call for this in their 1.0.0 release but their
+                # official answer of using a separate native-code-dependent
+                # library to do one line of work is unreasonable. Of course, this
+                # line might break in the future...
+                unwrapped = info['private_key'].parsed
+                # The unwrapped key is equivalent to pkcs1 contents
+                return SigningKey.from_der(unwrapped.dump())
+            else:
+                raise Exception('Not a PEM file')
+        except Exception:
+            LOG.debug(error_message, exc_info=True)
+            raise Exception(error_message)
+
+    @staticmethod
+    def detect_private_key(private_key):
+        """
+        Try to see if the private key is an ECDSA key by parsing it.
+        :param private_key: The key to check.
+        :return: True if the key is an ECDSA key, False otherwise.
+        """
+        try:
+            ECDSAv1Auth._parse_private_key(private_key)
+            return True
+        except Exception:
+            return False
+
+    def _raw_sign_string(self, string_to_sign):
+        """
+        Sign the supplied string using the credentials and return the raw signature.
+        :param string_to_sign: String to sign
+        :return: Raw signature as string
+        """
+        sk = ECDSAv1Auth._parse_private_key(
+            self.credentials.private_key,
+            self.ERROR_MESSAGE % self.credentials.method)
+        # Sign the hash.
+        signature = sk.sign_deterministic(
+            string_to_sign.encode('utf-8'),
+            hashfunc=hashlib.sha512,
+            sigencode=sigencode_der)
+        return signature
+
+
 class AccessTokenAuth:
     AUTH_METHOD_NAME = 'access_token'
 
@@ -219,6 +290,7 @@ class AccessTokenAuth:
 
 
 AUTH_TYPE_MAPS = {
+    ECDSAv1Auth.AUTH_METHOD_NAME: ECDSAv1Auth,
     Ed25519v1Auth.AUTH_METHOD_NAME: Ed25519v1Auth,
     RSAv1Auth.AUTH_METHOD_NAME: RSAv1Auth,
     AccessTokenAuth.AUTH_METHOD_NAME: AccessTokenAuth

@@ -38,6 +38,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/opdb/createDatabase:
     post:
       summary: Create opDb
@@ -79,6 +80,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/opdb/describeDatabase:
     post:
       summary: Describe a opDb
@@ -99,6 +101,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/opdb/dropDatabase:
     post:
       summary: drop a opDb
@@ -140,6 +143,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/opdb/listDiagnostics:
     post:
       summary: List all diagnostics associated to the database
@@ -160,6 +164,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/opdb/listSupportedEnvironments:
     post:
       summary: List of environments available for the database creation
@@ -180,6 +185,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/opdb/startDatabase:
     post:
       summary: Starts the database

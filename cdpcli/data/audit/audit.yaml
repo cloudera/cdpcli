@@ -109,6 +109,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/audit/getArchivingStatus:
     post:
       summary: Retrieve the status for an archive process.
@@ -132,6 +133,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/audit/getBatchEventsForArchivingStatus:
     post:
       summary: Get the status of creating batches of audit events to be archived.
@@ -153,6 +155,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/audit/listEvents:
     post:
       summary: List all audit events recorded in a specified time span, and optionally with a specified request ID and/or event source.
@@ -176,6 +179,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/audit/listEventsInArchiveBatch:
     post:
       summary: List events contained in a single archive batch.
@@ -197,6 +201,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/audit/listOutstandingArchiveBatches:
     post:
       summary: List outstanding (unarchived) archive batches.
@@ -219,6 +224,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/audit/listRecentArchiveRuns:
     post:
       summary: List recent archive runs.
@@ -241,6 +247,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/audit/markArchiveBatchesAsSuccessful:
     post:
       summary: Mark archive batches as successful.

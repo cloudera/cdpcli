@@ -40,6 +40,7 @@ def get_requirements():
             "asn1crypto>=0.21.1",
             "rsa>=3.4.2",
             "pure25519>=0.0.1",
+            "ecdsa>=0.17.0",
             "requests>=2.21.0",
             "urllib3>=1.21.1"]
 
