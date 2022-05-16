@@ -79,15 +79,13 @@
          "help": "<p>Use a specific profile from your credential file.</p>"
       },
       "cdp-region": {
-         "hidden": true,
          "choices": [
-            "default",
             "us-west-1",
             "eu-1",
             "ap-1"
          ],
-         "default": "default",
-         "help": "<p>Specifies which CDP Region to send this command's request to.</p>"
+         "default": "us-west-1",
+         "help": "<p>Specifies which CDP region to send this command's CDP request to.</p>"
       },
       "ensure-ascii": {
         "hidden": true,

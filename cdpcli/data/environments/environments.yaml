@@ -3230,6 +3230,9 @@ definitions:
         type: integer
         format: int32
         description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
+      multiAz:
+        type: boolean
+        description: Flag which marks that the freeIPA will be deployed in a multi-availability zone way or not.
   AzureFreeIpaCreationRequest:
     description: Request object for creating FreeIPA in the environment.
     type: object

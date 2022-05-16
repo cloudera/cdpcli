@@ -342,6 +342,18 @@ definitions:
       subnets:
         type: string
         description: List of Subnet IDs of the CDP subnets used by the kubernetes worker node.
+      privateClusterEnabled:
+        type: boolean
+        description: If true, the CDE service was created with fully private Azure services (AKS, MySQL, etc.).
+      publicEndpointEnabled:
+        type: boolean
+        description: If true, the CDE endpoint was created in a publicly accessible subnet.
+      workloadAnalyticsEnabled:
+        type: boolean
+        description: If true, diagnostic information about job and query execution is sent to Cloudera Workload Manager.
+      ssdUsed:
+        type: boolean
+        description: If true, SSD would have been be used for workload filesystem.
   ServiceResources:
     type: object
     description: Object to store resources for a CDE service.
@@ -661,6 +673,9 @@ definitions:
         type: boolean
         description: Skip Validation check.
         default: false
+      enablePrivateNetwork:
+        type: boolean
+        description: Create CDE with fully private Azure services (AKS, MySQL, etc.) and enable vnet access via private endpoints and private link. This option is available only for Azure services.
       subnets:
         type: array
         items:

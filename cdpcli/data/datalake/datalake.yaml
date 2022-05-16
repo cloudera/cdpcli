@@ -978,6 +978,9 @@ definitions:
         enum:
           - VALID
           - HOST_CERT_EXPIRING
+      multiAz:
+        type: boolean
+        description: Flag which marks that the datalake is deployed in a multi-availability zone way or not.
   DatalakeResourceTagRequest:
     type: object
     description: Tag for a datalake resource.

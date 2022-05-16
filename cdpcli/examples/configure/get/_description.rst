@@ -24,7 +24,7 @@ unqualified name will be scoped to the current profile.  For example,
 ``cdp configure get cdp_access_key_id`` will retrieve the ``cdp_access_key_id``
 from the current profile,  or the ``default`` profile if no profile is
 specified.  You can still provide a ``--profile`` argument to the ``cdp
-configure get`` command.  For example, ``cdp configure get region --profile
+configure get`` command.  For example, ``cdp configure get cdp_region --profile
 testing`` will print the region value for the ``testing`` profile.
 
 

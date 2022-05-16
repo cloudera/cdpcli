@@ -877,6 +877,10 @@ definitions:
         description: Options for activating an Azure environment.
         $ref: '#/definitions/AzureActivationOptions'
         x-form-factors: public
+      privateCloudOptions:
+        description: Options for activating a Private Cloud environment.
+        $ref: '#/definitions/PrivateCloudActivationOptions'
+        x-form-factors: private
   AwsActivationOptions:
     type: object
     description: Options for activating an AWS environment.
@@ -942,6 +946,25 @@ definitions:
         type: boolean
         description: Enable uptime SLA for Kubernetes API server.
         default: false
+  PrivateCloudActivationOptions:
+    type: object
+    description: Options for activating a Private Cloud environment.
+    required:
+      - delegationUsername
+      - delegationPassword
+    properties:
+      delegationUsername:
+        type: string
+        description: Name of delegation user. This user is used between Hue - Impala to create a session, as Hue should not pass the user credentials, instead Hue authenticates with the delegation user, then this user will impersonate the logged in user. This means that the Delegation User and Password should be able to authenticate through LDAP.
+      delegationPassword:
+        type: string
+        description: Password of delegation user.
+      securityContextConstraintName:
+        type: string
+        description: The name of the Hive Security Context Constraint.
+      storageClass:
+        type: string
+        description: The storage class for the Local Storage Operator.
   CreateClusterResponse:
     type: object
     description: Response object for the createCluster method.
@@ -1059,6 +1082,21 @@ definitions:
         type: string
         description: Tenant Storage Location if the feature is enabled for the account.
         default: ''
+      dbMetastore:
+        type: string
+        description: The name of the Metastore database.
+        default: ''
+        x-form-factors: private
+      dbDas:
+        type: string
+        description: The name of the DAS database.
+        default: ''
+        x-form-factors: private
+      dbHue:
+        type: string
+        description: The name of the HUE database.
+        default: ''
+        x-form-factors: private
   CreateDbcResponse:
     type: object
     description: Response object for the createDbc method.

@@ -32,6 +32,12 @@ By default, the credentials file is found at ``~/.cdp/credentials``.
 
 The **config file** stores other information, in the following variables:
 
+* **cdp_region** - The region for CDP API services, possible values are:
+
+ * us-west-1 (default value)
+ * eu-1
+ * ap-1
+
 * **cdp_endpoint_url** - The base URL for CDP API services
 * **endpoint_url** - The base URL for other, legacy CDP API services
   (``cdp configure`` does not prompt for this value)

@@ -18,6 +18,7 @@ import os
 
 from cdpcli.compat import json
 from nose.tools import assert_equal
+from nose.tools import assert_in
 from tests import executing_in_container
 
 
@@ -61,3 +62,31 @@ def test_cli_options_match_service_model_validator():
                              'cdp-region',
                              'ensure-ascii']
     assert_equal(sorted(cli_data['options'].keys()), sorted(validated_cli_options))
+
+
+def test_cdp_region():
+    # We skip this test if we're in a container since the CLI data is not simple
+    # to find. This is fine, since no additional coverage is offered by running
+    # this on different OSes with different versions of python.
+    if executing_in_container():
+        return
+
+    cli_data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 '../../cdpcli/data/cli.json')
+    with open(cli_data_path, 'r') as fp:
+        cli_data = json.load(fp)
+
+    validated_cdp_regions = ['us-west-1',
+                             'eu-1',
+                             'ap-1']
+    cdp_regions = cli_data['options']['cdp-region']['choices']
+    assert_equal(sorted(cdp_regions), sorted(validated_cdp_regions))
+
+    # Verify the same list of regions is in the configure help description.
+    configure_doc_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                      '../../cdpcli/examples/configure/_description.rst')
+    with open(configure_doc_path, 'r') as fp:
+        configure_doc = fp.read()
+
+    for cdp_region in validated_cdp_regions:
+        assert_in(' * ' + cdp_region, configure_doc)
