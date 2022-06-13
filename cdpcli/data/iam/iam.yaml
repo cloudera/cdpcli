@@ -1461,6 +1461,77 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /iam/createScimAccessToken:
+    post:
+      summary: Creates a SCIM access token for a SCIM enabled identity provider.
+      description: Creates a SCIM access token for a SCIM enabled identity provider. This token is used to authenticate requests sent to the SCIM endpoints.
+      operationId: createScimAccessToken
+      x-form-factors: public
+      x-right: iam/createScimAccessToken
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateScimAccessTokenRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateScimAccessTokenResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/listScimAccessTokens:
+    post:
+      summary: Lists SCIM access tokens for a SCIM enabled identity provider.
+      description: Lists SCIM access tokens for a SCIM enabled identity provider. These access tokens are used to authenticate requests sent to the SCIM endpoints.
+      operationId: listScimAccessTokens
+      x-form-factors: public
+      x-paginates: true
+      x-paging-default-max-items: 100
+      x-right: iam/listScimAccessTokens
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListScimAccessTokensRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListScimAccessTokensResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/deleteScimAccessToken:
+    post:
+      summary: Deletes a SCIM access token.
+      description: Deletes a SCIM access token.
+      operationId: deleteScimAccessToken
+      x-form-factors: public
+      x-right: iam/deleteScimAccessToken
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteScimAccessTokenRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteScimAccessTokenResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -1817,6 +1888,15 @@ definitions:
       syncGroupsOnLogin:
         type: boolean
         description: Whether users federated with this SAML provider will have their group membership synchronized. Group membership can be passed using the https://cdp.cloudera.com/SAML/Attributes/groups SAML assertion.
+      generateWorkloadUsernameByEmail:
+        type: boolean
+        description: Whether to generate users' workload username by email or by identity provider user ID (SAML NameID).
+      enableScim:
+        type: boolean
+        description: Whether SCIM is enabled on this SAML provider. System for Cross-domain Identity Management (SCIM) version 2.0 is a standard for automating the provisioning of user and group identity information from identity provider to CDP.
+      scimUrl:
+        type: string
+        description: The SCIM URL if SCIM is enabled.
       samlMetadataDocument:
         type: string
         description: The original metadata that was passed while creating the SAML provider connector. This field will not be set when the SAML provider does not have metadata. This field will not be set for listSamlProviders API response.
@@ -2055,6 +2135,12 @@ definitions:
       syncGroupsOnLogin:
         type: boolean
         description: Whether to sync group information for users federated with this SAML provider. Group membership can be passed using the https://cdp.cloudera.com/SAML/Attributes/groups SAML assertion. The default is to synchronize group membership.
+      generateWorkloadUsernameByEmail:
+        type: boolean
+        description: Whether to generate users' workload username by email . The default is to generate workload usernames by identity provider user ID (SAML NameID).
+      enableScim:
+        type: boolean
+        description: Whether to enable SCIM on this SAML provider. System for Cross-domain Identity Management (SCIM) version 2.0 is a standard for automating the provisioning of user and group identity information from identity provider to CDP.
   CreateSamlProviderResponse:
     type: object
     description: Response object for a creating SAML provider request.
@@ -2127,6 +2213,12 @@ definitions:
       syncGroupsOnLogin:
         type: boolean
         description: Whether to sync group information for users federated with this SAML provider. Group membership can be passed using the https://cdp.cloudera.com/SAML/Attributes/groups SAML assertion. The default is to synchronize group membership. Can be omitted if no update is required.
+      generateWorkloadUsernameByEmail:
+        type: boolean
+        description: Whether to generate users' workload username by email. The default is to generate workload usernames by identity provider user ID (SAML NameID).
+      enableScim:
+        type: boolean
+        description: Whether to enable SCIM on this SAML provider. System for Cross-domain Identity Management (SCIM) version 2.0 is a standard for automating the provisioning of user and group identity information from identity provider to CDP.
   UpdateSamlProviderResponse:
     type: object
     description: Response object for an updating SAML provider request.
@@ -3348,3 +3440,102 @@ definitions:
     enum:
       - DE
       - DF
+  CreateScimAccessTokenRequest:
+    type: object
+    description: Request object to create the SCIM access token.
+    required:
+      - identityProviderNameOrCrn
+      - accessTokenLifetimeDays
+    properties:
+      identityProviderNameOrCrn:
+        type: string
+        description: The name or CRN of the SCIM enabled identity provider.
+      accessTokenLifetimeDays:
+        type: integer
+        format: int32
+        minimum: 1
+        description: The lifetime, in days, of the access token.
+  CreateScimAccessTokenResponse:
+    type: object
+    description: Response object to create the SCIM access token.
+    required:
+      - accessToken
+      - accessTokenSecret
+    properties:
+      accessToken:
+        $ref: '#/definitions/ScimAccessToken'
+        description: The SCIM access token that was created.
+      accessTokenSecret:
+        type: string
+        description: The SCIM access token secret. This secret could be used to authenticate requests sent to SCIM endpoints.
+        x-sensitive: true
+  ListScimAccessTokensRequest:
+    type: object
+    description: Request object to list the SCIM access tokens.
+    required:
+      - identityProviderNameOrCrn
+    properties:
+      identityProviderNameOrCrn:
+        type: string
+        description: The name or CRN of the identity provider.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListScimAccessTokensResponse:
+    type: object
+    description: Response object to list the SCIM access tokens.
+    required:
+      - accessTokens
+    properties:
+      accessTokens:
+        type: array
+        items:
+          $ref: '#/definitions/ScimAccessToken'
+        x-paging-result: true
+        description: The SCIM access tokens.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  DeleteScimAccessTokenRequest:
+    type: object
+    description: Request object to delete the SCIM access token.
+    required:
+      - accessTokenIdOrCrn
+    properties:
+      accessTokenIdOrCrn:
+        type: string
+        description: The ID or CRN of the SCIM access token.
+  DeleteScimAccessTokenResponse:
+    type: object
+    description: Response object to delete the SCIM access token.
+  ScimAccessToken:
+    type: object
+    description: Information about the SCIM access token.
+    required:
+      - accessTokenId
+      - crn
+      - creationDate
+    properties:
+      accessTokenId:
+        type: string
+        description: The SCIM access token id.
+      crn:
+        type: string
+        description: The SCIM access token CRN.
+      creationDate:
+        type: string
+        format: date-time
+        description: The date when this SCIM access token was created.
+      expirationDate:
+        type: string
+        format: date-time
+        description: The SCIM access token expiration date. The access token never expires if the value is not set.

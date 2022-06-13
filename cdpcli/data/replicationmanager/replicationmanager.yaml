@@ -726,8 +726,14 @@ definitions:
       sourceCluster:
         description: Source cluster of replication.
         type: string
+      sourceClusterCrn:
+        description: CRN of the source cluster.
+        type: string
       targetCluster:
         description: Target cluster of replication if not cloud.
+        type: string
+      targetClusterCrn:
+        description: CRN of the target cluster.
         type: string
       customProperties:
         description: Custom replication properties.
@@ -930,6 +936,12 @@ definitions:
         enum:
           - DYNAMIC
           - STATIC
+      mapReduceService:
+        description: Name of the mapreduce service.
+        type: string
+      logPath:
+        description: Job log path.
+        type: string
       errorHandling:
         description: Error handling strategy.
         $ref: '#/definitions/ErrorHandling'

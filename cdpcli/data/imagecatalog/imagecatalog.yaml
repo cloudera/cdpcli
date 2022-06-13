@@ -508,6 +508,9 @@ definitions:
   FindDefaultImageRequest:
     type: object
     description: The request object to filter data that is used for retrieving an image from the default image catalog.
+    required:
+      - provider
+      - imageType
     properties:
       provider:
         description: Cloud provider - either AWS, AZURE or GCP

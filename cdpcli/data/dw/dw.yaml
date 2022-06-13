@@ -195,6 +195,153 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/dw/createDataVisualization:
+    post:
+      summary: Creates a Cloudera Data Visualization.
+      description: Creates a Cloudera Data Visualization.
+      operationId: createDataVisualization
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateDataVisualizationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateDataVisualizationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/listDataVisualizations:
+    post:
+      summary: Lists Cloudera Data Visualization in the provided CDW cluster.
+      description: Lists Cloudera Data Visualization in the provided CDW cluster.
+      operationId: listDataVisualizations
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDataVisualizationsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDataVisualizationsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/deleteDataVisualization:
+    post:
+      summary: Asynchronous operation that deletes a Cloudera Data Visualization. When the DV is in deleting state, we can still use describe-data-visualization to check the status. Once it is deleted, the describe-data-visualization would return a not found error.
+      description: Asynchronous operation that deletes a Cloudera Data Visualization. When the DV is in deleting state, we can still use describe-data-visualization to check the status. Once it is deleted, the describe-data-visualization would return a not found error.
+      operationId: deleteDataVisualization
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteDataVisualizationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteDataVisualizationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/describeDataVisualization:
+    post:
+      summary: Describes a Cloudera Data Visualization.
+      description: Describes a Cloudera Data Visualization.
+      operationId: describeDataVisualization
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeDataVisualizationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeDataVisualizationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/updateDataVisualization:
+    post:
+      x-mutating: true
+      summary: Asynchronous operation that updates the configuration of a Cloudera Data Visualization. The describe-data-visualization can be used at any time to get the latest status of a Data Visualization.
+      description: Asynchronous operation that updates the configuration of a Cloudera Data Visualization. The describe-data-visualization can be used at any time to get the latest status of a Data Visualization.
+      operationId: updateDataVisualization
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateDataVisualizationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateDataVisualizationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/getDataVisualizationUpgradeVersion:
+    post:
+      summary: Gets latest version and latest compatible version for Cloudera Data Visualization.
+      description: Gets latest version and latest compatible version for Cloudera Data Visualization.
+      operationId: getDataVisualizationUpgradeVersion
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetDataVisualizationUpgradeVersionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetDataVisualizationUpgradeVersionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/upgradeDataVisualization:
+    post:
+      summary: Asynchronous operation that upgrades a Cloudera Data Visualization to a compatible version. The describe-data-visualization can be used at any time to get the latest status of a Data Visualization.
+      description: Asynchronous operation that upgrades a Cloudera Data Visualization to a compatible version. The describe-data-visualization can be used at any time to get the latest status of a Data Visualization.
+      operationId: upgradeDataVisualization
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeDataVisualizationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeDataVisualizationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/dw/createDbc:
     post:
       x-no-compatibility-guarantee: true
@@ -859,7 +1006,7 @@ definitions:
     properties:
       environmentCrn:
         type: string
-        description: The environment for the cluster to create.
+        description: The CRN of the environment for the cluster to create.
       useOverlayNetwork:
         type: boolean
         description: Using an overlay network will save IP addresses in the VPC by using a private IP address range for Pods in the cluster.
@@ -920,6 +1067,7 @@ definitions:
         enum:
           - Standard_E16_v3
           - Standard_E16ds_v4
+          - Standard_E16ads_v5
         description: The generation type of the virtual machines used to create the environment.
       logAnalyticsWorkspaceId:
         type: string
@@ -965,6 +1113,12 @@ definitions:
       storageClass:
         type: string
         description: The storage class for the Local Storage Operator.
+      dbDas:
+        type: string
+        description: The name of the DAS database. Not required for embedded databases
+      dbHue:
+        type: string
+        description: The name of the HUE database. Not required for embedded databases.
   CreateClusterResponse:
     type: object
     description: Response object for the createCluster method.
@@ -981,7 +1135,7 @@ definitions:
         description: The ID of the cluster to delete.
       force:
         type: boolean
-        description: 'Force delete cluster (default: false). Force delete means CDW will delete the cluster even if there are attached DB Catalogs and Virtual Warehouses. All managed data will be lost and won''t be recoverable. Force delete attampts all steps of the deletion even if previous steps have failed.'
+        description: Force delete cluster (default is false). Force delete means CDW will delete the cluster even if there are attached DB Catalogs and Virtual Warehouses. All managed data will be lost and won't be recoverable. Force delete attempts all steps of the deletion even if previous steps have failed.
     required:
       - clusterId
   DeleteClusterResponse:
@@ -1050,6 +1204,117 @@ definitions:
         items:
           $ref: '#/definitions/ClusterSummary'
         description: The list of clusters.
+  CreateDataVisualizationRequest:
+    type: object
+    description: Request object for the createDataVisualization call.
+    required:
+      - clusterId
+      - name
+      - config
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster where Cloudera Data Visualization should be created.
+      name:
+        type: string
+        description: Name of the Cloudera Data Visualization
+      config:
+        description: The LDAP admin and user group configuration for Cloudera Data Visualization.
+        $ref: '#/definitions/VizConfig'
+      imageVersion:
+        type: string
+        description: Version of the Cloudera Data Visualization.
+      templateName:
+        type: string
+        description: The template size for the Cloudera Data Visualization.
+  CreateDataVisualizationResponse:
+    type: object
+    description: Response object for the createDataVisualization method.
+    properties:
+      dataVisualizationId:
+        type: string
+        description: ID of the new Cloudera Data Visualization.
+  ListDataVisualizationsRequest:
+    type: object
+    description: Request object for the listDataVisualizations method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster to list Cloudera Data Visualizations.
+  ListDataVisualizationsResponse:
+    type: object
+    description: Response object for the listDataVisualizations method.
+    properties:
+      dataVisualizations:
+        type: array
+        items:
+          $ref: '#/definitions/DataVisualizationSummary'
+        description: The list of Cloudera Data Visualizations.
+  DeleteDataVisualizationRequest:
+    type: object
+    description: Request object for the deleteDataVisualization method.
+    required:
+      - clusterId
+      - dataVisualizationId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cloudera Data Visualization's cluster.
+      dataVisualizationId:
+        type: string
+        description: ID of the Cloudera Data Visualization to delete from the cluster.
+  DeleteDataVisualizationResponse:
+    type: object
+    description: Response object for the deleteDataVisualization method.
+    properties:
+      status:
+        type: string
+        description: The status of asynchronous delete request for Cloudera Data Visualization. To find the latest status please use describe-data-visualization. Once the Data Visualization is deleted, the describe-data-visualization would return a not found error.
+  DescribeDataVisualizationRequest:
+    type: object
+    description: Request object for the describeDataVisualization method.
+    required:
+      - clusterId
+      - dataVisualizationId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cloudera Data Visualization's cluster.
+      dataVisualizationId:
+        type: string
+        description: ID of the Cloudera Data Visualization
+  DescribeDataVisualizationResponse:
+    type: object
+    description: Response object for the describeDataVisualization method.
+    properties:
+      dataVisualization:
+        description: The Cloudera Data Visualization.
+        $ref: '#/definitions/DataVisualizationSummary'
+  UpdateDataVisualizationRequest:
+    type: object
+    description: Request object for the updateDataVisualization method.
+    required:
+      - clusterId
+      - dataVisualizationId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cloudera Data Visualization's cluster.
+      dataVisualizationId:
+        type: string
+        description: ID of the Cloudera Data Visualization.
+      config:
+        description: The service configuration to update the DataVisualization with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
+        $ref: '#/definitions/VizConfig'
+  UpdateDataVisualizationResponse:
+    type: object
+    description: Response object for the updateDataVisualization method.
+    properties:
+      status:
+        type: string
+        description: The status of asynchronous update configuration request for Cloudera Data Visualization. To find the latest status please use describe-data-visualization.
   CreateDbcRequest:
     type: object
     description: Request object for the createDbc method.
@@ -1089,14 +1354,65 @@ definitions:
         x-form-factors: private
       dbDas:
         type: string
-        description: The name of the DAS database.
+        description: The name of the DAS database. Not required for embedded databases.
         default: ''
         x-form-factors: private
       dbHue:
         type: string
-        description: The name of the HUE database.
+        description: The name of the HUE database. Not required for embedded databases.
         default: ''
         x-form-factors: private
+  GetDataVisualizationUpgradeVersionRequest:
+    type: object
+    description: Request object for the getDataVisualizationUpgradeVersion method.
+    required:
+      - clusterId
+      - dataVisualizationId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cloudera Data Visualization's cluster.
+      dataVisualizationId:
+        type: string
+        description: ID of the Cloudera Data Visualization.
+  GetDataVisualizationUpgradeVersionResponse:
+    type: object
+    description: Response object for the getDataVisualizationUpgradeVersion method.
+    properties:
+      upgradeVersions:
+        description: Details of upgrade versions.
+        $ref: '#/definitions/UpgradeVersions'
+  UpgradeVersions:
+    type: object
+    description: Details of upgrade versions.
+    properties:
+      latestVersion:
+        type: string
+        description: Latest available Data Visualization version.
+  UpgradeDataVisualizationRequest:
+    type: object
+    description: Request object for the upgradeDataVisualization method.
+    required:
+      - clusterId
+      - dataVisualizationId
+      - imageVersion
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cloudera Data Visualization's cluster.
+      dataVisualizationId:
+        type: string
+        description: ID of the Cloudera Data Visualization.
+      imageVersion:
+        type: string
+        description: Image version of the Cloudera Data Visualization to upgrade to.
+  UpgradeDataVisualizationResponse:
+    type: object
+    description: Response object for the upgradeDataVisualization method.
+    properties:
+      status:
+        type: string
+        description: The status of asynchronous upgrade request for Cloudera Data Visualization. To find the latest status please use describe-data-visualization.
   CreateDbcResponse:
     type: object
     description: Response object for the createDbc method.
@@ -1180,9 +1496,9 @@ definitions:
       - hive
       - impala
     description: 'Type of Virtual Warehouse: ''hive'' or ''impala''.'
-  AutoscalingOptions:
+  AutoscalingOptionsCreateRequest:
     type: object
-    description: Configurations for auto-scaling a Virtual Warehouse.
+    description: Auto-scaling configuration for a Virtual Warehouse.
     properties:
       minClusters:
         type: integer
@@ -1192,7 +1508,7 @@ definitions:
       maxClusters:
         type: integer
         format: int32
-        default: 20
+        default: 10
         description: Maximum number of available compute groups.
   CreateVwRequest:
     type: object
@@ -1229,7 +1545,7 @@ definitions:
           - large
       autoscaling:
         description: Autoscaling settings for the Virtual Warehouse.
-        $ref: '#/definitions/AutoscalingOptions'
+        $ref: '#/definitions/AutoscalingOptionsCreateRequest'
       config:
         description: Configuration settings for the Virtual Warehouse.
         $ref: '#/definitions/ServiceConfigReq'
@@ -1258,6 +1574,13 @@ definitions:
       vwId:
         type: string
         description: ID of the new Virtual Warehouse.
+  VwFilter:
+    type: object
+    description: Filter object for Virtual Warehouses.
+    properties:
+      vwType:
+        description: Virtual Warehouse type.
+        $ref: '#/definitions/VwType'
   ListVwsRequest:
     type: object
     description: Request object for the listVws method.
@@ -1267,6 +1590,9 @@ definitions:
       clusterId:
         type: string
         description: ID of cluster to list.
+      filter:
+        description: Filter object for listVws method.
+        $ref: '#/definitions/VwFilter'
   ListVwsResponse:
     type: object
     description: Response object for the listVws method.
@@ -1370,6 +1696,28 @@ definitions:
       cloudPlatform:
         type: string
         description: The cloud platform of the environment that was used to create this cluster.
+  DataVisualizationSummary:
+    type: object
+    description: A Cloudera Data Visualization.
+    properties:
+      id:
+        type: string
+        description: The ID of the Cloudera Data Visualization.
+      name:
+        type: string
+        description: The name of the Cloudera Data Visualization.
+      status:
+        type: string
+        description: Status of the Cloudera Data Visualization i.e. Creating, Created, Accepted, Running, Deleting, Updating
+      imageVersion:
+        type: string
+        description: Current image version of the Cloudera Data Visualization
+      creatorCrn:
+        type: string
+        description: The CRN of the user who created the Cloudera Data Visualization
+      size:
+        type: string
+        description: The template size for the Cloudera Data Visualization
   DbcSummary:
     type: object
     description: A Database Catalog.
@@ -1653,6 +2001,20 @@ definitions:
         additionalProperties:
           description: Keys with different values.
           $ref: '#/definitions/StringDiff'
+  VizConfig:
+    type: object
+    description: Configurations for a Cloudera Data Visualization
+    properties:
+      userGroups:
+        type: array
+        items:
+          type: string
+        description: User groups to allow user access to Data Visualization for selected users
+      adminGroups:
+        type: array
+        items:
+          type: string
+        description: Admin groups to allow configuration access to Data Visualization for selected users
   ConfigContentDiff:
     type: object
     description: Difference between two ConfigContents.

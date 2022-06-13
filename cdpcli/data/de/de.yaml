@@ -731,6 +731,9 @@ definitions:
         type: string
         description: Deprecated. The operation ID of the update request.
         x-deprecated: true
+      status:
+        type: string
+        description: Status of update.
   ListServicesResponse:
     type: object
     description: Response object for ListServices method.

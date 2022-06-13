@@ -102,6 +102,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/opdb/describeUpgradeDatabase:
+    post:
+      summary: Describes the upgrade availability.
+      description: Describes the upgrade availability for an operational database.
+      operationId: describeUpgradeDatabase
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeUpgradeDatabaseRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeUpgradeDatabaseResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/opdb/dropDatabase:
     post:
       summary: drop a opDb
@@ -223,6 +244,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/StopDatabaseResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/opdb/upgradeDatabase:
+    post:
+      summary: Upgrades the database.
+      description: Upgrades an operational database in an environment to a given runtime.
+      operationId: upgradeDatabase
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeDatabaseRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeDatabaseResponse'
         default:
           description: The default response on an error.
           schema:
@@ -661,4 +703,80 @@ definitions:
       kerberosConfiguration:
         description: Kerberos configuration information
         $ref: '#/definitions/KerberosConfiguration'
+  UpgradeDatabaseRequest:
+    type: object
+    description: Asynchronous request to upgrade the CDP Runtime for a database.
+    required:
+      - environment
+      - database
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      database:
+        type: string
+        description: The name or CRN of the database.
+      runtime:
+        type: string
+        description: The CDP Runtime version to upgrade to.
+      osUpgradeOnly:
+        type: boolean
+        description: Only perform an Operating System upgrade.
+  UpgradeDatabaseResponse:
+    type: object
+    description: Response with the reason whether upgrade request is accepted or why it is not possible.
+    properties:
+      statusReason:
+        type: string
+        description: The reason whether upgrade request is accepted or why it is not possible.
+  DescribeUpgradeDatabaseRequest:
+    type: object
+    description: Request to describe the upgrade availability of CDP Runtime and Operating System for a database.
+    required:
+      - environment
+      - database
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      database:
+        type: string
+        description: The name or CRN of the database.
+  DescribeUpgradeDatabaseResponse:
+    type: object
+    description: Response with upgrade availability of CDP Runtime and Operating System for a database.
+    properties:
+      statusReason:
+        type: string
+        description: The reason whether upgrade request is accepted or why it is not possible.
+      currentComponentVersion:
+        description: Versions of currently deployed CDP runtime and operating system.
+        $ref: '#/definitions/ComponentsVersion'
+      availableComponentVersions:
+        type: array
+        items:
+          $ref: '#/definitions/ComponentsVersion'
+        description: List of available versions for upgrade.
+      isOSUpgradeAvailable:
+        type: boolean
+        description: Is an OS upgrade available.
+      isRuntimeUpgradeAvailable:
+        type: boolean
+        description: Is a CDP Runtime upgrade available.
+  ComponentsVersion:
+    type: object
+    description: Versions of the CDP runtime and Operating system components.
+    properties:
+      cm:
+        type: string
+        description: Version of Cloudera Manager.
+      cdp:
+        type: string
+        description: CDP Runtime version.
+      os:
+        type: string
+        description: Operation System name and version.
+      osPatchLevel:
+        type: string
+        description: Operation System patch level.
 x-audit: true
