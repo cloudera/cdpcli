@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: __API_VERSION__
+  version: 0.9.63
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -57,6 +57,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListClustersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/listClusterLifecycleEvents:
+    post:
+      summary: Lists Workload cluster lifecycle events.
+      description: Lists Workload cluster lifecycle events.
+      operationId: listClusterLifecycleEvents
+      x-mutating: false
+      x-paging-default-max-items: 100
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListClusterLifecycleEventsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListClusterLifecycleEventsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1550,6 +1572,300 @@ definitions:
       cluster:
         $ref: '#/definitions/Cluster'
         description: The cluster.
+  ListClusterLifecycleEventsRequest:
+    type: object
+    description: Request object for listing cluster events.
+    required:
+      - cluster
+    properties:
+      cluster:
+        type: string
+        description: The name or CRN of the cluster for which events are to be listed.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListClusterLifecycleEventsResponse:
+    type: object
+    description: Response object for fetching cluster events request.
+    required:
+      - clusterEvents
+    properties:
+      clusterEvents:
+        type: array
+        items:
+          $ref: '#/definitions/ClusterLifecycleEvents'
+        x-paging-result: true
+        description: Cluster events.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  ClusterLifecycleEvents:
+    type: object
+    description: Related events for the stack.
+    properties:
+      eventType:
+        type: string
+        description: Type of the event.
+      eventTimestamp:
+        type: string
+        format: date-time
+        description: Timestamp of this event.
+      eventMessage:
+        type: string
+        description: Message from this event.
+      userId:
+        type: string
+        description: User ID.
+      notificationType:
+        type: string
+        description: Type of notification as identified in the UI.
+      cloudType:
+        type: string
+        description: Cloud provider type.
+      region:
+        type: string
+        description: Cloud provider region in which the cluster is deployed.
+      availabilityZone:
+        type: string
+        description: Cloud provider availability zone for the region in which the cluster is deployed.
+      blueprintId:
+        type: integer
+        format: int64
+        description: Blueprint ID for the blueprint deployed on the cluster.
+      blueprintName:
+        type: string
+        description: Blueprint name for the blueprint deployed on the cluster.
+      clusterId:
+        type: integer
+        format: int64
+        description: ID of the cluster.
+      clusterName:
+        type: string
+        description: Name of the cluster.
+      stackCrn:
+        type: string
+        description: The unique CRN of the resource.
+      stackName:
+        type: string
+        description: Name of the stack.
+      stackStatus:
+        description: Current status of the stack.
+        $ref: '#/definitions/StackStatus'
+      nodeCount:
+        type: integer
+        format: int32
+        description: Current node count for the nodes in the cluster.
+      instanceGroup:
+        type: string
+        description: Name of the instance group.
+      clusterStatus:
+        description: Status of the cluster.
+        $ref: '#/definitions/StackStatus'
+      workspaceId:
+        type: integer
+        format: int64
+        description: Workspace ID of the resource.
+      tenantName:
+        type: string
+        description: Name of the current tenant.
+      ldapDetails:
+        description: Details of the LDAP.
+        $ref: '#/definitions/ClusterLdapDetails'
+      rdsDetails:
+        description: Details of the RDS.
+        $ref: '#/definitions/ClusterRdsDetails'
+  StackStatus:
+    type: string
+    description: Status of the stack.
+    enum:
+      - REQUESTED
+      - CREATE_IN_PROGRESS
+      - AVAILABLE
+      - UPDATE_IN_PROGRESS
+      - UPDATE_REQUESTED
+      - UPDATE_FAILED
+      - BACKUP_IN_PROGRESS
+      - BACKUP_FAILED
+      - BACKUP_FINISHED
+      - RESTORE_IN_PROGRESS
+      - RESTORE_FAILED
+      - RESTORE_FINISHED
+      - RECOVERY_IN_PROGRESS
+      - RECOVERY_REQUESTED
+      - RECOVERY_FAILED
+      - CREATE_FAILED
+      - ENABLE_SECURITY_FAILED
+      - PRE_DELETE_IN_PROGRESS
+      - DELETE_IN_PROGRESS
+      - DELETE_FAILED
+      - DELETED_ON_PROVIDER_SIDE
+      - DELETE_COMPLETED
+      - STOPPED
+      - STOP_REQUESTED
+      - START_REQUESTED
+      - STOP_IN_PROGRESS
+      - START_IN_PROGRESS
+      - START_FAILED
+      - STOP_FAILED
+      - WAIT_FOR_SYNC
+      - MAINTENANCE_MODE_ENABLED
+      - AMBIGUOUS
+      - UNREACHABLE
+      - NODE_FAILURE
+      - EXTERNAL_DATABASE_CREATION_IN_PROGRESS
+      - EXTERNAL_DATABASE_CREATION_FAILED
+      - EXTERNAL_DATABASE_DELETION_IN_PROGRESS
+      - EXTERNAL_DATABASE_DELETION_FINISHED
+      - EXTERNAL_DATABASE_DELETION_FAILED
+      - EXTERNAL_DATABASE_START_IN_PROGRESS
+      - EXTERNAL_DATABASE_START_FINISHED
+      - EXTERNAL_DATABASE_START_FAILED
+      - EXTERNAL_DATABASE_STOP_IN_PROGRESS
+      - EXTERNAL_DATABASE_STOP_FINISHED
+      - EXTERNAL_DATABASE_STOP_FAILED
+      - LOAD_BALANCER_UPDATE_IN_PROGRESS
+      - LOAD_BALANCER_UPDATE_FINISHED
+      - LOAD_BALANCER_UPDATE_FAILED
+  ClusterLdapDetails:
+    type: object
+    description: Details of the LDAP attached to cluster.
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: ID of the LDAP.
+      name:
+        type: string
+        description: Name of the LDAP.
+      description:
+        type: string
+        description: Description of the LDAP.
+      serverHost:
+        type: string
+        description: LDAP server host.
+      serverPort:
+        type: integer
+        format: int32
+        description: LDAP server port.
+      protocol:
+        type: string
+        description: LDAP protocol.
+      userSearchBase:
+        type: string
+        description: User search base.
+      userDnPattern:
+        type: string
+        description: UserDN pattern.
+      groupSearchBase:
+        type: string
+        description: Group search base.
+      userNameAttribute:
+        type: string
+        description: User name attribute.
+      domain:
+        type: string
+        description: LDAP domain.
+      directoryType:
+        type: string
+        description: Directory type.
+      userObjectClass:
+        type: string
+        description: User object class.
+      groupObjectClass:
+        type: string
+        description: Group object class.
+      groupNameAttribute:
+        type: string
+        description: Group name attribute.
+      groupMemberAttribute:
+        type: string
+        description: Group member attribute.
+      adminGroup:
+        type: string
+        description: Admin group.
+      certificate:
+        type: string
+        description: Certificate.
+      workspaceId:
+        type: integer
+        format: int64
+        description: Workspace ID.
+      userId:
+        type: string
+        description: User ID.
+      userName:
+        type: string
+        description: User name.
+      tenantName:
+        type: string
+        description: Tenant name.
+  ClusterRdsDetails:
+    description: Details of the RDS attached to cluster.
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: ID of RDS.
+      name:
+        type: string
+        description: Name of RDS.
+      description:
+        type: string
+        description: Description of RDS.
+      connectionURL:
+        type: string
+        description: Connection URL of RDS.
+      sslMode:
+        type: string
+        description: SSL mode.
+      databaseEngine:
+        type: string
+        description: Database engine.
+      connectionDriver:
+        type: string
+        description: Connection driver.
+      creationDate:
+        type: string
+        format: date-time
+        description: RDS creation date.
+      stackVersion:
+        type: string
+        description: Stack version.
+      status:
+        type: string
+        description: Status of RDS.
+      type:
+        type: string
+        description: Type of RDS.
+      connectorJarUrl:
+        type: string
+        description: Connector Jar URL.
+      workspaceId:
+        type: integer
+        format: int64
+        description: Workspace ID.
+      userId:
+        type: string
+        description: User ID.
+      userName:
+        type: string
+        description: User name.
+      tenantName:
+        type: string
+        description: RDS tenant name.
+      external:
+        type: boolean
+        description: Set to true if RDS is external.
   ListClustersRequest:
     type: object
     description: Request object for list clusters request.

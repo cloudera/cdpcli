@@ -6,7 +6,7 @@ x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: __API_VERSION__
+  version: 0.9.63
   title: Cloudera IAM Service
   license:
     name: Apache 2.0

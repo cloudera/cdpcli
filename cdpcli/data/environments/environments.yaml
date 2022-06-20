@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: __API_VERSION__
+  version: 0.9.63
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -424,8 +424,9 @@ paths:
   /api/v1/environments2/setPassword:
     post:
       summary: Sets workload user's password and updates into all environments.
-      description: Sets workload user's password and updates into all environments if there is no environment CRN passed or, if environment CRNs list is provided, then password is reset only for that environment. Password must be of min 8 characters and no more then 64 characters and should be combination of UPPER Case, lower case, digits and special characters.
+      description: Deprecated. Use 'iam set-workload-password' command instead.
       operationId: setPassword
+      x-deprecated: true
       x-mutating: true
       parameters:
         - name: input
@@ -2530,7 +2531,8 @@ definitions:
         description: Sync operation end timestamp.
   SetPasswordRequest:
     type: object
-    description: Request object for set password request.
+    description: Request object for set password request. (deprecated)
+    x-deprecated: true
     required:
       - password
     properties:
@@ -2545,7 +2547,8 @@ definitions:
           type: string
   SetPasswordResponse:
     type: object
-    description: Response object for set password request.
+    description: Response object for set password request. (deprecated)
+    x-deprecated: true
     required:
       - operationId
     properties:
