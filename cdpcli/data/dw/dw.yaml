@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.63
+  version: 0.9.64
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -451,6 +451,95 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/dw/createDbcDiagnosticDataJob:
+    post:
+      x-mutating: true
+      x-form-factors: public
+      summary: Create a diganostic data job for the given Database Catalog.
+      description: Create a diganostic data job for the given Database Catalog.
+      operationId: createDbcDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateDbcDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateDbcDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listDbcDiagnosticDataJobs:
+    post:
+      x-mutating: false
+      x-paging-default-max-items: 100
+      x-form-factors: public
+      summary: Get the list of diagnostic jobs for the given Database Catalog.
+      description: Get the list of diagnostic jobs for the given Database Catalog.
+      operationId: listDbcDiagnosticDataJobs
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDbcDiagnosticDataJobsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDbcDiagnosticDataJobsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/describeDbcDiagnosticDataJob:
+    post:
+      x-mutating: false
+      x-form-factors: public
+      summary: Describe a diagnostic job for the given Database Catalog.
+      description: Describe a diagnostic job for the given Database Catalog.
+      operationId: describeDbcDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeDbcDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeDbcDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/deleteDbcDiagnosticDataJob:
+    post:
+      x-mutating: true
+      x-form-factors: public
+      summary: Delete a diagnostic job for the given Database Catalog.
+      description: Delete a diagnostic job for the given Database Catalog.
+      operationId: deleteDbcDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteDbcDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteDbcDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/createVw:
     post:
       x-no-compatibility-guarantee: true
@@ -598,6 +687,95 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/PauseVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/createVwDiagnosticDataJob:
+    post:
+      x-mutating: true
+      x-form-factors: public
+      summary: Create a diganostic data job for the given Virtual Warehouse.
+      description: Create a diganostic data job for the given Virtual Warehouse.
+      operationId: createVwDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateVwDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateVwDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listVwDiagnosticDataJobs:
+    post:
+      x-mutating: false
+      x-paging-default-max-items: 100
+      x-form-factors: public
+      summary: Get the list of diagnostic jobs for the given Virtual Warehouse.
+      description: Get the list of diagnostic jobs for the given Virtual Warehouse.
+      operationId: listVwDiagnosticDataJobs
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListVwDiagnosticDataJobsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListVwDiagnosticDataJobsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/describeVwDiagnosticDataJob:
+    post:
+      x-mutating: false
+      x-form-factors: public
+      summary: Describe a diagnostic jobs for the given Virtual Warehouse.
+      description: Describe a diagnostic job for the given Virtual Warehouse.
+      operationId: describeVwDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeVwDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeVwDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/deleteVwDiagnosticDataJob:
+    post:
+      x-mutating: true
+      x-form-factors: public
+      summary: Delete a diagnostic job for the given Virtual Warehouse.
+      description: Delete a diagnostic job for the given Virtual Warehouse.
+      operationId: deleteVwDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteVwDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteVwDiagnosticDataJobResponse'
         default:
           description: The default response on an error.
           schema:
@@ -950,7 +1128,7 @@ definitions:
     properties:
       cluster:
         description: The cluster.
-        $ref: '#/definitions/ClusterSummary'
+        $ref: '#/definitions/ClusterSummaryResponse'
   DescribeKubeconfigRequest:
     type: object
     description: Request object for the describeKubeconfig method.
@@ -1044,7 +1222,8 @@ definitions:
           type: string
       customEcrRepository:
         type: string
-        description: URL for custom ECR repository
+        description: DEPRECATED, superseded by the CustomRegistryOptions. URL for custom ECR repository
+        x-deprecated: true
       customAmiId:
         type: string
         description: Custom AMI ID.
@@ -1202,7 +1381,7 @@ definitions:
       clusters:
         type: array
         items:
-          $ref: '#/definitions/ClusterSummary'
+          $ref: '#/definitions/ClusterSummaryResponse'
         description: The list of clusters.
   CreateDataVisualizationRequest:
     type: object
@@ -1362,6 +1541,197 @@ definitions:
         description: The name of the HUE database. Not required for embedded databases.
         default: ''
         x-form-factors: private
+  CreateDbcDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the createDbcDiagnosticDataJob method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - dbcId
+      - startTime
+      - endTime
+      - destination
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+      startTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics after the specified start time.
+      endTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics before the specified end time.
+      destination:
+        type: string
+        description: Destination of the diagnostics collection.
+        enum:
+          - UPLOAD_TO_CLOUDERA
+          - DOWNLOAD
+      caseNumber:
+        type: string
+        description: Optional support case number in case of SUPPORT destination, otherwise only act as additional data.
+      bundleMetadata:
+        type: object
+        additionalProperties:
+          type: string
+        description: Metadata information which is attached to bundle-info.json when posting the bundle.
+      force:
+        type: boolean
+        default: false
+        description: Forced recreation of the diagnostic job.
+  CreateDbcDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the createDbcDiagnosticDataJob method.
+    x-form-factors: public
+    properties:
+      id:
+        type: string
+        description: Identifier for each bundle collection.
+      status:
+        type: string
+        description: Status of the diagnostics collection request.
+      url:
+        type: string
+        description: This URL points to a download location if the destination is DOWNLOAD.
+      labels:
+        type: object
+        description: Additional key-value pair attributes associated with the Diagnostic Data Job.
+        additionalProperties:
+          type: string
+  ListDbcDiagnosticDataJobsRequest:
+    type: object
+    description: Request object for the listDbcDiagnosticDataJobsRequest method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+      status:
+        description: Filter for job type
+        $ref: '#/definitions/DiagnosticDataJobStatus'
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+        x-paging-input-token: true
+  ListDbcDiagnosticDataJobsResponse:
+    type: object
+    description: Response object for the listDbcDiagnosticDataJobsRequest method.
+    x-form-factors: public
+    properties:
+      jobs:
+        type: array
+        description: The list of the jobs belonging to the particular Database Catalog
+        items:
+          $ref: '#/definitions/DbcDiagnosticDataJob'
+        x-paging-result: true
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If there are no additional results, the string is empty.
+  DescribeDbcDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the describeDbcDiagnosticDataJobRequest method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - dbcId
+      - jobId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+      jobId:
+        type: string
+        description: ID of the diagnostic job.
+  DescribeDbcDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the describeDbcDiagnosticDataJobRequest method.
+    x-form-factors: public
+    properties:
+      job:
+        description: The job belonging to the particular Database Catalog
+        $ref: '#/definitions/DbcDiagnosticDataJob'
+  DeleteDbcDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the deleteDbcDiagnosticDataJobRequest method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - dbcId
+      - jobId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+      jobId:
+        type: string
+        description: ID of the diagnostic job.
+  DeleteDbcDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the deleteDbcDiagnosticDataJobRequest method.
+    x-form-factors: public
+  DbcDiagnosticDataJob:
+    type: object
+    description: Represents a Diagnostic Data Job
+    x-form-factors: public
+    properties:
+      jobId:
+        type: string
+        description: The unique identifier of the Diagnostic Data Job.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the Diagnostic Data Job.
+      endTime:
+        type: string
+        format: date-time
+        description: The finish time of the Diagnostic Data Job.
+      url:
+        type: string
+        description: This URL points to a download location if the destination is DOWNLOAD.
+      status:
+        description: The job status.
+        $ref: '#/definitions/DiagnosticDataJobStatus'
+      labels:
+        type: object
+        description: Additional key-value pair attributes associated with the Diagnostic Data Job.
+        additionalProperties:
+          type: string
+  DiagnosticDataJobStatus:
+    type: string
+    description: Represents the possible status values of a Diagnostic Data Job.
+    x-form-factors: public
+    enum:
+      - Starting
+      - Succeeded
+      - Failed
+      - Running
+      - Unknown
+      - Deleted
   GetDataVisualizationUpgradeVersionRequest:
     type: object
     description: Request object for the getDataVisualizationUpgradeVersion method.
@@ -1510,6 +1880,34 @@ definitions:
         format: int32
         default: 10
         description: Maximum number of available compute groups.
+  AutoscalingOptionsUpdateRequest:
+    type: object
+    description: Auto-scaling configuration for a Virtual Warehouse. Provide those values only that you want to update.
+    properties:
+      minClusters:
+        type: integer
+        format: int32
+        default: 0
+        description: Minimum number of available compute groups. Zero means, the minClusters will not be updated.
+      maxClusters:
+        type: integer
+        format: int32
+        default: 0
+        description: Maximum number of available compute groups. Zero means, the maxClusters will not be updated..
+  QueryIsolationOptionsRequest:
+    type: object
+    description: Configurations for Query Isolation.
+    properties:
+      maxQueries:
+        type: integer
+        format: int32
+        default: 0
+        description: Maximum Concurrent Isolated Queries. If not provided, 0 will be applied. The 0 value means the query isoltaion functionality will be disabled.
+      maxNodesPerQuery:
+        type: integer
+        format: int32
+        default: 0
+        description: Maximum Nodes Per Isolated Query. If not provided, 0 will be applied. The 0 value means the query isoltaion functionality will be disabled.
   CreateVwRequest:
     type: object
     description: Request object for the createVw method.
@@ -1638,7 +2036,7 @@ definitions:
   DeleteVwResponse:
     type: object
     description: Response object for the deleteVw method.
-  Actor:
+  ActorResponse:
     type: object
     description: A CDP actor (user or machine user).
     properties:
@@ -1670,7 +2068,243 @@ definitions:
   RestartVwResponse:
     type: object
     description: Response object for the restartVw method.
-  ClusterSummary:
+  CreateVwDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the createVwDiagnosticDataJob method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - vwId
+      - startTime
+      - endTime
+      - destination
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+      startTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics after the specified start time.
+      endTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics before the specified end time.
+      destination:
+        type: string
+        description: Destination of the diagnostics collection.
+        enum:
+          - UPLOAD_TO_CLOUDERA
+          - DOWNLOAD
+      caseNumber:
+        type: string
+        description: Optional support case number in case of SUPPORT destination, otherwise only act as additional data.
+      bundleMetadata:
+        type: object
+        additionalProperties:
+          type: string
+        description: Metadata information which is attached to bundle-info.json when posting the bundle.
+      force:
+        type: boolean
+        default: false
+        description: Forced recreation of the diagnostic job.
+      hiveDownloadOptions:
+        description: Hive diagnostic options. If not provided, everything will be included into the Diagnostic Data.
+        $ref: '#/definitions/HiveCreateDiagnosticDataDownloadOptions'
+      impalaDownloadOptions:
+        description: Impala diagnostic options. If not provided, everything will be included into the Diagnostic Data.
+        $ref: '#/definitions/ImpalaCreateDiagnosticDataDownloadOptions'
+  CreateVwDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the createVwDiagnosticDataJob method.
+    x-form-factors: public
+    properties:
+      id:
+        type: string
+        description: Identifier for each bundle collection.
+      status:
+        type: string
+        description: Status of the diagnostics collection request.
+      url:
+        type: string
+        description: This URL points to a download location if the destination is DOWNLOAD.
+      labels:
+        type: object
+        description: Additional key-value pair attributes associated with the Diagnostic Data Job.
+        additionalProperties:
+          type: string
+  ListVwDiagnosticDataJobsRequest:
+    type: object
+    description: Request object for the listVwDiagnosticDataJobsRequest method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+      status:
+        description: Filter for job type
+        $ref: '#/definitions/DiagnosticDataJobStatus'
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+        x-paging-input-token: true
+  ListVwDiagnosticDataJobsResponse:
+    type: object
+    description: Response object for the listVwDiagnosticDataJobsRequest method.
+    x-form-factors: public
+    properties:
+      jobs:
+        type: array
+        description: The list of the jobs belonging to the particular Virtual Warehouse.
+        items:
+          $ref: '#/definitions/VwDiagnosticDataJob'
+        x-paging-result: true
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If there are no additional results, the string is empty.
+  DescribeVwDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the describeVwDiagnosticDataJobRequest method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - vwId
+      - jobId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+      jobId:
+        type: string
+        description: ID of the diagnostic job.
+  DescribeVwDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the describeVwDiagnosticDataJobRequest method.
+    x-form-factors: public
+    properties:
+      job:
+        description: The job belonging to the particular Virtual Warehouse.
+        $ref: '#/definitions/VwDiagnosticDataJob'
+  DeleteVwDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the deleteVwDiagnosticDataJobRequest method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - vwId
+      - jobId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+      jobId:
+        type: string
+        description: ID of the diagnostic job.
+  DeleteVwDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the deleteVwDiagnosticDataJobRequest method.
+    x-form-factors: public
+  VwDiagnosticDataJob:
+    type: object
+    description: Represents a Diagnostic Data Job.
+    x-form-factors: public
+    properties:
+      jobId:
+        type: string
+        description: The unique identifier of the Diagnostic Data Job.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the Diagnostic Data Job.
+      endTime:
+        type: string
+        format: date-time
+        description: The finish time of the Diagnostic Data Job.
+      url:
+        type: string
+        description: If the request is for download, this URL points to download location.
+      status:
+        description: The job status.
+        $ref: '#/definitions/DiagnosticDataJobStatus'
+      labels:
+        type: object
+        description: Additional key-value pair attributes associated with the Diagnostic Data Job.
+        additionalProperties:
+          type: string
+  HiveCreateDiagnosticDataDownloadOptions:
+    type: object
+    description: Flags that denote which diagnostics to include for a Hive Virtual Warehouse.
+    x-form-factors: public
+    properties:
+      includeHms:
+        type: boolean
+        default: false
+        description: Include the HMS diagnostics.
+      includeErrordump:
+        type: boolean
+        default: false
+        description: Include the error dump.
+      includeGclogs:
+        type: boolean
+        default: false
+        description: Include the Garbage collector logs.
+      includeHeapdump:
+        type: boolean
+        default: false
+        description: Include the heap-dump.
+      includeLogs:
+        type: boolean
+        default: false
+        description: Include logs.
+  ImpalaCreateDiagnosticDataDownloadOptions:
+    type: object
+    description: Flags that denote which diagnostics to include for an Impala Virtual Warehouse.
+    x-form-factors: public
+    properties:
+      includeHms:
+        type: boolean
+        default: false
+        description: Include the HMS diagnostics.
+      includeMinidump:
+        type: boolean
+        default: false
+        description: Include the minidump.
+      includeProfile:
+        type: boolean
+        default: false
+        description: Include the profile.
+      includeSidecar:
+        type: boolean
+        default: false
+        description: Include the sidecar diagnostics.
+      includeWorkload:
+        type: boolean
+        default: false
+        description: Include the workload diagnostics.
+  ClusterSummaryResponse:
     type: object
     description: A Cloudera Data Warehouse cluster.
     properties:
@@ -1687,7 +2321,7 @@ definitions:
         type: string
         description: Status of the cluster.
       creator:
-        $ref: '#/definitions/Actor'
+        $ref: '#/definitions/ActorResponse'
         description: The creator of the cluster.
       creationDate:
         type: string
@@ -1735,7 +2369,7 @@ definitions:
         type: string
         description: Status of the Database Catalog.
       creator:
-        $ref: '#/definitions/Actor'
+        $ref: '#/definitions/ActorResponse'
         description: The creator of the Database Catalog.
       creationDate:
         type: string
@@ -1764,7 +2398,7 @@ definitions:
         type: string
         description: Status of the Virtual Warehouse.
       creator:
-        $ref: '#/definitions/Actor'
+        $ref: '#/definitions/ActorResponse'
         description: The creator of the Virtual Warehouse.
       creationDate:
         type: string
@@ -1892,6 +2526,12 @@ definitions:
       config:
         description: The service configuration to update the VW with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
         $ref: '#/definitions/ServiceConfigReq'
+      autoscaling:
+        description: Autoscaling settings for the Virtual Warehouse.
+        $ref: '#/definitions/AutoscalingOptionsUpdateRequest'
+      queryIsolationOptions:
+        description: Query isolation settings for Hive Virtual Warehouses.
+        $ref: '#/definitions/QueryIsolationOptionsRequest'
   UpdateVwResponse:
     type: object
     description: Response object for the updateVw method.

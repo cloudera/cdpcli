@@ -32,6 +32,8 @@ class TestClassifyDeployment(unittest.TestCase):
             "https://cloudera.cdp.mow-int.cloudera.com/",
             # Example for Private Stack
             "https://console.cdp-priv.mow-dev.cloudera.com/cloud/environments/list"
+            # Allow local testing via run.sh or run-with-backend.sh
+            "http://localhost:8982"
         ]
         for url in public_urls:
             self.classifier.set_endpoint_url(url)

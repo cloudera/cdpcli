@@ -6,7 +6,7 @@ x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.63
+  version: 0.9.64
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -1589,11 +1589,15 @@ definitions:
     description: Information about a Cloudera CDP account.
     required:
       - clouderaSSOLoginEnabled
+      - clouderaSSOAllLoginEnabled
       - workloadPasswordPolicy
     properties:
       clouderaSSOLoginEnabled:
         type: boolean
         description: Whether interactive login using Cloudera SSO is enabled for users who are not account administrators. Its default value is 'true'. When it is 'true', the account administrators, as well as non-administrator users can login through Cloudera SSO. When it is 'false', Cloudera SSO users who are not account administrators will not be able to login.
+      clouderaSSOAllLoginEnabled:
+        type: boolean
+        description: Whether login is enabled for Cloudera SSO users. It can only be set by Cloudera upon request and disables interactive login through Cloudera SSO. Note that restricting Cloudera SSO login will prevent account administrators from logging in interactively. Its default value is 'true'. When it is 'true', the Cloudera SSO interactive login behavior is controlled according to the existing `clouderaSSOLoginEnabled` flag. When it is 'false', it overrides the setting for `clouderaSSOLoginEnabled`.
       workloadPasswordPolicy:
         $ref: '#/definitions/WorkloadPasswordPolicy'
         description: The workload password policy object.
