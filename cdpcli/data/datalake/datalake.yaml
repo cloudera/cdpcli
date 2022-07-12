@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.64
+  version: 0.9.65
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -2394,7 +2394,7 @@ definitions:
         description: The name or CRN of the datalake.
       recoveryType:
         type: string
-        description: The type of the recovery. The default value is RECOVER_WITHOUT_DATA.
+        description: The type of the recovery. The default value is RECOVER_WITHOUT_DATA. The recovery always runs with RECOVER_WITH_DATA if the on resize failure.
         enum:
           - RECOVER_WITH_DATA
           - RECOVER_WITHOUT_DATA

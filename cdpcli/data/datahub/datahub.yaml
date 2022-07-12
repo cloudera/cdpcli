@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.64
+  version: 0.9.65
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -2057,11 +2057,23 @@ definitions:
         maxLength: 40
       clusterDefinitionName:
         type: string
+        x-deprecated: true
+        description: Deprecated, the name or CRN of the cluster definition to use for cluster creation.
+      clusterDefinition:
+        type: string
         description: The name or CRN of the cluster definition to use for cluster creation.
       environmentName:
         type: string
+        x-deprecated: true
+        description: Deprecated, name or CRN of the environment to use when creating the cluster. The environment must be an AWS environment.
+      environment:
+        type: string
         description: Name or CRN of the environment to use when creating the cluster. The environment must be an AWS environment.
       clusterTemplateName:
+        type: string
+        x-deprecated: true
+        description: Deprecated, name or CRN of the cluster template to use for cluster creation.
+      clusterTemplate:
         type: string
         description: Name or CRN of the cluster template to use for cluster creation.
       customConfigurationsName:
