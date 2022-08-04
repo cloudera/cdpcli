@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.65
+  version: 0.9.66
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -514,6 +514,150 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-certificate-encoded:
+    post:
+      summary: Get Inbound Connection Endpoint Client Certificate (in PEM encoding)
+      description: Get Inbound Connection Endpoint Client Certificate (in PEM encoding)
+      operationId: getClientCertificateEncoded
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Get Inbound Connection Endpoint client's certificate request
+          required: true
+          schema:
+            $ref: '#/definitions/InboundConnectionEndpointClientCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid inboundConnectionEndpointClientCertificateRequest.
+          schema:
+            $ref: '#/definitions/InboundConnectionEndpointClientCertificateResponse'
+        default:
+          description: The default response on an error.
+  /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-private-key-encoded:
+    post:
+      summary: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding)
+      description: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding)
+      operationId: getClientPrivateKeyEncoded
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Get Inbound Connection Endpoint client's private key request
+          required: true
+          schema:
+            $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyResponse'
+        default:
+          description: The default response on an error.
+  /dfx/api/rpc-v1/inbound-connection-endpoints/create-inbound-connection-endpoint:
+    post:
+      summary: Create Inbound Connection Endpoint
+      description: Create Inbound Connection Endpoint
+      operationId: createInboundConnectionEndpoint
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Create Inbound Connection Endpoint request
+          required: true
+          schema:
+            $ref: '#/definitions/CreateInboundConnectionEndpointRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateInboundConnectionEndpointResponse'
+        default:
+          description: The default response on an error.
+  /dfx/api/rpc-v1/inbound-connection-endpoints/delete-inbound-connection-endpoint:
+    post:
+      summary: Delete Inbound Connection Endpoint
+      description: Delete Inbound Connection Endpoint
+      operationId: deleteInboundConnectionEndpoint
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Delete Inbound Connection Endpoint request
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteInboundConnectionEndpointRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteInboundConnectionEndpointResponse'
+        default:
+          description: The default response on an error.
+  /dfx/api/rpc-v1/inbound-connection-endpoints/describe-inbound-connection-endpoint:
+    post:
+      summary: Describe Inbound Connection Endpoint
+      description: Describe Inbound Connection Endpoint
+      operationId: describeInboundConnectionEndpoint
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Describe Inbound Connection Endpoint request
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeInboundConnectionEndpointRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeInboundConnectionEndpointResponse'
+        default:
+          description: The default response on an error.
+  /dfx/api/rpc-v1/inbound-connection-endpoints/list-inbound-connection-endpoints:
+    post:
+      summary: List Inbound Connection Endpoints
+      description: List Inbound Connection Endpoints
+      operationId: listInboundConnectionEndpoints
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: List Inbound Connection Endpoints request
+          required: true
+          schema:
+            $ref: '#/definitions/ListInboundConnectionEndpointsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListInboundConnectionEndpointsResponse'
+        default:
+          description: The default response on an error.
 definitions:
   AbortAssetUpdateRequestRequest:
     type: object
@@ -888,7 +1032,7 @@ definitions:
         description: Indicates whether or not the flow should be started during deployment creation
       inboundHostname:
         type: string
-        description: The inbound hostname
+        description: The FQDN of inbound hostname or just the prefix part
       listenComponents:
         type: array
         description: Listen components port and protocol data
@@ -906,6 +1050,49 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  CreateInboundConnectionEndpointRequest:
+    type: object
+    description: Request object that contains FQDN for the Inbound Connection Endpoint to create
+    x-workload: true
+    x-client-only: true
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      hostname:
+        type: string
+        description: Fully qualified domain name
+    required:
+      - environmentCrn
+  CreateInboundConnectionEndpointResponse:
+    type: object
+    description: Response object returned during Inbound Connection Endpoint creation
+    x-workload: true
+    x-client-only: true
+    properties:
+      inboundConnectionEndpointSummary:
+        description: Data that describes the Inbound Connection Endpoint.
+        $ref: '#/definitions/InboundConnectionEndpointSummary'
+  DeleteInboundConnectionEndpointRequest:
+    type: object
+    description: Request object that contains the identifier of the Inbound Connection Endpoint to delete
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - id
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      id:
+        type: string
+        description: The identifier of the Inbound Connection Endpoint
+  DeleteInboundConnectionEndpointResponse:
+    type: object
+    description: Response object returned during deletion of an Inbound Connection Endpoint
+    x-workload: true
+    x-client-only: true
   DeploymentConfiguration:
     type: object
     description: Provides all of the configuration that dictates how a flow should be deployed
@@ -1024,12 +1211,15 @@ definitions:
           - RESTARTING
           - TERMINATING
           - CANCEL_REQUESTED
+          - STOPPED
           - UNKNOWN
           - KPI_OUT_OF_RANGE
           - CANNOT_AUTOSCALE
           - DEPLOYMENT_DISCONNECTED
           - UNUSED_LOGICAL_BAD_HEALTH
           - AT_CAPACITY
+          - SDX_OUTPUT_CHANGED
+          - METRICS_UNAVAILABLE
           - UPGRADING
           - FAILED_TO_UPGRADE
           - ROLLING_BACK
@@ -1049,10 +1239,35 @@ definitions:
           - RESTARTING
           - UPGRADING
           - ROLLING_BACK
+          - STOPPED
           - UNKNOWN
       message:
         type: string
         description: Detail message relating to the current status of the deployment
+  DescribeInboundConnectionEndpointRequest:
+    type: object
+    description: Request object that contains the identifier of the Inbound Connection Endpoint to describe
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - id
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      id:
+        type: string
+        description: The identifier of the Inbound Connection Endpoint
+  DescribeInboundConnectionEndpointResponse:
+    type: object
+    description: Response object that describes an Inbound Connection Endpoint
+    x-workload: true
+    x-client-only: true
+    properties:
+      inboundConnectionEndpointSummary:
+        description: Data that describes the Inbound Connection Endpoint.
+        $ref: '#/definitions/InboundConnectionEndpointSummary'
   EnvCloudRegion:
     type: object
     description: A cloud region
@@ -1273,6 +1488,81 @@ definitions:
       deploymentConfigurationMetadata:
         description: The deployment configuration metadata.
         $ref: '#/definitions/RpcDeploymentConfigurationMetadata'
+  InboundConnectionEndpointClientCertificateRequest:
+    type: object
+    description: Request object to retrieve Inbound Connection Endpoint client's certificate.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - id
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      id:
+        type: string
+        description: The Inbound Connection Endpoint identifier
+  InboundConnectionEndpointClientCertificateResponse:
+    type: object
+    description: Response object that contains the client's certificate.
+    x-workload: true
+    x-client-only: true
+    properties:
+      certificate:
+        type: string
+        description: The client's encoded certificate.
+        readOnly: true
+  InboundConnectionEndpointClientPrivateKeyRequest:
+    type: object
+    description: Request object to retrieve Inbound Connection Endpoint client's private key.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - id
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      id:
+        type: string
+        description: The Inbound Connection Endpoint identifier
+  InboundConnectionEndpointClientPrivateKeyResponse:
+    type: object
+    description: Response object that contains the client's private key.
+    x-workload: true
+    x-client-only: true
+    properties:
+      privateKey:
+        type: string
+        description: The client's encoded private key.
+        readOnly: true
+  InboundConnectionEndpointSummary:
+    type: object
+    description: Inbound Connection Endpoint summary
+    x-workload: true
+    x-client-only: true
+    properties:
+      fullyQualifiedDomainName:
+        type: string
+        description: The FQDN of the inbound connection hostname
+        readOnly: true
+      state:
+        type: string
+        description: State of the inbound connection endpoint
+        readOnly: true
+        enum:
+          - RESERVED
+          - AVAILABLE
+      deploymentId:
+        type: string
+        description: ID of deployment the hostname is assigned to
+        readOnly: true
+      id:
+        type: string
+        description: Internal identifier of the inbound connection endpoint
+        readOnly: true
   KpiContextGroup:
     type: object
     description: Captures the use of a KPI in the context of a process group
@@ -1420,6 +1710,29 @@ definitions:
         type: integer
         format: int64
         description: The conversion factor to use to normalize values with this unit into a common unit
+  ListInboundConnectionEndpointsRequest:
+    type: object
+    description: Request object to use to list Inbound Connection Endpoints
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+  ListInboundConnectionEndpointsResponse:
+    type: object
+    description: Response object that contains a list of Inbound Connection Endpoints
+    x-workload: true
+    x-client-only: true
+    properties:
+      inboundConnectionEndpoints:
+        type: array
+        description: A list of Inbound Connection Endpoints.
+        readOnly: true
+        items:
+          $ref: '#/definitions/InboundConnectionEndpointSummary'
   ListNifiVersionsRequest:
     type: object
     description: Request object for listing the supported NiFi versions.
@@ -1618,6 +1931,9 @@ definitions:
       inboundConnectionEndpointId:
         type: string
         description: The ID of Inbound Connection Endpoint assigned to the deployment
+      testSession:
+        type: boolean
+        description: Indicates this deployment was created as a test session for designing a flow
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.

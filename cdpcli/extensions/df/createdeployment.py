@@ -136,6 +136,18 @@ OPERATION_SHAPES = {
                         'description': 'Custom configuration version number'
                     }
                 }
+            },
+            'inboundHostname': {
+                'type': 'string',
+                'description':
+                    'The FQDN of inbound host or just the prefix part of the hostname'
+            },
+            'listenComponents': {
+                'type': 'array',
+                'description': 'Listen components port and protocol data',
+                'items': {
+                    '$ref': '#/definitions/ListenComponent'
+                }
             }
         }
     },
@@ -261,6 +273,22 @@ OPERATION_SHAPES = {
                 }
             }
         }
+    },
+    'ListenComponent': {
+        'type': 'object',
+        'required': ['protocol', 'port'],
+        'properties': {
+            'protocol': {
+                'type': 'string',
+                'description': 'Inbound protocol',
+                'enum': ['TCP', 'UDP']
+            },
+            'port': {
+                'type': 'string',
+                'description': 'Inbound port'
+            }
+        },
+        'description': 'Provides subset of metadata of a Listen* component'
     }
 }
 
@@ -444,6 +472,12 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             'clusterSizeName': parameters.get('clusterSizeName', 'EXTRA_SMALL'),
             'staticNodeCount': parameters.get('staticNodeCount', 1)
         }
+
+        inboundHostname = parameters.get('inboundHostname', None)
+        if inboundHostname is not None:
+            deployment_configuration['inboundHostname'] = inboundHostname
+            deployment_configuration['listenComponents'] = \
+                parameters.get('listenComponents', None)
 
         autoScalingEnabled = parameters.get('autoScalingEnabled', None)
         if autoScalingEnabled is not None:

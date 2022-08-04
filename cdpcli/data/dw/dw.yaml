@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.65
+  version: 0.9.66
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1239,7 +1239,7 @@ definitions:
         description: Enables Azure Availability Zones for the cluster deployment.
       enableSpotInstances:
         type: boolean
-        description: Enable Spot instances for compute workloads
+        description: Whether to enable spot instances for Virtual warehouses. It cannot be updated later. If the AzureActivationOptions is not provided it defaults to false.
         default: false
       vmGenerationType:
         type: string
@@ -1856,7 +1856,7 @@ definitions:
         description: ID of the Database Catalog's cluster.
       dbcId:
         type: string
-        description: ID of the Database Catalog to delete.
+        description: The id of the Database Catalog to restart.
   RestartDbcResponse:
     type: object
     description: Response object for the restartDbc method.
@@ -2064,7 +2064,7 @@ definitions:
         description: ID of the Virtual Warehouse's cluster.
       vwId:
         type: string
-        description: ID of the Virtual Warehouse to delete.
+        description: The id of the Virtual Warehouse to restart.
   RestartVwResponse:
     type: object
     description: Response object for the restartVw method.
