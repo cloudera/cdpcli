@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.66
+  version: 0.9.67
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1194,6 +1194,12 @@ definitions:
       usePrivateLoadBalancer:
         type: boolean
         description: Set up load balancer with private IP address. In AWS it is created in private subnets. In Azure an internal load balancer gets created. Make sure there is connectivity between your client network and the network (VPC/VNet) where CDW environment is deployed.
+      enableStorageRoles:
+        type: boolean
+        description: Enable Storage Roles
+        default: false
+        x-form-factors: public
+        x-entitlement: CDW_STORAGE_ROLES
       awsOptions:
         description: Options for activating an AWS environment.
         $ref: '#/definitions/AwsActivationOptions'
@@ -1220,10 +1226,6 @@ definitions:
         description: IDs of public AWS subnets where the cluster should be deployed.
         items:
           type: string
-      customEcrRepository:
-        type: string
-        description: DEPRECATED, superseded by the CustomRegistryOptions. URL for custom ECR repository
-        x-deprecated: true
       customAmiId:
         type: string
         description: Custom AMI ID.
@@ -1250,14 +1252,23 @@ definitions:
         description: The generation type of the virtual machines used to create the environment.
       logAnalyticsWorkspaceId:
         type: string
-        description: Workspace ID for Azure log analytics.
+        description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
       dockerBridgeCidr:
         type: string
         description: Docker bridge CIDR range for deployment.
       enableUDR:
         type: boolean
-        description: Enable user defined routing for the cluster deployment.
+        description: DEPRECATED in favour of outbound-type. The current value of the enable-udr translates as follows. The false value is equal to LoadBalancer, whereas the true value is equal to UserDefinedRouting. Enable user defined routing for the cluster deployment.
         default: false
+        x-deprecated: true
+      outboundType:
+        type: string
+        description: This option supersedes the enableUDR option. If the enableUDR is set to true, then the outbound type must be set to empty or "UserAssignedNATGateway". The enableUDR will be deprecated in the upcoming release.
+        enum:
+          - EmptyValue
+          - LoadBalancer
+          - UserAssignedNATGateway
+          - UserDefinedRouting
       enablePrivateSQL:
         type: boolean
         description: Enables private SQL for the cluster deployment.
@@ -1314,7 +1325,8 @@ definitions:
         description: The ID of the cluster to delete.
       force:
         type: boolean
-        description: Force delete cluster (default is false). Force delete means CDW will delete the cluster even if there are attached DB Catalogs and Virtual Warehouses. All managed data will be lost and won't be recoverable. Force delete attempts all steps of the deletion even if previous steps have failed.
+        default: false
+        description: 'Force delete means CDW will delete the cluster even if there are attached DB Catalogs and Virtual Warehouses. All managed data will be lost and will not be recoverable. Force delete attempts all steps of the deletion even if previous steps have failed. NOTICE: Be aware that a Force delete may not remove all resources due to cloud provider constraints. Should this happen, it is responsibility of the user to ensure the impacted resources are deleted on the cloud provider.'
     required:
       - clusterId
   DeleteClusterResponse:
@@ -1374,6 +1386,43 @@ definitions:
   ListClustersRequest:
     type: object
     description: Request object for the listClusters method.
+    properties:
+      environmentCrn:
+        type: string
+        description: Filter returned clusters for the belonging Environment CRN.
+      clusterId:
+        type: string
+        description: Filter returned clusters by cluster ID.
+      name:
+        type: string
+        description: Filter returned clusters by name.
+      status:
+        type: string
+        description: Filter returned clusters by cluster status.
+        enum:
+          - Creating
+          - Created
+          - Accepted
+          - Starting
+          - Running
+          - Stopping
+          - Stopped
+          - Updating
+          - PreUpdate
+          - PreUpgrade
+          - Restarting
+          - Deleting
+          - Upgrading
+          - Waiting
+          - Error
+          - Failed
+      cloudPlatform:
+        x-form-factors: public
+        type: string
+        description: Filter returned clusters by hosting platform.
+        enum:
+          - AWS
+          - AZURE
   ListClustersResponse:
     type: object
     description: Response object for the listClusters method.
@@ -1880,6 +1929,53 @@ definitions:
         format: int32
         default: 10
         description: Maximum number of available compute groups.
+      disableAutoSuspend:
+        type: boolean
+        description: Turn off auto suspend for Virtual Warehouse.
+      autoSuspendTimeoutSeconds:
+        type: integer
+        format: int32
+        description: Auto suspend threshold for Virtual Warehouse.
+      enableUnifiedAnalytics:
+        type: boolean
+        description: Enable Unified Analytics. In case of Hive Virtual Warehouses this cannot be provided, because this value is inferred. In case of Impala this can be set. Passing --query-isolation will be considered if this flag is set to true. If Unified Analytics enabled then the "impalaEnableShutdownOfCoordinator" explicitly disabled and should not be provided, furthermore the "impalaHighAvailabilityMode" cannot be set to ACTIVE_ACTIVE.
+      hiveScaleWaitTimeSeconds:
+        type: integer
+        format: int32
+        description: Set wait time before a scale event happens. Either "hiveScaleWaitTimeSeconds" or "hiveDesiredFreeCapacity" can be provided.
+      hiveDesiredFreeCapacity:
+        type: integer
+        format: int32
+        description: Set Desired free capacity. Either "hiveScaleWaitTimeSeconds" or "hiveDesiredFreeCapacity" can be provided.
+      impalaHighAvailabilityMode:
+        type: string
+        enum:
+          - ACTIVE_PASSIVE
+          - ACTIVE_ACTIVE
+          - DISABLED
+        description: Set High Availability mode. If not provided the default will apply. This value is disregarded for Hive.
+      impalaScaleUpDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale up the scaling up threshold in seconds. If not provided defaults will apply.
+      impalaScaleDownDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale down threshold in seconds. If not provided defaults will apply.
+      impalaEnableShutdownOfCoordinator:
+        type: boolean
+        description: Enables a shutdown of the coordinator. If Unified Analytics enabled then this setting explicitly disabled and should not be provided.
+      impalaShutdownOfCoordinatorDelaySeconds:
+        type: integer
+        format: int32
+        description: Delay in seconds before the shutdown of coordinator event happens.
+      impalaNumOfActiveCoordinators:
+        type: integer
+        format: int32
+        description: Number of the active coordinators.
+      podConfigName:
+        type: string
+        description: Name of the pod configuration.
   AutoscalingOptionsUpdateRequest:
     type: object
     description: Auto-scaling configuration for a Virtual Warehouse. Provide those values only that you want to update.
@@ -1894,6 +1990,96 @@ definitions:
         format: int32
         default: 0
         description: Maximum number of available compute groups. Zero means, the maxClusters will not be updated..
+      disableAutoSuspend:
+        type: boolean
+        description: Turn off auto suspend for Virtual Warehouse.
+      autoSuspendTimeoutSeconds:
+        type: integer
+        format: int32
+        description: Auto suspend threshold for Virtual Warehouse.
+      hiveScaleWaitTimeSeconds:
+        type: integer
+        format: int32
+        description: Set wait time before a scale event happens. Either "hiveScaleWaitTimeSeconds" or "hiveDesiredFreeCapacity" can be provided. If "hiveScaleWaitTimeSeconds" provided, then the "hiveDesiredFreeCapacity" will be explicityly set to 0.
+      hiveDesiredFreeCapacity:
+        type: integer
+        format: int32
+        description: Set Desired free capacity. Either "hiveScaleWaitTimeSeconds" or "hiveDesiredFreeCapacity" can be provided.
+      impalaScaleUpDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale up the scaling up threshold in seconds.
+      impalaScaleDownDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale down threshold in seconds.
+      impalaShutdownOfCoordinatorDelaySeconds:
+        type: integer
+        format: int32
+        description: Delay in seconds before the shutdown of coordinator event happens.
+      impalaNumOfActiveCoordinators:
+        type: integer
+        format: int32
+        description: Number of the active coordinators.
+  AutoscalingOptionsResponse:
+    type: object
+    description: Auto-scaling configuration for a Virtual Warehouse.
+    properties:
+      minClusters:
+        type: integer
+        format: int32
+        description: Minimum number of available compute groups.
+      maxClusters:
+        type: integer
+        format: int32
+        description: Maximum number of available compute groups.
+      disableAutoSuspend:
+        type: boolean
+        description: Turn off auto suspend for Virtual Warehouse.
+      autoSuspendTimeoutSeconds:
+        type: integer
+        format: int32
+        description: Auto suspend threshold for Virtual Warehouse.
+      enableUnifiedAnalytics:
+        type: boolean
+        description: Whether the Unified Analytics is enabled.
+      hiveScaleWaitTimeSeconds:
+        type: integer
+        format: int32
+        description: Wait time before a scale event happens.
+      hiveDesiredFreeCapacity:
+        type: integer
+        format: int32
+        description: Desired free capacity.
+      impalaHighAvailabilityMode:
+        type: string
+        enum:
+          - ACTIVE_PASSIVE
+          - ACTIVE_ACTIVE
+          - DISABLED
+        description: High Availability mode.
+      impalaScaleUpDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale up the scaling up threshold in seconds.
+      impalaScaleDownDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale down threshold in seconds.
+      impalaEnableShutdownOfCoordinator:
+        type: boolean
+        description: Whether a shutdown of the coordinator is enabled.
+      impalaNumOfActiveCoordinators:
+        type: integer
+        format: int32
+        description: Number of the active coordinators.
+      impalaShutdownOfCoordinatorDelaySeconds:
+        type: integer
+        format: int32
+        description: Delay in seconds before the shutdown of coordinator event happens.
+      podConfigName:
+        type: string
+        description: Name of the pod configuration.
   QueryIsolationOptionsRequest:
     type: object
     description: Configurations for Query Isolation.
@@ -1908,6 +2094,18 @@ definitions:
         format: int32
         default: 0
         description: Maximum Nodes Per Isolated Query. If not provided, 0 will be applied. The 0 value means the query isoltaion functionality will be disabled.
+  QueryIsolationOptionsResponse:
+    type: object
+    description: Configurations for Query Isolation.
+    properties:
+      maxQueries:
+        type: integer
+        format: int32
+        description: Maximum Concurrent Isolated Queries
+      maxNodesPerQuery:
+        type: integer
+        format: int32
+        description: Maximum Nodes Per Isolated Query
   CreateVwRequest:
     type: object
     description: Request object for the createVw method.
@@ -1979,6 +2177,15 @@ definitions:
       vwType:
         description: Virtual Warehouse type.
         $ref: '#/definitions/VwType'
+      dbcId:
+        type: string
+        description: Filter Virtual Warehouses by Database Catalog Id.
+      compactor:
+        type: boolean
+        description: Filter Virtual Warehouses whether it is a Compactor or not.
+      viz:
+        type: boolean
+        description: Filter the Virtual Warehouses based on whether it has Data Visualisation.
   ListVwsRequest:
     type: object
     description: Request object for the listVws method.
@@ -2052,6 +2259,37 @@ definitions:
       machineUsername:
         type: string
         description: Username for machine users.
+  AwsOptionsResponse:
+    type: object
+    description: Response object of the cluster Aws settings.
+    properties:
+      subnetIds:
+        type: array
+        description: IDs of AWS subnets where the cluster has been deployed.
+        items:
+          type: string
+      customAmiId:
+        type: string
+        description: Id of the Custom Amazon Machine Image
+  AzureOptionsResponse:
+    type: object
+    description: Response object of the cluster Azure settings.
+    properties:
+      subnetId:
+        type: string
+        description: ID of Azure subnet where the cluster is deployed.
+      enableAZ:
+        type: boolean
+        description: Denotes whther the Azure Availability Zones for the cluster is enabled or not.
+        default: false
+      enableUDR:
+        type: boolean
+        description: DEPRECATED, Superseded by the outboundType and will be deprecated in the upcoming release. Denotes whther the user defined routing for the cluster deployment is enabled or not.
+        default: false
+        x-deprecated: true
+      outboundType:
+        type: string
+        description: The current outbound type setting.
   RestartVwRequest:
     type: object
     description: Request object for the restartVw method.
@@ -2330,6 +2568,19 @@ definitions:
       cloudPlatform:
         type: string
         description: The cloud platform of the environment that was used to create this cluster.
+      enableStorageRoles:
+        type: boolean
+        description: Enable Storage Roles checkbox was checked when creating/activating this cluster.
+        x-form-factors: public
+        x-entitlement: CDW_STORAGE_ROLES
+      awsOptions:
+        $ref: '#/definitions/AwsOptionsResponse'
+        description: Response object of AWS related cluster options.
+        x-form-factors: public
+      azureOptions:
+        $ref: '#/definitions/AzureOptionsResponse'
+        description: Response object of Azure related cluster options.
+        x-form-factors: public
   DataVisualizationSummary:
     type: object
     description: A Cloudera Data Visualization.
@@ -2409,6 +2660,18 @@ definitions:
         description: Tags associated with the resources.
         items:
           $ref: '#/definitions/TagResponse'
+      compactor:
+        type: boolean
+        description: Denotes whether the Hive Virtual Warehouse is a compactor or not.
+      viz:
+        type: boolean
+        description: Denotes whether the Virtual Warehouse has Data Visualisation or not.
+      autoscalingOptions:
+        description: The current settings stored for atuoscaling.
+        $ref: '#/definitions/AutoscalingOptionsResponse'
+      queryIsolationOptions:
+        description: The current settings stored for query-isolation.
+        $ref: '#/definitions/QueryIsolationOptionsResponse'
   TagResponse:
     description: A key/value pair attached to some resources.
     type: object
