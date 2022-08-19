@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.67
+  version: 0.9.68
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -18,6 +18,27 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/v1/ml/backupWorkspace:
+    post:
+      summary: Backup a workspace.
+      description: Backup a workspace.
+      operationId: backupWorkspace
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BackupWorkspaceRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/BackupWorkspaceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/createWorkspace:
     post:
       summary: Create a Cloudera Machine Learning workspace.
@@ -34,6 +55,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CreateWorkspaceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/deleteBackup:
+    post:
+      summary: Deletes a backup snapshot.
+      description: Deletes a Cloudera Machine Learning workspace backup.
+      operationId: deleteBackup
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteBackupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteBackupResponse'
         default:
           description: The default response on an error.
           schema:
@@ -207,6 +249,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/ml/listWorkspaceBackups:
+    post:
+      summary: List backup snapshots of a workspace.
+      description: List backup snapshots of a workspace.
+      operationId: listWorkspaceBackups
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListWorkspaceBackupsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListWorkspaceBackupsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/ml/listWorkspaces:
     post:
       summary: List Cloudera Machine Learning workspaces.
@@ -286,6 +349,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ModifyWorkspaceLoadBalancerResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/restoreWorkspace:
+    post:
+      summary: Restore a Cloudera Machine Learning workspace.
+      description: Create a new workspace based on an existing workspace backup snapshot.
+      operationId: restoreWorkspace
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestoreWorkspaceRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestoreWorkspaceResponse'
         default:
           description: The default response on an error.
           schema:
@@ -689,7 +773,7 @@ definitions:
         type: boolean
         description: The boolean flag to disable TLS setup for workspace. By default the TLS is enabled.
       provisionK8sRequest:
-        description: The request for Kubernetes workspace provision.
+        description: The request for Kubernetes workspace provision. Required in public cloud.
         $ref: '#/definitions/ProvisionK8sRequest'
       enableMonitoring:
         type: boolean
@@ -722,12 +806,44 @@ definitions:
         items:
           type: string
         description: The whitelist of CIDR blocks which can access the API server.
+      staticSubdomain:
+        type: string
+        description: The static subdomain to be used for the workspace.
+  RestoreWorkspaceRequest:
+    type: object
+    description: Request object for RestoreWorkspace method.
+    required:
+      - newWorkspaceParameters
+      - backupCrn
+    properties:
+      newWorkspaceParameters:
+        description: The parameters required for a new Cloudera Machine Learning workspace.
+        $ref: '#/definitions/CreateWorkspaceRequest'
+      backupCrn:
+        type: string
+        description: The CRN of the backup snapshot to used for restoring.
+      useStaticSubdomain:
+        type: boolean
+        description: A boolean value to check if subdomain must be used or not.
   CreateWorkspaceResponse:
     type: object
     description: Response object for the CreateWorkspace method.
+  RestoreWorkspaceResponse:
+    type: object
+    description: Response object for the RestoreWorkspace method.
+    properties:
+      workspaceCrn:
+        type: string
+        description: The CRN of the Cloudera Machine Learning workspace being provisioned.
   ListWorkspacesRequest:
     type: object
     description: Request object for the ListWorkspaces method.
+    properties:
+      queryOptions:
+        type: array
+        items:
+          type: string
+        description: Additional query options.
   ListWorkspacesResponse:
     type: object
     description: Response object for the ListWorkspaces method.
@@ -737,6 +853,82 @@ definitions:
         items:
           $ref: '#/definitions/WorkspaceSummary'
         description: The list of workspaces.
+  ListWorkspaceBackupsQueryOptions:
+    type: object
+    description: Query options object for ListWorkspaceBackups method.
+    properties:
+      expandEnvironmentMetadata:
+        type: boolean
+        description: When set to true, will return the metadata of the environment where the backed-up workspace is/was present.
+  ListWorkspaceBackupsRequest:
+    type: object
+    description: Request object for ListWorkspaceBackups method.
+    properties:
+      environmentName:
+        type: string
+        description: The environment for the workspace to list backups for.
+      workspaceName:
+        type: string
+        description: The name of the workspace to list backups for.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workspace to list backups for. If this field is specified, environmentName and workspaceName are ignored.
+      queryOptions:
+        description: Additional query options to enhance/mutate the API response.
+        $ref: '#/definitions/ListWorkspaceBackupsQueryOptions'
+  BackupDetail:
+    type: object
+    description: Backup Detail response object for listing backups.
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup snapshot.
+      backupName:
+        type: string
+        description: The name of the backup snapshot.
+      createdAt:
+        type: string
+        format: date-time
+        description: The creation time of the backup snapshot.
+      creatorCrn:
+        type: string
+        description: The CRN of the creator.
+      workspaceVersionAtBackup:
+        type: string
+        description: The version of the backed-up workspace at the time of backup.
+      backupStatus:
+        type: string
+        description: The status of the backup.
+  ListWorkspaceBackupsResponse:
+    type: object
+    description: Response object for ListWorkspaceBackups method.
+    properties:
+      backups:
+        type: array
+        items:
+          $ref: '#/definitions/BackupDetail'
+        description: The list of backups along with their details.
+  BackupMetadata:
+    type: object
+    description: Backup metadata response object for the workspace summary.
+    properties:
+      backupVaultName:
+        type: string
+        description: The backup vault name.
+      lastSuccessfulBackupTime:
+        type: string
+        format: date-time
+        description: The time when the last successful backup was taken.
+      isSuccessfulBackupAvailable:
+        type: boolean
+        description: Whether successful backups are available for the workspace.
+      lastBackupStatus:
+        type: string
+        description: The status of the last backup initiated.
+      numberOfAvailableBackups:
+        type: integer
+        format: int64
+        description: The number of backups available.
   WorkspaceSummary:
     type: object
     description: A Cloudera Machine Learning workspace which includes the deployed configuration details.
@@ -811,6 +1003,12 @@ definitions:
         items:
           $ref: '#/definitions/HealthInfo'
         description: The health info information of the workspace.
+      backupMetadata:
+        description: The Backup Metadata for the workspace.
+        $ref: '#/definitions/BackupMetadata'
+      clusterID:
+        type: string
+        description: The Cluster ID for the workspace.
   Workspace:
     type: object
     description: A ML workspace, which includes the cluster and storage.
@@ -918,6 +1116,9 @@ definitions:
         items:
           type: string
         description: The whitelist of CIDR blocks which can access the API server.
+      backupMetadata:
+        description: The Backup MetaData for this Workspace
+        $ref: '#/definitions/BackupMetadata'
   UpgradeWorkspaceRequest:
     type: object
     description: Request object for the UpgradeWorkspace method.
@@ -930,7 +1131,8 @@ definitions:
         description: The name of the workspace.
       mlVersion:
         type: string
-        description: The version of workspace to upgrade to.
+        description: The version of workspace to upgrade to. (Deprecated).
+        x-deprecated: true
       workspaceCrn:
         type: string
         description: The CRN of the workspace. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.
@@ -1191,4 +1393,43 @@ definitions:
   ModifyWorkspaceLoadBalancerResponse:
     type: object
     description: Response object for ModifyWorkspaceLoadBalancer.
+  BackupWorkspaceRequest:
+    type: object
+    description: The request object for workspace backup.
+    required:
+      - workspaceCrn
+      - backupName
+    properties:
+      workspaceCrn:
+        type: string
+        description: CRN of the workspace to backup.
+      backupName:
+        type: string
+        description: Backup name.
+  BackupWorkspaceResponse:
+    type: object
+    description: The response object for workspace backup.
+    properties:
+      backupCrn:
+        type: string
+        description: CRN of the backup generated.
+      vaultName:
+        type: string
+        description: Name of the vault where backup related volumes are stored.
+  DeleteBackupRequest:
+    type: object
+    description: The request object for DeleteBackup operation.
+    required:
+      - backupCrn
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup to be deleted.
+  DeleteBackupResponse:
+    type: object
+    description: The response object for DeleteBackup operation.
+    properties:
+      workflowId:
+        type: string
+        description: The ID of the delete-backup workflow.
 x-audit: true
