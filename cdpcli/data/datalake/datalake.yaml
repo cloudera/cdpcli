@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.68
+  version: 0.9.69
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -677,8 +677,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/datalake/recoverDatalake:
     post:
-      summary: Recover datalake to the original version after a failed upgrade.
-      description: Recover datalake to the original version after a failed upgrade.
+      summary: Recover data lake to the original version after a failed upgrade.
+      description: Recover data lake to the original version after a failed upgrade.
       operationId: recoverDatalake
       x-mutating: true
       parameters:
@@ -689,7 +689,7 @@ paths:
             $ref: '#/definitions/RecoverDatalakeRequest'
       responses:
         200:
-          description: Expected response to a valid recover datalake request.
+          description: Expected response to a valid recover data lake request.
           schema:
             $ref: '#/definitions/RecoverDatalakeResponse'
         default:
@@ -2340,7 +2340,7 @@ definitions:
         description: The reason for the current status of the datalake.
       cloudbreakVersion:
         type: string
-        description: The Cloudbreak version used to create the datalake.
+        description: The Cloudbreak version used to create the data lake.
   ReplaceRecipesRequest:
     type: object
     description: The request for replacing recipes.

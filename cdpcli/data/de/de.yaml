@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.68
+  version: 0.9.69
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -681,6 +681,25 @@ definitions:
         items:
           type: string
         description: List of Subnet IDs of CDP subnets to use for the kubernetes worker node.
+      customAzureFilesConfigs:
+        $ref: '#/definitions/CustomAzureFilesConfigs'
+        description: CDE uses a default public File Shares storage provisioned by AKS. Enable this option to use your own public/private File Shares.
+  CustomAzureFilesConfigs:
+    type: object
+    description: Override Azure Files Configs.
+    required:
+      - storageAccountName
+      - resourceGroup
+    properties:
+      storageAccountName:
+        type: string
+        description: Azure Storage Account of the File Share.
+      resourceGroup:
+        type: string
+        description: Resource Group of the Storage Account.
+      azureFilesFQDN:
+        type: string
+        description: Azure File Share's server address. Defaults to '<storageaccount>.file.core.windows.net'.
   EnableServiceResponse:
     type: object
     description: Response object for EnableService request.
