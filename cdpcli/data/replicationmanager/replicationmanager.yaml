@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.69
+  version: 0.9.70
   title: Cloudera Replication Manager Service
   license:
     name: Apache 2.0

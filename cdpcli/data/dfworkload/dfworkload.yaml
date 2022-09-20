@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.69
+  version: 0.9.70
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1540,7 +1540,7 @@ definitions:
         readOnly: true
   InboundConnectionEndpointSummary:
     type: object
-    description: Inbound Connection Endpoint summary
+    description: Inbound Connection Endpoint Summary
     x-workload: true
     x-client-only: true
     properties:
@@ -1550,18 +1550,22 @@ definitions:
         readOnly: true
       state:
         type: string
-        description: State of the inbound connection endpoint
+        description: State of the Inbound Connection Endpoint
         readOnly: true
         enum:
-          - RESERVED
-          - AVAILABLE
+          - UNASSIGNED
+          - ASSIGNED
+          - PROVISIONING_CERTIFICATES
+          - RENEWING_CERTIFICATES
+          - READY
+          - FAILED
       deploymentId:
         type: string
-        description: ID of deployment the hostname is assigned to
+        description: The identifier of the deployment the hostname is assigned to
         readOnly: true
       id:
         type: string
-        description: Internal identifier of the inbound connection endpoint
+        description: The identifier of the Inbound Connection Endpoint
         readOnly: true
   KpiContextGroup:
     type: object

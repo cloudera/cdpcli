@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.69
+  version: 0.9.70
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1049,6 +1049,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpgradeClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/prepareClusterUpgrade:
+    post:
+      summary: Running upgrade related validations and prepares the required parcels for the upgrade.
+      description: In order to reduce the chance of upgrade failures, we're introducing a preparation phase for runtime upgrades. During this phase, we're running all validations and downloading the required parcels for the machines. You can track the progress of the parcel preparation on the Cloudera Manager UI or you can check on the Management Console as well.
+      operationId: prepareClusterUpgrade
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PrepareClusterUpgradeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/PrepareClusterUpgradeResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3665,6 +3686,37 @@ definitions:
   UpgradeClusterResponse:
     type: object
     description: Response object for upgrade datahub request.
+    properties:
+      current:
+        $ref: '#/definitions/ImageInfo'
+        description: Information about the current image.
+      upgradeCandidates:
+        type: array
+        description: List of images and components to upgrade to.
+        items:
+          $ref: '#/definitions/ImageInfo'
+          description: Information about an image.
+      reason:
+        type: string
+        description: The reason why upgrade is not possible.
+  PrepareClusterUpgradeRequest:
+    type: object
+    description: Request object to Data Hub upgrade preparation. This command indicates the upgrade preparation for a specific image or a selected runtime version. Important to note that the imageId or the runtime parameter must be present in the request.
+    required:
+      - cluster
+    properties:
+      cluster:
+        type: string
+        description: The name or CRN of the Data Hub.
+      imageId:
+        type: string
+        description: The ID of an image to upgrade to.
+      runtime:
+        type: string
+        description: The runtime version to upgrade to.
+  PrepareClusterUpgradeResponse:
+    type: object
+    description: Response object for upgrade Data Hub request.
     properties:
       current:
         $ref: '#/definitions/ImageInfo'

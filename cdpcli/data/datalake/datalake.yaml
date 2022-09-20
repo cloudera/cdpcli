@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.69
+  version: 0.9.70
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -311,6 +311,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpgradeDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/prepareDatalakeUpgrade:
+    post:
+      summary: Prepares the Data Lake cluster for upgrade.
+      description: In order to reduce the chance of upgrade failures, we're introducing a preparation phase for runtime upgrades. During this phase, we're running all validations and downloading the required parcels for the machines. You can track the progress of the parcel preparation on the Cloudera Manager UI or you can check on the Management Console as well.
+      operationId: prepareDatalakeUpgrade
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PrepareDatalakeUpgradeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/PrepareDatalakeUpgradeResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1451,7 +1472,6 @@ definitions:
     description: Request object to perform a backup of datalake.
     required:
       - datalakeName
-      - backupLocation
     properties:
       datalakeName:
         type: string
@@ -1979,6 +1999,37 @@ definitions:
   UpgradeDatalakeResponse:
     type: object
     description: Response object for upgrade datalake request.
+    properties:
+      current:
+        $ref: '#/definitions/ImageInfo'
+        description: Information about the current image
+      upgradeCandidates:
+        type: array
+        description: List of images and components to upgrade to
+        items:
+          $ref: '#/definitions/ImageInfo'
+          description: Information about an image
+      reason:
+        type: string
+        description: The reason why upgrade is not possible
+  PrepareDatalakeUpgradeRequest:
+    type: object
+    description: Request object to prepare Data Lake upgrade. This command indicates the upgrade preparation for a specific image or a selected runtime version. Important to note that the imageId or the runtime parameter must be present in the request.
+    required:
+      - datalake
+    properties:
+      datalake:
+        type: string
+        description: The name or CRN of the Data Lake cluster.
+      imageId:
+        type: string
+        description: The ID of an image to upgrade to
+      runtime:
+        type: string
+        description: The runtime version to upgrade to
+  PrepareDatalakeUpgradeResponse:
+    type: object
+    description: Response object for prepare Data Lake upgrade request.
     properties:
       current:
         $ref: '#/definitions/ImageInfo'

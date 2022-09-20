@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.69
+  version: 0.9.70
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1244,12 +1244,13 @@ definitions:
         description: Whether to enable spot instances for Virtual warehouses. It cannot be updated later. If the AzureActivationOptions is not provided it defaults to false.
         default: false
       vmGenerationType:
+        x-deprecated: true
         type: string
         enum:
           - Standard_E16_v3
           - Standard_E16ds_v4
           - Standard_E16ads_v5
-        description: The generation type of the virtual machines used to create the environment.
+        description: DEPRECATED in favour of compute-instance-types. The generation type of the virtual machines used to create the environment.
       logAnalyticsWorkspaceId:
         type: string
         description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
@@ -2261,7 +2262,7 @@ definitions:
         description: Username for machine users.
   AwsOptionsResponse:
     type: object
-    description: Response object of the cluster Aws settings.
+    description: Response object of the cluster AWS settings.
     properties:
       subnetIds:
         type: array
