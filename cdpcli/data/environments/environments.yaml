@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.70
+  version: 0.9.71
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -228,6 +228,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateAzureEncryptionResourcesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/updateAwsDiskEncryptionParameters:
+    post:
+      summary: Update the AWS encryption key ARN for the environment.
+      description: Updates the AWS encryption key ARN for the environment. Enables the server side encryption with CMK for newly created AWS resources for the existing environment.
+      operationId: updateAwsDiskEncryptionParameters
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAwsDiskEncryptionParametersRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateAwsDiskEncryptionParametersResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2151,6 +2172,40 @@ definitions:
       resourceEncryptionParameters:
         $ref: '#/definitions/AzureResourceEncryptionParameters'
         description: Object containing details of encryption parameters for Azure cloud.
+  UpdateAwsDiskEncryptionParametersRequest:
+    type: object
+    description: Request object for updating AWS encryption parameters.
+    required:
+      - environment
+      - encryptionKeyArn
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      encryptionKeyArn:
+        type: string
+        description: The ARN of an encryption key, which will be used to encrypt the AWS EBS volumes, if the entitlement has been granted.
+        x-no-paramfile: true
+  UpdateAwsDiskEncryptionParametersResponse:
+    type: object
+    description: Response object for an update AWS encryption parameters request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: The environment summary.
+      awsDiskEncryptionParameters:
+        $ref: '#/definitions/AwsDiskEncryptionParameters'
+        description: Object containing details of encryption parameters for AWS cloud.
+  AwsDiskEncryptionParameters:
+    type: object
+    description: Object containing details of encryption parameters for AWS cloud.
+    properties:
+      encryptionKeyArn:
+        type: string
+        description: ARN of the CMK which is used to encrypt the AWS EBS volumes.
+        x-no-paramfile: true
   AzureResourceEncryptionParameters:
     type: object
     description: Object containing details of encryption parameters for Azure cloud.

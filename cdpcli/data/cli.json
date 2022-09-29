@@ -80,11 +80,12 @@
       },
       "cdp-region": {
          "choices": [
+            "default",
             "us-west-1",
             "eu-1",
             "ap-1"
          ],
-         "default": "us-west-1",
+         "default": "default",
          "help": "<p>Specifies which CDP region to send this command's CDP request to.</p>"
       },
       "ensure-ascii": {

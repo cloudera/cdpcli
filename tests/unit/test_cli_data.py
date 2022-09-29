@@ -80,7 +80,9 @@ def test_cdp_region():
                              'eu-1',
                              'ap-1']
     cdp_regions = cli_data['options']['cdp-region']['choices']
-    assert_equal(sorted(cdp_regions), sorted(validated_cdp_regions))
+    # 'default' is a valid region in CLI argument, because it means:
+    # read from configure file.
+    assert_equal(sorted(cdp_regions), sorted([*validated_cdp_regions, 'default']))
 
     # Verify the same list of regions is in the configure help description.
     configure_doc_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
