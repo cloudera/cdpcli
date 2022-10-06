@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.71
+  version: 0.9.72
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -825,6 +825,10 @@ definitions:
       useStaticSubdomain:
         type: boolean
         description: A boolean value to check if subdomain must be used or not.
+      restoreJobTimeoutMinutes:
+        type: integer
+        format: int32
+        description: The timeout to restore the backup snapshots, in minutes.
   CreateWorkspaceResponse:
     type: object
     description: Response object for the CreateWorkspace method.
@@ -1406,6 +1410,13 @@ definitions:
       backupName:
         type: string
         description: Backup name.
+      backupJobTimeoutMinutes:
+        type: integer
+        format: int32
+        description: The timeout(in minutes) to use for the execution of the backup jobs.
+      skipValidation:
+        type: boolean
+        description: Skip pre-flight validations if requested.
   BackupWorkspaceResponse:
     type: object
     description: The response object for workspace backup.

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.71
+  version: 0.9.72
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -658,6 +658,30 @@ paths:
             $ref: '#/definitions/ListInboundConnectionEndpointsResponse'
         default:
           description: The default response on an error.
+  /dfx/api/rpc-v1/inbound-connection-endpoints/renew-certificates:
+    post:
+      summary: Renew Inbound Connection Endpoint certificates
+      description: Submits a request for renewal of Inbound Connection Endpoint certificates
+      operationId: renewInboundConnectionEndpointCertificates
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: body
+          description: Inbound connection endpoint certificates renewal request
+          required: true
+          schema:
+            $ref: '#/definitions/RenewInboundConnectionEndpointCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RenewInboundConnectionEndpointCertificateResponse'
+        default:
+          description: The default response on an error.
 definitions:
   AbortAssetUpdateRequestRequest:
     type: object
@@ -1078,16 +1102,19 @@ definitions:
     description: Request object that contains the identifier of the Inbound Connection Endpoint to delete
     x-workload: true
     x-client-only: true
-    required:
-      - environmentCrn
-      - id
     properties:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
       id:
         type: string
-        description: The identifier of the Inbound Connection Endpoint
+        description: The identifier of the Inbound Connection Endpoint. Deprecated. Use 'crn' instead
+        x-deprecated: true
+      crn:
+        type: string
+        description: The CRN of the Inbound Connection Endpoint
+    required:
+      - environmentCrn
   DeleteInboundConnectionEndpointResponse:
     type: object
     description: Response object returned during deletion of an Inbound Connection Endpoint
@@ -1249,16 +1276,19 @@ definitions:
     description: Request object that contains the identifier of the Inbound Connection Endpoint to describe
     x-workload: true
     x-client-only: true
-    required:
-      - environmentCrn
-      - id
     properties:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
       id:
         type: string
-        description: The identifier of the Inbound Connection Endpoint
+        description: The identifier of the Inbound Connection Endpoint. Deprecated. Use 'crn' instead
+        x-deprecated: true
+      crn:
+        type: string
+        description: The CRN of the Inbound Connection Endpoint
+    required:
+      - environmentCrn
   DescribeInboundConnectionEndpointResponse:
     type: object
     description: Response object that describes an Inbound Connection Endpoint
@@ -1307,7 +1337,7 @@ definitions:
       value:
         type: string
         description: The value of the parameter
-        x-no-paramfile: 'true'
+        x-no-paramfile: true
       sensitive:
         type: boolean
         description: Whether or not the parameter value is sensitive
@@ -1488,6 +1518,39 @@ definitions:
       deploymentConfigurationMetadata:
         description: The deployment configuration metadata.
         $ref: '#/definitions/RpcDeploymentConfigurationMetadata'
+  InboundConnectionEndpointCertificateSummary:
+    type: object
+    description: Inbound Connection Endpoint Certificate Summary
+    x-workload: true
+    x-client-only: true
+    properties:
+      expiration:
+        type: integer
+        format: int64
+        description: The timestamp of when the Inbound Connection Endpoint Certificate expires
+        readOnly: true
+      certificateType:
+        type: string
+        description: The type of the Inbound Connection Endpoint Certificate
+        readOnly: true
+        enum:
+          - CLIENT_ENTITY
+          - CLIENT_CA
+          - SERVER_ENTITY
+      state:
+        type: string
+        description: The state of the Inbound Connection Endpoint Certificate
+        readOnly: true
+        enum:
+          - PROVISIONING
+          - CURRENT
+          - EXPIRED
+          - RENEWING
+          - RENEWAL_FAILED
+      statusMessage:
+        type: string
+        description: The status message of the Inbound Connection Endpoint Certificate
+        readOnly: true
   InboundConnectionEndpointClientCertificateRequest:
     type: object
     description: Request object to retrieve Inbound Connection Endpoint client's certificate.
@@ -1561,12 +1624,29 @@ definitions:
           - FAILED
       deploymentId:
         type: string
-        description: The identifier of the deployment the hostname is assigned to
+        description: The identifier of the deployment the hostname is assigned to.  Deprecated.  Use 'deploymentCrn' instead
+        readOnly: true
+        x-deprecated: true
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment the hostname is assigned to
+        readOnly: true
+      crn:
+        type: string
+        description: The CRN of the Inbound Connection Endpoint
         readOnly: true
       id:
         type: string
-        description: The identifier of the Inbound Connection Endpoint
+        description: The identifier of the Inbound Connection Endpoint. Deprecated. Use 'crn' instead
         readOnly: true
+        x-deprecated: true
+      certificateSummaries:
+        type: array
+        description: The summaries of certificates associated with the Inbound Connection Endpoint
+        readOnly: true
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/InboundConnectionEndpointCertificateSummary'
   KpiContextGroup:
     type: object
     description: Captures the use of a KPI in the context of a process group
@@ -1795,6 +1875,35 @@ definitions:
       port:
         type: string
         description: Inbound port
+  RenewInboundConnectionEndpointCertificateRequest:
+    type: object
+    description: Request object to renew Inbound Connection Endpoint certificate(s)
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - crn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      crn:
+        type: string
+        description: The CRN of the Inbound Connection Endpoint
+      renewServerCertificate:
+        type: boolean
+        description: Whether to renew Inbound Connection Endpoint's server certificate
+      renewClientCertificates:
+        type: boolean
+        description: Whether to renew Inbound Connection Endpoint's client certificates
+      revokeClientCertificates:
+        type: boolean
+        description: Whether to revoke existing Inbound Connection Endpoint's client certificates
+  RenewInboundConnectionEndpointCertificateResponse:
+    type: object
+    description: Response object for Inbound Connection Endpoint certificate renewal request
+    x-workload: true
+    x-client-only: true
   RpcDeployment:
     type: object
     description: Provides details about a deployment.

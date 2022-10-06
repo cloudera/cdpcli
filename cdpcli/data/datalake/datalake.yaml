@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.71
+  version: 0.9.72
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -332,6 +332,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/PrepareDatalakeUpgradeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/startDatabaseUpgrade:
+    post:
+      summary: Upgrades the database of the Data Lake cluster.
+      description: This command initiates the upgrade of the database of the Data Lake cluster.
+      operationId: startDatabaseUpgrade
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartDatabaseUpgradeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartDatabaseUpgradeResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2043,6 +2064,30 @@ definitions:
       reason:
         type: string
         description: The reason why upgrade is not possible
+  StartDatabaseUpgradeRequest:
+    type: object
+    description: Request object for Data Lake database upgrade.
+    required:
+      - datalake
+      - targetVersion
+    properties:
+      datalake:
+        type: string
+        description: The name or CRN of the Data Lake.
+      targetVersion:
+        type: string
+        description: The database engine major version to upgrade to.
+        enum:
+          - VERSION_11
+  StartDatabaseUpgradeResponse:
+    type: object
+    description: Response object to Data Lake database upgrade.
+    properties:
+      targetVersion:
+        type: string
+        description: The database engine major version to upgrade to.
+        enum:
+          - VERSION_11
   DatalakeVmLogRequest:
     type: object
     description: Log descriptor, contains a path and label pair. Used for diagnostics collections.
