@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.72
+  version: 0.9.73
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1243,6 +1243,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpgradeCcmResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/rotateSaltPassword:
+    post:
+      summary: Rotate SaltStack user password on FreeIPA instances.
+      description: Rotate SaltStack user password on FreeIPA instances.
+      operationId: rotateSaltPassword
+      x-mutating: true
+      x-entitlement: CDP_ROTATE_SALTUSER_PASSWORD
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RotateSaltPasswordRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RotateSaltPasswordResponse'
         default:
           description: The default response on an error.
           schema:
@@ -4136,3 +4158,15 @@ definitions:
     type: object
     description: Response object for upgrading Cluster Connectivity Manager request on an environment.
     x-no-compatibility-guarantee: true
+  RotateSaltPasswordRequest:
+    type: object
+    description: Request object for rotating SaltStack user password on FreeIPA instances.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+  RotateSaltPasswordResponse:
+    type: object
+    description: Response object for rotating SaltStack user password on FreeIPA instances.
