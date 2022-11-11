@@ -104,9 +104,17 @@ class PageIterator(object):
     # builds a full operation result object by iterating over pages which are
     # fetched using multiple requests to service
     def build_full_result(self):
+        first_response = True
         result = {}
         # iterate over service responses, one response per page of results
         for response in self:
+            if first_response:
+                result = copy(response)
+                if self._result_key in result:
+                    del result[self._result_key]
+                if self._output_token_key in result:
+                    del result[self._output_token_key]
+                first_response = False
             response_value = response.get(self._result_key, None)
             if response_value is None:
                 continue

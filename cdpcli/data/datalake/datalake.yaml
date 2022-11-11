@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.73
+  version: 0.9.74
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1893,6 +1893,8 @@ definitions:
     required:
       - stopServices
       - startServices
+      - precheckStoragePermission
+      - rangerAuditCollectionValidation
     properties:
       stopServices:
         $ref: '#/definitions/BackupRestoreOperationStatus'
@@ -1900,6 +1902,12 @@ definitions:
       startServices:
         $ref: '#/definitions/BackupRestoreOperationStatus'
         description: The status of the start services operation this is triggered after the backup/restore is complete.
+      precheckStoragePermission:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: Validate storage permissions before running a backup/restore.
+      rangerAuditCollectionValidation:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: Run the ranger audit collection validation in the backup precheck.
   HbaseBackupRestoreState:
     type: object
     description: The state of each HBase backup/restore operation.
@@ -2091,7 +2099,6 @@ definitions:
     description: Request object for Data Lake database upgrade.
     required:
       - datalake
-      - targetVersion
     properties:
       datalake:
         type: string

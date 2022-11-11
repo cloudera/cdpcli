@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.73
+  version: 0.9.74
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1305,16 +1305,10 @@ definitions:
       dockerBridgeCidr:
         type: string
         description: Docker bridge CIDR range for deployment.
-      enableUDR:
-        type: boolean
-        description: DEPRECATED in favour of outbound-type. The current value of the enable-udr translates as follows. The false value is equal to LoadBalancer, whereas the true value is equal to UserDefinedRouting. Enable user defined routing for the cluster deployment.
-        default: false
-        x-deprecated: true
       outboundType:
         type: string
-        description: This option supersedes the enableUDR option. If the enableUDR is set to true, then the outbound type must be set to empty or "UserAssignedNATGateway". The enableUDR will be deprecated in the upcoming release.
+        description: Network outbound type. This setting controls the egress traffic for cluster nodes in Azure Kubernetes Service. Please refer to the following AKS documentation on the Azure portal. https://learn.microsoft.com/en-us/azure/aks/egress-outboundtype, https://learn.microsoft.com/en-us/azure/aks/nat-gateway
         enum:
-          - EmptyValue
           - LoadBalancer
           - UserAssignedNATGateway
           - UserDefinedRouting
@@ -1987,7 +1981,7 @@ definitions:
         description: Auto suspend threshold for Virtual Warehouse.
       enableUnifiedAnalytics:
         type: boolean
-        description: Enable Unified Analytics. In case of Hive Virtual Warehouses this cannot be provided, because this value is inferred. In case of Impala this can be set. Passing --query-isolation will be considered if this flag is set to true. If Unified Analytics enabled then the "impalaEnableShutdownOfCoordinator" explicitly disabled and should not be provided, furthermore the "impalaHighAvailabilityMode" cannot be set to ACTIVE_ACTIVE.
+        description: Enable Unified Analytics. In case of Hive Virtual Warehouses this cannot be provided, because this value is inferred. In case of Impala this can be set. Passing --query-isolation-options will be considered if this flag is set to true. If Unified Analytics enabled then the "impalaEnableShutdownOfCoordinator" explicitly disabled and should not be provided, furthermore the "impalaHighAvailabilityMode" cannot be set to ACTIVE_ACTIVE.
       hiveScaleWaitTimeSeconds:
         type: integer
         format: int32
@@ -2200,7 +2194,7 @@ definitions:
         description: Configuration settings for the Virtual Warehouse.
         $ref: '#/definitions/ServiceConfigReq'
       queryIsolationOptions:
-        description: Query isolation settings for the Virtual Warehouse.
+        description: Query isolation settings for the Virtual Warehouse. For Impala this value will be considered only if Unified Analytics is enabled.
         $ref: '#/definitions/QueryIsolationOptionsRequest'
       tags:
         type: array
@@ -2342,11 +2336,6 @@ definitions:
         type: boolean
         description: Denotes whther the Azure Availability Zones for the cluster is enabled or not.
         default: false
-      enableUDR:
-        type: boolean
-        description: DEPRECATED, Superseded by the outboundType and will be deprecated in the upcoming release. Denotes whther the user defined routing for the cluster deployment is enabled or not.
-        default: false
-        x-deprecated: true
       outboundType:
         type: string
         description: The current outbound type setting.
@@ -2765,7 +2754,7 @@ definitions:
         type: boolean
         description: Denotes whether the Virtual Warehouse has Data Visualisation or not.
       autoscalingOptions:
-        description: The current settings stored for atuoscaling.
+        description: The current settings stored for autoscaling.
         $ref: '#/definitions/AutoscalingOptionsResponse'
       queryIsolationOptions:
         description: The current settings stored for query-isolation.

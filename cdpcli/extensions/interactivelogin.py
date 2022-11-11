@@ -117,6 +117,8 @@ class LoginHttpHandler(httpserver.SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def _save_access_token(self, access_key_id, private_key):
+        # V3/ECDSA private key has '\n' in the string.
+        private_key = private_key.replace('\n', '\\n')
         credential_file_values = {CDP_ACCESS_KEY_ID_KEY_NAME: access_key_id,
                                   CDP_PRIVATE_KEY_KEY_NAME: private_key}
         profile_name = self.server.context.effective_profile

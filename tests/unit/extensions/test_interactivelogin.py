@@ -143,6 +143,27 @@ class TestLoginCommand(unittest.TestCase):
         self.assertEqual(login_result.get('status_code'), 200)
         self.assertTrue(login_result.get('succeeded'))
 
+    def test_login_command_succeeded_for_access_key_type_v3(self):
+        login_result = {'succeeded': False}
+        thread = threading.Thread(
+            target=TestLoginCommand.mock_user_login,
+            args=(self,
+                  '?accessKeyId=foo&privateKey=--v3--%0Ahello%0Aworld%3D%3D',
+                  login_result))
+        thread.start()
+        try:
+            args = ['--account-id', 'foobar', '--timeout', '1']
+            parsed_globals = mock.Mock()
+            self.login(self.context, args=args, parsed_globals=parsed_globals)
+            self.assert_credentials_file_updated_with(
+                {CDP_ACCESS_KEY_ID_KEY_NAME: 'foo',
+                 CDP_PRIVATE_KEY_KEY_NAME: '--v3--\\nhello\\nworld=='},
+                config_file_comment=CREDENTIAL_FILE_COMMENT)
+        finally:
+            thread.join()
+        self.assertEqual(login_result.get('status_code'), 200)
+        self.assertTrue(login_result.get('succeeded'))
+
     def test_login_command_succeeded_for_profile(self):
         login_result = {'succeeded': False}
         thread = threading.Thread(

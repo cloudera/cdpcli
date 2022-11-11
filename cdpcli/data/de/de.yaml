@@ -3,8 +3,9 @@ x-endpoint-name: de
 x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
+x-audit: true
 info:
-  version: 0.9.73
+  version: 0.9.74
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -22,6 +23,7 @@ paths:
       summary: Create Virtual Cluster
       description: Creates a virtual cluster and returns creation response.
       operationId: createVc
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -42,6 +44,7 @@ paths:
       summary: Delete Virtual Cluster
       description: Deletes a virtual cluster and returns deletion response.
       operationId: deleteVc
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -62,6 +65,7 @@ paths:
       summary: Update Cloudera Data Engineering (CDE) Virtual Cluster
       description: Updates Cloudera Data Engineering (CDE) Virtual Cluster and returns details of updated CDE service.
       operationId: updateVc
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -82,6 +86,7 @@ paths:
       summary: Describe Cloudera Data Engineering(CDE) Service
       description: Returns details of CDE service.
       operationId: describeService
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -102,6 +107,7 @@ paths:
       summary: Describe Virtual Cluster
       description: Returns a description for the specified virtual cluster.
       operationId: describeVc
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -122,6 +128,7 @@ paths:
       summary: Disable Cloudera Data Engineering(CDE) Service
       description: Returns delete response.
       operationId: disableService
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -142,6 +149,7 @@ paths:
       summary: Enable Cloudera Data Engineering(CDE) Service
       description: Returns enabling response.
       operationId: enableService
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -162,6 +170,7 @@ paths:
       summary: Update Cloudera Data Engineering (CDE) Service
       description: Returns update response consisting of operation ID that can be used to log update events.
       operationId: updateService
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -182,6 +191,7 @@ paths:
       summary: Get Kubeconfig for the CDE service
       description: Returns kubeconfig.
       operationId: getKubeconfig
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -202,6 +212,7 @@ paths:
       summary: List Cloudera Data Engineering(CDE) Services
       description: Returns list of cde services.
       operationId: listServices
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -222,6 +233,7 @@ paths:
       summary: List Virtual Clusters
       description: Returns a list of virtual clusters for a given CDE service.
       operationId: listVcs
+      x-mutating: false
       parameters:
         - name: input
           in: body

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.73
+  version: 0.9.74
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -39,6 +39,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/compute/listClusters:
     post:
       summary: List compute clusters
@@ -61,6 +62,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/compute/upgradeDeployment:
     post:
       summary: Upgrades a deployment to a different chart.
@@ -82,6 +84,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: true
 definitions:
   Error:
     type: object
@@ -334,3 +337,4 @@ definitions:
       chart:
         description: Chart that the deployment was created from.
         $ref: '#/definitions/Chart'
+x-audit: true

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.73
+  version: 0.9.74
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -3778,7 +3778,6 @@ definitions:
     description: Request object for Data Hub database upgrade.
     required:
       - cluster
-      - targetVersion
     properties:
       cluster:
         type: string

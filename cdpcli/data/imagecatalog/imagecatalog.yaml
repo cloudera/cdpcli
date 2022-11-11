@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.73
+  version: 0.9.74
   title: Image catalog service
   license:
     name: Apache 2.0
@@ -38,6 +38,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/imagecatalog/deleteCustomCatalog:
     post:
       summary: Delete custom image catalog
@@ -58,6 +59,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/imagecatalog/deleteFreeipaImage:
     post:
       summary: Delete FreeIPA image
@@ -78,6 +80,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/imagecatalog/deleteRuntimeImage:
     post:
       summary: Delete Cloudera Runtime image
@@ -98,6 +101,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/imagecatalog/describeCustomCatalog:
     post:
       summary: Describe custom image catalog
@@ -118,6 +122,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/imagecatalog/describeCustomImage:
     post:
       summary: Describe custom image
@@ -138,6 +143,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/imagecatalog/describeDefaultImage:
     post:
       summary: Describe default image
@@ -158,6 +164,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/imagecatalog/findDefaultImage:
     post:
       summary: Find default image
@@ -178,6 +185,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/imagecatalog/listCustomCatalogs:
     post:
       summary: List custom image catalogs
@@ -198,6 +206,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/imagecatalog/setFreeipaImage:
     post:
       summary: Add or update FreeIPA image
@@ -218,6 +227,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/imagecatalog/setRuntimeImage:
     post:
       summary: Add or update Cloudera Runtime image
@@ -238,6 +248,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      x-mutating: true
 definitions:
   Error:
     type: object
@@ -593,3 +604,4 @@ definitions:
       provider:
         description: Cloud provider - either AWS, AZURE or GCP
         $ref: '#/definitions/VmImageProvider'
+x-audit: true

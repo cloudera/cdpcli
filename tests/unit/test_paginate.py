@@ -91,6 +91,26 @@ class TestPagination(unittest.TestCase):
         result = self.paginator.paginate().build_full_result()
         self.assertEqual(result, {'Foo': 'foobar'})
 
+    def test_build_full_result_extra_field(self):
+        responses = [{'Extra': 'hello', 'Foo': 0.0, 'NextToken': 'm1'},
+                     {'Extra': 'hello', 'Foo': 0.0}]
+        self.method.side_effect = responses
+        result = self.paginator.paginate().build_full_result()
+        self.assertEqual(result, {'Extra': 'hello', 'Foo': 0.0})
+
+    def test_build_full_result_extra_field_from_first_response(self):
+        responses = [{'Extra': 'hello', 'Foo': 0.0, 'NextToken': 'm1'},
+                     {'Field': 'world', 'Foo': 0.0}]
+        self.method.side_effect = responses
+        result = self.paginator.paginate().build_full_result()
+        self.assertEqual(result, {'Extra': 'hello', 'Foo': 0.0})
+
+    def test_build_full_result_extra_field_only(self):
+        responses = [{'Extra': 'hello'}]
+        self.method.side_effect = responses
+        result = self.paginator.paginate().build_full_result()
+        self.assertEqual(result, {'Extra': 'hello'})
+
     def test_exception_raised_if_same_next_token(self):
         responses = [{'NextToken': 'token1'},
                      {'NextToken': 'token2'},

@@ -3,8 +3,9 @@ x-endpoint-name: replicationmanager
 x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
+x-audit: true
 info:
-  version: 0.9.73
+  version: 0.9.74
   title: Cloudera Replication Manager Service
   license:
     name: Apache 2.0
@@ -22,6 +23,7 @@ paths:
       summary: Lists all clusters.
       description: Provides a detailed list of all available clusters.
       operationId: listClusters
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -42,6 +44,7 @@ paths:
       summary: Lists Cluster Service Statuses.
       description: Provides a list of cluster service (e.g. HDFS, Hive, YARN, etc.) statuses.
       operationId: listClusterServiceStatuses
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -62,6 +65,7 @@ paths:
       summary: Lists Cloud Credentials.
       description: Provides a detailed list of cloud credentials across all available clusters.
       operationId: listAllCredentials
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -82,6 +86,7 @@ paths:
       summary: Get Cloud Credentials from a Cluster.
       description: Returns cloud credentials on a specific cluster.
       operationId: getCredentials
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -102,6 +107,7 @@ paths:
       summary: Get All Replication Policies.
       description: Provides a list of all replication policies across all available clusters.
       operationId: listPolicies
+      x-mutating: false
       parameters:
         - name: input
           in: body
@@ -122,6 +128,7 @@ paths:
       summary: Delete Replication Policy.
       description: Permanently deletes a specific replication policy.
       operationId: deletePolicy
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -142,6 +149,7 @@ paths:
       summary: Create a Replication Policy.
       description: Creates a new replication policy with the given name on a specific cluster.
       operationId: createPolicy
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -162,6 +170,7 @@ paths:
       summary: Stop all replication tasks defined by the policy.
       description: Stops all replication tasks defined by the policy. Replication will resume after activating the policy.
       operationId: suspendPolicy
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -182,6 +191,7 @@ paths:
       summary: Resume all replication tasks defined by the policy.
       description: Resumes all replication tasks defined by the policy if the policy is currently suspended.
       operationId: activatePolicy
+      x-mutating: true
       parameters:
         - name: input
           in: body
@@ -897,7 +907,7 @@ definitions:
         description: Enable snapshot based replication.
         type: boolean
       cloudEncryptionAlgorithm:
-        description: Cloud encryption algorithm.
+        description: The type of cloud encryption algorithm. Can be used only for HDP/Ambari managed clusters. Supported values are AES256,SSE-KMS.
         type: string
       cloudEncryptionKey:
         description: Cloud encryption key.
