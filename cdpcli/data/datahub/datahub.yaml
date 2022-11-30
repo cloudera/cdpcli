@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.74
+  version: 0.9.75
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1053,6 +1053,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/startClusterVerticalScaling:
+    post:
+      summary: Initiates the vertical scaling on Data Hub cluster.
+      description: Initiates the vertical scaling on Data Hub cluster.
+      operationId: startClusterVerticalScaling
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartClusterVerticalScalingRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartClusterVerticalScalingResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datahub/prepareClusterUpgrade:
     post:
       summary: Running upgrade related validations and prepares the required parcels for the upgrade.
@@ -1288,6 +1309,37 @@ definitions:
         items:
           $ref: '#/definitions/Instance'
         description: Some information about the given instance.
+  StartClusterVerticalScalingRequest:
+    type: object
+    description: The request object for Data Hub vertical scaling.
+    required:
+      - datahub
+      - group
+      - instanceTemplate
+    properties:
+      datahub:
+        type: string
+        description: The name or CRN of the Data Hub cluster.
+      group:
+        type: string
+        description: The target group that reqested for vertical scaling.
+      instanceTemplate:
+        description: Instance template that specifies the core information for the vertical scale.
+        $ref: '#/definitions/InstanceTemplate'
+  StartClusterVerticalScalingResponse:
+    type: object
+    description: The response object for Data Hub cluster vertical scaling.
+    properties:
+      result:
+        type: string
+        description: The result of the operation.
+  InstanceTemplate:
+    type: object
+    description: Instance template configuration(s).
+    properties:
+      instanceType:
+        type: string
+        description: The type of the instance.
   Instance:
     type: object
     description: Object which holds some details of an instance for the given cluster.

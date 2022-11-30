@@ -6,7 +6,7 @@ x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.74
+  version: 0.9.75
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -91,7 +91,7 @@ paths:
   /iam/deleteUser:
     post:
       summary: Deletes a user and all associated resources.
-      description: Deletes a user. This includes deleting all associated access keys and unassigning all roles and resource roles assigned to the user. The user is also removed from all groups it belongs to. If the call succeeds the user will not be able to login interactively, or use any access keys to access the CDP control plane. This feature is under development and some reasources may be left behind after a successful call. Note that user-sync is not triggered yet by this call and the caller must trigger that to ensure that the user loses access to all environments as soon as possible.
+      description: Deletes a user. This includes deleting all associated access keys and unassigning all roles and resource roles assigned to the user. The user is also removed from all groups it belongs to. If the call succeeds the user will not be able to login interactively, or use any access keys to access the CDP control plane. This feature is under development and some resources may be left behind after a successful call. Note that user-sync is not triggered yet by this call and the caller must trigger that to ensure that the user loses access to all environments as soon as possible.
       operationId: deleteUser
       x-form-factors: public
       x-right: iam/deleteUser
@@ -273,7 +273,7 @@ paths:
   /iam/listResourceRoles:
     post:
       summary: Lists all the available resource roles.
-      description: Lists all the available reource roles. Resource roles grants rights over certain resources.
+      description: Lists all the available resource roles. Resource roles grant rights over certain resources.
       operationId: listResourceRoles
       x-form-factors: public,private
       x-right: iam/listResourceRoles
@@ -2504,7 +2504,7 @@ definitions:
     properties:
       machineUserName:
         type: string
-        description: The machine user to assign the resource role to. Can be the user's name or CRN.
+        description: The machine user to assign the resource role to. Can be the machine user's name or CRN.
       resourceRoleCrn:
         type: string
         description: The CRN of the resource role to assign to the machine user.
@@ -2524,7 +2524,7 @@ definitions:
     properties:
       machineUserName:
         type: string
-        description: The machine user to unassign the resource role from.
+        description: The machine user to unassign the resource role from. Can be the machine user's name or CRN.
       resourceRoleCrn:
         type: string
         description: The CRN of the resource role to unassigned from the machine user.
@@ -2668,7 +2668,7 @@ definitions:
         type: array
         items:
           type: string
-        description: The machine user names or CRNs of the macihne users. If not provided all machine users for the account are retrieved.
+        description: The names or the CRNs of the machine users. If not provided all machine users for the account are retrieved.
       pageSize:
         type: integer
         format: int32

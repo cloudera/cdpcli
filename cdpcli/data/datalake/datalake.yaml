@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.74
+  version: 0.9.75
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -163,6 +163,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RetryDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/startDatalakeVerticalScaling:
+    post:
+      summary: Initiates the vertical scaling on Data Lake.
+      description: Initiates the vertical scaling on Data Lake.
+      operationId: startDatalakeVerticalScaling
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartDatalakeVerticalScalingRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartDatalakeVerticalScalingResponse'
         default:
           description: The default response on an error.
           schema:
@@ -864,6 +885,37 @@ definitions:
       serviceAccountEmail:
         type: string
         description: The email id of the service account used for the ID Broker instance.
+  StartDatalakeVerticalScalingRequest:
+    type: object
+    description: The request object for Data Lake vertical scaling.
+    required:
+      - datalake
+      - group
+      - instanceTemplate
+    properties:
+      datalake:
+        type: string
+        description: The name or CRN of the Data Lake.
+      group:
+        type: string
+        description: The target group that requested vertical scaling.
+      instanceTemplate:
+        description: Instance template that specifies the core information for the vertical scale.
+        $ref: '#/definitions/InstanceTemplate'
+  StartDatalakeVerticalScalingResponse:
+    type: object
+    description: The response object for Data Lake vertical scaling.
+    properties:
+      result:
+        type: string
+        description: The result of the operation.
+  InstanceTemplate:
+    type: object
+    description: Instance template that specifies the core information for the vertical scale.
+    properties:
+      instanceType:
+        type: string
+        description: The type of the instance.
   DatalakeDetails:
     type: object
     description: Details about a datalake
@@ -1975,6 +2027,9 @@ definitions:
       failureReason:
         type: string
         description: The failure reason if the operation was not successful.
+      durationInMinutes:
+        type: string
+        description: The duration of each operation, in minutes.
   ImageComponentVersions:
     type: object
     description: Versions of the image components

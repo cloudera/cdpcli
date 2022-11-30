@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.74
+  version: 0.9.75
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -83,6 +83,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/dw/describeAllowedInstanceTypes:
+    post:
+      x-mutating: false
+      x-form-factors: public
+      summary: Get allowed compute instance types for both AWS and Azure cluster types and their default values.
+      description: Get allowed compute instance types for both AWS and Azure cluster types and their default values.
+      operationId: describeAllowedInstanceTypes
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeAllowedInstanceTypesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeAllowedInstanceTypesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/updateSshKey:
     post:
       x-form-factors: public
@@ -455,8 +477,8 @@ paths:
     post:
       x-mutating: true
       x-form-factors: public
-      summary: Create a diganostic data job for the given Database Catalog.
-      description: Create a diganostic data job for the given Database Catalog.
+      summary: Create a diagnostic job for the given database catalog.
+      description: Creates a diagnostic job for the given database catalog. The diagnostic data job is useful for troubleshooting purposes. The job collects logs and metrics (see --download-options to see available options) which are going to be bundled into a single file and will be available at the desired location (see --destination). General metadata about the diagnostics will also be included as the bundle-info.json file.
       operationId: createDbcDiagnosticDataJob
       parameters:
         - name: input
@@ -478,8 +500,8 @@ paths:
       x-mutating: false
       x-paging-default-max-items: 100
       x-form-factors: public
-      summary: Get the list of diagnostic jobs for the given Database Catalog.
-      description: Get the list of diagnostic jobs for the given Database Catalog.
+      summary: Get a list of diagnostic jobs for the given Database Catalog.
+      description: Lists diagnostic jobs for the given Database Catalog. The output includes a list of jobs along with their current status and metadata related to each job.
       operationId: listDbcDiagnosticDataJobs
       parameters:
         - name: input
@@ -500,8 +522,8 @@ paths:
     post:
       x-mutating: false
       x-form-factors: public
-      summary: Describe a diagnostic job for the given Database Catalog.
-      description: Describe a diagnostic job for the given Database Catalog.
+      summary: Describes a diagnostic job for the given Database Catalog.
+      description: Describes a diagnostic job for the given Database Catalog. The output includes a list of jobs along with their current status and some metadata related to each job.
       operationId: describeDbcDiagnosticDataJob
       parameters:
         - name: input
@@ -522,8 +544,8 @@ paths:
     post:
       x-mutating: true
       x-form-factors: public
-      summary: Delete a diagnostic job for the given Database Catalog.
-      description: Delete a diagnostic job for the given Database Catalog.
+      summary: Deletes a diagnostic job for the given Database Catalog.
+      description: Deletes a diagnostic job for the given Database Catalog. The job can be deleted even when its status is "Running".
       operationId: deleteDbcDiagnosticDataJob
       parameters:
         - name: input
@@ -536,6 +558,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteDbcDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listDbcEvents:
+    post:
+      x-mutating: false
+      summary: Get the list of events for the given Database Catalog.
+      description: Get the list of events for the given Database Catalog.
+      operationId: listDbcEvents
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDbcEventsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDbcEventsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -695,8 +738,8 @@ paths:
     post:
       x-mutating: true
       x-form-factors: public
-      summary: Create a diganostic data job for the given Virtual Warehouse.
-      description: Create a diganostic data job for the given Virtual Warehouse.
+      summary: Create a diagnostic job for the given Virtual Warehouse.
+      description: Creates a job for the given Virtual Warehouse. The diagnostic data job is useful for troubleshooting purposes. The job collects logs and metrics (see --hive-download-options, --impala-download-options to see available options) which are going to be bundled into a single file and will be available at the desired location (see --destination). General metadata about the diagnostics will also be included as the bundle-info.json file.
       operationId: createVwDiagnosticDataJob
       parameters:
         - name: input
@@ -718,8 +761,8 @@ paths:
       x-mutating: false
       x-paging-default-max-items: 100
       x-form-factors: public
-      summary: Get the list of diagnostic jobs for the given Virtual Warehouse.
-      description: Get the list of diagnostic jobs for the given Virtual Warehouse.
+      summary: Get a list of diagnostic jobs for the given Virtual Warehouse.
+      description: Lists diagnostic jobs for the given Virtual Warehouse. The output includes a list of jobs along with their current status and metadata related to each job.
       operationId: listVwDiagnosticDataJobs
       parameters:
         - name: input
@@ -741,7 +784,7 @@ paths:
       x-mutating: false
       x-form-factors: public
       summary: Describe a diagnostic jobs for the given Virtual Warehouse.
-      description: Describe a diagnostic job for the given Virtual Warehouse.
+      description: Describes a diagnostic job for the given Virtual Warehouse. The output includes a list of jobs along with their current status and metadata related to each job.
       operationId: describeVwDiagnosticDataJob
       parameters:
         - name: input
@@ -763,7 +806,7 @@ paths:
       x-mutating: true
       x-form-factors: public
       summary: Delete a diagnostic job for the given Virtual Warehouse.
-      description: Delete a diagnostic job for the given Virtual Warehouse.
+      description: Delete a diagnostic job for the given Virtual Warehouse. The job can be deleted even when its status is "Running".
       operationId: deleteVwDiagnosticDataJob
       parameters:
         - name: input
@@ -776,6 +819,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteVwDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listVwEvents:
+    post:
+      x-mutating: false
+      summary: Get the list of events for the given Virtual Warehouse.
+      description: Get the list of events for the given Virtual Warehouse.
+      operationId: listVwEvents
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListVwEventsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListVwEventsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1145,6 +1209,33 @@ definitions:
       kubeconfig:
         type: string
         description: The kubeconfig.
+  DescribeAllowedInstanceTypesRequest:
+    type: object
+    description: Request object for the describeAllowedInstanceTypes method.
+  DescribeAllowedInstanceTypesResponse:
+    type: object
+    properties:
+      aws:
+        description: Instance type settings that are being used during cluster creation command on the AWS platform
+        $ref: '#/definitions/AllowedInstanceTypes'
+      azure:
+        description: Instance type settings that are being used during cluster creation command on the Azure platform
+        $ref: '#/definitions/AllowedInstanceTypes'
+    description: Response object for the describeAllowedInstanceTypes method.
+  AllowedInstanceTypes:
+    type: object
+    description: Allowed compute instance type values and default compute instance type value.
+    properties:
+      default:
+        type: array
+        description: Default value for the compute instance type usage.
+        items:
+          type: string
+      allowed:
+        type: array
+        description: Allowed values for the instance type.
+        items:
+          type: string
   UpdateSshKeyRequest:
     type: object
     description: Request object for the updateSshKey method.
@@ -1277,6 +1368,16 @@ definitions:
       reducedPermissionMode:
         type: boolean
         description: Use this option to activate the environment with fewer than half of the standard required IAM permissions on your AWS cross-account IAM role.
+      computeInstanceTypes:
+        type: array
+        items:
+          type: string
+        description: AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.
+      additionalInstanceTypes:
+        type: array
+        items:
+          type: string
+        description: Additional (fallback) instance types listed in their priority order. They will be used instead of the primary compute instance type in case it is unavailable. You cannot include any instance type that was already indicated in computeInstanceTypes. Use describe-allowed-instance-types to see currently supported values and also the default value when nothing is provided for the computeInstanceTypes.
   AzureActivationOptions:
     type: object
     description: Options for activating an Azure environment.
@@ -1299,6 +1400,11 @@ definitions:
           - Standard_E16ds_v4
           - Standard_E16ads_v5
         description: DEPRECATED in favour of compute-instance-types. The generation type of the virtual machines used to create the environment.
+      computeInstanceTypes:
+        type: array
+        items:
+          type: string
+        description: Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.
       logAnalyticsWorkspaceId:
         type: string
         description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
@@ -1640,8 +1746,6 @@ definitions:
     required:
       - clusterId
       - dbcId
-      - startTime
-      - endTime
       - destination
     properties:
       clusterId:
@@ -1650,28 +1754,28 @@ definitions:
       dbcId:
         type: string
         description: ID of the Database Catalog.
-      startTime:
-        type: string
-        format: date-time
-        description: The resulting bundle will contain logs/metrics after the specified start time.
-      endTime:
-        type: string
-        format: date-time
-        description: The resulting bundle will contain logs/metrics before the specified end time.
       destination:
         type: string
         description: Destination of the diagnostics collection.
         enum:
           - UPLOAD_TO_CLOUDERA
           - DOWNLOAD
+      startTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics after the specified start time. If not indicated, then 30 minutes ago from now is taken as the start time.
+      endTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics before the specified end time. If not indicated, then the current time is taken as the end time.
       caseNumber:
         type: string
-        description: Optional support case number in case of SUPPORT destination, otherwise only act as additional data.
+        description: Optional support case number in case of UPLOAD_TO_CLOUDERA destination, otherwise only act as additional data.
       bundleMetadata:
         type: object
         additionalProperties:
           type: string
-        description: Metadata information which is attached to bundle-info.json when posting the bundle.
+        description: Additional user-defined metadata information which is attached to resulting bundle-info.json when posting the bundle.
       force:
         type: boolean
         default: false
@@ -1824,6 +1928,50 @@ definitions:
       - Running
       - Unknown
       - Deleted
+  ListDbcEventsRequest:
+    type: object
+    description: Request object for the listDbcEvents method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+      limit:
+        type: integer
+        format: int32
+        description: Limit the number of returned rows. If not specified all the events will be returned. Please note the DWX only stores the last 50 events.
+      ascending:
+        type: boolean
+        default: false
+        description: Provide the result in ascending order, default is descending.
+  ListDbcEventsResponse:
+    type: object
+    description: Response object for the listDbcEvents method.
+    properties:
+      events:
+        type: array
+        description: The list of the events belonging to the particular Database Catalog
+        items:
+          $ref: '#/definitions/EventResponse'
+  EventResponse:
+    type: object
+    description: Represents a Event
+    properties:
+      event:
+        type: string
+        description: The code name of the event
+      message:
+        type: string
+        description: Detailed message
+      timestamp:
+        type: string
+        format: date-time
+        description: The timestamp of the event
   GetDataVisualizationUpgradeVersionRequest:
     type: object
     description: Request object for the getDataVisualizationUpgradeVersion method.
@@ -2016,6 +2164,9 @@ definitions:
         type: integer
         format: int32
         description: Number of the active coordinators.
+      impalaEnableCatalogHighAvailability:
+        type: boolean
+        description: Enables a backup instance for Impala catalog to ensure high availability.
       podConfigName:
         type: string
         description: Name of the pod configuration.
@@ -2120,6 +2271,9 @@ definitions:
         type: integer
         format: int32
         description: Delay in seconds before the shutdown of coordinator event happens.
+      impalaEnableCatalogHighAvailability:
+        type: boolean
+        description: Denotes whether a backup instance for Impala catalog is enabled.
       podConfigName:
         type: string
         description: Name of the pod configuration.
@@ -2365,8 +2519,6 @@ definitions:
     required:
       - clusterId
       - vwId
-      - startTime
-      - endTime
       - destination
     properties:
       clusterId:
@@ -2375,28 +2527,28 @@ definitions:
       vwId:
         type: string
         description: ID of the Virtual Warehouse.
-      startTime:
-        type: string
-        format: date-time
-        description: The resulting bundle will contain logs/metrics after the specified start time.
-      endTime:
-        type: string
-        format: date-time
-        description: The resulting bundle will contain logs/metrics before the specified end time.
       destination:
         type: string
         description: Destination of the diagnostics collection.
         enum:
           - UPLOAD_TO_CLOUDERA
           - DOWNLOAD
+      startTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics after the specified start time. If not indicated, then 30 minutes ago from now is taken as the start time.
+      endTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics before the specified end time. If not indicated, then the current time is taken as the end time.
       caseNumber:
         type: string
-        description: Optional support case number in case of SUPPORT destination, otherwise only act as additional data.
+        description: Optional support case number in case of UPLOAD_TO_CLOUDERA destination, otherwise only act as additional data.
       bundleMetadata:
         type: object
         additionalProperties:
           type: string
-        description: Metadata information which is attached to bundle-info.json when posting the bundle.
+        description: Additional user-defined metadata information which is attached to resulting bundle-info.json when posting the bundle.
       force:
         type: boolean
         default: false
@@ -2544,6 +2696,36 @@ definitions:
         description: Additional key-value pair attributes associated with the Diagnostic Data Job.
         additionalProperties:
           type: string
+  ListVwEventsRequest:
+    type: object
+    description: Request object for the listVwEvents method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+      limit:
+        type: integer
+        format: int32
+        description: Limit the number of returned rows. If not specified all the events will be returned. Please note the DWX only stores the last 50 events.
+      ascending:
+        type: boolean
+        default: false
+        description: Provide the result in ascending order, default is descending.
+  ListVwEventsResponse:
+    type: object
+    description: Response object for the listVwEvents method.
+    properties:
+      events:
+        type: array
+        description: The list of the events belonging to the particular Virtual Warehouse
+        items:
+          $ref: '#/definitions/EventResponse'
   HiveCreateDiagnosticDataDownloadOptions:
     type: object
     description: Flags that denote which diagnostics to include for a Hive Virtual Warehouse.
@@ -2632,6 +2814,16 @@ definitions:
         x-form-factors: public
         type: boolean
         description: Denotes whether the spot instances have been enabled for the cluster. This value is only available for AWS and Azure clusters.
+      computeInstanceTypes:
+        type: array
+        items:
+          type: string
+        description: Compute instance types that the environment is restricted to use. This affects the creation of the virtual warehouses where this restriction will apply.
+      additionalInstanceTypes:
+        type: array
+        items:
+          type: string
+        description: Additional (fallback) instance types listed in their priority order. They are used instead of the primary compute instance type in case it is unavailable. Since additional instance types are not supported for Azure, this is always empty for it.
       awsOptions:
         $ref: '#/definitions/AwsOptionsResponse'
         description: Response object of AWS related cluster options.
@@ -2678,6 +2870,10 @@ definitions:
       status:
         type: string
         description: Status of the Database Catalog.
+      statusChangedAt:
+        type: string
+        format: date-time
+        description: Timestamp of the last status change of the Database Catalog.
       creator:
         $ref: '#/definitions/ActorResponse'
         description: The creator of the Database Catalog.
@@ -2707,6 +2903,10 @@ definitions:
       status:
         type: string
         description: Status of the Virtual Warehouse.
+      statusChangedAt:
+        type: string
+        format: date-time
+        description: Timestamp of the last status change of the Virtual Warehouse.
       creator:
         $ref: '#/definitions/ActorResponse'
         description: The creator of the Virtual Warehouse.

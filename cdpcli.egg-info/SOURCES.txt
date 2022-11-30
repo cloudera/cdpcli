@@ -62,6 +62,7 @@ cdpcli/data/datalake/datalake.yaml
 cdpcli/data/de/de.yaml
 cdpcli/data/df/df.yaml
 cdpcli/data/dfworkload/dfworkload.yaml
+cdpcli/data/drscp/drscp.yaml
 cdpcli/data/dw/dw.yaml
 cdpcli/data/environments/environments.yaml
 cdpcli/data/iam/iam.yaml

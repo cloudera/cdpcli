@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.74
+  version: 0.9.75
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -111,6 +111,54 @@ definitions:
       - EKS
       - AKS
       - RKE
+  ComputeClusterType:
+    type: string
+    description: "Object representing compute cluster types.\n `Dedicated` - value representing dedicated compute cluster `Shared` - value representing shared compute cluster"
+    enum:
+      - Dedicated
+      - Shared
+  ComputeClusterOwner:
+    type: object
+    description: Compute cluster owner structure.
+    properties:
+      email:
+        type: string
+        description: Owner's email.
+      firstName:
+        type: string
+        description: Owner's firstname.
+      lastName:
+        type: string
+        description: Owner's lastname.
+      userId:
+        type: string
+        description: Owner's user ID.
+      accountId:
+        type: string
+        description: Owner's account ID.
+      crn:
+        type: string
+        description: Owner's actor CRN.
+    x-form-factors: public
+  CommonImageCatalogResp:
+    type: object
+    description: Image catalog response structure.
+    properties:
+      crn:
+        type: string
+        description: The catalog CRN (either CRN or name is required).
+      name:
+        type: string
+        description: The catalog name (either CRN or name is required).
+    x-form-factors: public
+  CommonStorageSpecResp:
+    type: object
+    description: Storage spec response structure.
+    properties:
+      csiEnabled:
+        type: boolean
+        description: Flag to enable CSI (Container Storage Interface). It further sets specific inline cloud formation policies required for CSI.
+    x-form-factors: public
   ListClustersRequest:
     type: object
     description: Request object to list clusters.
@@ -118,6 +166,14 @@ definitions:
       envNameOrCrn:
         type: string
         description: Environment name or crn.
+      workloads:
+        type: string
+        description: Workloads for workload filtering.
+        x-form-factors: public
+      status:
+        type: string
+        description: Cluster Status for status filtering.
+        x-form-factors: public
       pageSize:
         type: integer
         format: int32
@@ -171,6 +227,57 @@ definitions:
       envCrn:
         type: string
         description: CDP environment CRN.
+      clusterType:
+        description: Compute cluster type.
+        $ref: '#/definitions/ComputeClusterType'
+        x-form-factors: public
+      creationTime:
+        type: string
+        description: Compute cluster creation time in ISO format.
+        x-form-factors: public
+      deletionTime:
+        type: string
+        description: Compute cluster deletion time in ISO format.
+        x-form-factors: public
+      updateTime:
+        type: string
+        description: Compute cluster update time in ISO format.
+        x-form-factors: public
+      clusterStateVersion:
+        type: integer
+        format: int32
+        description: Cluster state version.
+        x-form-factors: public
+      clusterOwner:
+        description: Cluster owner.
+        $ref: '#/definitions/ComputeClusterOwner'
+        x-form-factors: public
+      region:
+        type: string
+        description: Region.
+        x-form-factors: public
+      message:
+        type: string
+        description: Message with additional details about the cluster status.
+        x-form-factors: public
+      account:
+        type: string
+        description: / CDP account ID.
+        x-form-factors: public
+      availableUpgrades:
+        type: array
+        items:
+          type: string
+        description: List of available kubernetes upgrades.
+        x-form-factors: public
+      imageCatalog:
+        description: The image catalog details.
+        $ref: '#/definitions/CommonImageCatalogResp'
+        x-form-factors: public
+      storage:
+        description: The storage specifications.
+        $ref: '#/definitions/CommonStorageSpecResp'
+        x-form-factors: public
       labels:
         type: object
         description: Map of labels associated with this cluster.

@@ -16,6 +16,7 @@
 
 import os
 import signal
+import sys
 
 from cdpcli.help import ExecutableNotFoundError
 from cdpcli.help import HelpCommand, WindowsHelpRenderer
@@ -41,7 +42,9 @@ class HelpSpyMixin(object):
 
 
 class FakePosixHelpRenderer(HelpSpyMixin, PosixHelpRenderer):
-    pass
+    def __init__(self, output_stream=sys.stdout):
+        HelpSpyMixin.__init__(self)
+        PosixHelpRenderer.__init__(self, output_stream)
 
 
 class FakeWindowsHelpRenderer(HelpSpyMixin, WindowsHelpRenderer):
@@ -95,12 +98,23 @@ class TestHelpPager(unittest.TestCase):
         self.assertEqual(self.renderer.get_pager_cmdline(),
                          pager_cmd.split())
 
-    def test_no_groff_exists(self):
+    def test_no_groff_or_mandoc_exists(self):
         renderer = FakePosixHelpRenderer()
         renderer.exists_on_path['groff'] = False
-        with self.assertRaisesRegexp(ExecutableNotFoundError,
-                                     'Could not find executable named: groff'):
+        renderer.exists_on_path['mandoc'] = False
+        expected_error = 'Could not find executable named: groff or mandoc'
+        with self.assertRaisesRegex(ExecutableNotFoundError, expected_error):
             renderer.render('foo')
+
+    @skip_if_windows('Requires POSIX system.')
+    def test_renderer_falls_back_to_mandoc(self):
+        renderer = FakePosixHelpRenderer()
+        renderer.exists_on_path['groff'] = False
+        renderer.exists_on_path['mandoc'] = True
+        renderer.mock_popen.communicate.return_value = ('rendered', '')
+        renderer.render('foo')
+        args, kargs = renderer.mock_popen.communicate.call_args_list[0]
+        self.assertIn(b'foo', kargs.get('input'))
 
     def test_shlex_split_for_pager_var(self):
         pager_cmd = '/bin/sh -c "col -bx | vim -c \'set ft=man\' -"'

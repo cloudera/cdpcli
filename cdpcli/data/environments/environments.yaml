@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.74
+  version: 0.9.75
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1221,6 +1221,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DownscaleFreeipaResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/startFreeIpaVerticalScaling:
+    post:
+      summary: Initiates the vertical scaling on FreeIPA.
+      description: Initiates the vertical scaling on FreeIPA.
+      operationId: startFreeIpaVerticalScaling
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartFreeIpaVerticalScalingRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartFreeIpaVerticalScalingResponse'
         default:
           description: The default response on an error.
           schema:
@@ -4144,6 +4165,72 @@ definitions:
       operationId:
         description: UUID of the request for this operation. This ID can be used to get the status of the operation.
         type: string
+  StartFreeIpaVerticalScalingRequest:
+    type: object
+    description: The request object for FreeIPA vertical scaling.
+    required:
+      - environment
+      - instanceTemplate
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      instanceTemplate:
+        description: Instance template that specifies the core information for the vertical scale.
+        $ref: '#/definitions/InstanceTemplate'
+  StartFreeIpaVerticalScalingResponse:
+    type: object
+    description: The response object for FreeIPA vertical scaling.
+    properties:
+      result:
+        type: string
+        description: The result of the operation.
+  InstanceTemplate:
+    type: object
+    description: Instance template that specifies the core information for the instances.
+    properties:
+      attachedVolumes:
+        type: array
+        description: The attached volume configuration(s).
+        items:
+          $ref: '#/definitions/AttachedVolume'
+      awsProperties:
+        description: AWS specific FreeIPA parameters.
+        $ref: '#/definitions/AwsFreeIpaInstanceTemplateParams'
+      instanceType:
+        type: string
+        description: The type of the instance.
+  AttachedVolume:
+    type: object
+    description: The attached volume configuration.
+    properties:
+      count:
+        type: integer
+        format: int32
+        description: The number of volumes.
+      volumeType:
+        type: string
+        description: The type of the volumes.
+      size:
+        type: integer
+        format: int64
+        description: The size of volumes.
+  AwsFreeIpaInstanceTemplateParams:
+    type: object
+    description: AWS specific FreeIPA parameters.
+    properties:
+      spotPercentage:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 100
+        description: Percentage of spot instances.
+      spotMaxPrice:
+        type: number
+        format: double
+        minimum: 0.001
+        maximum: 255
+        description: Maximum hourly price of spot instances.
   UpgradeCcmRequest:
     type: object
     description: Request object for upgrading Cluster Connectivity Manager on an environment.

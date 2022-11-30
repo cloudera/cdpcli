@@ -19,6 +19,7 @@ import platform
 import shlex
 from subprocess import PIPE
 from subprocess import Popen
+import sys
 
 from cdpcli.argparser import ArgTableArgParser
 from cdpcli.argprocess import ParamShorthand
@@ -56,6 +57,14 @@ class NullRenderer(object):
 
 
 class PagingHelpRenderer(object):
+    """
+    Interface for a help renderer.
+    The renderer is responsible for displaying the help content on
+    a particular platform.
+    """
+    def __init__(self, output_stream=sys.stdout):
+        self.output_stream = output_stream
+
     PAGER = None
 
     def get_pager_cmdline(self):
@@ -91,12 +100,15 @@ class PosixHelpRenderer(PagingHelpRenderer):
 
     def _convert_doc_content(self, contents):
         man_contents = publish_string(contents, writer=manpage.Writer())
-        if not self._exists_on_path('groff'):
-            raise ExecutableNotFoundError(executable_name='groff')
-        cmdline = ['groff', '-man', '-T', 'ascii']
+        if self._exists_on_path('groff'):
+            cmdline = ['groff', '-m', 'man', '-T', 'ascii']
+        elif self._exists_on_path('mandoc'):
+            cmdline = ['mandoc', '-T', 'ascii']
+        else:
+            raise ExecutableNotFoundError(executable_name='groff or mandoc')
         p3 = self._popen(cmdline, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        groff_output = p3.communicate(input=man_contents)[0]
-        return groff_output
+        output = p3.communicate(input=man_contents)[0]
+        return output
 
     def _send_output_to_pager(self, output):
         cmdline = self.get_pager_cmdline()
