@@ -5,7 +5,7 @@ x-form-factors: private
 x-audit: true
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.75
+  version: 0.9.76
   title: CDP Control Plane Data Recovery Service
   license:
     name: Apache 2.0
@@ -127,24 +127,24 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/drscp/listItems:
+  /api/v1/drscp/listBackupEntities:
     post:
       summary: Lists potential backup entities associated with the control plane.
-      description: Lists potential backup entities associated with the control plane.
-      operationId: listItems
-      x-right: drscp/listItems
+      description: Lists potential backup entities. It includes the main control plane namespace and its corresponding vault namespace(if embedded).
+      operationId: listBackupEntities
+      x-right: drscp/listBackupEntities
       x-mutating: false
       parameters:
         - name: input
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ListItemsRequest'
+            $ref: '#/definitions/ListBackupEntitiesRequest'
       responses:
         200:
           description: Expected response to a valid request.
           schema:
-            $ref: '#/definitions/ListItemsResponse'
+            $ref: '#/definitions/ListBackupEntitiesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -235,17 +235,12 @@ definitions:
       message:
         type: string
         description: The error message.
-  ListItemsRequest:
+  ListBackupEntitiesRequest:
     type: object
-    description: Request object for the list items request.
-    properties:
-      limit:
-        type: integer
-        description: Maximum number of items to return at once.
-        format: int32
-  ListItemsResponse:
+    description: Request object for the list entities request.
+  ListBackupEntitiesResponse:
     type: object
-    description: Response object for the list items request.
+    description: Response object for the list entities request.
     required:
       - items
     properties:

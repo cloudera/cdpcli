@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.75
+  version: 0.9.76
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -105,6 +105,50 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/dw/describeServerSetting:
+    post:
+      x-form-factors: private
+      summary: Get the DWX server settings.
+      description: Get the DWX server settings. This method can be used from DWX Private Cloud version 1.4.1.
+      operationId: describeServerSetting
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeServerSettingRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeServerSettingResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/dw/updateServerSetting:
+    post:
+      x-form-factors: private
+      summary: Update the DWX server settings.
+      description: 'Update the DWX server settings. The input list of server settings will be updated accordingly (turns on if enabled: true is set, turns off if enabled: false is set). Some settings need further actions to be taken (e.g. recreating a Virtual Warehouse), this is indicated in the server setting list returned by the describeServerSetting functionality. This method can be used from DWX Private Cloud version 1.4.1.'
+      operationId: updateServerSetting
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateServerSettingRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateServerSettingResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/dw/updateSshKey:
     post:
       x-form-factors: public
@@ -1236,6 +1280,80 @@ definitions:
         description: Allowed values for the instance type.
         items:
           type: string
+  DescribeServerSettingRequest:
+    type: object
+    description: Request object for the describeServerSetting method.
+    x-form-factors: private
+  DescribeServerSettingResponse:
+    type: object
+    description: Response object for the describeServerSetting method.
+    x-form-factors: private
+    properties:
+      settings:
+        type: array
+        items:
+          $ref: '#/definitions/DescribeServerSettingItem'
+        description: The list of the server settings.
+  DescribeServerSettingItem:
+    type: object
+    description: A DWX server setting.
+    x-form-factors: private
+    properties:
+      configurationName:
+        type: string
+        description: The name of the setting in human readable format.
+      configurationKey:
+        type: string
+        description: The identifier of the setting.
+      enabled:
+        type: boolean
+        description: The state of the setting.
+      description:
+        type: string
+        description: The description of the setting.
+      requiresUpdate:
+        type: array
+        items:
+          $ref: '#/definitions/DescribeServerSettingItemRequiresUpdate'
+        description: Indicates update requirements for the change to take effect.
+  DescribeServerSettingItemRequiresUpdate:
+    type: string
+    description: Indicates an update requirement for the change to take effect. `ENVIRONMENT` - Means that the environments need to be updated/recreated for the setting change to take effect. `DBC` - Means that the Database Catalogs need an update/recreation. `VW` - Means that the Virtual Warehouses need the update/recreation. `VIZ` - Means that the Dataviz need the update/recreation.
+    x-form-factors: private
+    enum:
+      - ENVIRONMENT
+      - DBC
+      - VW
+      - VIZ
+  UpdateServerSettingRequest:
+    type: object
+    description: Request object for the updateServerSetting method.
+    x-form-factors: private
+    properties:
+      settings:
+        type: array
+        items:
+          $ref: '#/definitions/UpdateServerSettingItem'
+        description: The list of the server setting updates.
+  UpdateServerSettingResponse:
+    type: object
+    description: Response object for the updateServerSetting method.
+    x-form-factors: private
+    properties:
+      status:
+        type: string
+        description: Update status.
+  UpdateServerSettingItem:
+    type: object
+    description: A DWX server setting update.
+    x-form-factors: private
+    properties:
+      configurationKey:
+        type: string
+        description: The identifier of the setting.
+      enabled:
+        type: boolean
+        description: The state of the setting.
   UpdateSshKeyRequest:
     type: object
     description: Request object for the updateSshKey method.
@@ -1601,6 +1719,7 @@ definitions:
       imageVersion:
         type: string
         description: Version of the Cloudera Data Visualization.
+        x-form-factors: public
       templateName:
         type: string
         description: The template size for the Cloudera Data Visualization.
@@ -1712,6 +1831,7 @@ definitions:
         type: string
         description: Version of the Database Catalog.
         default: ''
+        x-form-factors: public
       isDefault:
         type: boolean
         description: Is this a Default Database Catalog?
@@ -2328,6 +2448,7 @@ definitions:
         type: string
         description: version of the Virtual Warehouse.
         default: ''
+        x-form-factors: public
       template:
         type: string
         description: Name of configuration template to use.

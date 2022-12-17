@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.75
+  version: 0.9.76
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1590,6 +1590,12 @@ definitions:
       skipRangerAudits:
         type: boolean
         description: Skips the backup of the Ranger audits. If this option is not provided, Ranger audits are backed up by default.
+      skipValidation:
+        type: boolean
+        description: Skips the validation step that runs prior to the backup. If this option is not provided, the validations are performed by default.
+      validationOnly:
+        type: boolean
+        description: Runs only the validation steps and then returns. If this option is not provided, the backup is performed as normal by default.
   BackupDatalakeResponse:
     type: object
     description: Response object to a request made for backup of datalake.
@@ -1735,6 +1741,12 @@ definitions:
       backupLocationOverride:
         type: string
         description: Backup location. When provided, will be used to lookup the backup. If provided, the --backup-id parameter is required.
+      skipValidation:
+        type: boolean
+        description: Skips the validation step that runs prior to the restore. If this option is not provided, the validations are performed by default.
+      validationOnly:
+        type: boolean
+        description: Runs only the validation steps and then returns. If this option is not provided, the restore is performed as normal by default.
   RestoreDatalakeResponse:
     type: object
     description: Response object to a request to perform restore of datalake.
@@ -2102,6 +2114,15 @@ definitions:
       skipBackup:
         type: boolean
         description: If provided, will skip the backup flow for the upgrade process.
+      skipRangerHmsMetadata:
+        type: boolean
+        description: Skips the backup of the databases backing HMS/Ranger services. Redundant if --skip-backup is included. If this option is not provided, the HMS/Ranger services are backed up by default.
+      skipAtlasMetadata:
+        type: boolean
+        description: Skips the backup of the Atlas metadata. Redundant if --skip-backup is included. If this option is not provided, the Atlas metadata is backed up by default.
+      skipRangerAudits:
+        type: boolean
+        description: Skips the backup of the Ranger audits. Redundant if --skip-backup is included. If this option is not provided, Ranger audits are backed up by default.
   UpgradeDatalakeResponse:
     type: object
     description: Response object for upgrade datalake request.
