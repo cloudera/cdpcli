@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.76
+  version: 0.9.77
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -149,7 +149,7 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/environments2/createAzureCredential:
     post:
-      summary: Creates a new Azure credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
+      summary: Creates a new Azure credential that can be attached to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
       description: Creates a new Azure credential.
       operationId: createAzureCredential
       x-mutating: true
@@ -1338,18 +1338,9 @@ definitions:
       credentialName:
         type: string
         description: The name of the credential.
-      subscriptionId:
-        type: string
-        description: The Azure subscription ID.
-      tenantId:
-        type: string
-        description: The Azure AD tenant ID for the Azure subscription.
       appBased:
         type: object
         description: Additional configurations needed for app-based authentication.
-        required:
-          - applicationId
-          - secretKey
         properties:
           applicationId:
             type: string
@@ -1358,6 +1349,12 @@ definitions:
             type: string
             x-sensitive: true
             description: The client secret key (also referred to as application password) for the registered application.
+      subscriptionId:
+        type: string
+        description: The Azure subscription ID.
+      tenantId:
+        type: string
+        description: The Azure AD tenant ID for the Azure subscription.
       description:
         type: string
         description: A description for the credential.
@@ -1868,6 +1865,18 @@ definitions:
       defaultSecurityGroupId:
         type: string
         description: Security group where all other hosts are placed. Mutually exclusive with cidr.
+      securityGroupIDsForKnox:
+        type: array
+        description: Security group IDs where Knox-enabled hosts are placed. Mutually exclusive with CIDR.
+        uniqueItems: true
+        items:
+          type: string
+      defaultSecurityGroupIDs:
+        type: array
+        description: Security group IDs where all other hosts are placed. Mutually exclusive with CIDR.
+        uniqueItems: true
+        items:
+          type: string
   GcpSecurityAccessRequest:
     type: object
     description: Firewall rules for FreeIPA, Data Lake and Data Hub deployment.

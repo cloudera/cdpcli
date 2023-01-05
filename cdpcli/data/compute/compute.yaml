@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.76
+  version: 0.9.77
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -178,9 +178,10 @@ definitions:
         type: integer
         format: int32
         minimum: 1
-        maximum: 100
+        maximum: 500
         x-paging-page-size: true
         description: The size of each page. Default is 100.
+        default: 100
         x-form-factors: public
       startingToken:
         type: string
@@ -297,6 +298,16 @@ definitions:
         type: string
         x-paging-output-token: true
         description: The token to use when requesting the next set of results. If not present, there are no additional results.
+        x-form-factors: public
+      totalClusters:
+        type: integer
+        format: int32
+        description: Total number of clusters.
+        x-form-factors: public
+      totalPages:
+        type: integer
+        format: int32
+        description: Total number of pages.
         x-form-factors: public
   DescribeDeploymentRequest:
     type: object

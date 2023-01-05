@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.76
+  version: 0.9.77
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -820,6 +820,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RotateSaltPasswordResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/updateOrchestratorState:
+    post:
+      summary: Run orchestrator engine state update on the Data Lake cluster.
+      description: Run orchestrator engine state update on the Data Lake cluster.
+      operationId: updateOrchestratorState
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateOrchestratorStateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateOrchestratorStateResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2685,3 +2706,15 @@ definitions:
   RotateSaltPasswordResponse:
     type: object
     description: Response object for rotating SaltStack user password on DataLake instances.
+  UpdateOrchestratorStateRequest:
+    type: object
+    description: Request object for running orchestrator engine state update on the Data Lake cluster.
+    required:
+      - clusterCrn
+    properties:
+      clusterCrn:
+        type: string
+        description: The CRN of the Data Lake cluster.
+  UpdateOrchestratorStateResponse:
+    type: object
+    description: Response object for running orchestrator engine state update on the Data Lake cluster.

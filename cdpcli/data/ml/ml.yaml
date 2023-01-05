@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.76
+  version: 0.9.77
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -1482,6 +1482,9 @@ definitions:
         type: integer
         format: int32
         description: The desired autoscaling min of the workspace cluster instance group.
+      instanceType:
+        type: string
+        description: The desired instance type of the workspace cluster instance group.
   ModifyClusterInstanceGroupResponse:
     type: object
     description: Response object for ModifyClusterInstanceGroup.
