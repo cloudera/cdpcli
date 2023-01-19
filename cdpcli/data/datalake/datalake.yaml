@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.77
+  version: 0.9.78
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1749,7 +1749,7 @@ definitions:
         description: The name of the backup. When provided, the restore will be performed using the latest successful backup whose name matches the parameter, and that was taken from the datalake that is being restored.
       includeDatabase:
         type: boolean
-        description: DEPRECATED - The database is included in the restore by default. To skip it, use the --skip-database flag.
+        description: DEPRECATED - The database is included in the restore by default. To skip it, use the --skip-ranger-hms-metadata flag.
       skipRangerHmsMetadata:
         type: boolean
         description: Skips the restore of the databases backing HMS/Ranger services. If this option is not provided, then by default the Atlas lineage will be restored if the backup used includes the Atlas lineage information.

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.77
+  version: 0.9.78
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1331,8 +1331,6 @@ definitions:
     description: Request object for a create Azure credential request.
     required:
       - credentialName
-      - subscriptionId
-      - tenantId
       - appBased
     properties:
       credentialName:
@@ -1351,10 +1349,10 @@ definitions:
             description: The client secret key (also referred to as application password) for the registered application.
       subscriptionId:
         type: string
-        description: The Azure subscription ID.
+        description: The Azure subscription ID. Required for secret based credentials and optional for certificate based ones.
       tenantId:
         type: string
-        description: The Azure AD tenant ID for the Azure subscription.
+        description: The Azure AD tenant ID for the Azure subscription. Required for secret based credentials and optional for certificate based ones.
       description:
         type: string
         description: A description for the credential.

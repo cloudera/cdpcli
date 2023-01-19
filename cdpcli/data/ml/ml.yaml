@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.77
+  version: 0.9.78
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -370,6 +370,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ModifyWorkspaceLoadBalancerResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/requestWorkflowCancellation:
+    post:
+      summary: Request a workflow cancellation.
+      description: Request a long running workflow cancellation by resource ID and workflow type.
+      operationId: requestWorkflowCancellation
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RequestWorkflowCancellationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RequestWorkflowCancellationResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1467,6 +1488,7 @@ definitions:
       - instanceGroupName
       - min
       - max
+      - instanceType
     properties:
       workspaceCrn:
         type: string
@@ -1598,4 +1620,43 @@ definitions:
       workflowId:
         type: string
         description: The ID of the delete-backup workflow.
+  WorkflowMetadata:
+    type: object
+    description: The workflow metadata.
+    properties:
+      resourceId:
+        type: string
+        description: The unique identifier of the resource.
+      workflowIndex:
+        type: integer
+        format: int64
+        description: The workflow index. Monotonically increases for each subsequent workflow for a resource.
+      workflowType:
+        type: string
+        description: The workflow type.
+      workflowId:
+        type: string
+        description: The workflow identifier.
+      lastKnownStatus:
+        type: string
+        description: The last known status of the workflow.
+  RequestWorkflowCancellationRequest:
+    type: object
+    description: Request object for RequestWorkflowCancellation.
+    properties:
+      resourceId:
+        type: string
+        description: The unique identifier of the resource.
+      workflowType:
+        type: string
+        description: The workflow type.
+  RequestWorkflowCancellationResponse:
+    type: object
+    description: Response object for RequestWorkflowCancellation.
+    properties:
+      workflowMetadata:
+        type: array
+        items:
+          $ref: '#/definitions/WorkflowMetadata'
+        description: The list of workflow metedata for cancelled workflows.
 x-audit: true

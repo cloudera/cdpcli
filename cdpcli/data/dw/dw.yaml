@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.77
+  version: 0.9.78
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1615,7 +1615,7 @@ definitions:
         type: array
         items:
           type: string
-        description: List of IP address CIDRs to whitelist.
+        description: 'List of IP address CIDRs to whitelist. NOTE: CDW is in process of rolling out a new feature to whitelist IP CIDR separately for Kubernetes Clusters and Loadbalancers on CDP Public Cloud. For an existing cluster, if different IP CIDR has been already applied to LoadBalancer and the Kubernetes cluster through the DWX UI, then updating the IP CIDR of such cluster is not supported from CLI. In the upcoming release, the CLI will support this feature. Please make use of UI for the same.'
       awsUpdate:
         type: object
         description: Additional properties for AWS clusters.
@@ -2915,7 +2915,7 @@ definitions:
         description: Name of the cluster (same as the name of the environment).
       status:
         type: string
-        description: Status of the cluster.
+        description: 'Status of the cluster. Possible values are: Creating, Created, Accepted, Starting, Running, Stopping, Stopped, Updating, PreUpdate, Upgrading, PreUpgrade, Restarting, Deleting, Waiting, Failed, Error.'
       creator:
         $ref: '#/definitions/ActorResponse'
         description: The creator of the cluster.
@@ -2965,7 +2965,7 @@ definitions:
         description: The name of the Cloudera Data Visualization.
       status:
         type: string
-        description: Status of the Cloudera Data Visualization i.e. Creating, Created, Accepted, Running, Deleting, Updating
+        description: 'Status of the Cloudera Data Visualization. Possible values are: Creating, Created, Accepted, Starting, Running, Stopping, Stopped, Updating, PreUpdate, Upgrading, PreUpgrade, Restarting, Deleting, Waiting, Failed, Error.'
       imageVersion:
         type: string
         description: Current image version of the Cloudera Data Visualization
@@ -2990,7 +2990,7 @@ definitions:
         description: The name of the Database Catalog.
       status:
         type: string
-        description: Status of the Database Catalog.
+        description: 'Status of the Database Catalog. Possible values are: Creating, Created, Accepted, Starting, Running, Stopping, Stopped, Updating, PreUpdate, Upgrading, PreUpgrade, Restarting, Deleting, Waiting, Failed, Error.'
       statusChangedAt:
         type: string
         format: date-time
@@ -3023,7 +3023,7 @@ definitions:
         description: ID of Database Catalog that the Virtual Warehouse is attached to.
       status:
         type: string
-        description: Status of the Virtual Warehouse.
+        description: 'Status of the Virtual Warehouse. Possible values are: Creating, Created, Accepted, Starting, Running, Stopping, Stopped, Updating, PreUpdate, Upgrading, PreUpgrade, Restarting, Deleting, Waiting, Failed, Error.'
       statusChangedAt:
         type: string
         format: date-time
