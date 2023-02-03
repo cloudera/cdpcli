@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.78
+  version: 0.9.79
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1206,6 +1206,214 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/HealthCheckResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/createBackup:
+    post:
+      summary: Creates a backup for the data warehouse.
+      description: Creates an on-demand backup for the data warehouse including Kubernetes objects, persistent volumes, etc. Backup requests are processed asynchronously and instantaneously.
+      operationId: createBackup
+      x-right: dw/createBackup
+      x-mutating: true
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateBackupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/deleteBackup:
+    post:
+      summary: Deletes a data warehouse backup.
+      description: Deletes an existing data warehouse backup. The call returns immediately.
+      operationId: deleteBackup
+      x-right: dw/deleteBackup
+      x-mutating: true
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteBackupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/describeBackup:
+    post:
+      summary: Describes the backup.
+      description: Returns the description of an existing data warehouse backup.
+      operationId: describeBackup
+      x-right: dw/describeBackup
+      x-mutating: false
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeBackupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/restoreBackup:
+    post:
+      summary: Restores backup.
+      description: Restores the state of the data warehouse from an existing backup.
+      operationId: restoreBackup
+      x-right: dw/restoreBackup
+      x-mutating: true
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestoreBackupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestoreBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/describeRestore:
+    post:
+      summary: Describes the restore.
+      description: Returns the description of a data warehouse restore operation.
+      operationId: describeRestore
+      x-right: dw/describeRestore
+      x-mutating: false
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeRestoreRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeRestoreResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listBackupEntities:
+    post:
+      summary: Lists potential backup entities associated with the data warehouse.
+      description: Lists potential backup entities associated with the data warehouse.
+      operationId: listBackupEntities
+      x-right: dw/listBackupEntities
+      x-mutating: false
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListBackupEntitiesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListBackupEntitiesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listBackups:
+    post:
+      summary: Lists backups.
+      description: Lists backups associated with the data warehouse.
+      operationId: listBackups
+      x-right: dw/listBackups
+      x-mutating: false
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListBackupsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListBackupsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listRestores:
+    post:
+      summary: Lists restores.
+      description: Lists restores associated with the data warehouse.
+      operationId: listRestores
+      x-right: dw/listRestores
+      x-mutating: false
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListRestoresRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListRestoresResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/getLogs:
+    post:
+      summary: Gets job logs.
+      description: Given the CRN, returns the corresponding job logs.
+      operationId: getLogs
+      x-right: dw/getLogs
+      x-mutating: false
+      x-form-factors: private
+      x-no-compatibility-guarantee: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetLogsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetLogsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3753,4 +3961,336 @@ definitions:
       message:
         type: string
         description: HealthCheck status text.
+  CreateBackupRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the create backup request.
+    properties:
+      backupName:
+        type: string
+        description: Specified name for the backup. If not set, the name will be blank.
+      namespaceName:
+        type: string
+        description: Namespace of the potential candidate for backup. If not set, all of the Data Warehouse namespaces will be backed up.
+  CreateBackupResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the create backup request.
+    required:
+      - backupCrn
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN the backup.
+  DeleteBackupRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the delete backup request.
+    required:
+      - backupCrn
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup.
+  DeleteBackupResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the delete backup request.
+    required:
+      - deleteBackupCrn
+    properties:
+      deleteBackupCrn:
+        type: string
+        description: The CRN of the delete backup custom resource.
+  DescribeBackupRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the describe backup request.
+    required:
+      - backupCrn
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup.
+  DescribeBackupResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the describe backup request.
+    required:
+      - backup
+    properties:
+      backup:
+        $ref: '#/definitions/Backup'
+        description: The backup details.
+  ListBackupsRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the list backups request.
+    properties:
+      backupName:
+        type: string
+        description: Specified name for the backup. If not present, this filter is not used.
+      jobStates:
+        type: array
+        items:
+          type: string
+        description: The job states we need to filter by. If not present, this filter is not used.
+  ListBackupsResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the list backups request.
+    required:
+      - backups
+    properties:
+      backups:
+        type: array
+        description: List of backups.
+        items:
+          $ref: '#/definitions/SimpleBackup'
+  Message:
+    type: object
+    x-form-factors: private
+    description: The message object used to display warnings and errors during DRS workflows
+    properties:
+      text:
+        type: string
+        description: The text message of the warning/error.
+      timestamp:
+        type: string
+        description: The time when the warning/error is hit.
+      namespace:
+        type: string
+        description: The namespace that has the warning/error.
+  SimpleBackup:
+    type: object
+    x-form-factors: private
+    description: A simple backup entry for listBackup usage
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup.
+      backupName:
+        type: string
+        description: The display name of the backup.
+      backupCreationTime:
+        type: string
+        description: The time when the backup was created.
+  Backup:
+    type: object
+    x-form-factors: private
+    description: Backup entry
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup.
+      backupCreationTime:
+        type: string
+        description: The time when the backup was created.
+      backupName:
+        type: string
+        description: The display name of the backup.
+      backupUpdatedTime:
+        type: string
+        description: The time when the backup was updated.
+      backupPhase:
+        type: string
+        description: The phase of the backup operation.
+      backupJobState:
+        type: string
+        description: The current state of the backup job.
+      backupJob:
+        type: string
+        description: The backup job name.
+      includedNamespaces:
+        type: array
+        description: The list of namespaces to be included in backup.
+        items:
+          type: string
+      warnings:
+        type: array
+        description: The warnings from backup job.
+        items:
+          $ref: '#/definitions/Message'
+      errors:
+        type: array
+        description: The errors from backup job.
+        items:
+          $ref: '#/definitions/Message'
+  RestoreBackupRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the restore backup request.
+    required:
+      - backupCrn
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup.
+      namespaceNames:
+        type: array
+        description: A comma-separated list of namespaces of the potential candidates for restore. If not set, all of the Data Warehouse namespaces within the backup CRN will be restored.
+        items:
+          type: string
+  RestoreBackupResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the restore backup request.
+    required:
+      - restoreCrn
+    properties:
+      restoreCrn:
+        type: string
+        description: The CRN of the restore.
+  DescribeRestoreRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the describe restore request.
+    required:
+      - restoreCrn
+    properties:
+      restoreCrn:
+        type: string
+        description: The CRN of the restore.
+  DescribeRestoreResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the describe restore request.
+    required:
+      - restore
+    properties:
+      restore:
+        $ref: '#/definitions/Restore'
+        description: The restore details.
+  ListRestoresRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the list restores request.
+    properties:
+      jobStates:
+        type: array
+        items:
+          type: string
+        description: The job states to filter by.
+      backupCrn:
+        type: string
+        description: CRN of the backup.
+  ListRestoresResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the list restores request.
+    required:
+      - restores
+    properties:
+      restores:
+        type: array
+        description: List of restores for the control plane.
+        items:
+          $ref: '#/definitions/SimpleRestore'
+  SimpleRestore:
+    type: object
+    x-form-factors: private
+    description: A simple Restore entry for listRestore Usage
+    properties:
+      restoreCrn:
+        type: string
+        description: The CRN of the restore.
+      backupCrn:
+        type: string
+        description: The CRN of the backup.
+      restoreCreationTime:
+        type: string
+        description: The time when the restore was created.
+      includedNamespaces:
+        type: array
+        description: The list of namespaces to be included in restore.
+        items:
+          type: string
+  Restore:
+    type: object
+    x-form-factors: private
+    description: Restore entry
+    properties:
+      restoreCrn:
+        type: string
+        description: The CRN of the restore.
+      backupCrn:
+        type: string
+        description: The CRN of the backup.
+      restoreCreationTime:
+        type: string
+        description: The time when the restore was created.
+      restoreUpdatedTime:
+        type: string
+        description: The updated time of the restore.
+      excludedResources:
+        type: array
+        description: The list of resources to be excluded in restore.
+        items:
+          type: string
+      includedNamespaces:
+        type: array
+        description: The list of namespaces to be included in restore.
+        items:
+          type: string
+      successConditions:
+        type: array
+        description: The list of conditions to be met for a successful restore.
+        items:
+          type: string
+      restorePhase:
+        type: string
+        description: The phase of the restore operation.
+      restoreJobState:
+        type: string
+        description: The current state of the restore job.
+      restoreJob:
+        type: string
+        description: The restore job name.
+      warnings:
+        type: array
+        description: The warnings from restore job.
+        items:
+          $ref: '#/definitions/Message'
+      errors:
+        type: array
+        description: The errors from restore job.
+        items:
+          $ref: '#/definitions/Message'
+  GetLogsRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the get logs request.
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the backup, restore or backup deletion.
+  GetLogsResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the get logs request.
+    required:
+      - logs
+    properties:
+      logs:
+        type: string
+        description: Contains the logs of the operation.
+        x-skip-logging: true
+  ListBackupEntitiesRequest:
+    type: object
+    x-form-factors: private
+    description: Request object for the list backup entities request.
+  ListBackupEntitiesResponse:
+    type: object
+    x-form-factors: private
+    description: Response object for the list backup entities request.
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        description: A list of available namespaces for backup, corresponding to the CDW entities.
+        items:
+          type: string
 x-audit: true

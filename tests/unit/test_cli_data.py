@@ -78,7 +78,8 @@ def test_cdp_region():
 
     validated_cdp_regions = ['us-west-1',
                              'eu-1',
-                             'ap-1']
+                             'ap-1',
+                             'usg-1']
     cdp_regions = cli_data['options']['cdp-region']['choices']
     # 'default' is a valid region in CLI argument, because it means:
     # read from configure file.

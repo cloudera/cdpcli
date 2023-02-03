@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.78
+  version: 0.9.79
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -901,6 +901,20 @@ definitions:
       staticSubdomain:
         type: string
         description: The static subdomain to be used for the workspace.
+      cdswMigrationMode:
+        type: string
+        description: Toggle for cdsw migration preflight validation
+      outboundTypes:
+        type: array
+        items:
+          $ref: '#/definitions/OutboundTypes'
+        description: Outbound Types provided for the workspace.
+  OutboundTypes:
+    type: string
+    description: List of possible Outbound types.
+    enum:
+      - UNKNOWN
+      - OUTBOUND_TYPE_UDR
   RestoreWorkspaceRequest:
     type: object
     description: Request object for RestoreWorkspace method.

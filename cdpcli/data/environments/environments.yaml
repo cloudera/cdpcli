@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.78
+  version: 0.9.79
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -164,6 +164,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CreateAzureCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/updateAzureCredential:
+    post:
+      summary: Updates a new certificate based Azure credential that can be attached to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
+      description: Updates a certificate based Azure credential.
+      operationId: updateAzureCredential
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAzureCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateAzureCredentialResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1340,6 +1361,9 @@ definitions:
         type: object
         description: Additional configurations needed for app-based authentication.
         properties:
+          authenticationType:
+            $ref: '#/definitions/AzureAuthenticationTypeProperties'
+            description: Authentication type of the credential
           applicationId:
             type: string
             description: The id of the application registered in Azure.
@@ -1353,6 +1377,40 @@ definitions:
       tenantId:
         type: string
         description: The Azure AD tenant ID for the Azure subscription. Required for secret based credentials and optional for certificate based ones.
+      description:
+        type: string
+        description: A description for the credential.
+  UpdateAzureCredentialRequest:
+    type: object
+    description: Request object for an update Azure credential request.
+    required:
+      - credentialName
+      - subscriptionId
+      - tenantId
+      - appBased
+    properties:
+      credentialName:
+        type: string
+        description: The name of the credential.
+      subscriptionId:
+        type: string
+        description: The Azure subscription ID.
+      tenantId:
+        type: string
+        description: The Azure AD tenant ID for the Azure subscription.
+      appBased:
+        type: object
+        description: Additional configurations needed for app-based authentication.
+        required:
+          - authenticationType
+          - applicationId
+        properties:
+          authenticationType:
+            $ref: '#/definitions/AzureAuthenticationTypeProperties'
+            description: Authentication type of the credential
+          applicationId:
+            type: string
+            description: The id of the application registered in Azure.
       description:
         type: string
         description: A description for the credential.
@@ -1420,6 +1478,13 @@ definitions:
       gcpCredentialProperties:
         description: The credential properties that closely related to those that have been created on GCP.
         $ref: '#/definitions/GCPCredentialProperties'
+  UpdateAzureCredentialResponse:
+    type: object
+    properties:
+      credential:
+        description: The credential object.
+        $ref: '#/definitions/Credential'
+    description: Response object for an update Azure credential request.
   AwsCredentialProperties:
     type: object
     description: The credential properties that closely related to those that have been created on AWS.
@@ -1440,6 +1505,41 @@ definitions:
       appId:
         type: string
         description: The ID of the created Azure app.
+      authenticationType:
+        $ref: '#/definitions/AzureAuthenticationTypeProperties'
+        description: Authentication type of the credential
+      certificate:
+        $ref: '#/definitions/AzureCredentialCertificateProperties'
+        description: The public certificate used by the Azure credential.
+  AzureAuthenticationTypeProperties:
+    type: string
+    description: Authentication type of the credential
+    enum:
+      - CERTIFICATE
+      - SECRET
+  AzureCredentialCertificateProperties:
+    type: object
+    description: The certificate used for the credential
+    properties:
+      status:
+        type: string
+        description: The status of an Azure credential.
+        enum:
+          - KEY_GENERATED
+          - ACTIVE
+      expiration:
+        type: string
+        description: the expiration timestamp
+      expirationDate:
+        type: string
+        format: date-time
+        description: the expiration in date format
+      sha512:
+        type: string
+        description: The SHA512 digest of the certificate
+      base64:
+        type: string
+        description: The certificate (PEM) encoded in base64 format
   GCPCredentialProperties:
     type: object
     description: The credential properties that closely related to those that have created on GCP.
@@ -2151,6 +2251,9 @@ definitions:
       databasePrivateDnsZoneId:
         type: string
         description: The ID of an existing private DNS zone used for the database.
+      aksPrivateDnsZoneId:
+        type: string
+        description: The ID of an existing private DNS zone used for the AKS.
   ExistingGCPNetworkRequest:
     type: object
     description: Request object for creating an GCP environment using existing VPC and subnets.
@@ -2526,6 +2629,9 @@ definitions:
       databasePrivateDnsZoneId:
         type: string
         description: The ID of an existing private DNS zone used for the database.
+      aksPrivateDnsZoneId:
+        type: string
+        description: The ID of an existing private DNS zone used for the AKS.
   NetworkGcpParams:
     type: object
     description: GCP network parameters.

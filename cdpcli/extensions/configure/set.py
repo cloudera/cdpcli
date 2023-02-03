@@ -102,6 +102,9 @@ class ConfigureSetCommand(BasicCommand):
                 section, varname = parts
         config_filename = os.path.expanduser(
             context.get_config_variable('config_file'))
+        if varname == CDP_PRIVATE_KEY_KEY_NAME:
+            # V3/ECDSA private key has '\n' in the string.
+            value = value.replace('\n', '\\n')
         updated_config = {'__section__': section, varname: value}
         if varname in self._WRITE_TO_CREDS_FILE:
             config_filename = os.path.expanduser(

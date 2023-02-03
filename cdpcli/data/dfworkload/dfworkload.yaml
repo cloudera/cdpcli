@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.78
+  version: 0.9.79
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1247,6 +1247,7 @@ definitions:
           - AT_CAPACITY
           - SDX_OUTPUT_CHANGED
           - METRICS_UNAVAILABLE
+          - METERING_WARNING
           - UPGRADING
           - FAILED_TO_UPGRADE
           - ROLLING_BACK
@@ -2047,6 +2048,12 @@ definitions:
       testSession:
         type: boolean
         description: Indicates this deployment was created as a test session for designing a flow
+      flowDesignerId:
+        type: string
+        description: The ID of the flow design for a test session deployment.
+      customNarConfigurationId:
+        type: string
+        description: The identifier of the custom NAR configuration, if used.
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.

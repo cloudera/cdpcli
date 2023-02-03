@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.78
+  version: 0.9.79
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -1670,6 +1670,24 @@ definitions:
       dfxLocalUrl:
         type: string
         description: Base URL to the dfx-local instance running an eventually created deployment
+  DeploymentState:
+    type: string
+    description: The state that the deployment is currently in.
+    enum:
+      - DEPLOYING
+      - GOOD_HEALTH
+      - CONCERNING_HEALTH
+      - BAD_HEALTH
+      - STARTING_FLOW
+      - SUSPENDING_FLOW
+      - SUSPENDED
+      - UPDATING
+      - TERMINATING
+      - RESTARTING
+      - UPGRADING
+      - ROLLING_BACK
+      - STOPPED
+      - UNKNOWN
   DeploymentStatus:
     type: object
     description: The status of a deployment
@@ -1685,8 +1703,8 @@ definitions:
         type: string
         description: Detail message relating to the current status of the deployment
       state:
-        type: string
         description: The state that the deployment is currently in
+        $ref: '#/definitions/DeploymentState'
   DeploymentSummary:
     type: object
     description: A deployment summary
@@ -2035,6 +2053,21 @@ definitions:
       metricSummary:
         description: the metric summary
         $ref: '#/definitions/MetricSummary'
+  ServiceState:
+    type: string
+    description: The state of the service.
+    enum:
+      - NOT_ENABLED
+      - ENABLING
+      - GOOD_HEALTH
+      - CONCERNING_HEALTH
+      - BAD_HEALTH
+      - UPDATING
+      - RENEWING_CERTS
+      - DISABLING
+      - UNKNOWN
+      - UPGRADING
+      - COLLECTING_DIAGNOSTICS
   ServiceStatus:
     type: object
     description: The status of a DataFlow enabled service.
@@ -2042,8 +2075,8 @@ definitions:
       - state
     properties:
       state:
-        type: string
         description: The state of the service.
+        $ref: '#/definitions/ServiceState'
       message:
         type: string
         description: A status message for the service.

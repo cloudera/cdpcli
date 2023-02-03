@@ -5,7 +5,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.78
+  version: 0.9.79
   title: Cloudera DataCatalog Service
   license:
     name: Apache 2.0

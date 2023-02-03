@@ -37,6 +37,7 @@ The **config file** stores other information, in the following variables:
  * us-west-1 (default value)
  * eu-1
  * ap-1
+ * usg-1
 
 * **cdp_endpoint_url** - The base URL for CDP API services
 * **endpoint_url** - The base URL for other, legacy CDP API services

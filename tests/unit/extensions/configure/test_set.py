@@ -135,3 +135,12 @@ class TestConfigureSetCommand(unittest.TestCase):
         self.config_writer.update_config.assert_called_with(
             {'__section__': 'foo',
              CDP_ACCESS_KEY_ID_KEY_NAME: 'bar'}, self.fake_credentials_filename)
+
+    def test_configure_set_command_access_key_v3(self):
+        set_command = ConfigureSetCommand(self.config_writer)
+        set_command(self.context,
+                    args=[CDP_PRIVATE_KEY_KEY_NAME, 'foo\nbar'],
+                    parsed_globals=None)
+        self.config_writer.update_config.assert_called_with(
+            {'__section__': 'default',
+             CDP_PRIVATE_KEY_KEY_NAME: 'foo\\nbar'}, self.fake_credentials_filename)
