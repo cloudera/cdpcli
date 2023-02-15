@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.79
+  version: 0.9.80
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -61,6 +61,95 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/dw/createClusterDiagnosticDataJob:
+    post:
+      x-mutating: true
+      x-form-factors: public
+      summary: Create a diagnostic job for the given cluster.
+      description: Creates a diagnostic job for the given cluster. The diagnostic data job is useful for troubleshooting purposes. The job collects logs and metrics (see --download-options to see available options) which are going to be bundled into a single file and will be available at the desired location (see --destination). General metadata about the diagnostics will also be included as the bundle-info.json file.
+      operationId: createClusterDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateClusterDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateClusterDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listClusterDiagnosticDataJobs:
+    post:
+      x-mutating: false
+      x-paging-default-max-items: 100
+      x-form-factors: public
+      summary: Get a list of diagnostic jobs for the given cluster.
+      description: Lists diagnostic jobs for the given cluster. The output includes a list of jobs along with their current status and metadata related to each job.
+      operationId: listClusterDiagnosticDataJobs
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListClusterDiagnosticDataJobsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListClusterDiagnosticDataJobsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/describeClusterDiagnosticDataJob:
+    post:
+      x-mutating: false
+      x-form-factors: public
+      summary: Describes a diagnostic job for the given Cluster.
+      description: Describes a diagnostic job for the given Cluster. The output includes a list of jobs along with their current status and some metadata related to each job.
+      operationId: describeClusterDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeClusterDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeClusterDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/deleteClusterDiagnosticDataJob:
+    post:
+      x-mutating: true
+      x-form-factors: public
+      summary: Deletes a diagnostic job for the given cluster.
+      description: Deletes a diagnostic job for the given cluster. The job can be deleted even when its status is "Running".
+      operationId: deleteClusterDiagnosticDataJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteClusterDiagnosticDataJobRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteClusterDiagnosticDataJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/describeKubeconfig:
     post:
       x-form-factors: public
@@ -257,6 +346,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/upgradeCluster:
+    post:
+      x-mutating: true
+      summary: Upgrade the Cloudera Data Warehouse cluster.
+      description: Upgrade the Cloudera Data Warehouse cluster to the latest supported version. Expect downtime during the upgrade and refrain issuing queries. You can check the current status of the cluster with the describe-cluster command.
+      operationId: upgradeCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeClusterResponse'
         default:
           description: The default response on an error.
           schema:
@@ -496,6 +606,49 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/dw/rebuildDbc:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Rebuild a Database Catalog.
+      description: Rebuild a Database Catalog. Please use this feature for Database Catalogs which are in inconsistent or erroneous state. Running/Stopped Database Catalogs are safe to rebuild as well. This is a Beta feature. If a rebuild has been initiated, try to avoid rebuilding it again until it is completed or in erroneous state.
+      operationId: rebuildDbc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RebuildDbcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RebuildDbcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/suspendDbc:
+    post:
+      x-mutating: true
+      summary: Suspends a running Database Catalog.
+      description: Suspends a running Database Catalog. Has no effect if the DBC is already suspended.
+      operationId: suspendDbc
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SuspendDbcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SuspendDbcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/restartDbc:
     post:
       x-mutating: true
@@ -736,6 +889,28 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/dw/rebuildVw:
+    post:
+      x-no-compatibility-guarantee: true
+      x-mutating: true
+      summary: Rebuild a Virtual Warehouse.
+      description: Rebuild a Virtual Warehouse. Please use this feature for Virtual Warehouses which are in inconsistent or erroneous state. Running/Stopped Virtual Warehouses are safe to rebuild as well. This is a Beta feature. If a rebuild has been initiated, try to avoid rebuilding it again until it is completed or in erroneous state.
+      operationId: rebuildVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RebuildVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RebuildVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/startVw:
     post:
       x-mutating: true
@@ -759,9 +934,10 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/dw/pauseVw:
     post:
+      x-deprecated: true
       x-mutating: true
       summary: Pauses a running Virtual Warehouse.
-      description: Pauses a running Virtual Warehouse. Has no effect if the VW is already paused.
+      description: DEPRECATED in favor of suspend-vw command. Pauses a running Virtual Warehouse. Has no effect if the VW is already paused.
       operationId: pauseVw
       parameters:
         - name: input
@@ -774,6 +950,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/PauseVwResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/suspendVw:
+    post:
+      x-mutating: true
+      summary: Suspends a running Virtual Warehouse.
+      description: Suspends a running Virtual Warehouse. Has no effect if the VW is already suspended.
+      operationId: suspendVw
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SuspendVwRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SuspendVwResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1718,14 +1915,6 @@ definitions:
         type: boolean
         description: Whether to enable spot instances for Virtual warehouses. It cannot be updated later. If the AzureActivationOptions is not provided it defaults to false.
         default: false
-      vmGenerationType:
-        x-deprecated: true
-        type: string
-        enum:
-          - Standard_E16_v3
-          - Standard_E16ds_v4
-          - Standard_E16ads_v5
-        description: DEPRECATED in favour of compute-instance-types. The generation type of the virtual machines used to create the environment.
       computeInstanceTypes:
         type: array
         items:
@@ -1807,6 +1996,31 @@ definitions:
   DeleteClusterResponse:
     type: object
     description: Response object for the deleteCluster method.
+  UpgradeClusterRequest:
+    type: object
+    description: Request object for the upgradeCluster method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to upgrade.
+  UpgradeClusterResponse:
+    type: object
+    description: Response object for the upgradeCluster method.
+    properties:
+      status:
+        type: string
+        description: 'The upgrade status. Possible values are: Upgrading, Error, Failed.'
+      message:
+        type: string
+        description: Detailed explanation of the status.
+      timedOut:
+        type: boolean
+        description: True if the upgrade timed out, false or omitted otherwise.
+      serviceUnhealthy:
+        type: boolean
+        description: True, if the service is in unhealthy state, false or omitted otherwise.
   UpdateClusterRequest:
     type: object
     description: Request object for the updateCluster method.
@@ -2067,6 +2281,171 @@ definitions:
         description: The name of the HUE database. Not required for embedded databases.
         default: ''
         x-form-factors: private
+  CreateClusterDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the createClusterDiagnosticDataJob method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - destination
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cluster.
+      destination:
+        type: string
+        description: Destination of the diagnostics collection.
+        enum:
+          - UPLOAD_TO_CLOUDERA
+          - DOWNLOAD
+      startTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics after the specified start time. If not indicated, then 30 minutes ago from now is taken as the start time.
+      endTime:
+        type: string
+        format: date-time
+        description: The resulting bundle will contain logs/metrics before the specified end time. If not indicated, then the current time is taken as the end time.
+      caseNumber:
+        type: string
+        description: Optional support case number in case of UPLOAD_TO_CLOUDERA destination, otherwise only act as additional data.
+      bundleMetadata:
+        type: object
+        additionalProperties:
+          type: string
+        description: Additional user-defined metadata information that is attached to the resulting bundle-info.json when posting the bundle.
+      force:
+        type: boolean
+        default: false
+        description: Forced recreation of the diagnostic job.
+      downloadOptions:
+        description: Cluster diagnostic options. If not provided, everything will be included in the Diagnostic Data.
+        $ref: '#/definitions/ClusterCreateDiagnosticDataDownloadOptions'
+  CreateClusterDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the createClusterDiagnosticDataJob method.
+    x-form-factors: public
+    properties:
+      id:
+        type: string
+        description: Identifier for each bundle collection.
+      status:
+        type: string
+        description: Status of the diagnostics collection request.
+      url:
+        type: string
+        description: This URL points to a download location if the destination is DOWNLOAD.
+      labels:
+        type: object
+        description: Additional key-value pair attributes associated with the Diagnostic Data Job.
+        additionalProperties:
+          type: string
+  ListClusterDiagnosticDataJobsRequest:
+    type: object
+    description: Request object for the listClusterDiagnosticDataJobs method.
+    x-form-factors: public
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cluster.
+      status:
+        description: Filter for job status, only those jobs will be returned which have the given status.
+        $ref: '#/definitions/DiagnosticDataJobStatus'
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+        x-paging-input-token: true
+  ListClusterDiagnosticDataJobsResponse:
+    type: object
+    description: Response object for the listClusterDiagnosticDataJobs method.
+    x-form-factors: public
+    properties:
+      jobs:
+        type: array
+        description: The list of jobs belonging to the particular cluster.
+        items:
+          $ref: '#/definitions/ClusterDiagnosticDataJob'
+        x-paging-result: true
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If there are no additional results, the string is empty.
+  ClusterDiagnosticDataJob:
+    type: object
+    description: Represents a Diagnostic Data Job.
+    x-form-factors: public
+    properties:
+      jobId:
+        type: string
+        description: The unique identifier of the Diagnostic Data Job.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the Diagnostic Data Job.
+      endTime:
+        type: string
+        format: date-time
+        description: The finish time of the Diagnostic Data Job.
+      url:
+        type: string
+        description: This URL points to a download location if the destination is DOWNLOAD.
+      status:
+        description: The job status.
+        $ref: '#/definitions/DiagnosticDataJobStatus'
+      labels:
+        type: object
+        description: Additional key-value pair attributes associated with the Diagnostic Data Job.
+        additionalProperties:
+          type: string
+  DescribeClusterDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the describeClusterDiagnosticDataJob method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - jobId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cluster.
+      jobId:
+        type: string
+        description: ID of the diagnostic job.
+  DescribeClusterDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the describeClusterDiagnosticDataJob method.
+    x-form-factors: public
+    properties:
+      job:
+        description: The job belonging to the particular Cluster.
+        $ref: '#/definitions/ClusterDiagnosticDataJob'
+  DeleteClusterDiagnosticDataJobRequest:
+    type: object
+    description: Request object for the deleteClusterDiagnosticDataJob method.
+    x-form-factors: public
+    required:
+      - clusterId
+      - jobId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Cluster.
+      jobId:
+        type: string
+        description: ID of the diagnostic job.
+  DeleteClusterDiagnosticDataJobResponse:
+    type: object
+    description: Response object for the deleteClusterDiagnosticDataJob method.
+    x-form-factors: public
   CreateDbcDiagnosticDataJobRequest:
     type: object
     description: Request object for the createDbcDiagnosticDataJob method.
@@ -2108,6 +2487,9 @@ definitions:
         type: boolean
         default: false
         description: Forced recreation of the diagnostic job.
+      downloadOptions:
+        description: Database Catalog diagnostic options. If not provided, everything will be included in the Diagnostic Data.
+        $ref: '#/definitions/DBCCreateDiagnosticDataDownloadOptions'
   CreateDbcDiagnosticDataJobResponse:
     type: object
     description: Response object for the createDbcDiagnosticDataJob method.
@@ -2412,6 +2794,41 @@ definitions:
   DeleteDbcResponse:
     type: object
     description: Response object for the deleteDbc method.
+  RebuildDbcRequest:
+    type: object
+    description: Request object for the rebuildDbc method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog to rebuild.
+      keepImageVersion:
+        type: boolean
+        description: true - keep the current image version. false - set to latest image version when rebuilding the Database Catalog. If not provided, the latest image version will be set.
+  RebuildDbcResponse:
+    type: object
+    description: Response object for the rebuildDbc method.
+  SuspendDbcRequest:
+    type: object
+    description: The request object for the suspendDbc method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Database Catalog's cluster.
+      dbcId:
+        type: string
+        description: The ID of the Database Catalog to suspend.
+  SuspendDbcResponse:
+    type: object
+    description: The response object for the suspendDbc method.
   RestartDbcRequest:
     type: object
     description: Request object for the restartDbc method.
@@ -2456,8 +2873,9 @@ definitions:
         format: int32
         description: Auto suspend threshold for Virtual Warehouse.
       enableUnifiedAnalytics:
+        x-deprecated: true
         type: boolean
-        description: Enable Unified Analytics. In case of Hive Virtual Warehouses this cannot be provided, because this value is inferred. In case of Impala this can be set. Passing --query-isolation-options will be considered if this flag is set to true. If Unified Analytics enabled then the "impalaEnableShutdownOfCoordinator" explicitly disabled and should not be provided, furthermore the "impalaHighAvailabilityMode" cannot be set to ACTIVE_ACTIVE.
+        description: DEPRECATED in favor of the top level enableUnifiedAnalytics flag. Enable Unified Analytics. In case of Hive Virtual Warehouses this cannot be provided, because this value is inferred. In case of Impala this can be set. Passing --query-isolation-options will be considered if this flag is set to true. If Unified Analytics enabled then the "impalaEnableShutdownOfCoordinator" explicitly disabled and should not be provided, furthermore the "impalaHighAvailabilityMode" cannot be set to ACTIVE_ACTIVE.
       hiveScaleWaitTimeSeconds:
         type: integer
         format: int32
@@ -2467,12 +2885,13 @@ definitions:
         format: int32
         description: Set Desired free capacity. Either "hiveScaleWaitTimeSeconds" or "hiveDesiredFreeCapacity" can be provided.
       impalaHighAvailabilityMode:
+        x-deprecated: true
         type: string
         enum:
           - ACTIVE_PASSIVE
           - ACTIVE_ACTIVE
           - DISABLED
-        description: Set High Availability mode. If not provided the default will apply. This value is disregarded for Hive.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Set High Availability mode. If not provided the default will apply. This value is disregarded for Hive.
       impalaScaleUpDelaySeconds:
         type: integer
         format: int32
@@ -2482,22 +2901,71 @@ definitions:
         format: int32
         description: Scale down threshold in seconds. If not provided defaults will apply.
       impalaEnableShutdownOfCoordinator:
+        x-deprecated: true
         type: boolean
-        description: Enables a shutdown of the coordinator. If Unified Analytics enabled then this setting explicitly disabled and should not be provided.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Enables a shutdown of the coordinator. If Unified Analytics enabled then this setting explicitly disabled and should not be provided.
       impalaShutdownOfCoordinatorDelaySeconds:
+        x-deprecated: true
         type: integer
         format: int32
-        description: Delay in seconds before the shutdown of coordinator event happens.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Delay in seconds before the shutdown of coordinator event happens.
       impalaNumOfActiveCoordinators:
+        x-deprecated: true
         type: integer
         format: int32
-        description: Number of the active coordinators.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Number of the active coordinators.
       impalaEnableCatalogHighAvailability:
+        x-deprecated: true
         type: boolean
-        description: Enables a backup instance for Impala catalog to ensure high availability.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Enables a backup instance for Impala catalog to ensure high availability.
       podConfigName:
         type: string
         description: Name of the pod configuration.
+  ImpalaOptionsCreateRequest:
+    type: object
+    description: Impala specific options. It cannot be provided for Virtual Warehouse types other than Impala.
+    properties:
+      spillToS3Uri:
+        type: string
+        description: Set S3 URI in "s3://bucket/path" format and enable spilling to S3. If this is set, "scratchSpaceLimit" cannot be set. Spilling to a remote storage is not supported on Azure, it is available on AWS and PvC platforms. If your workload results in large volumes of intermediate data being written, it is recommended to configure the heavy spilling queries to use a remote storage location rather than the local one since Impala occasionally needs to use persistent storage for writing intermediate files during large sorts, joins, aggregations, or analytic function operations. Note that this value is ignored if the Impala version does not support spilling to S3.
+      scratchSpaceLimit:
+        x-entitlement: CDW_IMPALA_EBS_SCRATCH_SPACE
+        type: integer
+        format: int32
+        description: Defines the limit for scratch space in GiB needed by Impala for spilling queries. If this is set, "spillToS3Uri" cannot be set. The valid values are between 1-16000 for AWS and 1-16684 for Azure. It will choose the first valid value for which the total disk space is greater than or equal to the specified scratch space limit. The valid scratch space limit values per node in GiBs for AWS are [300, 634, 968, 1302, 1636, 1970, 2304, 2638, 2972, 6550, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000, 16000]. Valid values for Azure are [300, 684, 812, 1068, 1324, 1836, 2348, 3372, 4396, 8492, 16684].
+  ImpalaOptionsResponse:
+    type: object
+    description: Impala specific settings.
+    properties:
+      spillToS3Uri:
+        type: string
+        description: Impala spill to S3 URI.
+      scratchSpaceLimit:
+        type: integer
+        format: int32
+        description: Maximum scratch space used for spilling to disk.
+        x-omitempty: false
+  ImpalaHASettingsCreateRequest:
+    type: object
+    description: High Availability settings for the Impala Virtual Warehouse. The values are disregarded for Hive.
+    properties:
+      highAvailabilityMode:
+        $ref: '#/definitions/ImpalaHighAvailabilityMode'
+        description: Set High Availability mode. If not provided, the default will apply. DISABLED - Disables Impala coordinator and Database Catalog high availability. ACTIVE_PASSIVE - Runs multiple coordinators (one active, one passive) and Database Catalogs (one active, one passive). ACTIVE_ACTIVE - Runs multiple coordinators (both active) and Database Catalogs (one active, one passive). If Unified Analytics is enabled, then this cannot be set to ACTIVE_ACTIVE.
+      enableShutdownOfCoordinator:
+        type: boolean
+        description: Enables a shutdown of the coordinator. If Unified Analytics is enabled, then this setting is explicitly disabled (ignored) and should not be provided.
+      shutdownOfCoordinatorDelaySeconds:
+        type: integer
+        format: int32
+        description: Delay in seconds before the shutdown of coordinator event happens.
+      numOfActiveCoordinators:
+        type: integer
+        format: int32
+        description: The number of active coordinators.
+      enableCatalogHighAvailability:
+        type: boolean
+        description: Enables a backup instance for Impala catalog to ensure high availability.
   AutoscalingOptionsUpdateRequest:
     type: object
     description: Auto-scaling configuration for a Virtual Warehouse. Provide those values only that you want to update.
@@ -2536,13 +3004,27 @@ definitions:
         format: int32
         description: Scale down threshold in seconds.
       impalaShutdownOfCoordinatorDelaySeconds:
+        x-deprecated: true
+        type: integer
+        format: int32
+        description: DEPRECATED in favor of the top level impalaHASettings object. Delay in seconds before the shutdown of coordinator event happens.
+      impalaNumOfActiveCoordinators:
+        x-deprecated: true
+        type: integer
+        format: int32
+        description: DEPRECATED in favor of the top level impalaHASettings object. Number of the active coordinators.
+  ImpalaHASettingsUpdateRequest:
+    type: object
+    description: High Availability settings update options for the Impala Virtual Warehouse.
+    properties:
+      shutdownOfCoordinatorDelaySeconds:
         type: integer
         format: int32
         description: Delay in seconds before the shutdown of coordinator event happens.
-      impalaNumOfActiveCoordinators:
+      numOfActiveCoordinators:
         type: integer
         format: int32
-        description: Number of the active coordinators.
+        description: The number of active coordinators.
   AutoscalingOptionsResponse:
     type: object
     description: Auto-scaling configuration for a Virtual Warehouse.
@@ -2563,8 +3045,9 @@ definitions:
         format: int32
         description: Auto suspend threshold for Virtual Warehouse.
       enableUnifiedAnalytics:
+        x-deprecated: true
         type: boolean
-        description: Whether the Unified Analytics is enabled.
+        description: DEPRECATED in favor of the top level enableUnifiedAnalytics flag. Whether the Unified Analytics is enabled.
       hiveScaleWaitTimeSeconds:
         type: integer
         format: int32
@@ -2574,12 +3057,13 @@ definitions:
         format: int32
         description: Desired free capacity.
       impalaHighAvailabilityMode:
+        x-deprecated: true
         type: string
         enum:
           - ACTIVE_PASSIVE
           - ACTIVE_ACTIVE
           - DISABLED
-        description: High Availability mode.
+        description: DEPRECATED in favor of the top level impalaHASettings object. High Availability mode.
       impalaScaleUpDelaySeconds:
         type: integer
         format: int32
@@ -2589,22 +3073,54 @@ definitions:
         format: int32
         description: Scale down threshold in seconds.
       impalaEnableShutdownOfCoordinator:
+        x-deprecated: true
         type: boolean
-        description: Whether a shutdown of the coordinator is enabled.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Whether a shutdown of the coordinator is enabled.
       impalaNumOfActiveCoordinators:
+        x-deprecated: true
         type: integer
         format: int32
-        description: Number of the active coordinators.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Number of the active coordinators.
       impalaShutdownOfCoordinatorDelaySeconds:
+        x-deprecated: true
         type: integer
         format: int32
-        description: Delay in seconds before the shutdown of coordinator event happens.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Delay in seconds before the shutdown of coordinator event happens.
       impalaEnableCatalogHighAvailability:
+        x-deprecated: true
         type: boolean
-        description: Denotes whether a backup instance for Impala catalog is enabled.
+        description: DEPRECATED in favor of the top level impalaHASettings object. Denotes whether a backup instance for Impala catalog is enabled.
       podConfigName:
         type: string
         description: Name of the pod configuration.
+  ImpalaHASettingsOptionsResponse:
+    type: object
+    description: Impala High Availability settings for a Virtual Warehouse.
+    properties:
+      highAvailabilityMode:
+        $ref: '#/definitions/ImpalaHighAvailabilityMode'
+        description: High Availability mode. DISABLED - Impala coordinator and Database Catalog high availability is disabled. ACTIVE_PASSIVE - Multiple coordinators (one active, one passive) and Database Catalogs (one active, one passive) are run. ACTIVE_ACTIVE - Multiple coordinators (both active) and Database Catalogs (one active, one passive) are run.
+      enableShutdownOfCoordinator:
+        type: boolean
+        description: Whether a shutdown of the coordinator is enabled.
+      numOfActiveCoordinators:
+        type: integer
+        format: int32
+        description: Number of the active coordinators.
+      shutdownOfCoordinatorDelaySeconds:
+        type: integer
+        format: int32
+        description: Delay in seconds before the shutdown of coordinator event happens.
+      enableCatalogHighAvailability:
+        type: boolean
+        description: Denotes whether a backup instance for Impala catalog is enabled.
+  ImpalaHighAvailabilityMode:
+    type: string
+    enum:
+      - ACTIVE_PASSIVE
+      - ACTIVE_ACTIVE
+      - DISABLED
+    description: Set Impala High Availability mode. If not provided, the default will apply. DISABLED - Disables Impala coordinator and Database Catalog high availability. ACTIVE_PASSIVE - Runs multiple coordinators (one active, one passive) and Database Catalogs (one active, one passive). ACTIVE_ACTIVE - Runs multiple coordinators (both active) and Database Catalogs (one active, one passive). If Unified Analytics is enabled, then this cannot be set to ACTIVE_ACTIVE.
   QueryIsolationOptionsRequest:
     type: object
     description: Configurations for Query Isolation.
@@ -2631,6 +3147,26 @@ definitions:
         type: integer
         format: int32
         description: Maximum Nodes Per Isolated Query
+  ReplicaStatus:
+    x-form-factors: public
+    type: object
+    description: Status information on the current state of replicas in the virtual warehouse.
+    properties:
+      totalExecutorReplicas:
+        type: integer
+        format: int32
+        description: Total number of executor replicas scheduled for the virtual warehouse. This number contains the number of executor replicas in pending state, as well as the replicas that are already running. If this number is zero, then the executor functionality is stopped.
+        x-omitempty: false
+      readyExecutorReplicas:
+        type: integer
+        format: int32
+        description: Total number of ready executor replicas in the virtual warehouse. This number only contains the healthy executor replicas that have already started up and are ready to accept requests. If this number is less than the totalExecutorReplicas, then the virtual warehouse might still be starting up or there might be a problem scheduling these replicas.
+        x-omitempty: false
+      totalCoordinatorReplicas:
+        type: integer
+        format: int32
+        description: Total number of coordinator replicas scheduled for the virtual warehouse. This number contains the number of coordinator replicas in pending state, as well as the replicas that are already running. If this number is zero, then the coordinator functionality is stopped.
+        x-omitempty: false
   CreateVwRequest:
     type: object
     description: Request object for the createVw method.
@@ -2670,6 +3206,18 @@ definitions:
         format: int32
         default: 0
         description: Node Count per compute cluster. Implies 'custom' template, even if you pass template explicitly.
+      availabilityZone:
+        type: string
+        description: This feature works only for AWS cluster type. An availability zone to host compute instances. If not specified, defaults to a randomly selected availability zone inferred from available subnets. In order to query possible options, see "availabilityZones" field of describe-cluster or list-clusters command response.
+      enableUnifiedAnalytics:
+        type: boolean
+        description: Enable Unified Analytics. In the case of Hive Virtual Warehouses, this cannot be provided, because this value is inferred. In the case of Impala, this can be set. Passing --query-isolation-options will be considered only if this flag is set to true. If Unified Analytics is enabled then the "enableShutdownOfCoordinator" in --impala-ha-settings is explicitly disabled (ignored) and should not be provided, furthermore the "highAvailabilityMode" in --impala-ha-settings cannot be set to ACTIVE_ACTIVE.
+      impalaOptions:
+        description: Impala specific options. It cannot be provided for Virtual Warehouse types other than Impala.
+        $ref: '#/definitions/ImpalaOptionsCreateRequest'
+      impalaHaSettings:
+        description: High Availability settings for the Impala Virtual Warehouse. NOTE that in --autoscaling object you should avoid using the same deprecated properties because only the --impala-ha-setting properties will be considered if any of its values are set.
+        $ref: '#/definitions/ImpalaHASettingsCreateRequest'
       autoscaling:
         description: Autoscaling settings for the Virtual Warehouse.
         $ref: '#/definitions/AutoscalingOptionsCreateRequest'
@@ -2761,6 +3309,25 @@ definitions:
       vw:
         description: The Virtual Warehouse.
         $ref: '#/definitions/VwSummary'
+  RebuildVwRequest:
+    type: object
+    description: Request object for the rebuildVw method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the Virtual Warehouse's cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse to rebuild.
+      keepImageVersion:
+        type: boolean
+        description: Set it to true to keep the current image version. Set it to false to use the latest image version when rebuilding the Virtual Warehouse. If not provided, the latest image version will be set.
+  RebuildVwResponse:
+    type: object
+    description: Response object for the rebuildVw method.
   DeleteVwRequest:
     type: object
     description: Request object for the deleteVw method.
@@ -2802,6 +3369,11 @@ definitions:
         description: IDs of AWS subnets where the cluster has been deployed.
         items:
           type: string
+      availabilityZones:
+        type: array
+        items:
+          type: string
+        description: List of availability zones that the cluster is restricted to use.
       customAmiId:
         type: string
         description: Id of the Custom Amazon Machine Image
@@ -3080,6 +3652,14 @@ definitions:
         type: boolean
         default: false
         description: Include logs.
+      includeComputeResourceInfo:
+        type: boolean
+        default: false
+        description: Include compute resource info.
+      includeKubernetesResourceInfo:
+        type: boolean
+        default: false
+        description: Include Kubernetes resource info.
   ImpalaCreateDiagnosticDataDownloadOptions:
     type: object
     description: Flags that denote which diagnostics to include for an Impala Virtual Warehouse.
@@ -3105,6 +3685,40 @@ definitions:
         type: boolean
         default: false
         description: Include the workload diagnostics.
+      includeKubernetesResourceInfo:
+        type: boolean
+        default: false
+        description: Include kubernetes resource info.
+  DBCCreateDiagnosticDataDownloadOptions:
+    type: object
+    description: Flags that denote which diagnostics to include for a Database Catalog.
+    x-form-factors: public
+    properties:
+      includeKubernetesResourceInfo:
+        type: boolean
+        default: false
+        description: Include kubernetes resource info.
+  ClusterCreateDiagnosticDataDownloadOptions:
+    type: object
+    description: Flags that denote which diagnostics to include for the cluster.
+    x-form-factors: public
+    properties:
+      includeClusterInfo:
+        type: boolean
+        default: false
+        description: Include cluster info.
+      includeIstioSystem:
+        type: boolean
+        default: false
+        description: Include Istio system.
+      includeSharedServices:
+        type: boolean
+        default: false
+        description: Include shared services.
+      includeKubeSystem:
+        type: boolean
+        default: false
+        description: Include Kube system.
   ClusterSummaryResponse:
     type: object
     description: A Cloudera Data Warehouse cluster.
@@ -3249,6 +3863,9 @@ definitions:
       cdhVersion:
         type: string
         description: CDH image version.
+      availabilityZone:
+        type: string
+        description: Availability zone in which the Virtual Warehouse is running.
       endpoints:
         type: object
         description: Endpoints for accessing the Virtual Warehouse.
@@ -3282,12 +3899,25 @@ definitions:
       viz:
         type: boolean
         description: Denotes whether the Virtual Warehouse has Data Visualisation or not.
+      enableUnifiedAnalytics:
+        type: boolean
+        description: Denotes whether the Unified Analytics is enabled.
       autoscalingOptions:
         description: The current settings stored for autoscaling.
         $ref: '#/definitions/AutoscalingOptionsResponse'
+      impalaOptions:
+        description: Current Impala settings.
+        $ref: '#/definitions/ImpalaOptionsResponse'
+      impalaHaSettingsOptions:
+        description: Current Impala High Availability settings.
+        $ref: '#/definitions/ImpalaHASettingsOptionsResponse'
       queryIsolationOptions:
         description: The current settings stored for query-isolation.
         $ref: '#/definitions/QueryIsolationOptionsResponse'
+      replicaStatus:
+        x-form-factors: public
+        description: Status information on the current state of replicas in the virtual warehouse.
+        $ref: '#/definitions/ReplicaStatus'
   TagResponse:
     description: A key/value pair attached to some resources.
     type: object
@@ -3408,6 +4038,9 @@ definitions:
       autoscaling:
         description: Autoscaling settings for the Virtual Warehouse.
         $ref: '#/definitions/AutoscalingOptionsUpdateRequest'
+      impalaHaSettings:
+        description: High Availability settings update for the Impala Virtual Warehouse.
+        $ref: '#/definitions/ImpalaHASettingsUpdateRequest'
       queryIsolationOptions:
         description: Query isolation settings for Hive Virtual Warehouses.
         $ref: '#/definitions/QueryIsolationOptionsRequest'
@@ -3746,6 +4379,22 @@ definitions:
   PauseVwResponse:
     type: object
     description: The response object for the pauseVw method.
+  SuspendVwRequest:
+    type: object
+    description: The request object for the suspendVw method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Virtual Warehouse cluster.
+      vwId:
+        type: string
+        description: The ID of the Virtual Warehouse to suspend.
+  SuspendVwResponse:
+    type: object
+    description: The response object for the suspendVw method.
   AddUserRequest:
     type: object
     description: Request object for the addUser method.
