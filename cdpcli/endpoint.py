@@ -69,6 +69,8 @@ class EndpointResolver(object):
         if region in ['default', 'us-west-1']:
             return "%s://%sapi.us-west-1.altus.cloudera.com:%d" % \
                    (scheme, service_name, port)
+        elif region == 'usg-1':
+            return "%s://api.%s.cdp.clouderagovt.com:%d" % (scheme, region, port)
         else:
             return "%s://api.%s.cdp.cloudera.com:%d" % (scheme, region, port)
 
@@ -83,7 +85,10 @@ class EndpointResolver(object):
         """
         if region == 'default':
             region = 'us-west-1'
-        return "%s://%s.%s.cdp.cloudera.com:%d" % (scheme, prefix, region, port)
+        if region == 'usg-1':
+            return "%s://%s.%s.cdp.clouderagovt.com:%d" % (scheme, prefix, region, port)
+        else:
+            return "%s://%s.%s.cdp.cloudera.com:%d" % (scheme, prefix, region, port)
 
     def _construct_login_endpoint(self, scheme, region, port):
         """Construct a login URL to a CDP service.
@@ -97,8 +102,12 @@ class EndpointResolver(object):
             region = 'us-west-1'
         if region == 'us-west-1':
             return "%s://consoleauth.altus.cloudera.com:%d/login" % (scheme, port)
-        return "%s://console.%s.cdp.cloudera.com:%d/consoleauth/login" % \
-               (scheme, region, port)
+        elif region == 'usg-1':
+            return "%s://console.%s.cdp.clouderagovt.com:%d/consoleauth/login" % \
+                   (scheme, region, port)
+        else:
+            return "%s://console.%s.cdp.cloudera.com:%d/consoleauth/login" % \
+                   (scheme, region, port)
 
     def _substitute_custom_endpoint(self, endpoint_url, service_name, prefix, products):
         """Applies string formatting for one %s value.

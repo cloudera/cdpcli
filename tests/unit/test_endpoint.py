@@ -524,7 +524,7 @@ class TestEndpointCreator(unittest.TestCase):
         self.assertEqual(endpoint.host, endpoint_url)
 
     def test_create_endpoint_with_explicit_region_usg_1(self):
-        endpoint_url = 'https://api.usg-1.cdp.cloudera.com:443'
+        endpoint_url = 'https://api.usg-1.cdp.clouderagovt.com:443'
         endpoint = self.creator.create_endpoint(
             self.service_model,
             explicit_endpoint_url=None,
@@ -576,7 +576,7 @@ class TestEndpointCreator(unittest.TestCase):
         self.assertEqual(endpoint.host, endpoint_url)
 
     def test_create_endpoint_with_region_from_config_usg_1(self):
-        endpoint_url = 'https://api.usg-1.cdp.cloudera.com:443'
+        endpoint_url = 'https://api.usg-1.cdp.clouderagovt.com:443'
         endpoint = self.creator.create_endpoint(
             self.cdp_service_model,
             explicit_endpoint_url=None,
@@ -694,8 +694,9 @@ class TestEndpointResolver(unittest.TestCase):
             products=['CDP'],
             scheme='https',
             port=443)
-        self.assertEqual(endpoint,
-                         'https://console.usg-1.cdp.cloudera.com:443/consoleauth/login')
+        self.assertEqual(
+            endpoint,
+            'https://console.usg-1.cdp.clouderagovt.com:443/consoleauth/login')
 
     def test_resolve_login_endpoint_with_region_from_config_default(self):
         endpoint_resolver = EndpointResolver()
@@ -762,5 +763,6 @@ class TestEndpointResolver(unittest.TestCase):
             products=['CDP'],
             scheme='https',
             port=443)
-        self.assertEqual(endpoint,
-                         'https://console.usg-1.cdp.cloudera.com:443/consoleauth/login')
+        self.assertEqual(
+            endpoint,
+            'https://console.usg-1.cdp.clouderagovt.com:443/consoleauth/login')

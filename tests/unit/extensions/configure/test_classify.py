@@ -30,6 +30,7 @@ class TestClassifyDeployment(unittest.TestCase):
             "https://iamapi.thunderhead-stage.cloudera.com",
             "https://cloudera.cdp.mow-int.cloudera.com/",
             "https://cloudera.cdp.mow-int.cloudera.com/",
+            "https://cloudera.cdp.mow-stage.clouderagovt.com/",
             # Example for Private Stack
             "https://console.cdp-priv.mow-dev.cloudera.com/cloud/environments/list"
             # Allow local testing via run.sh or run-with-backend.sh

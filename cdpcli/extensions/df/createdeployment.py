@@ -340,10 +340,11 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         df_client = client_creator('df')
 
         service_crn = parameters.get('serviceCrn', None)
-        environment_crn = self._get_environment_crn(df_client, service_crn)
         flow_version_crn = parameters.get('flowVersionCrn', None)
         deployment_request_crn = self._initiate_deployment(
                 df_client, service_crn, flow_version_crn)
+
+        environment_crn = self._get_environment_crn(df_client, service_crn)
 
         iam_client = client_creator('iam')
         set_workload_access_token(iam_client, parsed_globals, SERVICE_NAME.upper(),

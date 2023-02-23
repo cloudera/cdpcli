@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.80
+  version: 0.9.81
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -4777,7 +4777,7 @@ definitions:
         description: The CRN of the backup.
       namespaceNames:
         type: array
-        description: A comma-separated list of namespaces of the potential candidates for restore. If not set, all of the Data Warehouse namespaces within the backup CRN will be restored.
+        description: A list of namespaces of the potential candidates for restore. If not set, all of the Data Warehouse namespaces within the backup CRN will be restored.
         items:
           type: string
   RestoreBackupResponse:

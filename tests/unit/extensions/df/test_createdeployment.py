@@ -75,6 +75,7 @@ class TestCreateDeployment(unittest.TestCase):
         with self.assertRaises(DfExtensionError):
             self.deployment_caller.invoke(self.client_creator, self.deployment_model,
                                           parameters, parsed_args, parsed_globals)
+            self.assertEqual(2, self.df_client.make_api_call.call_count)
 
     def test_invoke_create_deployment_required_parameters(self):
         self.maxDiff = 2000
@@ -653,7 +654,7 @@ class TestCreateDeployment(unittest.TestCase):
             self.deployment_caller.invoke(self.client_creator, self.deployment_model,
                                           parameters, parsed_args, parsed_globals)
 
-        self.assertEqual(2, self.df_client.make_api_call.call_count)
+        self.assertEqual(1, self.df_client.make_api_call.call_count)
         self.assertEqual(0, self.iam_client.make_api_call.call_count)
         self.assertEqual(0, self.df_workload_client.make_api_call.call_count)
 

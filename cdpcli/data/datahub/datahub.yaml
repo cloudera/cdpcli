@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.80
+  version: 0.9.81
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
