@@ -31,8 +31,10 @@ MANUAL_SECTION = '1'
 MANUAL_GROUP = 'CDP CLI'
 
 
-def _is_argument_hidden(argument):
-    if getattr(argument, '_UNDOCUMENTED', False):
+def _is_hidden(item):
+    if getattr(item, '_UNDOCUMENTED', False):
+        return True
+    if getattr(item, 'is_deprecated', False):
         return True
     return False
 
@@ -49,7 +51,8 @@ def generate_doc(generator, help_command):
     generator.doc_options_start(help_command)
     if help_command.arg_table:
         for arg_name in help_command.arg_table:
-            if _is_argument_hidden(help_command.arg_table[arg_name]):
+            if not generator.show_hidden and \
+               _is_hidden(help_command.arg_table[arg_name]):
                 continue
             generator.doc_option_start(arg_name, help_command)
             generator.doc_option(arg_name, help_command)
@@ -60,8 +63,8 @@ def generate_doc(generator, help_command):
     generator.doc_subitems_start(help_command)
     if help_command.command_table:
         for command_name in sorted(help_command.command_table.keys()):
-            if hasattr(help_command.command_table[command_name],
-                       '_UNDOCUMENTED'):
+            if not generator.show_hidden and \
+               _is_hidden(help_command.command_table[command_name]):
                 continue
             generator.doc_subitem(command_name, help_command)
     generator.doc_subitems_end(help_command)
@@ -76,11 +79,12 @@ def generate_doc(generator, help_command):
 
 class CLIDocumentGenerator(object):
 
-    def __init__(self, help_command):
+    def __init__(self, help_command, show_hidden=False):
         self.help_command = help_command
         self.help_command.doc.translation_map = self.build_translation_map()
         self._arg_groups = self._build_arg_table_groups(help_command)
         self._documented_arg_groups = []
+        self.show_hidden = show_hidden
 
     def _build_arg_table_groups(self, help_command):
         arg_groups = {}
@@ -122,7 +126,7 @@ class CLIDocumentGenerator(object):
     def doc_synopsis_option(self, arg_name, help_command):
         doc = help_command.doc
         argument = help_command.arg_table[arg_name]
-        if _is_argument_hidden(argument):
+        if not self.show_hidden and _is_hidden(argument):
             return
         if argument.group_name in self._arg_groups:
             if argument.group_name in self._documented_arg_groups:
@@ -252,8 +256,10 @@ class ProviderDocumentGenerator(CLIDocumentGenerator):
 
     def doc_subitem(self, command_name, help_command):
         doc = help_command.doc
+        command = help_command.command_table[command_name]
+        is_deprecated = ' (deprecated)' if _is_hidden(command) else ''
         file_name = '%s/index' % command_name
-        doc.style.tocitem(command_name, file_name=file_name)
+        doc.style.tocitem(command_name + is_deprecated, file_name=file_name)
 
 
 class ServiceDocumentGenerator(CLIDocumentGenerator):
@@ -325,15 +331,16 @@ class ServiceDocumentGenerator(CLIDocumentGenerator):
     def doc_subitem(self, command_name, help_command):
         doc = help_command.doc
         subcommand = help_command.command_table[command_name]
+        is_deprecated = ' (deprecated)' if _is_hidden(subcommand) else ''
         subcommand_table = getattr(subcommand, 'subcommand_table', {})
         # If the subcommand table has commands in it,
         # direct the subitem to the command's index because
         # it has more subcommands to be documented.
         if (len(subcommand_table) > 0):
             file_name = '%s/index' % command_name
-            doc.style.tocitem(command_name, file_name=file_name)
+            doc.style.tocitem(command_name + is_deprecated, file_name=file_name)
         else:
-            doc.style.tocitem(command_name)
+            doc.style.tocitem(command_name + is_deprecated)
 
 
 class OperationDocumentGenerator(CLIDocumentGenerator):
@@ -504,8 +511,12 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
     def doc_option(self, arg_name, help_command):
         doc = help_command.doc
         argument = help_command.arg_table[arg_name]
-        if _is_argument_hidden(argument):
-            return
+        is_deprecated = ''
+        if _is_hidden(argument):
+            if not self.show_hidden:
+                return
+            else:
+                is_deprecated = ' (deprecated)'
         if argument.group_name in self._arg_groups:
             if argument.group_name in self._documented_arg_groups:
                 # This arg is already documented so we can move on.
@@ -515,7 +526,7 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
                  self._arg_groups[argument.group_name]])
         else:
             name = '``%s``' % argument.cli_name
-        doc.write('%s (%s)\n' % (name, argument.cli_type_name))
+        doc.write('%s (%s)%s\n' % (name, argument.cli_type_name, is_deprecated))
         doc.style.indent()
         doc.style.new_paragraph()
         doc.include_doc_string(argument.documentation)
@@ -530,7 +541,7 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
     def doc_option_example(self, arg_name, help_command):
         doc = help_command.doc
         cli_argument = help_command.arg_table[arg_name]
-        if _is_argument_hidden(cli_argument):
+        if not self.show_hidden and _is_hidden(cli_argument):
             return
         if cli_argument.group_name in self._arg_groups:
             if cli_argument.group_name in self._documented_arg_groups:
@@ -588,7 +599,7 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
     def doc_option_form_factors(self, arg_name, help_command):
         doc = help_command.doc
         argument = help_command.arg_table[arg_name]
-        if _is_argument_hidden(argument):
+        if not self.show_hidden and _is_hidden(argument):
             return
         if argument.group_name in self._arg_groups:
             if argument.group_name in self._documented_arg_groups:
@@ -659,11 +670,18 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
             stack.pop()
 
     def _do_doc_member(self, doc, member_name, member_shape, stack):
+        is_deprecated = ''
+        if _is_hidden(member_shape):
+            if not self.show_hidden:
+                return
+            else:
+                is_deprecated = ' (deprecated)'
         docs = member_shape.documentation
         if member_name:
-            doc.write('%s -> (%s)' % (member_name, member_shape.type_name))
+            doc.write('%s -> (%s)%s' %
+                      (member_name, member_shape.type_name, is_deprecated))
         else:
-            doc.write('(%s)' % member_shape.type_name)
+            doc.write('(%s)%s' % member_shape.type_name, is_deprecated)
         doc.style.indent()
         doc.style.new_paragraph()
         doc.include_doc_string(docs)

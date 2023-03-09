@@ -102,6 +102,41 @@ class TestCompleter(BaseCompleterTest):
             self.clidriver_creator.create_clidriver(commands))
         self.assert_completion(completer, 'cdp bin', [])
 
+    def test_complete_cli_enum_options(self):
+        commands = {
+            'subcommands': {},
+            'arguments': ['version', 'output', 'color']
+        }
+        clidriver = self.clidriver_creator.create_clidriver(commands)
+        clidriver._cli_data = {
+            "options": {
+                "version": {
+                    "action": "version",
+                    "help": "<p>Display the version of this tool.</p>"
+                },
+                "output": {
+                    "choices": [
+                        "json",
+                        "text",
+                        "table"
+                    ],
+                    "help": "<p>The formatting style for command output.</p>"
+                },
+                "color": {
+                    "choices": [
+                        "on",
+                        "off",
+                        "auto"
+                    ],
+                    "default": "auto",
+                    "help": "<p>Turn on/off color output.</p>"
+                }
+            }
+        }
+        completer = Completer(clidriver)
+        self.assert_completion(completer, 'cdp --output ', ['json', 'text', 'table'])
+        self.assert_completion(completer, 'cdp --color ', ['on', 'off', 'auto'])
+
     def test_complete_top_level_args(self):
         commands = {
             'subcommands': {},
@@ -293,6 +328,7 @@ class TestCompleter(BaseCompleterTest):
 
 class MockModel:
     is_hidden = False
+    is_deprecated = False
 
 
 class MockCLIDriverFactory(object):

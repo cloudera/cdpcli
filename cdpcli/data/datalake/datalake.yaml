@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.81
+  version: 0.9.82
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -86,7 +86,6 @@ paths:
     post:
       summary: Creates an GCP Data Lake.
       description: Creates an GCP Data Lake.
-      x-entitlement: CDP_GCP
       operationId: createGCPDatalake
       x-mutating: true
       parameters:

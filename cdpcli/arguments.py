@@ -287,7 +287,7 @@ class CLIArgument(BaseCLIArgument):
         self._required = is_required
         self._operation_model = operation_model
         self.no_paramfile = no_paramfile
-        self._UNDOCUMENTED = self.argument_model.is_undocumented
+        self._UNDOCUMENTED = self.argument_model.is_deprecated
 
     @property
     def py_name(self):

@@ -76,11 +76,14 @@ class Completer(object):
     def _complete_option(self, option_name):
         if option_name == '--endpoint-url':
             return []
-        if option_name == '--output':
-            cli_data = self.driver.session.get_data('cli')
-            return cli_data['options']['output']['choices']
         if option_name == '--profile':
-            return self.driver.session.available_profiles
+            return []
+        cli_data_options = getattr(self.driver, '_cli_data', {}).get('options', {})
+        enum_option_names = ['--' + name
+                             for name, option in cli_data_options.items()
+                             if 'choices' in option]
+        if option_name in enum_option_names:
+            return cli_data_options[option_name.lstrip('-')]['choices']
         return []
 
     def _complete_provider(self, current_arg, opts):

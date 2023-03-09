@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.81
+  version: 0.9.82
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -129,7 +129,6 @@ paths:
     post:
       summary: Creates a GCP workload cluster.
       description: Creates a GCP workload cluster.
-      x-entitlement: CDP_GCP
       operationId: createGCPCluster
       x-mutating: true
       parameters:
@@ -3184,7 +3183,7 @@ definitions:
       scheduleBasedPolicy:
         description: Scheduled based policy
         $ref: '#/definitions/AutoScaleScheduleRequest'
-      loadBasdePolicy:
+      loadBasedPolicy:
         description: Load based policy
         $ref: '#/definitions/AutoScaleLoadRequest'
   AutoScalePolicyResponse:
@@ -3199,7 +3198,7 @@ definitions:
       scheduleBasedPolicy:
         description: Scheduled based policy
         $ref: '#/definitions/AutoScaleScheduleResponse'
-      loadBasdePolicy:
+      loadBasedPolicy:
         description: Load based policy
         $ref: '#/definitions/AutoScaleLoadResponse'
   AutoScaleScheduleRequest:

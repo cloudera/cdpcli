@@ -11,8 +11,12 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import base64
+from contextlib import redirect_stdout
+import io
 import os
 
+from cdpcli.compat import json
 from cdpcli.exceptions import DfExtensionError
 from cdpcli.extensions.df import DfExtension, upload_workload_asset
 from mock import Mock
@@ -374,6 +378,42 @@ class TestDfExtension(unittest.TestCase):
                                   parsed_args,
                                   parsed_globals)
         self.assertTrue(result)
+
+    def test_get_flow_version(self):
+        sample_flow_definition = b'{"flowContents":{"identifier":' \
+                                 b'"97047f2a-9d0d-3669-977e-9d022308feb9",'\
+                                 b'"name":"Simple","comments":""},' \
+                                 b'"parameterContexts":{},' \
+                                 b'"flowEncodingVersion":"1.0"}'
+
+        def _make_api_call(*args, **kwargs):
+            return Mock(status_code=200), {
+                'flowDefinition': base64.b64encode(sample_flow_definition)
+            }
+
+        self.client.make_api_call.side_effect = _make_api_call
+
+        operation_model = Mock()
+        operation_model.service_model = Mock(service_name='df')
+        operation_model.name = 'getFlowVersion'
+        operation_model.http = {
+            'method': 'post',
+            'requestUri': 'https://test.com/path/getFlowVersion'}
+        parameters = {
+            'flowVersionId': 'flow_id'
+        }
+
+        df_extension = DfExtension()
+        f = io.StringIO()
+        with redirect_stdout(f):
+            df_extension.invoke(self.client_creator, operation_model,
+                                parameters, None, self.parsed_globals)
+
+        self.assertEqual(1, self.client.make_api_call.call_count)
+        args, kwargs = self.client.make_api_call.call_args
+        self.assertEqual('getFlowVersion', args[0])
+        self.assertEqual(parameters, args[1])
+        self.assertEqual(json.loads(sample_flow_definition), json.loads(f.getvalue()))
 
     def test_asset_references_uploaded(self):
         operation_model = Mock()

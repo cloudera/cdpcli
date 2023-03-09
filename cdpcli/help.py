@@ -192,7 +192,8 @@ class HelpCommand(object):
                 return self.subcommand_table[parsed.subcommand](remaining,
                                                                 parsed_globals)
 
-        generate_doc(self.GeneratorClass(self), self)
+        show_deprecated = parsed_globals.deprecated
+        generate_doc(self.GeneratorClass(self, show_hidden=show_deprecated), self)
         self.renderer.render(self.doc.getvalue())
 
 

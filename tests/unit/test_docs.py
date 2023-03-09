@@ -102,7 +102,8 @@ class TestCLIDocumentEventHandler(unittest.TestCase):
                             shape_map['EnumArg'],
                             ShapeResolver(shape_map))
         arg_table = {'arg-name': mock.Mock(argument_model=shape,
-                                           _UNDOCUMENTED=False)}
+                                           _UNDOCUMENTED=False,
+                                           is_deprecated=None)}
         help_command = mock.Mock()
         help_command.doc = ReSTDocument()
         help_command.arg_table = arg_table

@@ -60,7 +60,8 @@ def test_cli_options_match_service_model_validator():
                              'auth-config',
                              'profile',
                              'cdp-region',
-                             'ensure-ascii']
+                             'ensure-ascii',
+                             'deprecated']
     assert_equal(sorted(cli_data['options'].keys()), sorted(validated_cli_options))
 
 

@@ -301,8 +301,8 @@ class BasicCommand(CLICommand):
 
 class BasicDocHandler(OperationDocumentGenerator):
 
-    def __init__(self, help_command):
-        super(BasicDocHandler, self).__init__(help_command)
+    def __init__(self, help_command, show_hidden=False):
+        super(BasicDocHandler, self).__init__(help_command, show_hidden=show_hidden)
         self.doc = help_command.doc
 
     def build_translation_map(self):
@@ -443,5 +443,6 @@ class BasicHelp(HelpCommand):
         # Now generate all of the events for a Provider document.
         # We pass ourselves along so that we can, in turn, get passed
         # to all event handlers.
-        generate_doc(self.GeneratorClass(self), self)
+        generate_doc(self.GeneratorClass(self, show_hidden=parsed_globals.deprecated),
+                     self)
         self.renderer.render(self.doc.getvalue())

@@ -195,10 +195,10 @@ class TestShapeResolver(unittest.TestCase):
         with self.assertRaises(InvalidShapeError):
             self.resolver.get_shape_by_name('invalid', 'InvalidShapeType')
 
-    def test_undocumented_param(self):
+    def test_deprecated_param(self):
         shape = self.resolver.get_shape_by_name('shape', 'UndocumentedParmTest')
-        self.assertEqual(shape.members['undocumentedParam'].is_undocumented, True)
-        self.assertEqual(shape.members['documentedParam'].is_undocumented, False)
+        self.assertEqual(shape.members['undocumentedParam'].is_deprecated, True)
+        self.assertEqual(shape.members['documentedParam'].is_deprecated, False)
 
     def test_referenced_map(self):
         shape = self.resolver.get_shape_by_name('shape', 'ReferencedMapTest')

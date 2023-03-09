@@ -90,9 +90,12 @@
          "help": "<p>Specifies which CDP region to send this command's CDP request to.</p>"
       },
       "ensure-ascii": {
-        "hidden": true,
         "action": "store_true",
         "help": "<p>Escape all non-ASCII characters in the output with \\uXXXX sequences when the output is in JSON format.</p>"
-      }
+      },
+     "deprecated": {
+       "action": "store_true",
+       "help": "<p>Show deprecated commands and parameters in help message.</p>"
+     }
    }
 }

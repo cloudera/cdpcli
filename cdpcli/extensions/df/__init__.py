@@ -12,6 +12,8 @@
 # language governing permissions and limitations under the License.
 
 
+import base64
+import json
 import logging
 import os
 import urllib.parse as urlparse
@@ -76,6 +78,11 @@ class DfExtension(CLIOperationCaller):
                                          operation_model,
                                          parameters,
                                          parsed_globals)
+        elif service_name == 'df' and operation_name == 'getFlowVersion':
+            self._df_download_flow_version(client_creator,
+                                           operation_model,
+                                           parameters,
+                                           parsed_globals)
         elif service_name == 'dfworkload' and operation_name == 'uploadAsset':
             self._df_workload_upload_asset(client_creator,
                                            operation_model,
@@ -142,6 +149,18 @@ class DfExtension(CLIOperationCaller):
         response = upload_file(client, operation_name,
                                method, url, headers, file_path)
         self._display_response(operation_name, response, parsed_globals)
+
+    def _df_download_flow_version(self, client_creator, operation_model,
+                                  parameters, parsed_globals):
+        client = client_creator('df')
+        operation_name = operation_model.name
+
+        http, response = client.make_api_call(operation_name, parameters)
+
+        decoded_flow_definition = base64.b64decode(response.get('flowDefinition'))
+        flow_definition_json = json.loads(decoded_flow_definition)
+
+        self._display_response(operation_name, flow_definition_json, parsed_globals)
 
     def _df_workload_upload_asset(self, client_creator, operation_model,
                                   parameters, parsed_globals):

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.81
+  version: 0.9.82
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -88,7 +88,6 @@ paths:
       description: Creates a new GCP environment.
       operationId: createGCPEnvironment
       x-mutating: true
-      x-entitlement: CDP_GCP
       parameters:
         - name: input
           in: body
@@ -193,7 +192,6 @@ paths:
     post:
       summary: Creates a new GCP credential that can be attatched to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
       description: Creates a new GCP credential.
-      x-entitlement: CDP_GCP
       operationId: createGCPCredential
       x-mutating: true
       parameters:

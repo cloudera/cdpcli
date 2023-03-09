@@ -500,6 +500,7 @@ class ServiceOperation(object):
         self._operation_callers = [operation_caller]
         self._lineage = [self]
         self._operation_model = operation_model
+        self._UNDOCUMENTED = self._operation_model.is_deprecated
 
     @property
     def name(self):

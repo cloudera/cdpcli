@@ -112,7 +112,7 @@ class Shape(object):
         return self._shape_data.get('x-no-paramfile', False)
 
     @CachedProperty
-    def is_undocumented(self):
+    def is_deprecated(self):
         return self._shape_data.get('x-deprecated', False)
 
     @CachedProperty
@@ -291,6 +291,10 @@ class OperationModel(object):
         if self.can_paginate:
             return int(self._operation_data.get("x-paging-default-max-items"))
         return None
+
+    @CachedProperty
+    def is_deprecated(self):
+        return self._operation_data.get('x-deprecated', False)
 
     @CachedProperty
     def form_factors(self):

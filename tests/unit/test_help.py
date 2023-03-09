@@ -233,6 +233,7 @@ class TestHelpCommand(TestHelpCommandBase):
         self.doc_generator_mock = mock.Mock()
         self.subcommand_mock = mock.Mock()
         self.renderer = mock.Mock()
+        self.parsed_globals = mock.Mock(deprecated=False)
 
         class SampleHelpCommand(HelpCommand):
             GeneratorClass = self.doc_generator_mock
@@ -245,19 +246,26 @@ class TestHelpCommand(TestHelpCommandBase):
         self.cmd.renderer = self.renderer
 
     def test_subcommand_call(self):
-        self.cmd(None, ['mycommand'], None)
-        self.subcommand_mock.assert_called_with([], None)
+        self.cmd(None, ['mycommand'], self.parsed_globals)
+        self.subcommand_mock.assert_called_with([], self.parsed_globals)
         self.assertFalse(self.doc_generator_mock.called)
 
     def test_regular_call(self):
-        self.cmd(None, [], None)
+        self.cmd(None, [], self.parsed_globals)
         self.assertFalse(self.subcommand_mock.called)
-        self.doc_generator_mock.assert_called_with(self.cmd)
+        self.doc_generator_mock.assert_called_with(self.cmd, show_hidden=False)
+        self.assertTrue(self.renderer.render.called)
+
+    def test_show_deprecated_call(self):
+        parsed_globals = mock.Mock(deprecated=True)
+        self.cmd(None, [], parsed_globals)
+        self.assertFalse(self.subcommand_mock.called)
+        self.doc_generator_mock.assert_called_with(self.cmd, show_hidden=True)
         self.assertTrue(self.renderer.render.called)
 
     def test_invalid_subcommand(self):
         with mock.patch('sys.stderr') as f:
             with self.assertRaises(SystemExit):
-                self.cmd(None, ['no-exist-command'], None)
+                self.cmd(None, ['no-exist-command'], self.parsed_globals)
         error_message = ''.join(arg[0][0] for arg in f.write.call_args_list)
         self.assertIn('Invalid choice', error_message)
