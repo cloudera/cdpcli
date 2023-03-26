@@ -6,7 +6,7 @@ x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.82
+  version: 0.9.83
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -795,6 +795,29 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListSamlProvidersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/describeSamlProvider:
+    post:
+      summary: Describes one SAML provider.
+      description: Describes one SAML provider.
+      operationId: describeSamlProvider
+      x-form-factors: public
+      x-right: iam/listSamlProviders
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeSamlProviderRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeSamlProviderResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2267,6 +2290,22 @@ definitions:
         type: string
         x-paging-output-token: true
         description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  DescribeSamlProviderRequest:
+    type: object
+    description: Request object for a describe SAML provider request.
+    properties:
+      samlProviderName:
+        type: string
+        description: The name or CRN of the SAML provider to describe.
+  DescribeSamlProviderResponse:
+    type: object
+    description: Response object for a describe SAML request.
+    required:
+      - samlProvider
+    properties:
+      samlProvider:
+        $ref: '#/definitions/SamlProvider'
+        description: The SAML provider.
   UpdateSamlProviderRequest:
     type: object
     description: Request object for an updating SAML provider request.

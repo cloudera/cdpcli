@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.82
+  version: 0.9.83
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -408,7 +408,8 @@ definitions:
         description: History of the deployment.
       overrides:
         type: string
-        description: JSON overrides for the deployment's properties.
+        description: JSON overrides for the deployment's properties. Deprecated.
+        x-deprecated: true
   UpgradeDeploymentRequest:
     type: object
     description: Request structure for upgrading a deployment.

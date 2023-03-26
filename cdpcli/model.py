@@ -358,6 +358,14 @@ class ServiceModel(object):
                                           operation_name,
                                           http_method,
                                           request_uri)
+                if operation_data.get("x-alt-operation-id", None) == operation_name:
+                    operation_data = operation_data.copy()
+                    operation_data["x-deprecated"] = True
+                    return OperationModel(operation_data,
+                                          self,
+                                          operation_name,
+                                          http_method,
+                                          request_uri)
         raise OperationNotFoundError(operation_name)
 
     @CachedProperty
@@ -365,8 +373,10 @@ class ServiceModel(object):
         operation_names = []
         for path in self._service_data["paths"]:
             for operation in self._service_data["paths"][path]:
-                operation_names.append(
-                    self._service_data["paths"][path][operation]["operationId"])
+                operation_data = self._service_data["paths"][path][operation]
+                operation_names.append(operation_data["operationId"])
+                if "x-alt-operation-id" in operation_data:
+                    operation_names.append(operation_data["x-alt-operation-id"])
         return operation_names
 
     def resolve_shape_ref(self, name, shape_ref):

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.82
+  version: 0.9.83
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -4257,6 +4257,7 @@ definitions:
       targetAvailabilityType:
         type: string
         enum:
+          - HA
           - TWO_NODE_BASED
         description: The target FreeIPA availability type.
   DownscaleFreeipaResponse:
@@ -4271,6 +4272,7 @@ definitions:
       targetAvailabilityType:
         type: string
         enum:
+          - HA
           - TWO_NODE_BASED
         description: The target FreeIPA availability type.
       operationId:

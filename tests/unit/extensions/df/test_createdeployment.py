@@ -11,6 +11,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+from copy import deepcopy
 import os
 
 from cdpcli.exceptions import ClientError, DfExtensionError
@@ -388,9 +389,8 @@ class TestCreateDeployment(unittest.TestCase):
                 raise ClientError(error, operation_name, 'dfworkload', 404, 'requestId')
             elif operation_name == 'createCustomNarConfiguration':
                 create_custom_nar_configuration_params.append(args[1])
-                configuration_response = {
-                    'crn': custom_nar_configuration_crn
-                }
+                configuration_response = deepcopy(custom_nar_configuration)
+                configuration_response['crn'] = custom_nar_configuration_crn
                 return (Mock(status_code=200), configuration_response)
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
@@ -567,6 +567,14 @@ class TestCreateDeployment(unittest.TestCase):
                     'crn': custom_nar_configuration_crn
                 }
                 return (Mock(status_code=200), configuration_response)
+            elif operation_name == 'createCustomNarConfiguration':
+                error_response = {
+                    'error': {
+                        'code': '409',
+                        'message': 'Test Error'
+                    }
+                }
+                raise ClientError(error_response, operation_name, 'df', 409, 'requestId')
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
         self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
@@ -734,3 +742,86 @@ class TestCreateDeployment(unittest.TestCase):
             ]
         }
         return (Mock(status_code=200), response)
+
+    def test_invoke_create_deployment_workload_error_should_call_tear_down(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+
+        custom_nar_configuration = {
+            'username': 'USER',
+            'password': 'PROTECTED',
+            'storageLocation': 's3a://bucket',
+            'configurationVersion': 0
+        }
+
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'customNarConfiguration': custom_nar_configuration
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        custom_nar_configuration_crn = 'NAR_CONFIGURATION_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        initiate_request_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'createDeployment':
+                error_response = {
+                    'error': {
+                        'code': '403',
+                        'message': 'Access Denied'
+                    }
+                }
+                raise ClientError(error_response, operation_name, 'df', 403, 'requestId')
+            elif operation_name == 'createCustomNarConfiguration':
+                configuration_response = deepcopy(custom_nar_configuration)
+                configuration_response['crn'] = custom_nar_configuration_crn
+                return (Mock(status_code=200), configuration_response)
+            elif operation_name == 'deleteCustomNarConfiguration':
+                configuration_response = deepcopy(custom_nar_configuration)
+                configuration_response['crn'] = custom_nar_configuration_crn
+                return (Mock(status_code=200), configuration_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        with self.assertRaises(ClientError):
+            self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                          parameters, parsed_args, parsed_globals)
+
+        self.assertEqual(2, self.df_client.make_api_call.call_count)
+        self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
+        self.assertEqual(3, self.df_workload_client.make_api_call.call_count)

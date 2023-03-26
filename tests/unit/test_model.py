@@ -61,18 +61,32 @@ class TestServiceModel(unittest.TestCase):
                 'deleteDirector') is not None)
         self.assertTrue(self.service_model.operation_model(
                 'describeDirectors') is not None)
+        self.assertTrue(self.service_model.operation_model(
+                'getDirectors') is not None)
         with self.assertRaises(OperationNotFoundError):
             self.service_model.operation_model('NonExistentOperation')
+
+    def test_multiple_operation_ids(self):
+        self.assertFalse(self.service_model.operation_model(
+                'describeDirectors').is_deprecated)
+        self.assertTrue(self.service_model.operation_model(
+                'getDirectors').is_deprecated)
+        self.assertEquals(self.service_model.operation_model(
+                'getDirectors').name, 'getDirectors')
+        self.assertEquals(
+                self.service_model.operation_model('getDirectors').http,
+                self.service_model.operation_model('describeDirectors').http)
 
     def test_documentation(self):
         self.assertTrue(self.service_model.documentation.startswith(
                 'Cloudera CDP Test Service Description'))
 
     def test_operation_names(self):
-        self.assertEquals(len(self.service_model.operation_names), 3)
+        self.assertEquals(len(self.service_model.operation_names), 4)
         self.assertTrue('createDirector' in self.service_model.operation_names)
         self.assertTrue('deleteDirector' in self.service_model.operation_names)
         self.assertTrue('describeDirectors' in self.service_model.operation_names)
+        self.assertTrue('getDirectors' in self.service_model.operation_names)
 
 
 class TestOperationModel(unittest.TestCase):

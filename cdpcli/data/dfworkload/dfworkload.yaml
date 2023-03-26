@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.82
+  version: 0.9.83
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -42,6 +42,32 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CreateCustomNarConfigurationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/custom-nar-configurations/delete-custom-nar-configuration:
+    post:
+      summary: Deletes an orphaned custom NAR configuration.
+      description: Deletes an orphaned custom NAR configuration.
+      operationId: deleteCustomNarConfiguration
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Delete Custom NAR Configuration Request
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteCustomNarConfigurationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteCustomNarConfigurationResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1097,24 +1123,68 @@ definitions:
       inboundConnectionEndpointSummary:
         description: Data that describes the Inbound Connection Endpoint.
         $ref: '#/definitions/InboundConnectionEndpointSummary'
+  DeleteCustomNarConfigurationRequest:
+    type: object
+    description: Request object for deleting a custom NAR configuration by CRN.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - configurationVersion
+      - customNarConfigurationCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      customNarConfigurationCrn:
+        type: string
+        description: The CRN of the custom NAR configuration to delete.
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+  DeleteCustomNarConfigurationResponse:
+    type: object
+    description: Response object for deleting a custom NAR configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+      - password
+      - storageLocation
+      - username
+    properties:
+      username:
+        type: string
+        description: The username used to access the storage location
+      password:
+        type: string
+        description: The password used to access the storage location
+      storageLocation:
+        type: string
+        description: The storage location, such as an S3 bucket or ADLS container
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+      crn:
+        type: string
+        description: The CRN of the custom NAR configuration to update.
   DeleteInboundConnectionEndpointRequest:
     type: object
     description: Request object that contains the identifier of the Inbound Connection Endpoint to delete
     x-workload: true
     x-client-only: true
+    required:
+      - environmentCrn
+      - crn
     properties:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
-      id:
-        type: string
-        description: The identifier of the Inbound Connection Endpoint. Deprecated. Use 'crn' instead
-        x-deprecated: true
       crn:
         type: string
         description: The CRN of the Inbound Connection Endpoint
-    required:
-      - environmentCrn
   DeleteInboundConnectionEndpointResponse:
     type: object
     description: Response object returned during deletion of an Inbound Connection Endpoint
@@ -1224,12 +1294,14 @@ definitions:
           - FAILED_TO_RESTART
           - SUSPENDED
           - FAILED_TO_DEPLOY
+          - FAILED_TO_IMPORT
           - FAILED_TO_UPDATE
           - FAILED_TO_TERMINATE
           - NEW
           - CREATING_NODES
           - DEPLOYING_ASSETS
           - DEPLOYING_FLOW_DEFINITION
+          - IMPORTING_FLOW
           - STARTING_FLOW
           - SUSPENDING_FLOW
           - UPDATING
@@ -1240,6 +1312,9 @@ definitions:
           - CANCEL_REQUESTED
           - STOPPED
           - UNKNOWN
+          - UPGRADING
+          - FAILED_TO_UPGRADE
+          - ROLLING_BACK
           - KPI_OUT_OF_RANGE
           - CANNOT_AUTOSCALE
           - DEPLOYMENT_DISCONNECTED
@@ -1248,9 +1323,9 @@ definitions:
           - SDX_OUTPUT_CHANGED
           - METRICS_UNAVAILABLE
           - METERING_WARNING
-          - UPGRADING
-          - FAILED_TO_UPGRADE
-          - ROLLING_BACK
+          - METERING_OFFLINE
+          - CERTIFICATE_RENEWED
+          - NOT_HEALTHY
       state:
         type: string
         description: The state that the deployment is currently in
@@ -1259,6 +1334,7 @@ definitions:
           - GOOD_HEALTH
           - CONCERNING_HEALTH
           - BAD_HEALTH
+          - IMPORTING_FLOW
           - STARTING_FLOW
           - SUSPENDING_FLOW
           - SUSPENDED
@@ -1277,19 +1353,16 @@ definitions:
     description: Request object that contains the identifier of the Inbound Connection Endpoint to describe
     x-workload: true
     x-client-only: true
+    required:
+      - environmentCrn
+      - crn
     properties:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
-      id:
-        type: string
-        description: The identifier of the Inbound Connection Endpoint. Deprecated. Use 'crn' instead
-        x-deprecated: true
       crn:
         type: string
         description: The CRN of the Inbound Connection Endpoint
-    required:
-      - environmentCrn
   DescribeInboundConnectionEndpointResponse:
     type: object
     description: Response object that describes an Inbound Connection Endpoint
@@ -1557,16 +1630,19 @@ definitions:
     description: Request object to retrieve Inbound Connection Endpoint client's certificate.
     x-workload: true
     x-client-only: true
-    required:
-      - environmentCrn
-      - id
     properties:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
       id:
         type: string
-        description: The Inbound Connection Endpoint identifier
+        description: The Inbound Connection Endpoint identifier. Deprecated. Use 'crn' instead
+        x-deprecated: true
+      crn:
+        type: string
+        description: The CRN of the Inbound Connection Endpoint
+    required:
+      - environmentCrn
   InboundConnectionEndpointClientCertificateResponse:
     type: object
     description: Response object that contains the client's certificate.
@@ -1582,16 +1658,19 @@ definitions:
     description: Request object to retrieve Inbound Connection Endpoint client's private key.
     x-workload: true
     x-client-only: true
-    required:
-      - environmentCrn
-      - id
     properties:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
       id:
         type: string
-        description: The Inbound Connection Endpoint identifier
+        description: The Inbound Connection Endpoint identifier. Deprecated. Use 'crn' instead
+        x-deprecated: true
+      crn:
+        type: string
+        description: The CRN of the Inbound Connection Endpoint
+    required:
+      - environmentCrn
   InboundConnectionEndpointClientPrivateKeyResponse:
     type: object
     description: Response object that contains the client's private key.
@@ -1623,11 +1702,6 @@ definitions:
           - RENEWING_CERTIFICATES
           - READY
           - FAILED
-      deploymentId:
-        type: string
-        description: The identifier of the deployment the hostname is assigned to.  Deprecated.  Use 'deploymentCrn' instead
-        readOnly: true
-        x-deprecated: true
       deploymentCrn:
         type: string
         description: The CRN of the deployment the hostname is assigned to
@@ -1636,11 +1710,6 @@ definitions:
         type: string
         description: The CRN of the Inbound Connection Endpoint
         readOnly: true
-      id:
-        type: string
-        description: The identifier of the Inbound Connection Endpoint. Deprecated. Use 'crn' instead
-        readOnly: true
-        x-deprecated: true
       certificateSummaries:
         type: array
         description: The summaries of certificates associated with the Inbound Connection Endpoint

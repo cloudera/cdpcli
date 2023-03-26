@@ -367,21 +367,32 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         deployment_configuration = self._get_deployment_configuration(
                 deployment_request_crn, parameters)
 
-        nar_configuration_crn = self._process_custom_nar_configuration(
+        custom_nar_configuration = self._process_custom_nar_configuration(
                 df_workload_client, environment_crn, parameters)
-        if nar_configuration_crn:
+        if custom_nar_configuration is not None:
+            nar_configuration_crn = custom_nar_configuration['crn']
             deployment_configuration['customNarConfigurationCrn'] = nar_configuration_crn
 
-        deployment_configuration['environmentCrn'] = environment_crn
-        LOG.debug('Create Deployment Parameters %s', deployment_configuration)
-        http, response = df_workload_client.make_api_call(
+        try:
+            deployment_configuration['environmentCrn'] = environment_crn
+            LOG.debug('Create Deployment Parameters %s', deployment_configuration)
+            http, response = df_workload_client.make_api_call(
                 'createDeployment', deployment_configuration)
-        deployment = response.get('deployment', {})
-        deployment_crn = deployment.get('crn', None)
-        create_response = {
-            'deploymentCrn': deployment_crn
-        }
-        return create_response
+            deployment = response.get('deployment', {})
+            deployment_crn = deployment.get('crn', None)
+            create_response = {
+                'deploymentCrn': deployment_crn
+            }
+            return create_response
+        except (ClientError, DfExtensionError):
+            # attempts to clean up resources then
+            # raise the error to pass on exception handling
+            self._tear_down(
+                df_workload_client,
+                environment_crn,
+                custom_nar_configuration
+            )
+            raise
 
     def _initiate_deployment(self,
                              df_client,
@@ -426,39 +437,54 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                                           environment_crn,
                                           parameters):
         """
-        Process Custom NAR Configuration and return Custom NAR Configuration CRN
+        Process Custom NAR Configuration and return the response
         """
         custom_nar_configuration = parameters.get('customNarConfiguration', None)
         if custom_nar_configuration:
             custom_nar_configuration['environmentCrn'] = environment_crn
 
-            default_parameters = {
-                'environmentCrn': environment_crn
-            }
-
             try:
-                default_http, default_configuration = df_workload_client.make_api_call(
-                        'getDefaultCustomNarConfiguration', default_parameters)
-                custom_nar_configuration['crn'] = default_configuration.get('crn', None)
-                default_version = default_configuration.get('configurationVersion', None)
-                custom_nar_configuration['configurationVersion'] = default_version
-
                 http, response = df_workload_client.make_api_call(
-                        'updateCustomNarConfiguration', custom_nar_configuration)
+                    'createCustomNarConfiguration',
+                    custom_nar_configuration
+                )
                 crn = response.get('crn', None)
-                LOG.debug('Updated Custom NAR Configuration CRN [%s]', crn)
-                return crn
+                LOG.debug('Created Custom NAR Configuration CRN [%s]', crn)
+                return response
             except ClientError as e:
-                if e.http_status_code == 404:
-                    http, response = df_workload_client.make_api_call(
-                            'createCustomNarConfiguration', custom_nar_configuration)
-                    crn = response.get('crn', None)
-                    LOG.debug('Created Custom NAR Configuration CRN [%s]', crn)
-                    return crn
+                if e.http_status_code == 409:
+                    return self._get_default_nar_configuration(
+                        df_workload_client,
+                        environment_crn,
+                        custom_nar_configuration
+                    )
                 else:
                     raise
         else:
             return None
+
+    def _get_default_nar_configuration(self,
+                                       df_workload_client,
+                                       environment_crn,
+                                       custom_nar_configuration):
+        default_parameters = {
+            'environmentCrn': environment_crn
+        }
+        default_http, default_configuration = df_workload_client.make_api_call(
+            'getDefaultCustomNarConfiguration',
+            default_parameters
+        )
+        custom_nar_configuration['crn'] = default_configuration.get('crn', None)
+        default_version = default_configuration.get('configurationVersion', None)
+        custom_nar_configuration['configurationVersion'] = default_version
+
+        http, response = df_workload_client.make_api_call(
+            'updateCustomNarConfiguration',
+            custom_nar_configuration
+        )
+        crn = response.get('crn', None)
+        LOG.debug('Updated Custom NAR Configuration CRN [%s]', crn)
+        return response
 
     def _get_deployment_configuration(self,
                                       deployment_request_crn,
@@ -562,3 +588,47 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                             updated_asset_references.append(asset_reference)
 
                         parameter['assetReferences'] = updated_asset_references
+
+    def _tear_down(self,
+                   df_workload_client,
+                   environment_crn,
+                   custom_nar_configuration):
+        """
+        This function makes a best-effort attempt to clean-up
+        resources that would otherwise be orphaned
+        due to a deployment creation failure.
+        """
+        if (custom_nar_configuration is not None):
+            self._delete_custom_nar_configuration(
+                df_workload_client,
+                environment_crn,
+                custom_nar_configuration
+            )
+
+    def _delete_custom_nar_configuration(self,
+                                         df_workload_client,
+                                         environment_crn,
+                                         custom_nar_configuration):
+        """
+        Deletes Custom NAR Configuration
+        """
+        try:
+            parameters = {}
+            parameters['customNarConfigurationCrn'] = custom_nar_configuration['crn']
+            parameters['configurationVersion'] = \
+                custom_nar_configuration['configurationVersion']
+            parameters['environmentCrn'] = environment_crn
+            http, response = df_workload_client.make_api_call(
+                'deleteCustomNarConfiguration',
+                parameters
+            )
+            LOG.debug('Successfully deleted Custom NAR Configuration: [%s]', parameters)
+        except ClientError as e:
+            if e.http_status_code >= 400:
+                LOG.error(
+                    'Failed to clean up Custom NAR Configuration: [%s]',
+                    parameters
+                )
+            else:
+                LOG.error('Encountered an error while attempting to '
+                          'cleanup Custom NAR configuration: [%s]', parameters)
