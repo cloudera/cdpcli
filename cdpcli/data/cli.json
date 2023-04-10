@@ -96,6 +96,11 @@
      "deprecated": {
        "action": "store_true",
        "help": "<p>Show deprecated commands and parameters in help message.</p>"
+     },
+     "no-parameter-expansion": {
+       "action": "store_false",
+       "help": "<p>Disable expanding parameters by referring to files or URIs.</p>",
+       "dest": "expand_param"
      }
    }
 }

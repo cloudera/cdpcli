@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.83
+  version: 0.9.84
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -522,6 +522,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListDatalakeBackupsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/cancelBackup:
+    post:
+      summary: Cancels the specified ongoing backup operation.
+      description: Cancels a currently running backup operation. The operation must be in a STARTED or IN_PROGRESS state. Pending sub-operations will be ignored and marked as cancelled. The operation does not wait for the currently running sub-operation(s) to complete.
+      operationId: cancelBackup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CancelBackupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelBackupResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1911,6 +1932,28 @@ definitions:
         description: Backup object with details of backup performed.
         items:
           $ref: '#/definitions/DatalakeBackup'
+  CancelBackupRequest:
+    type: object
+    description: The request to cancel a backup operation.
+    required:
+      - backupId
+    properties:
+      backupId:
+        type: string
+        description: Backup-id that identifies the backup to be cancelled.
+      force:
+        type: boolean
+        default: false
+        description: Will mark all unfinished operations as cancelled without waiting for their result and mark backup operation as finished (cancelled, successful or failed) immediately.
+  CancelBackupResponse:
+    type: object
+    description: Response to the cancel backup request.
+    required:
+      - result
+    properties:
+      result:
+        type: string
+        description: Result of the cancel backup request. It can contain a description of the current process state or guidelines to a customer on the next steps.
   DatalakeBackup:
     type: object
     description: Backup object with details of backup performed.

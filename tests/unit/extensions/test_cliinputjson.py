@@ -66,23 +66,27 @@ class TestCliInputJSONArgument(unittest.TestCase):
 
     def test_add_to_call_parameters_no_file(self):
         parsed_args = mock.Mock()
+        parsed_globals = mock.Mock()
         # Make the value a JSON string
         parsed_args.cli_input_json = self.input_json
         call_parameters = {}
         self.argument.add_to_call_parameters(
             call_parameters=call_parameters,
-            parsed_args=parsed_args
+            parsed_args=parsed_args,
+            parsed_globals=parsed_globals
         )
         self.assertEqual(call_parameters, {'A': 'foo', 'B': 'bar'})
 
     def test_add_to_call_parameters_with_file(self):
         parsed_args = mock.Mock()
+        parsed_globals = mock.Mock()
         # Make the value a file with JSON located inside.
         parsed_args.cli_input_json = 'file://' + self.temp_file
         call_parameters = {}
         self.argument.add_to_call_parameters(
             call_parameters=call_parameters,
-            parsed_args=parsed_args
+            parsed_args=parsed_args,
+            parsed_globals=parsed_globals
         )
         self.assertEqual(call_parameters, {'A': 'foo', 'B': 'bar'})
 
@@ -97,10 +101,12 @@ class TestCliInputJSONArgument(unittest.TestCase):
         temp_file2 = _make_file_uri(temp_file2)
         parsed_args = mock.Mock()
         parsed_args.cli_input_json = 'file://' + temp_file2
+        parsed_globals = mock.Mock()
         call_parameters = {}
         self.argument.add_to_call_parameters(
             call_parameters=call_parameters,
-            parsed_args=parsed_args
+            parsed_args=parsed_args,
+            parsed_globals=parsed_globals
         )
         self.assertEqual(call_parameters, {'A': 'foo', 'B': 'baz'})
 
@@ -108,31 +114,37 @@ class TestCliInputJSONArgument(unittest.TestCase):
         parsed_args = mock.Mock()
         # Create a bad JSON input
         parsed_args.cli_input_json = self.input_json + ','
+        parsed_globals = mock.Mock()
         call_parameters = {}
         with self.assertRaises(ParamError):
             self.argument.add_to_call_parameters(
                 call_parameters=call_parameters,
-                parsed_args=parsed_args
+                parsed_args=parsed_args,
+                parsed_globals=parsed_globals
             )
 
     def test_add_to_call_parameters_no_clobber(self):
         parsed_args = mock.Mock()
         parsed_args.cli_input_json = self.input_json
+        parsed_globals = mock.Mock()
         # The value for ``A`` should not be clobbered by the input JSON
         call_parameters = {'A': 'baz'}
         self.argument.add_to_call_parameters(
             call_parameters=call_parameters,
-            parsed_args=parsed_args
+            parsed_args=parsed_args,
+            parsed_globals=parsed_globals
         )
         self.assertEqual(call_parameters, {'A': 'baz', 'B': 'bar'})
 
     def test_no_add_to_call_parameters(self):
         parsed_args = mock.Mock()
         parsed_args.cli_input_json = None
+        parsed_globals = mock.Mock()
         call_parameters = {'A': 'baz'}
         self.argument.add_to_call_parameters(
             call_parameters=call_parameters,
-            parsed_args=parsed_args
+            parsed_args=parsed_args,
+            parsed_globals=parsed_globals
         )
         # Nothing should have been added to the call parameters because
         # ``cli_input_json`` is not in the ``parsed_args``

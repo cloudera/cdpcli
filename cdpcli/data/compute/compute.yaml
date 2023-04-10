@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.83
+  version: 0.9.84
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -374,7 +374,7 @@ definitions:
         $ref: '#/definitions/Chart'
       status:
         type: string
-        description: Status of the deployment. Currently supported values are UNKNOWN, DEPLOYED, UNINSTALLED, SUPERSEDED, and FAILED. New values may be added in the future.
+        description: Status of the deployment. Currently supported values are UNKNOWN, DEPLOYED, UNINSTALLED, SUPERSEDED, FAILED, PENDING-INSTALL, PENDING-UPGRADE and PENDING-ROLLBACK. New values may be added in the future.
       upgrades:
         type: array
         items:
@@ -390,7 +390,7 @@ definitions:
         description: Helm revision.
       status:
         type: string
-        description: Status of the deployment. Currently supported values are UNKNOWN, DEPLOYED, UNINSTALLED, SUPERSEDED, and FAILED. New values may be added in the future.
+        description: Status of the deployment. Currently supported values are UNKNOWN, DEPLOYED, UNINSTALLED, SUPERSEDED, FAILED, PENDING-INSTALL, PENDING-UPGRADE and PENDING-ROLLBACK. New values may be added in the future.
       chart:
         description: Chart that the deployment was created from.
         $ref: '#/definitions/Chart'
@@ -408,7 +408,7 @@ definitions:
         description: History of the deployment.
       overrides:
         type: string
-        description: JSON overrides for the deployment's properties. Deprecated.
+        description: Escaped JSON overrides for the deployment's properties. Deprecated.
         x-deprecated: true
   UpgradeDeploymentRequest:
     type: object
@@ -432,7 +432,7 @@ definitions:
         description: The version of the deployment to upgrade to. Defaults to latest version.
       overrides:
         type: string
-        description: JSON overrides for the deployment's properties.
+        description: Escaped JSON overrides for the deployment's properties.
   UpgradeDeploymentResponse:
     type: object
     description: Response structure for upgrading a deployment.
@@ -452,7 +452,7 @@ definitions:
         description: A message returned about the status of the upgrade operation.
       status:
         type: string
-        description: Status of the deployment. Currently supported values are UNKNOWN, DEPLOYED, UNINSTALLED, SUPERSEDED, and FAILED. New values may be added in the future.
+        description: Status of the deployment. Currently supported values are UNKNOWN, DEPLOYED, UNINSTALLED, SUPERSEDED, FAILED, PENDING-INSTALL, PENDING-UPGRADE and PENDING-ROLLBACK. New values may be added in the future.
       chart:
         description: Chart that the deployment was created from.
         $ref: '#/definitions/Chart'

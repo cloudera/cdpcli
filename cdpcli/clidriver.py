@@ -557,7 +557,8 @@ class ServiceOperation(object):
                                        parsed_globals)
         call_parameters = self._build_call_parameters(parsed_args,
                                                       self.arg_table,
-                                                      self._clidriver.get_form_factor())
+                                                      self._clidriver.get_form_factor(),
+                                                      parsed_globals)
         return self._invoke_operation_callers(client_creator,
                                               call_parameters,
                                               parsed_args,
@@ -576,7 +577,7 @@ class ServiceOperation(object):
         # CLIArguments for values.
         parser.add_argument('help', nargs='?')
 
-    def _build_call_parameters(self, args, arg_table, form_factor):
+    def _build_call_parameters(self, args, arg_table, form_factor, parsed_globals):
         # We need to convert the args specified on the command
         # line as valid **kwargs we can hand to botocore.
         service_params = {}
@@ -587,7 +588,7 @@ class ServiceOperation(object):
             py_name = arg_object.py_name
             if py_name in parsed_args:
                 value = parsed_args[py_name]
-                value = unpack_argument(arg_object, value)
+                value = unpack_argument(arg_object, value, parsed_globals)
                 arg_object.add_to_params(service_params, value)
         # We run the ParamFormFactorVisitor over the input data to check
         # the form factor for arguments.
@@ -595,7 +596,7 @@ class ServiceOperation(object):
             service_params, self._operation_model.input_shape)
         # We run the ParamFileVisitor over the input data to resolve any
         # paramfile references in it.
-        service_params = ParamFileVisitor().visit(
+        service_params = ParamFileVisitor(parsed_globals).visit(
             service_params, self._operation_model.input_shape)
         return service_params
 

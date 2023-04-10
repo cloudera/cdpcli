@@ -61,7 +61,8 @@ def test_cli_options_match_service_model_validator():
                              'profile',
                              'cdp-region',
                              'ensure-ascii',
-                             'deprecated']
+                             'deprecated',
+                             'no-parameter-expansion']
     assert_equal(sorted(cli_data['options'].keys()), sorted(validated_cli_options))
 
 

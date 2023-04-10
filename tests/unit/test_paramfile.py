@@ -32,6 +32,7 @@ MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'paramfile'
 
 class TestParamFile(unittest.TestCase):
     def setUp(self):
+        self.parsed_globals = mock.Mock()
         self.files = FileCreator()
 
     def tearDown(self):
@@ -41,7 +42,7 @@ class TestParamFile(unittest.TestCase):
         contents = 'This is a test'
         filename = self.files.create_file('foo', contents)
         prefixed_filename = 'file://' + filename
-        data = get_paramfile(prefixed_filename)
+        data = get_paramfile(prefixed_filename, self.parsed_globals)
         self.assertEqual(data, contents)
         self.assertIsInstance(data, six.string_types)
 
@@ -49,7 +50,7 @@ class TestParamFile(unittest.TestCase):
         contents = 'This is a test'
         filename = self.files.create_file('foo', contents)
         prefixed_filename = 'fileb://' + filename
-        data = get_paramfile(prefixed_filename)
+        data = get_paramfile(prefixed_filename, self.parsed_globals)
         self.assertEqual(data, b'This is a test')
         self.assertIsInstance(data, six.binary_type)
 
@@ -60,21 +61,22 @@ class TestParamFile(unittest.TestCase):
         filename = self.files.create_file('foo', contents, mode='wb')
         prefixed_filename = 'file://' + filename
         with self.assertRaises(ResourceLoadingError):
-            get_paramfile(prefixed_filename)
+            get_paramfile(prefixed_filename, self.parsed_globals)
 
     def test_file_does_not_exist_raises_error(self):
         with self.assertRaises(ResourceLoadingError):
-            get_paramfile('file://file/does/not/existsasdf.txt')
+            get_paramfile('file://file/does/not/existsasdf.txt', self.parsed_globals)
 
     def test_no_match_uris_returns_none(self):
-        self.assertIsNone(get_paramfile('foobar://somewhere.bar'))
+        self.assertIsNone(get_paramfile('foobar://somewhere.bar', self.parsed_globals))
 
     def test_non_string_type_returns_none(self):
-        self.assertIsNone(get_paramfile(100))
+        self.assertIsNone(get_paramfile(100, self.parsed_globals))
 
 
 class TestHTTPBasedResourceLoading(unittest.TestCase):
     def setUp(self):
+        self.parsed_globals = mock.Mock(verify_tls=True, ca_bundle=None)
         self.requests_patch = mock.patch('cdpcli.paramfile.requests')
         self.requests_mock = self.requests_patch.start()
         self.response = mock.Mock(status_code=200)
@@ -85,29 +87,45 @@ class TestHTTPBasedResourceLoading(unittest.TestCase):
 
     def test_resource_from_http(self):
         self.response.text = 'http contents'
-        loaded = get_paramfile('http://foo.bar.baz')
+        loaded = get_paramfile('http://foo.bar.baz', self.parsed_globals)
         self.assertEqual(loaded, 'http contents')
-        self.requests_mock.get.assert_called_with('http://foo.bar.baz')
+        self.requests_mock.get.assert_called_with('http://foo.bar.baz', verify=True)
 
     def test_resource_from_https(self):
         self.response.text = 'http contents'
-        loaded = get_paramfile('https://foo.bar.baz')
+        loaded = get_paramfile('https://foo.bar.baz', self.parsed_globals)
         self.assertEqual(loaded, 'http contents')
-        self.requests_mock.get.assert_called_with('https://foo.bar.baz')
+        self.requests_mock.get.assert_called_with('https://foo.bar.baz', verify=True)
 
     def test_non_200_raises_error(self):
         self.response.status_code = 500
         with self.assertRaisesRegexp(ResourceLoadingError, 'foo\\.bar\\.baz'):
-            get_paramfile('https://foo.bar.baz')
+            get_paramfile('https://foo.bar.baz', self.parsed_globals)
 
     def test_connection_error_raises_error(self):
         self.requests_mock.get.side_effect = Exception("Connection error.")
         with self.assertRaisesRegexp(ResourceLoadingError, 'foo\\.bar\\.baz'):
-            get_paramfile('https://foo.bar.baz')
+            get_paramfile('https://foo.bar.baz', self.parsed_globals)
+
+    def test_resource_from_https_verify_tls_with_ca(self):
+        parsed_globals = mock.Mock(verify_tls=True, ca_bundle='test.cer')
+        self.response.text = 'http contents'
+        loaded = get_paramfile('https://foo.bar.baz', parsed_globals)
+        self.assertEqual(loaded, 'http contents')
+        self.requests_mock.get.assert_called_with('https://foo.bar.baz',
+                                                  verify='test.cer')
+
+    def test_resource_from_https_skip_verify_tls(self):
+        parsed_globals = mock.Mock(verify_tls=False)
+        self.response.text = 'http contents'
+        loaded = get_paramfile('https://foo.bar.baz', parsed_globals)
+        self.assertEqual(loaded, 'http contents')
+        self.requests_mock.get.assert_called_with('https://foo.bar.baz', verify=False)
 
 
 class TestParamFileVisitor(unittest.TestCase):
     def setUp(self):
+        self.parsed_globals = mock.Mock()
         self.model = yaml.safe_load(open(os.path.join(MODEL_DIR, 'service.yaml')))
         self.service_model = ServiceModel(self.model, 'servicename')
         self.resolver = ShapeResolver(self.model['definitions'])
@@ -125,7 +143,7 @@ class TestParamFileVisitor(unittest.TestCase):
                                         'jobXml': 'file://' + filename}}]}
         shape = self.resolver.get_shape_by_name(
             'submit-jobs-request', 'SubmitJobsRequest')
-        visited = ParamFileVisitor().visit(params, shape)
+        visited = ParamFileVisitor(self.parsed_globals).visit(params, shape)
         params['jobs'][0]['hiveJob']['script'] = contents
         self.assertEqual(params, visited)
 
@@ -137,7 +155,7 @@ class TestParamFileVisitor(unittest.TestCase):
                                     'jobXml': 'file://' + filename}}}}
         shape = self.resolver.get_shape_by_name(
             'map-paramfile-test', 'RefMapParamFileTest')
-        visited = ParamFileVisitor().visit(params, shape)
+        visited = ParamFileVisitor(self.parsed_globals).visit(params, shape)
         params['jobs']['job1']['hiveJob']['script'] = contents
         self.assertEqual(params, visited)
 
@@ -149,7 +167,7 @@ class TestParamFileVisitor(unittest.TestCase):
                                     'jobXml': 'file://' + filename}}}
         shape = self.resolver.get_shape_by_name(
             'map-paramfile-test', 'ExplicitMapParamFileTest')
-        visited = ParamFileVisitor().visit(params, shape)
+        visited = ParamFileVisitor(self.parsed_globals).visit(params, shape)
         params['jobs']['job1']['script'] = contents
         self.assertEqual(params, visited)
 
@@ -161,6 +179,6 @@ class TestParamFileVisitor(unittest.TestCase):
                                     'jobXml': 'fileb://' + filename}}}
         shape = self.resolver.get_shape_by_name(
             'blob-test', 'BlobParamFileTest')
-        visited = ParamFileVisitor().visit(params, shape)
+        visited = ParamFileVisitor(self.parsed_globals).visit(params, shape)
         params['jobs']['job1']['script'] = contents
         self.assertEqual(params, visited)

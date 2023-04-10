@@ -63,7 +63,37 @@ class TestURIParams(BaseArgProcessTest):
             json_argument = json.dumps([{"Name": "user-id", "Values": ["u-1234"]}])
             f.write(json_argument)
             f.flush()
-            result = uri_param(p, 'file://%s' % f.name)
+            result = uri_param(p, 'file://%s' % f.name, None)
+        self.assertEqual(result, json_argument)
+
+    def test_uri_param_global_paramfile_false(self):
+        p = self.get_param_model('iam.getUser.userId')
+        p.no_paramfile = False
+        with temporary_file('r+') as f:
+            json_argument = json.dumps([{"Name": "user-id", "Values": ["u-1234"]}])
+            f.write(json_argument)
+            f.flush()
+            result = uri_param(p, 'file://%s' % f.name, mock.Mock(expand_param=False))
+        self.assertEqual(result, None)
+
+    def test_uri_param_global_paramfile_true(self):
+        p = self.get_param_model('iam.getUser.userId')
+        p.no_paramfile = False
+        with temporary_file('r+') as f:
+            json_argument = json.dumps([{"Name": "user-id", "Values": ["u-1234"]}])
+            f.write(json_argument)
+            f.flush()
+            result = uri_param(p, 'file://%s' % f.name, mock.Mock(expand_param=True))
+        self.assertEqual(result, json_argument)
+
+    def test_uri_param_global_paramfile_empty(self):
+        p = self.get_param_model('iam.getUser.userId')
+        p.no_paramfile = False
+        with temporary_file('r+') as f:
+            json_argument = json.dumps([{"Name": "user-id", "Values": ["u-1234"]}])
+            f.write(json_argument)
+            f.flush()
+            result = uri_param(p, 'file://%s' % f.name, mock.Mock())
         self.assertEqual(result, json_argument)
 
     def test_uri_param_no_paramfile_false(self):
@@ -73,7 +103,7 @@ class TestURIParams(BaseArgProcessTest):
             json_argument = json.dumps([{"Name": "user-id", "Values": ["u-1234"]}])
             f.write(json_argument)
             f.flush()
-            result = uri_param(p, 'file://%s' % f.name)
+            result = uri_param(p, 'file://%s' % f.name, None)
         self.assertEqual(result, json_argument)
 
     def test_uri_param_no_paramfile_true(self):
@@ -83,5 +113,5 @@ class TestURIParams(BaseArgProcessTest):
             json_argument = json.dumps([{"Name": "user-id", "Values": ["u-1234"]}])
             f.write(json_argument)
             f.flush()
-            result = uri_param(p, 'file://%s' % f.name)
+            result = uri_param(p, 'file://%s' % f.name, None)
         self.assertEqual(result, None)

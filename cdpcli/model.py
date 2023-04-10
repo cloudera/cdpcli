@@ -172,6 +172,10 @@ class StringShape(Shape):
         return self._shape_data.get('enum', [])
 
     @CachedProperty
+    def deprecated_enum_values(self):
+        return self._shape_data.get('x-deprecated-enum-values', [])
+
+    @CachedProperty
     def supported_options(self):
         return self._shape_data.get('x-supported-options', [])
 
@@ -502,6 +506,8 @@ class DenormalizedStructureBuilder(object):
             shape['documentation'] = model['documentation']
         if 'enum' in model:
             shape['enum'] = model['enum']
+        if 'x-deprecated-enum-values' in model:
+            shape['x-deprecated-enum-values'] = model['x-deprecated-enum-values']
         if 'x-supported-options' in model:
             shape['x-supported-options'] = model['x-supported-options']
         if 'x-no-paramfile' in model:

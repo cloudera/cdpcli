@@ -400,6 +400,10 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
         if isinstance(argument_model, StringShape):
             if argument_model.enum and include_enum_values:
                 choices = argument_model.enum
+                if not self.show_hidden and argument_model.deprecated_enum_values:
+                    choices = [item
+                               for item in choices
+                               if item not in argument_model.deprecated_enum_values]
                 return '|'.join(['"%s"' % c for c in choices])
             elif argument_model.supported_options and include_enum_values:
                 choices = argument_model.supported_options
@@ -583,7 +587,11 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
             doc.write('%s %s ...' % (example_type, example_type))
             if isinstance(member, StringShape):
                 if member.enum:
-                    self._write_possible_values(doc, member.enum)
+                    enum_values = member.enum
+                    if not self.show_hidden and member.deprecated_enum_values:
+                        enum_values = [v for v in enum_values
+                                       if v not in member.deprecated_enum_values]
+                    self._write_possible_values(doc, enum_values)
                 if member.supported_options:
                     self._write_possible_values(doc, member.supported_options)
             doc.style.end_codeblock()
@@ -705,7 +713,11 @@ class OperationDocumentGenerator(CLIDocumentGenerator):
             model = argument.argument_model
             if isinstance(model, StringShape):
                 if model.enum:
-                    self._write_possible_values(doc, model.enum)
+                    enum_values = model.enum
+                    if not self.show_hidden and model.deprecated_enum_values:
+                        enum_values = [v for v in enum_values
+                                       if v not in model.deprecated_enum_values]
+                    self._write_possible_values(doc, enum_values)
                 if model.supported_options:
                     self._write_possible_values(doc, model.supported_options)
 

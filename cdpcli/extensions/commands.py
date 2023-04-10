@@ -157,7 +157,7 @@ class BasicCommand(CLICommand):
             if xformed in self.arg_table:
                 cli_argument = self.arg_table[xformed]
 
-            value = unpack_argument(cli_argument, value)
+            value = unpack_argument(cli_argument, value, parsed_globals)
 
             # If this parameter has a schema defined, then allow plugins
             # a chance to process and override its value.

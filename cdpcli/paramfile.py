@@ -25,7 +25,7 @@ class ResourceLoadingError(Exception):
     pass
 
 
-def get_paramfile(path):
+def get_paramfile(path, parsed_globals):
     """Load parameter based on a resource URI.
 
     It is possible to pass parameters to operations by referring
@@ -41,11 +41,12 @@ def get_paramfile(path):
         for prefix, function_spec in PREFIX_MAP.items():
             if path.startswith(prefix):
                 function, kwargs = function_spec
+                kwargs['parsed_globals'] = parsed_globals
                 data = function(prefix, path, **kwargs)
     return data
 
 
-def get_file(prefix, path, mode):
+def get_file(prefix, path, mode, parsed_globals):
     file_path = os.path.expandvars(os.path.expanduser(path[len(prefix):]))
     try:
         with compat_open(file_path, mode) as f:
@@ -60,9 +61,16 @@ def get_file(prefix, path, mode):
             path, e))
 
 
-def get_uri(prefix, uri):
+def get_uri(prefix, uri, parsed_globals):
     try:
-        r = requests.get(uri)
+        # The TLS verification value can be a boolean or a CA_BUNDLE path. This
+        # is a little odd, but ultimately comes from the python HTTP requests
+        # library we're using.
+        tls_verification = getattr(parsed_globals, 'verify_tls', True)
+        ca_bundle = getattr(parsed_globals, 'ca_bundle', None)
+        if tls_verification and ca_bundle is not None:
+            tls_verification = ca_bundle
+        r = requests.get(uri, verify=tls_verification)
         if r.status_code == 200:
             return r.text
         else:
@@ -82,6 +90,9 @@ PREFIX_MAP = {
 
 
 class ParamFileVisitor(object):
+    def __init__(self, parsed_globals):
+        self._parsed_globals = parsed_globals
+
     """
     This visitor's visit method will walk the input params object of the input
     shape, visiting all fields and recursing through complex fields. Any string
@@ -128,9 +139,11 @@ class ParamFileVisitor(object):
         return param
 
     def _visit_string(self, param, shape, name):
+        if not getattr(self._parsed_globals, 'expand_param', True):
+            return param
         if shape.is_no_paramfile:
             return param
-        override = get_paramfile(param)
+        override = get_paramfile(param, self._parsed_globals)
         if override is not None:
             return override
         return param
@@ -145,9 +158,11 @@ class ParamFileVisitor(object):
         return param
 
     def _visit_blob(self, param, shape, name):
+        if not getattr(self._parsed_globals, 'expand_param', True):
+            return param
         if shape.is_no_paramfile:
             return param
-        override = get_paramfile(param)
+        override = get_paramfile(param, self._parsed_globals)
         if override is not None:
             return override
         return param

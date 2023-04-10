@@ -60,25 +60,27 @@ class TooComplexError(Exception):
     pass
 
 
-def unpack_argument(cli_argument, value):
-    override = uri_param(cli_argument, value)
+def unpack_argument(cli_argument, value, parsed_globals):
+    override = uri_param(cli_argument, value, parsed_globals)
     if override is not None:
         value = override
     return value
 
 
-def uri_param(cli_argument, value):
-    if getattr(cli_argument, 'no_paramfile', None):
+def uri_param(cli_argument, value, parsed_globals):
+    if not getattr(parsed_globals, 'expand_param', True):
+        return
+    elif getattr(cli_argument, 'no_paramfile', None):
         return
     else:
-        return _check_for_uri_param(cli_argument, value)
+        return _check_for_uri_param(cli_argument, value, parsed_globals)
 
 
-def _check_for_uri_param(param, value):
+def _check_for_uri_param(param, value, parsed_globals):
     if isinstance(value, list) and len(value) == 1:
         value = value[0]
     try:
-        return get_paramfile(value)
+        return get_paramfile(value, parsed_globals)
     except ResourceLoadingError as e:
         raise ParamError(param.cli_name, six.text_type(e))
 

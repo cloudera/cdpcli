@@ -116,3 +116,61 @@ class TestCLIDocumentEventHandler(unittest.TestCase):
         self.assertIn('Possible values', rendered)
         self.assertIn('FOO', rendered)
         self.assertIn('BAZ', rendered)
+
+    def test_documents_hide_deprecated_enum_values(self):
+        shape_map = {
+            'EnumArg': {
+                'type': 'string',
+                'x-deprecated-enum-values': 'FOO,BAR, WORLD',
+                'enum': ['FOO', 'BAR', 'HELLO', 'WORLD']
+            }
+        }
+        shape = StringShape('EnumArg',
+                            shape_map['EnumArg'],
+                            ShapeResolver(shape_map))
+        arg_table = {'arg-name': mock.Mock(argument_model=shape,
+                                           _UNDOCUMENTED=False,
+                                           is_deprecated=None)}
+        help_command = mock.Mock()
+        help_command.doc = ReSTDocument()
+        help_command.arg_table = arg_table
+        operation_model = mock.Mock()
+        operation_model.service_model.operation_names = []
+        help_command.obj = operation_model
+        operation_generator = OperationDocumentGenerator(help_command)
+        operation_generator.doc_option('arg-name', help_command)
+        rendered = help_command.doc.getvalue().decode('utf-8')
+        self.assertIn('Possible values', rendered)
+        self.assertIn('HELLO', rendered)
+        self.assertNotIn('FOO', rendered)
+        self.assertNotIn('BAR', rendered)
+        self.assertNotIn('WORLD', rendered)
+
+    def test_documents_show_deprecated_enum_values(self):
+        shape_map = {
+            'EnumArg': {
+                'type': 'string',
+                'x-deprecated-enum-values': 'FOO,BAR, WORLD',
+                'enum': ['FOO', 'BAR', 'HELLO', 'WORLD']
+            }
+        }
+        shape = StringShape('EnumArg',
+                            shape_map['EnumArg'],
+                            ShapeResolver(shape_map))
+        arg_table = {'arg-name': mock.Mock(argument_model=shape,
+                                           _UNDOCUMENTED=False,
+                                           is_deprecated=None)}
+        help_command = mock.Mock()
+        help_command.doc = ReSTDocument()
+        help_command.arg_table = arg_table
+        operation_model = mock.Mock()
+        operation_model.service_model.operation_names = []
+        help_command.obj = operation_model
+        operation_generator = OperationDocumentGenerator(help_command, show_hidden=True)
+        operation_generator.doc_option('arg-name', help_command)
+        rendered = help_command.doc.getvalue().decode('utf-8')
+        self.assertIn('Possible values', rendered)
+        self.assertIn('FOO', rendered)
+        self.assertIn('BAR', rendered)
+        self.assertIn('HELLO', rendered)
+        self.assertIn('WORLD', rendered)

@@ -25,6 +25,7 @@ from cdpcli.model import ObjectShape, OperationModel, ShapeResolver
 from cdpcli.utils import CachedProperty
 
 LOG = logging.getLogger('cdpcli.extensions.df.createdeployment')
+MAX_ASSET_SIZE = 150 * 1024 * 1024
 INITIAL_CONFIGURATION_VERSION = 0
 INITIAL_ASSET_VERSION = '0'
 
@@ -561,6 +562,23 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         parameter_groups = parameters.get('parameterGroups', None)
         if parameter_groups:
             deployment_name = parameters.get('deploymentName', None)
+
+            for parameter_group in parameter_groups:
+                parameters = parameter_group['parameters']
+                for parameter in parameters:
+                    asset_references = parameter.get('assetReferences', None)
+                    if asset_references:
+                        for asset_path in asset_references:
+                            file_stats = os.stat(asset_path)
+                            if file_stats.st_size > MAX_ASSET_SIZE:
+                                raise DfExtensionError(
+                                    err_msg='The file size exceeds '
+                                            'the 150 MB limit, file: [{}]'
+                                    .format(asset_path),
+                                    service_name=df_workload_client.meta.service_model
+                                    .service_name,
+                                    operation_name='uploadAsset')
+
             for parameter_group in parameter_groups:
                 parameter_group_name = parameter_group['name']
                 parameters = parameter_group['parameters']

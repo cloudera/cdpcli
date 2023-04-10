@@ -52,15 +52,15 @@ class CliInputJSONArgument(OverrideRequiredArgsArgument):
                parameters,
                parsed_args,
                parsed_globals):
-        return self.add_to_call_parameters(parameters, parsed_args)
+        return self.add_to_call_parameters(parameters, parsed_args, parsed_globals)
 
-    def add_to_call_parameters(self, call_parameters, parsed_args):
+    def add_to_call_parameters(self, call_parameters, parsed_args, parsed_globals):
 
         # Check if ``--cli-input-json`` was specified in the command line.
         input_json = getattr(parsed_args, 'cli_input_json', None)
         if input_json is not None:
             # Retrieve the JSON from the file if needed.
-            retrieved_json = get_paramfile(input_json)
+            retrieved_json = get_paramfile(input_json, parsed_globals)
             # Nothing was retrieved from the file. So assume the argument
             # is already a JSON string.
             if retrieved_json is None:
@@ -74,7 +74,7 @@ class CliInputJSONArgument(OverrideRequiredArgsArgument):
                                % (e, retrieved_json))
             # We run the ParamFileVisitor over the input data to resolve any
             # paramfile references in it.
-            input_data = ParamFileVisitor().visit(
+            input_data = ParamFileVisitor(parsed_globals).visit(
                 input_data, self._operation_model.input_shape)
             # Add the members from the input JSON to the call parameters.
             self._update_call_parameters(call_parameters, input_data)
