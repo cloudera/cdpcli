@@ -352,7 +352,14 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                                   environment_crn)
 
         df_workload_client = client_creator('dfworkload')
-        self._upload_assets(df_workload_client, deployment_request_crn, parameters)
+        self._get_deployment_request_details(
+            df_workload_client, deployment_request_crn, environment_crn)
+        try:
+            self._upload_assets(df_workload_client, deployment_request_crn, parameters)
+        except (ClientError, DfExtensionError):
+            self._abort_deployment_request(
+                df_workload_client, deployment_request_crn, environment_crn)
+            raise
         response = self._create_deployment(
                 df_workload_client, deployment_request_crn, environment_crn, parameters)
         self._display_response(operation_model.name, response, parsed_globals)
@@ -391,7 +398,8 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             self._tear_down(
                 df_workload_client,
                 environment_crn,
-                custom_nar_configuration
+                custom_nar_configuration,
+                deployment_request_crn
             )
             raise
 
@@ -412,6 +420,28 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         url = response.get('dfxLocalUrl', None)
         LOG.debug('Initiated Deployment Request CRN [%s] URL [%s]', request_crn, url)
         return request_crn
+
+    def _get_deployment_request_details(self,
+                                        df_workload_client,
+                                        deployment_request_crn,
+                                        environment_crn):
+        """
+        This function fetches the deployment request details
+        from the workload, and triggers the download of the flow.
+        This also triggers the registration of the deployment
+        details in the workload.
+        This should be done right after the deployment is
+        initiated due to the limited TTL of the resources
+        generated during the deployment initiation.
+        """
+        parameters = {
+            'deploymentRequestCrn': deployment_request_crn,
+            'environmentCrn': environment_crn
+        }
+        http, response = df_workload_client.make_api_call(
+            'getDeploymentRequestDetails', parameters)
+        LOG.debug('Obtained Deployment Request Details for CRN [%s]',
+                  deployment_request_crn)
 
     def _get_environment_crn(self,
                              df_client,
@@ -610,12 +640,19 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
     def _tear_down(self,
                    df_workload_client,
                    environment_crn,
-                   custom_nar_configuration):
+                   custom_nar_configuration,
+                   deployment_request_crn):
         """
         This function makes a best-effort attempt to clean-up
         resources that would otherwise be orphaned
         due to a deployment creation failure.
         """
+        if (deployment_request_crn is not None):
+            self._abort_deployment_request(
+                df_workload_client,
+                deployment_request_crn,
+                environment_crn
+            )
         if (custom_nar_configuration is not None):
             self._delete_custom_nar_configuration(
                 df_workload_client,
@@ -650,3 +687,36 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             else:
                 LOG.error('Encountered an error while attempting to '
                           'cleanup Custom NAR configuration: [%s]', parameters)
+
+    def _abort_deployment_request(self,
+                                  df_workload_client,
+                                  deployment_request_crn,
+                                  environment_crn):
+        """
+        Make a best effort attempt to clear up
+        resources that need to be cleaned up upon
+        deployment creation failure
+        """
+        try:
+            parameters = {
+                'deploymentRequestCrn': deployment_request_crn,
+                'environmentCrn': environment_crn
+            }
+            http, response = df_workload_client.make_api_call(
+                'abortDeploymentRequest',
+                parameters
+            )
+            LOG.debug('Successfully aborted deployment request with CRN: [%s]',
+                      deployment_request_crn)
+        except ClientError as e:
+            if e.http_status_code >= 400:
+                LOG.error(
+                    'Failed to clean up deployment request with CRN: [%s]',
+                    deployment_request_crn
+                )
+            else:
+                LOG.error(
+                    'Encountered an error while attempting to '
+                    'abort deployment request with CRN: [%s]',
+                    deployment_request_crn
+                )

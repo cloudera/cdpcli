@@ -135,6 +135,8 @@ class TestCreateDeployment(unittest.TestCase):
                 }
                 create_deployment_parameters.append(args[1])
                 return (Mock(status_code=200), create_response)
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
         self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
@@ -228,6 +230,8 @@ class TestCreateDeployment(unittest.TestCase):
                 }
                 create_deployment_parameters.append(args[1])
                 return (Mock(status_code=200), create_response)
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
         self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
@@ -392,6 +396,8 @@ class TestCreateDeployment(unittest.TestCase):
                 configuration_response = deepcopy(custom_nar_configuration)
                 configuration_response['crn'] = custom_nar_configuration_crn
                 return (Mock(status_code=200), configuration_response)
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
         self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
@@ -567,6 +573,8 @@ class TestCreateDeployment(unittest.TestCase):
                     'crn': custom_nar_configuration_crn
                 }
                 return (Mock(status_code=200), configuration_response)
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
             elif operation_name == 'createCustomNarConfiguration':
                 error_response = {
                     'error': {
@@ -720,6 +728,10 @@ class TestCreateDeployment(unittest.TestCase):
                     }
                 }
                 raise ClientError(error_response, operation_name, 'df', 403, 'requestId')
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'abortDeploymentRequest':
+                return (Mock(status_code=200), {})
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
         self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
@@ -730,7 +742,7 @@ class TestCreateDeployment(unittest.TestCase):
 
         self.assertEqual(2, self.df_client.make_api_call.call_count)
         self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
-        self.assertEqual(1, self.df_workload_client.make_api_call.call_count)
+        self.assertEqual(3, self.df_workload_client.make_api_call.call_count)
 
     def _get_deployable_services(self, service_crn, environment_crn):
         response = {
@@ -772,8 +784,6 @@ class TestCreateDeployment(unittest.TestCase):
         custom_nar_configuration_crn = 'NAR_CONFIGURATION_CRN'
         workload_url = 'https://localhost.localdomain/'
 
-        initiate_request_parameters = []
-
         def _df_make_api_call(*args, **kwargs):
             operation_name = args[0]
             if operation_name == 'listDeployableServicesForNewDeployments':
@@ -783,7 +793,6 @@ class TestCreateDeployment(unittest.TestCase):
                     'deploymentRequestCrn': deployment_request_crn,
                     'dfxLocalUrl': workload_url
                 }
-                initiate_request_parameters.append(args[1])
                 return (Mock(status_code=200), initiate_deployment_response)
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
@@ -814,6 +823,10 @@ class TestCreateDeployment(unittest.TestCase):
                 configuration_response = deepcopy(custom_nar_configuration)
                 configuration_response['crn'] = custom_nar_configuration_crn
                 return (Mock(status_code=200), configuration_response)
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'abortDeploymentRequest':
+                return (Mock(status_code=200), {})
             else:
                 raise Exception('Unexpected make_api_call [' + operation_name + ']')
         self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
@@ -824,4 +837,109 @@ class TestCreateDeployment(unittest.TestCase):
 
         self.assertEqual(2, self.df_client.make_api_call.call_count)
         self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
-        self.assertEqual(3, self.df_workload_client.make_api_call.call_count)
+        self.assertEqual(5, self.df_workload_client.make_api_call.call_count)
+
+    def test_upload_asset_failure_should_call_abort_deployment_request(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+
+        parameter_group_name = 'ParameterGroup'
+        parameter_name = 'Files'
+        asset_reference_name = 'df-workload.asset.bin'
+        asset_reference_file_path = os.path.join(BASE_DIR, asset_reference_name)
+
+        cluster_size_name = 'MEDIUM'
+        auto_scaling_enabled = False
+        static_node_count = 2
+        cfm_nifi_version = '1.14.0'
+        auto_start_flow = False
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'clusterSizeName': cluster_size_name,
+            'autoScalingEnabled': auto_scaling_enabled,
+            'staticNodeCount': static_node_count,
+            'cfmNifiVersion': cfm_nifi_version,
+            'autoStartFlow': auto_start_flow,
+            'parameterGroups': [
+                {
+                    'name': parameter_group_name,
+                    'parameters': [
+                        {
+                            'name': parameter_name,
+                            'assetReferences': [
+                                asset_reference_file_path
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'abortDeploymentRequest':
+                return (Mock(status_code=200), {})
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        def _df_workload_make_request(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'uploadAsset':
+                error_response = {
+                    'error': {
+                        'code': '403',
+                        'message': 'Access Denied'
+                    }
+                }
+                raise ClientError(
+                    error_response, operation_name, 'dfworkload', 403, 'requestId')
+            else:
+                raise Exception('Unexpected make_request [' + operation_name + ']')
+        self.df_workload_client.make_request.side_effect = _df_workload_make_request
+
+        with self.assertRaises(ClientError):
+            self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                          parameters, parsed_args, parsed_globals)
+
+        self.assertEqual(2, self.df_client.make_api_call.call_count)
+        self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
+        self.assertEqual(2, self.df_workload_client.make_api_call.call_count)
+        self.assertEqual(1, self.df_workload_client.make_request.call_count)

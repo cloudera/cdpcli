@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.84
+  version: 0.9.85
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1636,7 +1636,7 @@ definitions:
         description: Skips the backup of the Atlas indexes. If this option or --skipAtlasMetadata is not provided, Atlas indexes are backed up by default. Redundant if --skipAtlasMetadata is included.
       skipValidation:
         type: boolean
-        description: Skips the validation step that runs prior to the backup. If this option is not provided, the validations are performed by default.
+        description: Skips the validation steps that run prior to the backup. If this option is not provided, the validations are performed by default.
       validationOnly:
         type: boolean
         description: Runs only the validation steps and then returns. If this option is not provided, the backup is performed as normal by default.
@@ -1790,7 +1790,7 @@ definitions:
         description: Backup location. When provided, will be used to lookup the backup. If provided, the --backup-id parameter is required.
       skipValidation:
         type: boolean
-        description: Skips the validation step that runs prior to the restore. If this option is not provided, the validations are performed by default.
+        description: Skips the validation steps that run prior to the restore. If this option is not provided, the validations are performed by default.
       validationOnly:
         type: boolean
         description: Runs only the validation steps and then returns. If this option is not provided, the restore is performed as normal by default.

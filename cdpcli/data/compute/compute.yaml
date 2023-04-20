@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.84
+  version: 0.9.85
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -23,7 +23,7 @@ paths:
       summary: Describes a deployment
       description: Gets a single deployment along with its extended history. This can also include all of the known templates.
       operationId: describeDeployment
-      x-entitlement: COMPUTE_SECURITY_UPDATES
+      x-entitlement: COMPUTE_API_LIFTIE
       parameters:
         - name: input
           in: body
@@ -45,7 +45,7 @@ paths:
       summary: List compute clusters
       description: List all compute clusters in a CDP Environment
       operationId: listClusters
-      x-entitlement: COMPUTE_API
+      x-entitlement: COMPUTE_API_LIFTIE
       x-paging-default-max-items: 100
       parameters:
         - name: input
@@ -68,7 +68,7 @@ paths:
       summary: Upgrades a deployment to a different chart.
       description: Upgrades a deployment to a different chart.
       operationId: upgradeDeployment
-      x-entitlement: COMPUTE_SECURITY_UPDATES
+      x-entitlement: COMPUTE_API_LIFTIE_DEPLOYMENT
       parameters:
         - name: input
           in: body

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.84
+  version: 0.9.85
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -734,6 +734,48 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/GetFreeipaStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/attachFreeIpaRecipes:
+    post:
+      summary: Attach recipes to FreeIPA.
+      description: Attach recipes to FreeIPA.
+      operationId: attachFreeIpaRecipes
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AttachFreeIpaRecipesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AttachFreeIpaRecipesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/detachFreeIpaRecipes:
+    post:
+      summary: Detach recipes from FreeIPA.
+      description: Detach recipes from FreeIPA.
+      operationId: detachFreeIpaRecipes
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DetachFreeIpaRecipesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DetachFreeIpaRecipesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2164,6 +2206,9 @@ definitions:
       encryptionKeyResourceGroupName:
         type: string
         description: Name of the existing Azure resource group hosting the Azure Key Vault containing customer managed key which will be used to encrypt the Azure Managed Disks. It is required only when the entitlement is granted and the resource group of the key vault is different from the resource group in which the environment is to be created. Omitting it implies that, the key vault containing the encryption key is present in the same resource group where the environment would be created.
+      enableOutboundLoadBalancer:
+        type: boolean
+        description: Whether or not outbound load balancers should be created for Azure environments. The default behavior is to not create the outbound load balancer.
   CreateGCPEnvironmentRequest:
     type: object
     description: Request object for a create GCP environment request.
@@ -2630,6 +2675,9 @@ definitions:
       aksPrivateDnsZoneId:
         type: string
         description: The ID of an existing private DNS zone used for the AKS.
+      enableOutboundLoadBalancer:
+        type: boolean
+        description: Whether the outbound load balancer was created for this environment.
   NetworkGcpParams:
     type: object
     description: GCP network parameters.
@@ -3414,6 +3462,42 @@ definitions:
         additionalProperties:
           description: An Individual Node Status
           $ref: '#/definitions/FreeIPANodeStatus'
+  AttachFreeIpaRecipesRequest:
+    type: object
+    description: Request object for attaching recipes to FreeIPA.
+    required:
+      - environment
+      - recipes
+    properties:
+      environment:
+        type: string
+        description: The environment name or CRN of the FreeIPA.
+      recipes:
+        type: array
+        items:
+          type: string
+        description: The list of recipes to attach.
+  AttachFreeIpaRecipesResponse:
+    type: object
+    description: Response object for attaching recipes to FreeIPA.
+  DetachFreeIpaRecipesRequest:
+    type: object
+    description: Request object for detaching recipes from FreeIPA.
+    required:
+      - environment
+      - recipes
+    properties:
+      environment:
+        type: string
+        description: The environment name or CRN of the FreeIPA.
+      recipes:
+        type: array
+        items:
+          type: string
+        description: The list of recipes to detach.
+  DetachFreeIpaRecipesResponse:
+    type: object
+    description: Response object for detaching recipes from FreeIPA.
   RepairFreeipaRequest:
     type: object
     description: Request object for repairing the FreeIPA servers.
@@ -3515,6 +3599,11 @@ definitions:
         type: integer
         format: int32
         description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
+      recipes:
+        type: array
+        items:
+          type: string
+        description: The recipes for the FreeIPA cluster.
       multiAz:
         type: boolean
         description: Flag which marks that the freeIPA will be deployed in a multi-availability zone way or not.
@@ -3526,6 +3615,11 @@ definitions:
         type: integer
         format: int32
         description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
+      recipes:
+        type: array
+        items:
+          type: string
+        description: The recipes for the FreeIPA cluster.
   GCPFreeIpaCreationRequest:
     description: Request object for creating FreeIPA in the environment.
     type: object
@@ -3534,6 +3628,11 @@ definitions:
         type: integer
         format: int32
         description: The number of FreeIPA instances to create per group when creating FreeIPA in the environment
+      recipes:
+        type: array
+        items:
+          type: string
+        description: The recipes for the FreeIPA cluster.
   FreeIpaImageRequest:
     description: Request object for FreeIPA image.
     type: object
@@ -3591,6 +3690,11 @@ definitions:
         type: array
         description: The IP addresses of the FreeIPA cluster.
         uniqueItems: true
+        items:
+          type: string
+      recipes:
+        type: array
+        description: The recipes for the FreeIPA cluster.
         items:
           type: string
   ProxyConfig:
