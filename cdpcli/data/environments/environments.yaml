@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.85
+  version: 0.9.86
   title: Cloudera Environments Service
   license:
     name: Apache 2.0

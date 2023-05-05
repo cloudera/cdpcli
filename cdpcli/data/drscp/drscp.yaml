@@ -5,7 +5,7 @@ x-form-factors: private
 x-audit: true
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.85
+  version: 0.9.86
   title: CDP Control Plane Data Recovery Service
   license:
     name: Apache 2.0

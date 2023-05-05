@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.85
+  version: 0.9.86
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -670,6 +670,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/dw/describeDbcConfig:
+    post:
+      x-mutating: false
+      summary: Describes the Database Catalog current configuration.
+      description: Describes the Database Catalog current configuration.
+      operationId: describeDbcConfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeDbcConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeDbcConfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/updateDbcConfig:
+    post:
+      x-mutating: true
+      summary: Update a Database Catalog configuration.
+      description: Update a Database Catalog configuration.
+      operationId: updateDbcConfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateDbcConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateDbcConfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/createDbcDiagnosticDataJob:
     post:
       x-mutating: true
@@ -846,6 +888,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/dw/updateVwConfig:
+    post:
+      x-mutating: true
+      summary: Update a Virtual Warehouse configuration.
+      description: Update a Virtual Warehouse configuration.
+      operationId: updateVwConfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateVwConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateVwConfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/deleteVw:
     post:
       x-no-compatibility-guarantee: true
@@ -914,8 +977,8 @@ paths:
   /api/v1/dw/startVw:
     post:
       x-mutating: true
-      summary: Starts a paused Virtual Warehouse.
-      description: Starts a paused Virtual Warehouse. Has no effect if the VW is already started.
+      summary: Starts a suspended Virtual Warehouse.
+      description: Starts a suspended Virtual Warehouse. Has no effect if the VW is already started.
       operationId: startVw
       parameters:
         - name: input
@@ -928,28 +991,6 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/StartVwResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
-  /api/v1/dw/pauseVw:
-    post:
-      x-deprecated: true
-      x-mutating: true
-      summary: Pauses a running Virtual Warehouse.
-      description: DEPRECATED in favor of suspend-vw command. Pauses a running Virtual Warehouse. Has no effect if the VW is already paused.
-      operationId: pauseVw
-      parameters:
-        - name: input
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/PauseVwRequest'
-      responses:
-        200:
-          description: Expected response to a valid request.
-          schema:
-            $ref: '#/definitions/PauseVwResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1103,6 +1144,27 @@ paths:
           description: successful operation
           schema:
             $ref: '#/definitions/ListLatestVersionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/describeVwConfig:
+    post:
+      x-mutating: false
+      summary: Describes the current configuration of a Hive or Impala Virtual Warehouse.
+      description: Describes the current configuration of a Hive or Impala Virtual Warehouse.
+      operationId: describeVwConfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeVwConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeVwConfigResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1808,8 +1870,19 @@ definitions:
         default: 30
         description: PostgreSQL server backup retention days.
       whitelistIpCIDRs:
+        x-form-factors: public,private
         type: string
-        description: Comma separated list of IP address CIDRs to whitelist.
+        description: This field is still available for Private Cloud deployments, however it'll be removed for Public Cloud in the next DWX release. Please use the use 'whitelistK8sClusterAccessIpCIDRs' in combination of 'whitelistWorkloadAccessIpCIDRs' on Public Cloud. Comma separated list of IP address CIDRs to whitelist.
+      whitelistK8sClusterAccessIpCIDRs:
+        type: array
+        items:
+          type: string
+        description: List of IP address CIDRs to whitelist for kubernetes cluster access.
+      whitelistWorkloadAccessIpCIDRs:
+        type: array
+        items:
+          type: string
+        description: List of IP address CIDRs to whitelist for workload access.
       usePrivateLoadBalancer:
         type: boolean
         description: Set up load balancer with private IP address. In AWS it is created in private subnets. In Azure an internal load balancer gets created. Make sure there is connectivity between your client network and the network (VPC/VNet) where CDW environment is deployed.
@@ -1834,9 +1907,6 @@ definitions:
         description: Options for activating a Private Cloud environment.
         $ref: '#/definitions/PrivateCloudActivationOptions'
         x-form-factors: private
-      customId:
-        type: string
-        description: Custom environment ID provided to the cluster
       customSubdomain:
         type: string
         description: Custom environment subdomain. Overrides the environment subdomain using a customized domain either in the old subdomain format like ENV_ID.dw or the new format like dw-ENV_NAME.
@@ -1878,6 +1948,16 @@ definitions:
         description: IDs of public AWS subnets where the cluster should be deployed.
         items:
           type: string
+      workerSubnetIds:
+        type: array
+        description: IDs of AWS subnets where the cluster worker nodes should be deployed.
+        items:
+          type: string
+      lbSubnetIds:
+        type: array
+        description: IDs of AWS subnets where the cluster load balancer should be deployed.
+        items:
+          type: string
       customAmiId:
         type: string
         description: Custom AMI ID.
@@ -1905,6 +1985,9 @@ definitions:
     type: object
     description: Options for activating an Azure environment.
     properties:
+      userAssignedManagedIdentity:
+        type: string
+        description: Resource ID of the managed identity used by AKS. It is a mandatory parameter for Azure cluster creation.
       subnetId:
         type: string
         description: ID of Azure subnet where the cluster should be deployed.
@@ -1923,9 +2006,6 @@ definitions:
       logAnalyticsWorkspaceId:
         type: string
         description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
-      dockerBridgeCidr:
-        type: string
-        description: Docker bridge CIDR range for deployment.
       outboundType:
         type: string
         description: Network outbound type. This setting controls the egress traffic for cluster nodes in Azure Kubernetes Service. Please refer to the following AKS documentation on the Azure portal. https://learn.microsoft.com/en-us/azure/aks/egress-outboundtype, https://learn.microsoft.com/en-us/azure/aks/nat-gateway
@@ -1945,8 +2025,9 @@ definitions:
         description: Enable Azure Private AKS mode.
         default: false
       enableUptimeSLA:
+        x-deprecated: true
         type: boolean
-        description: Enable uptime SLA for Kubernetes API server.
+        description: Enable uptime SLA for Kubernetes API server. This option is deprecated and will be removed upon the next release of the DWX Public Cloud. The uptime SLA for the Kubernetes API server will be always enabled.
         default: false
   PrivateCloudActivationOptions:
     type: object
@@ -2034,10 +2115,21 @@ definitions:
         type: string
         description: Cluster description.
       whitelistIpCIDRs:
+        x-form-factors: public,private
         type: array
         items:
           type: string
         description: 'List of IP address CIDRs to whitelist. NOTE: CDW is in process of rolling out a new feature to whitelist IP CIDR separately for Kubernetes Clusters and Loadbalancers on CDP Public Cloud. For an existing cluster, if different IP CIDR has been already applied to LoadBalancer and the Kubernetes cluster through the DWX UI, then updating the IP CIDR of such cluster is not supported from CLI. In the upcoming release, the CLI will support this feature. Please make use of UI for the same.'
+      whitelistK8sClusterAccessIpCIDRs:
+        type: array
+        items:
+          type: string
+        description: List of IP address CIDRs to whitelist for kubernetes cluster access.
+      whitelistWorkloadAccessIpCIDRs:
+        type: array
+        items:
+          type: string
+        description: List of IP address CIDRs to whitelist for workload access.
       awsUpdate:
         type: object
         description: Additional properties for AWS clusters.
@@ -2056,6 +2148,16 @@ definitions:
             type: boolean
             default: false
             description: Renew Azure cluster certificate.
+      observabilityConfig:
+        type: object
+        description: Update the cluster observability configurations. You can forward logs from environments activated in Cloudera Data Warehouse (CDW) to observability and monitoring systems such as Datadog, New Relic, or Splun. Please refer to the following Cloudera documentation for more info. https://docs.cloudera.com/data-warehouse/cloud/monitoring/topics/dw-observability-log-forwarding.html
+        properties:
+          logsForwardingConfig:
+            type: string
+            description: Create the log forwarding configuration in a valid fluentd format. Then that configuration is later inserted into a larger fluentd configuration.
+          proxyCABundle:
+            type: string
+            description: Set the proxy CA certificates (PEM Bundle). If you use a TLS-terminating proxy server to inspect outbound internet traffic, you need to provide the proxy server's CA certificates bundle in PEM bundle format when you configure log forwarding.
   ExternalBucketAccessInfo:
     type: object
     description: External bucket definition.
@@ -3228,6 +3330,10 @@ definitions:
         description: Tags associated with the resources.
         items:
           $ref: '#/definitions/TagRequest'
+      platformJwtAuth:
+        type: boolean
+        default: false
+        description: Value of 'true' automatically configures the Virtual Warehouse to support JWTs issues by the CDP JWT token provider.  Value of 'false' does not enable JWT auth on the Virtual Warehouse.  If this field is not specified, it defaults to 'false'.
   TagRequest:
     description: A key/value pair that can be attached to some resources.
     type: object
@@ -3305,6 +3411,47 @@ definitions:
       vw:
         description: The Virtual Warehouse.
         $ref: '#/definitions/VwSummary'
+  UpdateVwConfigRequest:
+    type: object
+    description: Request object for the updateVwConfig method.
+    required:
+      - clusterId
+      - vwId
+      - component
+    properties:
+      clusterId:
+        type: string
+        description: ID of the cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+      component:
+        type: string
+        description: Configuration component to update. Hive components are [DasWebapp, Hiveserver2, QueryCoordinator, QueryExecutor, StandaloneQueryExecutor, TokenAuth, Hue]. Impala components are [Hue, ImpalaAutoscaler, ImpalaCatalogd, ImpalaCoordinator, ImpalaExecutor, ImpalaProxy, ImpalaStatestored, ImpalaTokenAuth].
+        enum:
+          - DasWebapp
+          - Hiveserver2
+          - QueryCoordinator
+          - QueryExecutor
+          - StandaloneQueryExecutor
+          - TokenAuth
+          - Hue
+          - ImpalaAutoscaler
+          - ImpalaCatalogd
+          - ImpalaCoordinator
+          - ImpalaExecutor
+          - ImpalaProxy
+          - ImpalaStatestored
+          - ImpalaTokenAuth
+      set:
+        description: Configuration files of the selected component to update.
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/ConfigBlock'
+  UpdateVwConfigResponse:
+    type: object
+    description: Response object for the updateVwConfig method.
   RebuildVwRequest:
     type: object
     description: Request object for the rebuildVw method.
@@ -3363,6 +3510,16 @@ definitions:
       subnetIds:
         type: array
         description: IDs of AWS subnets where the cluster has been deployed.
+        items:
+          type: string
+      workerSubnetIds:
+        type: array
+        description: IDs of AWS subnets where the cluster worker nodes should be deployed.
+        items:
+          type: string
+      lbSubnetIds:
+        type: array
+        description: IDs of AWS subnets where the cluster load balancer should be deployed.
         items:
           type: string
       availabilityZones:
@@ -3884,6 +4041,43 @@ definitions:
           das:
             type: string
             description: URL of Data Analytics Studio for Hive Virtual Warehouses.
+          hostname:
+            type: string
+            description: Hostname for clients to use when connecting to the VW.
+          port:
+            type: integer
+            format: int32
+            description: Port for clients to use when connecting to the VW.
+          jwtConnectionString:
+            type: string
+            description: Generic semi-colon delimited list of key-value pairs that contain all necessary information for clients to construct a connection to this Virtual Warehouse using JWTs as the authentication method.
+          jwtTokenGenUrl:
+            type: string
+            description: When platform JWT authentication is enabled, contains a URL where a JWT token can be generated by the CDP JWT token provider.
+      supportedAuthMethods:
+        type: object
+        description: Describes which authentication methods are supported on this Virtual Warehouse.
+        required:
+          - ldap
+          - jwt
+          - sso
+        properties:
+          ldap:
+            type: boolean
+            description: Indicates if username/password access to this Virtual Warehouse is supported.
+          jwt:
+            type: boolean
+            description: Indicates if JWT auth is supported on this Virtual Warehouse.
+          sso:
+            type: boolean
+            description: Indicates if SSO auth is supported on this Virtual Warehouse.
+      jwtAuth:
+        type: object
+        description: Details related to JWT Authentication settings on this Virtual Warehouse.
+        properties:
+          provider:
+            type: string
+            description: If JWT auth is enabled on the Virtual Warehouse, describes the type of provider.  If set to "CDP", then the CDP JWT auth provider is configured.  If set to "CUSTOM", then another JWT provider is configured.  If empty or missing, then JWT auth is not enabled on this Virtual Warehouse.
       tags:
         type: array
         description: Tags associated with the resources.
@@ -3927,6 +4121,93 @@ definitions:
       value:
         type: string
         description: The associated value of the tag.
+  DescribeDbcConfigRequest:
+    type: object
+    description: Request object for the describeDbcConfig method.
+    required:
+      - clusterId
+      - dbcId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+  DescribeDbcConfigResponse:
+    type: object
+    description: Response object for the describeDbcConfig method.
+    properties:
+      config:
+        description: The Database Catalog configuration.
+        $ref: '#/definitions/ServiceConfigResp'
+  UpdateDbcConfigRequest:
+    type: object
+    description: Request object for the updateDbcConfig method.
+    required:
+      - clusterId
+      - dbcId
+      - component
+    properties:
+      clusterId:
+        type: string
+        description: ID of the cluster.
+      dbcId:
+        type: string
+        description: ID of the Database Catalog.
+      component:
+        type: string
+        description: Database Catalog configuration component to update.
+        enum:
+          - DasEventProcessor
+          - DatabusProducer
+          - HueQueryProcessor
+          - Metastore
+      set:
+        description: Configuration files of the selected component to update.
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/ConfigBlock'
+  ConfigBlock:
+    type: object
+    description: Set values for a configuration file of a service.
+    properties:
+      configFile:
+        type: string
+        x-no-param-file: true
+        description: Configuration file to update.
+      keyValue:
+        type: object
+        description: Set values for key-value format configuration file e.g. ENV, PROPERTIES, FLAGFILE, HADOOP_XML typed file.
+        additionalProperties:
+          type: string
+      content:
+        description: Set values for text format configuration file e.g. TEXT, JSON, YAML, XML typed file.
+        type: string
+  UpdateDbcConfigResponse:
+    type: object
+    description: Response object for the updateDbcConfig method.
+  DescribeVwConfigRequest:
+    type: object
+    description: Request object for the describeVwConfig method.
+    required:
+      - clusterId
+      - vwId
+    properties:
+      clusterId:
+        type: string
+        description: ID of the cluster.
+      vwId:
+        type: string
+        description: ID of the Virtual Warehouse.
+  DescribeVwConfigResponse:
+    type: object
+    description: Response object for the describeVwConfig method.
+    properties:
+      config:
+        description: The Virtual Warehouse configuration.
+        $ref: '#/definitions/ServiceConfigResp'
   DescribeConfigRequest:
     type: object
     description: Request object for the describeConfig method.
@@ -4040,6 +4321,10 @@ definitions:
       queryIsolationOptions:
         description: Query isolation settings for Hive Virtual Warehouses.
         $ref: '#/definitions/QueryIsolationOptionsRequest'
+      platformJwtAuth:
+        type: boolean
+        x-nullable: true
+        description: Value of 'true' automatically configures the Virtual Warehouse to support JWTs issues by the CDP JWT token provider.  Value of 'false' does not enable JWT auth on the Virtual Warehouse.  If this field is not specified, it defaults to 'false'.
   UpdateVwResponse:
     type: object
     description: Response object for the updateVw method.
@@ -4359,22 +4644,6 @@ definitions:
   StartVwResponse:
     type: object
     description: The response object for the startVw method.
-  PauseVwRequest:
-    type: object
-    description: The request object for the pauseVw method.
-    required:
-      - clusterId
-      - vwId
-    properties:
-      clusterId:
-        type: string
-        description: The ID of the Virtual Warehouse cluster.
-      vwId:
-        type: string
-        description: The ID of the Virtual Warehouse.
-  PauseVwResponse:
-    type: object
-    description: The response object for the pauseVw method.
   SuspendVwRequest:
     type: object
     description: The request object for the suspendVw method.

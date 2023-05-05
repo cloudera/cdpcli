@@ -5,7 +5,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.85
+  version: 0.9.86
   title: Cloudera Replication Manager Service
   license:
     name: Apache 2.0
@@ -753,6 +753,7 @@ definitions:
       plugins:
         description: Plugins.
         type: array
+        x-default: null
         items:
           type: string
       nextRun:
@@ -915,6 +916,7 @@ definitions:
       plugins:
         description: Plugins.
         type: array
+        x-default: null
         items:
           type: string
       hiveExternalTableBaseDirectory:
@@ -971,6 +973,7 @@ definitions:
       exclusionFilters:
         description: Exclusion filters in glob format.
         type: array
+        x-default: null
         items:
           type: string
   ErrorHandling:

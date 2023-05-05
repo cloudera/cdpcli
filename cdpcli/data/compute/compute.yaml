@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.85
+  version: 0.9.86
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -68,7 +68,7 @@ paths:
       summary: Upgrades a deployment to a different chart.
       description: Upgrades a deployment to a different chart.
       operationId: upgradeDeployment
-      x-entitlement: COMPUTE_API_LIFTIE_DEPLOYMENT
+      x-entitlement: COMPUTE_API_LIFTIE
       parameters:
         - name: input
           in: body

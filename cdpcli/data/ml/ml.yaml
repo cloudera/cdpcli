@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.85
+  version: 0.9.86
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -918,9 +918,6 @@ definitions:
   RestoreWorkspaceRequest:
     type: object
     description: Request object for RestoreWorkspace method.
-    required:
-      - newWorkspaceParameters
-      - backupCrn
     properties:
       newWorkspaceParameters:
         description: The parameters required for a new Cloudera Machine Learning workspace.

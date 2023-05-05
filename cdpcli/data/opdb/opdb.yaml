@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.85
+  version: 0.9.86
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -706,9 +706,6 @@ definitions:
   UpgradeDatabaseRequest:
     type: object
     description: Asynchronous request to upgrade the CDP Runtime for a database.
-    required:
-      - environment
-      - database
     properties:
       environment:
         type: string
