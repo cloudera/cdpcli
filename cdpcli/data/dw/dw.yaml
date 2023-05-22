@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.86
+  version: 0.9.87
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -3246,7 +3246,7 @@ definitions:
         format: int32
         description: Maximum Nodes Per Isolated Query
   ReplicaStatus:
-    x-form-factors: public
+    x-form-factors: public,private
     type: object
     description: Status information on the current state of replicas in the virtual warehouse.
     properties:
@@ -4105,7 +4105,7 @@ definitions:
         description: The current settings stored for query-isolation.
         $ref: '#/definitions/QueryIsolationOptionsResponse'
       replicaStatus:
-        x-form-factors: public
+        x-form-factors: public,private
         description: Status information on the current state of replicas in the virtual warehouse.
         $ref: '#/definitions/ReplicaStatus'
   TagResponse:

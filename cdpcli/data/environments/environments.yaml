@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.86
+  version: 0.9.87
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -4431,7 +4431,7 @@ definitions:
       size:
         type: integer
         format: int64
-        description: The size of volumes.
+        description: The size of each volume in GB.
   AwsFreeIpaInstanceTemplateParams:
     type: object
     description: AWS specific FreeIPA parameters.

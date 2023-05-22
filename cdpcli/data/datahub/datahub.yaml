@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.86
+  version: 0.9.87
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1328,7 +1328,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Instance'
-        description: Some information about the given instance.
+        description: List of instances in this instance group.
   StartClusterVerticalScalingRequest:
     type: object
     description: The request object for Data Hub vertical scaling.
@@ -1366,6 +1366,7 @@ definitions:
     required:
       - id
       - state
+      - instanceType
     properties:
       id:
         type: string
@@ -1373,15 +1374,18 @@ definitions:
       state:
         type: string
         description: The health state of the instance. UNHEALTHY represents instances with unhealthy services, lost instances, or failed operations.
+      instanceType:
+        type: string
+        description: The type of the given instance (either GATEWAY, GATEWAY_PRIMARY, or CORE).
       privateIp:
         type: string
-        description: The private ip of the given instance.
+        description: The private IP of the given instance.
       publicIp:
         type: string
-        description: The public ip of the given instance.
+        description: The public IP of the given instance.
       fqdn:
         type: string
-        description: The FQDN for the instance
+        description: The FQDN of the instance.
       status:
         type: string
         description: The status of the instance. This includes information like whether the instance is being provisioned, stopped, decommissioning failures etc.

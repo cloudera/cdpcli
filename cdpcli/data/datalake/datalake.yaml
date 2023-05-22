@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.86
+  version: 0.9.87
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1035,12 +1035,12 @@ definitions:
     properties:
       name:
         type: string
-        description: The name of the instance group where the given instance is located.
+        description: The name of the instance group.
       instances:
         type: array
         items:
           $ref: '#/definitions/Instance'
-        description: Some information about the given instance.
+        description: List of instances in this instance group.
   Instance:
     type: object
     description: Object which holds some details of an instance for the given cluster.
@@ -1054,12 +1054,57 @@ definitions:
       state:
         type: string
         description: The actual state of the instance.
+      discoveryFQDN:
+        type: string
+        description: The FQDN of the instance.
+      instanceStatus:
+        $ref: '#/definitions/DatalakeInstanceStatus'
+        description: The status of the instance.
+      statusReason:
+        type: string
+        description: The reason for the current status of this instance.
       privateIp:
         type: string
-        description: The private ip of the given instance.
+        description: The private IP of the given instance.
       publicIp:
         type: string
-        description: The public ip of the given instance.
+        description: The public IP of the given instance.
+      sshPort:
+        type: integer
+        format: int32
+        description: The SSH port for the instance.
+      instanceGroup:
+        type: string
+        description: The name of the instance group this instance belongs to.
+      instanceTypeVal:
+        $ref: '#/definitions/DatalakeInstanceType'
+        description: The instance type.
+  DatalakeInstanceStatus:
+    type: string
+    description: The status of the instance.
+    enum:
+      - REQUESTED
+      - FAILED
+      - CREATED
+      - ORCHESTRATION_FAILED
+      - SERVICES_RUNNING
+      - SERVICES_HEALTHY
+      - SERVICES_UNHEALTHY
+      - WAITING_FOR_REPAIR
+      - STOPPED
+      - DELETED_ON_PROVIDER_SIDE
+      - DELETED_BY_PROVIDER
+      - DELETE_REQUESTED
+      - DECOMMISSIONED
+      - DECOMMISION_FAILED
+      - TERMINATED
+  DatalakeInstanceType:
+    type: string
+    description: The type of the instance.
+    enum:
+      - GATEWAY
+      - GATEWAY_PRIMARY
+      - CORE
   Endpoints:
     type: object
     description: Object which holds the exposed endpoints for the given cluster.

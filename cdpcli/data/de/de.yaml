@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.86
+  version: 0.9.87
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -901,10 +901,11 @@ definitions:
           - NONE
       sparkVersion:
         type: string
-        description: Spark version for the virtual cluster. Currently supported spark versions are 2.4.7 and 3.1.1. This feature is only supported in CDE-1.7.0 and beyond.
+        description: Spark version for the virtual cluster. Currently supported spark versions are SPARK2(deprecated), SPARK3 and SPARK3_3. This feature is only supported in CDE-1.7.0 and beyond. SPARK3_3 is supported in CDE-1.19 and beyond.
         enum:
           - SPARK2
           - SPARK3
+          - SPARK3_3
       aclUsers:
         description: Comma-separated Workload usernames of CDP users to be granted access to the Virtual Cluster.
         type: string
