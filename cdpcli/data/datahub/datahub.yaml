@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.87
+  version: 0.9.88
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -57,6 +57,49 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListClustersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/listScalingActivities:
+    post:
+      summary: Lists Scaling activities for a cluster.
+      description: Lists Scaling activities for a cluster.
+      operationId: listScalingActivities
+      x-mutating: false
+      x-paging-default-max-items: 100
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListScalingActivitiesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListScalingActivitiesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/describeScalingActivity:
+    post:
+      summary: Describes the Scaling Activity using Cluster CRN or Cluster NAME and operation ID.
+      description: Describes the Scaling Activity using Cluster CRN or Cluster NAME and operation ID.
+      operationId: describeScalingActivity
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeScalingActivityRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeScalingActivityResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1429,6 +1472,33 @@ definitions:
       open:
         type: boolean
         description: The access status of the given endpoint. Whether its open or not.
+  ScalingActivitySummary:
+    type: object
+    description: Information about a Scaling activity.
+    required:
+      - operationId
+      - startTime
+      - endTime
+      - scalingActivityReason
+      - activityStatus
+    properties:
+      operationId:
+        type: string
+        description: The operation ID of the scaling activity.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the scaling activity.
+      endTime:
+        type: string
+        format: date-time
+        description: The end time of the scaling activity.
+      scalingActivityReason:
+        type: string
+        description: The reason of the scaling activity.
+      activityStatus:
+        type: string
+        description: The status of the scaling activity. Supported values- ACTIVITY_PENDING - If scaling activity is in pending state, METRICS_COLLECTION_SUCCESS/FAILED - for success/failure of metrics collection, UPSCALE_TRIGGER_SUCCESS/FAILED - for success/failure at the time of upscaling, DOWNSCALE_TRIGGER_SUCCESS/FAILED for success/failure at the time of downscaling, SCHEDULE_BASED_UPSCALE/DOWNSCALE - if schedule based scaling is used, SCALING_FLOW_IN_PROGRESS/SUCCESS/FAILED - State at which the scaling has reached, POLICY_ADJUSTMENT - if policy adjustment is taking place, UNKNOWN - if the state is not known.
   ClusterSummary:
     type: object
     description: Information about a cluster.
@@ -2024,6 +2094,79 @@ definitions:
         items:
           $ref: '#/definitions/ClusterSummary'
         description: The clusters.
+  ListScalingActivitiesRequest:
+    type: object
+    description: Request object for List scaling Activities request.
+    required:
+      - cluster
+    properties:
+      cluster:
+        type: string
+        description: The name or CRN of the cluster.
+      duration:
+        type: integer
+        format: int64
+        description: Duration in minutes for which we want all the scaling activities for the cluster. Either duration or start and end time needs to be provided.
+      startTime:
+        type: integer
+        format: int64
+        description: Start time value in epoch millisecond from which we want to get all the scaling activities. Need to specify end time with it.
+      endTime:
+        type: integer
+        format: int64
+        description: End time value in epoch millisecond until which we want to get all the scaling activities. Need to specify start time with it.
+      onlyFailedScalingActivities:
+        type: boolean
+        description: Flag that decides whether to return only failed scaling activities or return all scaling activities in a given duration or a specific time interval.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The size of the page for getting scaling activities.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListScalingActivitiesResponse:
+    type: object
+    description: Response object for list scaling activities request.
+    required:
+      - scalingActivity
+    properties:
+      scalingActivity:
+        type: array
+        items:
+          $ref: '#/definitions/ScalingActivitySummary'
+        x-paging-result: true
+        description: The list of scaling activities.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  DescribeScalingActivityRequest:
+    type: object
+    description: Request object for describing a particular scaling activity using clusterCrn or clusterName and operationId.
+    required:
+      - cluster
+      - operationId
+    properties:
+      cluster:
+        type: string
+        description: The name or CRN of the cluster.
+      operationId:
+        type: string
+        description: Operation ID of the scaling activity.
+  DescribeScalingActivityResponse:
+    type: object
+    description: Response object for describe scaling activity request.
+    required:
+      - scalingActivity
+    properties:
+      scalingActivity:
+        $ref: '#/definitions/ScalingActivitySummary'
+        description: The scaling activity.
   AttachedVolumeRequest:
     type: object
     description: Configurations for additional attached volumes.
@@ -2252,6 +2395,10 @@ definitions:
       enableLoadBalancer:
         type: boolean
         description: Flag that decides whether to provision a load-balancer to front various service endpoints for the given datahub. This will typically be used for HA cluster shapes.
+      javaVersion:
+        type: integer
+        format: int32
+        description: Configure the major version of Java on the cluster.
   CreateAWSClusterResponse:
     type: object
     description: Response object for create AWS cluster request.
@@ -2307,6 +2454,10 @@ definitions:
       enableLoadBalancer:
         type: boolean
         description: Flag that decides whether to provision a load-balancer to front various service endpoints for the given datahub. This will typically be used for HA cluster shapes.
+      javaVersion:
+        type: integer
+        format: int32
+        description: Configure the major version of Java on the cluster.
   CreateAzureClusterResponse:
     type: object
     description: Response object for create Azure cluster request.
@@ -2359,6 +2510,10 @@ definitions:
       datahubDatabase:
         $ref: '#/definitions/DatahubDatabaseType'
         description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+      javaVersion:
+        type: integer
+        format: int32
+        description: Configure the major version of Java on the cluster.
   CreateGCPClusterResponse:
     type: object
     description: Response object for create GCP cluster request.

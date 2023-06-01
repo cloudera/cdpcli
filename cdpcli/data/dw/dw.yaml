@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.87
+  version: 0.9.88
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -367,6 +367,50 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpgradeClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/backupCluster:
+    post:
+      x-mutating: true
+      x-no-compatibility-guarantee: true
+      summary: Creates a backup from the cluster configuration and settings.
+      description: Creates a backup from the configuration and settings, including all the connected DbCatalogs, Virtual Warehouses and Data Visualisation Apps. The returned data may be used to restore all the entities by using the "restore-cluster" command.
+      operationId: backupCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BackupClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/BackupClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/restoreCluster:
+    post:
+      x-mutating: true
+      x-no-compatibility-guarantee: true
+      summary: Restores the cluster from a backup data made by "backup-cluster" command.
+      description: Restores the cluster from a backup data made by "backup-cluster" command. The operation restores the default DbCatalog configuration, the Virtual Warehouses and the Data Visualisation Apps.
+      operationId: restoreCluster
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestoreClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestoreClusterResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1910,6 +1954,93 @@ definitions:
       customSubdomain:
         type: string
         description: Custom environment subdomain. Overrides the environment subdomain using a customized domain either in the old subdomain format like ENV_ID.dw or the new format like dw-ENV_NAME.
+  BackupClusterRequest:
+    type: object
+    description: Request object for the backupCluster method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+  BackupClusterResponse:
+    type: object
+    description: Response object for the backupCluster method.
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+      timestamp:
+        type: string
+        format: date-time
+        description: The date of the creation.
+      data:
+        x-sensitive: true
+        type: string
+        description: The backup data.
+      md5:
+        x-sensitive: true
+        type: string
+        description: The md5 hash of the encoded data.
+  RestoreClusterRequest:
+    type: object
+    description: Request object for the restoreCluster method.
+    required:
+      - clusterId
+      - data
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+      data:
+        type: string
+        description: Dump of configuration received by calling "dump-cluster" command.
+  RestoreClusterResponse:
+    type: object
+    description: Response object for the restoreCluster method.
+    properties:
+      clusterId:
+        type: string
+        description: The the ID of the cluster.
+      operationId:
+        type: string
+        description: The the ID of the restore operation.
+      dbcRestorePlans:
+        type: array
+        description: Information about the restore-plan of the DbCatalogs.
+        items:
+          $ref: '#/definitions/RestoreClusterEntityPlan'
+      hiveRestorePlans:
+        type: array
+        description: Information about the restore-plan of the Hive Virtual Warehouses.
+        items:
+          $ref: '#/definitions/RestoreClusterEntityPlan'
+      impalaRestorePlans:
+        type: array
+        description: Information about the restore-plan of the Impala Virtual Warehouses.
+        items:
+          $ref: '#/definitions/RestoreClusterEntityPlan'
+      vizRestorePlans:
+        type: array
+        description: Information about the restore-plan of the Data Visualization Apps.
+        items:
+          $ref: '#/definitions/RestoreClusterEntityPlan'
+  RestoreClusterEntityPlan:
+    type: object
+    description: Entity status after the restore operation.
+    properties:
+      ref:
+        type: string
+        description: The reference of the entity in the backup data.
+      id:
+        type: string
+        description: The ID of the entity.
+      action:
+        type: string
+        description: 'The action associated with the plan. Possible actions: Create, Update, Skip'
+      message:
+        type: string
+        description: The description of the plan.
   CustomRegistryOptions:
     type: object
     description: Options for custom ACR, ECR, or Docker registry.
@@ -2023,11 +2154,6 @@ definitions:
       enablePrivateAks:
         type: boolean
         description: Enable Azure Private AKS mode.
-        default: false
-      enableUptimeSLA:
-        x-deprecated: true
-        type: boolean
-        description: Enable uptime SLA for Kubernetes API server. This option is deprecated and will be removed upon the next release of the DWX Public Cloud. The uptime SLA for the Kubernetes API server will be always enabled.
         default: false
   PrivateCloudActivationOptions:
     type: object

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.87
+  version: 0.9.88
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1317,6 +1317,10 @@ definitions:
         items:
           $ref: '#/definitions/InstanceGroupRecipeRequest'
         description: Additional recipes that will be attached on the datalake instances (by instance groups, most common ones are like 'master' or 'idbroker').
+      javaVersion:
+        type: integer
+        format: int32
+        description: Configure the major version of Java on the cluster.
   CreateAWSDatalakeResponse:
     type: object
     description: Response object for create AWS datalake request.
@@ -1368,6 +1372,10 @@ definitions:
         items:
           $ref: '#/definitions/InstanceGroupRecipeRequest'
         description: Additional recipes that will be attached on the datalake instances (by instance groups, most common ones are like 'master' or 'idbroker').
+      javaVersion:
+        type: integer
+        format: int32
+        description: Configure the major version of Java on the cluster.
   CreateAzureDatalakeResponse:
     type: object
     description: Response object for create Azure datalake request.
@@ -1416,6 +1424,10 @@ definitions:
         items:
           $ref: '#/definitions/InstanceGroupRecipeRequest'
         description: Additional recipes that will be attached on the datalake instances (by instance groups, most common ones are like 'master' or 'idbroker').
+      javaVersion:
+        type: integer
+        format: int32
+        description: Configure the major version of Java on the cluster.
   CreateGCPDatalakeResponse:
     type: object
     description: Response object for create GCP Data Lake request.
