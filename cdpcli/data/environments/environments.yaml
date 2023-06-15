@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.88
+  version: 0.9.89
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1347,6 +1347,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RotateSaltPasswordResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/updateOrchestratorState:
+    post:
+      summary: Run orchestrator engine state update on the FreeIPA cluster.
+      description: Run orchestrator engine state update on the FreeIPA cluster.
+      operationId: updateOrchestratorState
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateOrchestratorStateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateOrchestratorStateResponse'
         default:
           description: The default response on an error.
           schema:
@@ -4474,3 +4495,15 @@ definitions:
   RotateSaltPasswordResponse:
     type: object
     description: Response object for rotating SaltStack user password on FreeIPA instances.
+  UpdateOrchestratorStateRequest:
+    type: object
+    description: Request object for running orchestrator engine state update on the FreeIPA cluster.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+  UpdateOrchestratorStateResponse:
+    type: object
+    description: Response object for running orchestrator engine state update on the FreeIPA cluster.

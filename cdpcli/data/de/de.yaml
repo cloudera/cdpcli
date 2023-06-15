@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.88
+  version: 0.9.89
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -360,6 +360,9 @@ definitions:
       publicEndpointEnabled:
         type: boolean
         description: If true, the CDE endpoint was created in a publicly accessible subnet.
+      previousVersionDeployed:
+        type: boolean
+        description: The "true" value indicates that the previous version of the CDE service was requested to be deployed.
       workloadAnalyticsEnabled:
         type: boolean
         description: If true, diagnostic information about job and query execution is sent to Cloudera Workload Manager.
@@ -487,6 +490,9 @@ definitions:
       smtpConfig:
         description: SMTP Configurations for Airflow Email Alerts.
         $ref: '#/definitions/SmtpConfigResponse'
+      vcTier:
+        type: string
+        description: Tier of the Virtual Cluster.
   VcResources:
     type: object
     properties:
@@ -653,6 +659,10 @@ definitions:
         type: boolean
         default: false
         description: Creates a CDE endpoint (Load Balancer) in a publicly accessible subnet. If set false, the endpoint will be created in a private subnet and you will need to setup access to the endpoint manually in your cloud account.
+      deployPreviousVersion:
+        type: boolean
+        default: false
+        description: If set to "true", the previous version of the CDE service will be deployed.
       enableWorkloadAnalytics:
         type: boolean
         default: false
@@ -906,6 +916,12 @@ definitions:
           - SPARK2
           - SPARK3
           - SPARK3_3
+      vcTier:
+        type: string
+        description: Tier of the virtual cluster. Currently supported tiers are CORE and ALLP. CORE tiered virtual cluster enables operational deployment via batch jobs. ALLP virtual clusters are all-purpose virtual clusters supporting both operational batch jobs and interactive sessions. This feature is only supported in CDE-1.19.0 and beyond.
+        enum:
+          - ALLP
+          - CORE
       aclUsers:
         description: Comma-separated Workload usernames of CDP users to be granted access to the Virtual Cluster.
         type: string

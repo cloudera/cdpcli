@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.88
+  version: 0.9.89
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -188,6 +188,11 @@ definitions:
         x-paging-input-token: true
         description: A token to specify where to start paginating. This is the nextToken from a previously truncated response. 1 or empty for first page.
         x-form-factors: public
+      includeDeleted:
+        type: boolean
+        description: Include deleted clusters in the response. Optional.
+        default: false
+        x-form-factors: public
   ListClusterItem:
     type: object
     description: List clusters item structure.
@@ -342,6 +347,9 @@ definitions:
       name:
         type: string
         description: The chart name.
+      values:
+        type: string
+        description: Escaped JSON for values.yaml of that chart.
   AvailableDeploymentUpgrade:
     type: object
     description: Available deployment upgrade structure.
@@ -380,6 +388,9 @@ definitions:
         items:
           $ref: '#/definitions/AvailableDeploymentUpgrade'
         description: Any upgrades available for this deployment.
+      overrides:
+        type: string
+        description: Escaped JSON overrides for the deployment's properties.
   History:
     type: object
     description: History structure.
@@ -394,6 +405,9 @@ definitions:
       chart:
         description: Chart that the deployment was created from.
         $ref: '#/definitions/Chart'
+      overrides:
+        type: string
+        description: Escaped JSON overrides for the deployment's properties for given revision.
   DescribeDeploymentResponse:
     type: object
     description: Response structure for describing a deployment.

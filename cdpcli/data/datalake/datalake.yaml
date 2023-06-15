@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.88
+  version: 0.9.89
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -2249,6 +2249,9 @@ definitions:
       skipRangerAudits:
         type: boolean
         description: Skips the backup of the Ranger audits. Redundant if --skip-backup is included. If this option is not provided, Ranger audits are backed up by default.
+      skipBackupValidation:
+        type: boolean
+        description: Skips the validation steps that run prior to the backup. Redundant if --skip-backup is included. If this option is not provided, the validations are performed by default.
   UpgradeDatalakeResponse:
     type: object
     description: Response object for upgrade datalake request.
