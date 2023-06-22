@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.89
+  version: 0.9.90
   title: Cloudera Compute Service
   license:
     name: Apache 2.0

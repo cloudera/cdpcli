@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.89
+  version: 0.9.90
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1930,6 +1930,9 @@ definitions:
       usePrivateLoadBalancer:
         type: boolean
         description: Set up load balancer with private IP address. In AWS it is created in private subnets. In Azure an internal load balancer gets created. Make sure there is connectivity between your client network and the network (VPC/VNet) where CDW environment is deployed.
+      usePublicWorkerNode:
+        type: boolean
+        description: Set up worker node with public IP address. In AWS it is created in public subnets.
       enableStorageRoles:
         type: boolean
         description: Enable Storage Roles

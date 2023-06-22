@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.89
+  version: 0.9.90
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1041,6 +1041,11 @@ definitions:
         items:
           $ref: '#/definitions/Instance'
         description: List of instances in this instance group.
+      availabilityZones:
+        type: array
+        items:
+          type: string
+        description: List of availability zones that this instance group is associated with.
   Instance:
     type: object
     description: Object which holds some details of an instance for the given cluster.
@@ -1073,12 +1078,32 @@ definitions:
         type: integer
         format: int32
         description: The SSH port for the instance.
+      clouderaManagerServer:
+        type: boolean
+        description: Whether the instance has Cloudera Manager deployed or not.
       instanceGroup:
         type: string
         description: The name of the instance group this instance belongs to.
       instanceTypeVal:
         $ref: '#/definitions/DatalakeInstanceType'
         description: The instance type.
+      attachedVolumes:
+        type: array
+        description: List of volumes attached to this instance.
+        items:
+          $ref: '#/definitions/AttachedVolumeDetail'
+      availabilityZone:
+        type: string
+        description: The availability zone of the instance.
+      instanceVmType:
+        type: string
+        description: The VM type of the instance. Supported values depend on the cloud platform.
+      rackId:
+        type: string
+        description: The rack ID of the instance in Cloudera Manager.
+      subnetId:
+        type: string
+        description: The subnet ID of the instance.
   DatalakeInstanceStatus:
     type: string
     description: The status of the instance.
@@ -1105,6 +1130,21 @@ definitions:
       - GATEWAY
       - GATEWAY_PRIMARY
       - CORE
+  AttachedVolumeDetail:
+    type: object
+    description: The attached volume configuration.
+    properties:
+      count:
+        type: integer
+        format: int32
+        description: The number of volumes.
+      volumeType:
+        type: string
+        description: The type of volumes.
+      size:
+        type: integer
+        format: int32
+        description: The size of each volume in GB.
   Endpoints:
     type: object
     description: Object which holds the exposed endpoints for the given cluster.
@@ -1312,6 +1352,9 @@ definitions:
       enableRangerRaz:
         type: boolean
         description: Whether to enable Ranger RAZ for the datalake. Defaults to not being enabled.
+      multiAz:
+        type: boolean
+        description: Controls if the datalake is deployed in a multi-availability zone way.
       recipes:
         type: array
         items:

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.89
+  version: 0.9.90
   title: Cloudera Audit Service
   license:
     name: Apache 2.0
