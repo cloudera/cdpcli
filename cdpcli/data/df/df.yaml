@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.90
+  version: 0.9.91
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -884,6 +884,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/df/upgradeService:
+    post:
+      summary: Upgrade service.
+      description: Upgrade an enabled DataFlow service to the latest version.
+      operationId: upgradeService
+      x-entitlement: DFX_UPGRADE
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeServiceRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeServiceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
 definitions:
   Error:
     type: object
@@ -1487,14 +1509,14 @@ definitions:
       pageSize:
         type: integer
         format: int32
-        minimum: 20
+        minimum: 1
         maximum: 100
         x-paging-page-size: true
         description: The page size.
       startingToken:
         type: string
         x-paging-input-token: true
-        description: The starting page token.
+        description: The token pointing to the next element to be retrieved.
       sorts:
         type: array
         items:
@@ -1636,14 +1658,14 @@ definitions:
       pageSize:
         type: integer
         format: int32
-        minimum: 20
+        minimum: 1
         maximum: 100
         x-paging-page-size: true
         description: The page size.
       startingToken:
         type: string
         x-paging-input-token: true
-        description: The starting page token.
+        description: The token pointing to the next element to be retrieved.
       searchTerm:
         type: string
         description: Search term by which to filter (optional)
@@ -1999,14 +2021,14 @@ definitions:
       pageSize:
         type: integer
         format: int32
-        minimum: 20
+        minimum: 1
         maximum: 100
         x-paging-page-size: true
         description: The page size.
       startingToken:
         type: string
         x-paging-input-token: true
-        description: The starting page token.
+        description: The token pointing to the next element to be retrieved.
       sorts:
         type: array
         items:
@@ -2299,7 +2321,8 @@ definitions:
         description: The instance type of the kubernetes nodes currently in use by DataFlow for this service.
       clusterUsable:
         type: boolean
-        description: Whether or not a successfully created and usable cluster exists
+        description: Whether or not a successfully created and usable cluster exists. Deprecated. Use 'validActions' instead.
+        x-deprecated: true
       validActions:
         type: array
         items:
@@ -2388,7 +2411,8 @@ definitions:
         description: Cluster id of the service, if enabled
       clusterUsable:
         type: boolean
-        description: Whether or not a successfully created and usable cluster exists
+        description: Whether or not a successfully created and usable cluster exists. Deprecated. Use 'validActions' instead.
+        x-deprecated: true
       validActions:
         type: array
         items:
@@ -2449,14 +2473,14 @@ definitions:
       pageSize:
         type: integer
         format: int32
-        minimum: 20
+        minimum: 1
         maximum: 100
         x-paging-page-size: true
         description: The page size.
       startingToken:
         type: string
         x-paging-input-token: true
-        description: The starting page token.
+        description: The token pointing to the next element to be retrieved.
       searchTerm:
         type: string
         description: Search term to filter by name
@@ -2578,6 +2602,9 @@ definitions:
       instanceType:
         type: string
         description: Indicates custom instance type to be used
+      skipPreflightChecks:
+        type: boolean
+        description: Indicates whether to skip Liftie's pre-flight checks.
   EnableServiceResponse:
     type: object
     description: Response object for EnableService
@@ -2636,6 +2663,9 @@ definitions:
         items:
           type: string
         description: IP Ranges that are authorized to access CDF local endpoints.
+      skipPreflightChecks:
+        type: boolean
+        description: Indicates whether to skip Liftie's pre-flight checks.
   UpdateServiceResponse:
     type: object
     description: Response object for UpdateService
@@ -2801,6 +2831,29 @@ definitions:
       cloudUserId:
         type: string
         description: The cloudUserId of the newly revoked user
+  UpgradeServiceRequest:
+    type: object
+    description: Request object for UpgradeService
+    required:
+      - serviceCrn
+    properties:
+      serviceCrn:
+        type: string
+        description: The service CRN.
+      skipPreflightChecks:
+        type: boolean
+        description: Indicates whether or not to skip preflight checks when upgrading the workload cluster.
+      upgradeDeploymentsNifiVersion:
+        type: boolean
+        description: Indicates whether deployments NiFi version need to be upgraded; defaults to false
+        default: false
+  UpgradeServiceResponse:
+    type: object
+    description: Response object for UpgradeService
+    properties:
+      service:
+        description: The service.
+        $ref: '#/definitions/Service'
   ListDiagnosticsRequest:
     type: object
     description: A request to list past and present diagnostics for a given DataFlow Service.
@@ -2813,14 +2866,14 @@ definitions:
       pageSize:
         type: integer
         format: int32
-        minimum: 10
+        minimum: 1
         maximum: 100
         x-paging-page-size: true
         description: The page size.
       startingToken:
         type: string
         x-paging-input-token: true
-        description: The starting page token.
+        description: The token pointing to the next element to be retrieved.
   DiagnosticsStatus:
     type: string
     description: Diagnostics status enum.

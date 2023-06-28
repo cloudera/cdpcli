@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.90
+  version: 0.9.91
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -876,6 +876,9 @@ definitions:
       nfsVersion:
         type: string
         description: The NFS Protocol version of the NFS server we are using for Azure and Private Cloud.
+      mlVersion:
+        type: string
+        description: The version of ML workload app to install.
       enableModelMetrics:
         type: boolean
         description: Enables the model metrics service for exporting metrics for models to a metrics store.
@@ -1279,8 +1282,7 @@ definitions:
         description: The name of the workspace.
       mlVersion:
         type: string
-        description: The version of workspace to upgrade to. (Deprecated).
-        x-deprecated: true
+        description: The version of workspace to upgrade to.
       workspaceCrn:
         type: string
         description: The CRN of the workspace. If CRN is specified only the CRN is used for identifying the workspace, environment and name arguments are ignored.

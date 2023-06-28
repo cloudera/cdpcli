@@ -5,7 +5,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.90
+  version: 0.9.91
   title: Cloudera Replication Manager Service
   license:
     name: Apache 2.0
@@ -98,6 +98,69 @@ paths:
           description: Describes a successful response to a valid request.
           schema:
             $ref: '#/definitions/GetCredentialsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/createAwsCredential:
+    post:
+      summary: Create an AWS Cloud Credential.
+      description: Creates a new AWS cloud credential.
+      operationId: createAwsCredential
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAwsCredentialRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAwsCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/createAbfsCredential:
+    post:
+      summary: Create an ABFS Cloud Credential.
+      description: Creates a new ABFS cloud credential.
+      operationId: createAbfsCredential
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAbfsCredentialRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAbfsCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/deleteCredential:
+    post:
+      summary: Delete Cloud Credential.
+      description: Permanently deletes a specific cloud credential.
+      operationId: deleteCredential
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteCredentialRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteCredentialResponse'
         default:
           description: The default response on an error.
           schema:
@@ -207,6 +270,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/downloadDiagnosticBundle:
+    post:
+      summary: Download diagnostic bundle for a policy.
+      description: Downloads the previously collected diagnostic bundle if available. Before calling, the get-command-status command shall be polled until the command's status shows 'DOWNLOADABLE_WITH_CLI'. If the status is 'DOWNLOADABLE_WITH_URL', the result can be downloaded with the given result data URL only.
+      operationId: downloadDiagnosticBundle
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DownloadDiagnosticBundleRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/DownloadDiagnosticBundleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/collectDiagnosticBundle:
+    post:
+      summary: Collect diagnostic bundle for a policy.
+      description: Triggers the collection of diagnostic bundle for a policy.
+      operationId: collectDiagnosticBundle
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CollectDiagnosticBundleRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/CollectDiagnosticBundleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -294,6 +399,105 @@ definitions:
         description: List of credentials.
         items:
           $ref: '#/definitions/CredentialDetails'
+  DeleteCredentialRequest:
+    type: object
+    description: Request object for deleting a credential.
+    required:
+      - name
+    properties:
+      name:
+        description: Name of the cloud credential to delete.
+        type: string
+  DeleteCredentialResponse:
+    type: object
+    description: Response object for delete credential operation.
+    properties:
+      errors:
+        description: The list of response errors in case of a partial failure while deleting the credential.
+        type: array
+        items:
+          $ref: '#/definitions/ApiError'
+  CreateAwsCredentialRequest:
+    type: object
+    description: Request object for creating AWS IAM or Access & Secret Key cloud credentials.
+    required:
+      - name
+      - clusters
+      - type
+    properties:
+      name:
+        description: Name of the credential.
+        type: string
+      clusters:
+        description: List of cluster CRNs where the credential should be created.
+        type: array
+        items:
+          type: string
+      type:
+        description: 'Type of the credential. Additional required parameters by type: IAM: none; ACCESSKEY: accessKey, secretKey. Superfluous parameters are ignored. Providing IAM will create an IAM Role-based Authentication account in Cloudera Manager. Providing ACCESSKEY will create an AWS Access Key Authentication account in Cloudera Manager.'
+        $ref: '#/definitions/AwsCloudCredentialType'
+      accessKey:
+        description: AWS access key.
+        type: string
+        x-sensitive: true
+      secretKey:
+        description: AWS secret key.
+        type: string
+        x-sensitive: true
+  CreateAwsCredentialResponse:
+    type: object
+    description: Response object for creating AWS credentials.
+    properties:
+      errors:
+        description: The list of response errors in case of a partial failure while creating the credential.
+        type: array
+        items:
+          $ref: '#/definitions/ApiError'
+  CreateAbfsCredentialRequest:
+    type: object
+    description: 'Request object for creating ABFS cloud credentials. Currently supported cloud credentials: ABFS Access Key for Ambari clusters, ABFS Client Secret for CM clusters.'
+    required:
+      - name
+      - clusters
+      - type
+    properties:
+      name:
+        description: Name of the credential.
+        type: string
+      clusters:
+        description: List of cluster CRNs where the credential should be created.
+        type: array
+        items:
+          type: string
+      type:
+        description: 'Type of the credential. Additional required parameters by type: ACCESSKEY: storageAccountName, accessKey; CLIENTKEY: clientId, clientSecretKey, tenantId. Superfluous parameters are ignored. Providing ACCESSKEY will create an ABFS Access Key based account in Ambari. Providing CLIENTKEY will create an Azure Active Directory Service Principal account in Cloudera Manager. ACCESSKEY is only supported on Ambari, while CLIENTKEY is only supported on Cloudera Manager.'
+        $ref: '#/definitions/AbfsCloudCredentialType'
+      accessKey:
+        description: ABFS access key.
+        type: string
+        x-sensitive: true
+      storageAccountName:
+        description: ABFS storage account name.
+        type: string
+      clientId:
+        description: Client ID of an Active Directory service principal account.
+        type: string
+      clientSecretKey:
+        description: Client Key of an Active Directory service principal account.
+        type: string
+        x-sensitive: true
+      tenantId:
+        description: Tenant ID of an Active Directory service principal account.
+        type: string
+  CreateAbfsCredentialResponse:
+    type: object
+    description: Response object for creating ABFS credentials.
+    properties:
+      errors:
+        description: The list of response errors in case of a partial failure while creating the credential.
+        type: array
+        items:
+          $ref: '#/definitions/ApiError'
   ListPoliciesRequest:
     type: object
     description: Request object for listing all policies.
@@ -388,6 +592,63 @@ definitions:
   ActivatePolicyResponse:
     type: object
     description: Response object for resumePolicy.
+  DownloadDiagnosticBundleRequest:
+    type: object
+    description: Request to download the diagnostic bundle for the given cluster and command id.
+    required:
+      - clusterCrn
+      - commandId
+    properties:
+      clusterCrn:
+        description: The CRN of the target cluster.
+        type: string
+      commandId:
+        description: The command ID from the response of collect-diagnostic-bundle command.
+        type: string
+  DownloadDiagnosticBundleResponse:
+    type: object
+    description: Response object for download-diagnostic-bundle. On certain clusters this response will show if the download is only available directly from CM.
+    properties:
+      bundleFile:
+        x-skip-logging: true
+        description: Base64 encoded content of the diagnostic bundle zip file. A script like this can be used to save the response as file 'cat response.json | jq -r '.bundleFile' | base64 -D > bundle.zip'
+        type: string
+        format: byte
+  CollectDiagnosticBundleRequest:
+    type: object
+    description: Triggers a diagnostic bundle collect command for the given cluster and policyName.
+    required:
+      - clusterCrn
+      - policyName
+    properties:
+      clusterCrn:
+        description: The CRN of the target cluster.
+        type: string
+      policyName:
+        description: Name of the policy.
+        type: string
+  CollectDiagnosticBundleResponse:
+    type: object
+    description: Response object for collect-diagnostic-bundle.
+    required:
+      - commandId
+    properties:
+      commandId:
+        description: ID of the diagnostic bundle collection command issued against the CM. Polling get-command-status with this command id returns the current state of the command.
+        format: int64
+        type: integer
+      name:
+        description: Name of the policy.
+        type: string
+      active:
+        description: Whether the diagnostic bundle command is active.
+        type: boolean
+      startTime:
+        description: Start time of the diagnostic bundle collection command.
+        type: string
+      resultMessage:
+        description: Diagnostic bundle collection command result message.
+        type: string
   ApiError:
     type: object
     description: API error.
@@ -1086,3 +1347,15 @@ definitions:
       sourceUser:
         description: Source user.
         type: string
+  AwsCloudCredentialType:
+    type: string
+    description: AWS cloud credential type.
+    enum:
+      - IAM
+      - ACCESSKEY
+  AbfsCloudCredentialType:
+    type: string
+    description: ABFS cloud credential type.
+    enum:
+      - ACCESSKEY
+      - CLIENTKEY

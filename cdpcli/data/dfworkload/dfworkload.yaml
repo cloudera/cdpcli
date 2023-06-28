@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.90
+  version: 0.9.91
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1057,6 +1057,9 @@ definitions:
       autoScalingEnabled:
         type: boolean
         description: Specifies that auto-scaling should be enabled.
+      flowMetricsScalingEnabled:
+        type: boolean
+        description: Specifies that Flow metrics should be enabled for scaling.
       autoScaleMinNodes:
         type: integer
         format: int32
@@ -1210,6 +1213,9 @@ definitions:
       autoScalingEnabled:
         type: boolean
         description: Specifies that auto-scaling should be enabled.
+      flowMetricsScalingEnabled:
+        type: boolean
+        description: Specifies that Flow metrics should be enabled for scaling.
       autoScaleMinNodes:
         type: integer
         format: int32
@@ -2056,6 +2062,9 @@ definitions:
       autoscalingEnabled:
         type: boolean
         description: Whether or not autoscaling is enabled for this deployment
+      flowMetricsScalingEnabled:
+        type: boolean
+        description: Whether or not flow metrics scaling is enabled for this deployment
       autoscaleMinNodes:
         type: integer
         format: int32
@@ -2350,6 +2359,9 @@ definitions:
       autoScalingEnabled:
         type: boolean
         description: Specifies that auto-scaling should be enabled.
+      flowMetricsScalingEnabled:
+        type: boolean
+        description: Specifies that Flow metrics should be enabled for scaling.
       autoScaleMinNodes:
         type: integer
         format: int32
