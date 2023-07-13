@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.91
+  version: 0.9.92
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -2662,17 +2662,15 @@ definitions:
     description: Response object for renew certificate request, deprecated.
     x-deprecated: true
   ImageRequest:
-    description: The image request for the datalake. This must not be set if the runtime parameter is provided. The image ID parameter is required if this is present, but the image catalog name is optional, defaulting to 'cdp-default' if not present.
+    description: The image request for the datalake. When the 'runtime' parameter is set, only the 'os' parameter can be provided. Otherwise, you can use 'catalog name' and/or 'id' for selecting an image.
     type: object
-    required:
-      - id
     properties:
       id:
         type: string
         description: The image ID from the catalog. The corresponding image will be used for the created cluster machines.
       catalogName:
         type: string
-        description: The name of the custom image catalog to use.
+        description: The name of the custom image catalog to use, defaulting to 'cdp-default' if not present.
         default: cdp-default
   ResizeDatalakeRequest:
     type: object

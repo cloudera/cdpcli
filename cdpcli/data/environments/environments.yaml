@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.91
+  version: 0.9.92
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2220,6 +2220,11 @@ definitions:
       createPrivateEndpoints:
         type: boolean
         description: When this is enabled, then Azure Postgres will be configured with Private Endpoint and a Private DNS Zone. When this is disabled, then Azure Service Endpoints will be created. The default value is disabled.
+      endpointAccessGatewaySubnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnets to use for endpoint access gateway.
       encryptionKeyUrl:
         type: string
         description: URL of the key which will be used to encrypt the Azure Managed Disks, if entitlement has been granted.
@@ -2280,6 +2285,11 @@ definitions:
       freeIpa:
         $ref: '#/definitions/GCPFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
+      endpointAccessGatewaySubnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnets to use for endpoint access gateway.
       tags:
         type: array
         description: Tags that can be attached to GCP resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
@@ -4443,10 +4453,9 @@ definitions:
         type: string
   DownscaleFreeipaRequest:
     type: object
-    description: The request object for FreeIPA downscale.
+    description: The request object for FreeIPA downscale. Either targetAvailabilityType or instances
     required:
       - environmentName
-      - targetAvailabilityType
     properties:
       environmentName:
         type: string

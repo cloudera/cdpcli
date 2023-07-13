@@ -5,7 +5,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.91
+  version: 0.9.92
   title: Cloudera Replication Manager Service
   license:
     name: Apache 2.0
@@ -308,6 +308,27 @@ paths:
           description: Describes a successful response to a valid request.
           schema:
             $ref: '#/definitions/CollectDiagnosticBundleResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/replicationmanager/getCommandStatus:
+    post:
+      summary: Get the status of the given CM command.
+      description: Return the current status of the given CM command.
+      operationId: getCommandStatus
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetCommandStatusRequest'
+      responses:
+        200:
+          description: Describes a successful response to a valid request.
+          schema:
+            $ref: '#/definitions/GetCommandStatusResponse'
         default:
           description: The default response on an error.
           schema:
@@ -648,6 +669,61 @@ definitions:
         type: string
       resultMessage:
         description: Diagnostic bundle collection command result message.
+        type: string
+  GetCommandStatusRequest:
+    type: object
+    description: Get the current status of any CM command.
+    required:
+      - clusterCrn
+      - commandId
+    properties:
+      clusterCrn:
+        description: The CRN of the target cluster.
+        type: string
+      commandId:
+        description: ID of a CM command on the cluster.
+        type: string
+  GetCommandStatusResponse:
+    type: object
+    description: Response object for get command status.
+    required:
+      - commandId
+    properties:
+      commandId:
+        description: Id of the CM command.
+        format: int64
+        type: integer
+      success:
+        description: Whether the diagnostic collection is successful.
+        type: boolean
+      active:
+        description: Whether the command is still active.
+        type: boolean
+      name:
+        description: Name of the policy.
+        type: string
+      startTime:
+        description: Start time of the CM command.
+        type: string
+      endTime:
+        description: End time of the CM command.
+        type: string
+      resultDataUrl:
+        description: Some commands have result data URL for downloading the diagnostic bundle. On certain CM versions the bundle download is only available through this URL, but not with download-diagnostic-bundle operation.
+        type: string
+      resultMessage:
+        description: Result message of the command.
+        type: string
+      bundleStatus:
+        description: The current status of the command.
+        type: string
+        enum:
+          - IN_PROGRESS
+          - DOWNLOADABLE_WITH_URL
+          - DOWNLOADABLE_WITH_CLI
+          - FAILED
+      bundleStatusMessage:
+        description: Further information about the current command status.
         type: string
   ApiError:
     type: object

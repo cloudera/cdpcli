@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.91
+  version: 0.9.92
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2147,17 +2147,6 @@ definitions:
           - LoadBalancer
           - UserAssignedNATGateway
           - UserDefinedRouting
-      enablePrivateSQL:
-        type: boolean
-        description: Enables private SQL for the cluster deployment.
-        default: false
-      privateDNSZoneAKS:
-        type: string
-        description: Private DNS zone AKS resource ID.
-      enablePrivateAks:
-        type: boolean
-        description: Enable Azure Private AKS mode.
-        default: false
   PrivateCloudActivationOptions:
     type: object
     description: Options for activating a Private Cloud environment.
