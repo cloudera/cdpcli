@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.92
+  version: 0.9.93
   title: Image catalog service
   license:
     name: Apache 2.0

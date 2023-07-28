@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.92
+  version: 0.9.93
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -1980,6 +1980,9 @@ definitions:
       cfmNifiVersion:
         type: string
         description: The version of NiFi being used by this deployment.
+      flowMetricsScalingEnabled:
+        type: boolean
+        description: Whether or not to use Flow metrics to scale the deployment. May only be specified when autscalingEnabled is true.
   FilterOption:
     type: object
     description: A filter option
@@ -2461,6 +2464,15 @@ definitions:
       availableK8sVersionUpgrade:
         type: string
         description: The available kubernetes version that cluster can be upgraded to.
+      userDefinedRouting:
+        type: boolean
+        description: Whether User Defined Routing (UDR) mode is enabled for AKS clusters or not.
+      podCidr:
+        type: string
+        description: CIDR range from which to assign IPs to pods in the kubernetes cluster.
+      serviceCidr:
+        type: string
+        description: CIDR range from which to assign IPs to internal services in the kubernetes cluster.
   ListServicesRequest:
     type: object
     description: Request object for the ListServices method.
@@ -2605,6 +2617,15 @@ definitions:
       skipPreflightChecks:
         type: boolean
         description: Indicates whether to skip Liftie's pre-flight checks.
+      userDefinedRouting:
+        type: boolean
+        description: Indicates whether User Defined Routing (UDR) mode is enabled for AKS clusters.
+      podCidr:
+        type: string
+        description: CIDR range from which to assign IPs to pods in the kubernetes cluster.
+      serviceCidr:
+        type: string
+        description: CIDR range from which to assign IPs to internal services in the kubernetes cluster.
   EnableServiceResponse:
     type: object
     description: Response object for EnableService

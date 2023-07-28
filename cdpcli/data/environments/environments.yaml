@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.92
+  version: 0.9.93
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1753,6 +1753,7 @@ definitions:
         description: An description of the environment.
       enableTunnel:
         type: boolean
+        default: true
         description: Whether to enable SSH tunneling for the environment.
       workloadAnalytics:
         type: boolean
@@ -2193,6 +2194,7 @@ definitions:
         description: An description of the environment.
       enableTunnel:
         type: boolean
+        default: true
         description: Whether to enable SSH tunneling for the environment.
       workloadAnalytics:
         type: boolean
@@ -2220,6 +2222,12 @@ definitions:
       createPrivateEndpoints:
         type: boolean
         description: When this is enabled, then Azure Postgres will be configured with Private Endpoint and a Private DNS Zone. When this is disabled, then Azure Service Endpoints will be created. The default value is disabled.
+      endpointAccessGatewayScheme:
+        type: string
+        description: The scheme for the endpoint gateway. PUBLIC creates an external endpoint that can be accessed over the Internet. Defaults to PRIVATE which restricts the traffic to be internal to the VNet.
+        enum:
+          - PUBLIC
+          - PRIVATE
       endpointAccessGatewaySubnetIds:
         type: array
         items:
@@ -2275,6 +2283,7 @@ definitions:
         description: A description of the environment.
       enableTunnel:
         type: boolean
+        default: true
         description: Whether to enable SSH tunneling for the environment.
       workloadAnalytics:
         type: boolean
@@ -2285,6 +2294,12 @@ definitions:
       freeIpa:
         $ref: '#/definitions/GCPFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
+      endpointAccessGatewayScheme:
+        type: string
+        description: The scheme for the endpoint gateway. PUBLIC creates an external endpoint that can be accessed over the Internet. Defaults to PRIVATE which restricts the traffic to be internal to the VPC.
+        enum:
+          - PUBLIC
+          - PRIVATE
       endpointAccessGatewaySubnetIds:
         type: array
         items:
@@ -4466,6 +4481,11 @@ definitions:
           - HA
           - TWO_NODE_BASED
         description: The target FreeIPA availability type.
+      instances:
+        type: array
+        items:
+          type: string
+        description: The instance Ids to downscale.
   DownscaleFreeipaResponse:
     type: object
     description: The response object for FreeIPA downscale.
