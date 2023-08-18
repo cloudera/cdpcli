@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.93
+  version: 0.9.94
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -2672,6 +2672,9 @@ definitions:
         type: string
         description: The name of the custom image catalog to use, defaulting to 'cdp-default' if not present.
         default: cdp-default
+      os:
+        type: string
+        description: The OS of the image used for cluster instances.
   ResizeDatalakeRequest:
     type: object
     description: Datalake resize request.

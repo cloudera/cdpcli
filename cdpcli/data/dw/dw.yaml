@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.93
+  version: 0.9.94
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2074,12 +2074,14 @@ definitions:
     properties:
       privateSubnetIds:
         type: array
-        description: IDs of private AWS subnets where the cluster should be deployed.
+        description: DEPRECATED in favour of workerSubnetIds and lbSubnetIds field. IDs of private AWS subnets where the cluster should be deployed.
+        x-deprecated: true
         items:
           type: string
       publicSubnetIds:
         type: array
-        description: IDs of public AWS subnets where the cluster should be deployed.
+        description: DEPRECATED in favour of workerSubnetIds and lbSubnetIds field. IDs of public AWS subnets where the cluster should be deployed.
+        x-deprecated: true
         items:
           type: string
       workerSubnetIds:

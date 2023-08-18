@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.93
+  version: 0.9.94
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -3695,6 +3695,9 @@ definitions:
       id:
         type: string
         description: Image ID to use for creating FreeIPA instances.
+      os:
+        type: string
+        description: The OS to use for creating FreeIPA instances.
   TagRequest:
     description: A label that can be attached to some resources.
     type: object

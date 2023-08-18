@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.93
+  version: 0.9.94
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -524,14 +524,10 @@ definitions:
         description: The volume size in GB.
   GetLogsRequest:
     type: object
-    description: GetLogsRequestfor getting logs for a request ID.
+    description: GetLogsRequest for getting logs for a request ID.
     required:
-      - workspaceCrn
       - requestID
     properties:
-      workspaceCrn:
-        type: string
-        description: WorkspaceCrn the requestID belongs to.
       requestID:
         type: string
         description: Unique Key to identify a set of logs.
@@ -546,6 +542,10 @@ definitions:
         type: integer
         format: int32
         description: offset from which the logs should be fetched.
+      workspaceCrn:
+        type: string
+        description: Deprecated. Please begin to use resourceCrn, as this will soon be unsupported
+        x-deprecated: true
   GetLogsResponse:
     type: object
     description: GetLogsResponse contains all the logs for a given request id.
@@ -592,12 +592,14 @@ definitions:
   GetAuditEventsRequest:
     type: object
     description: GetAuditEventsRequest to get all audit events for a given workspace crn.
-    required:
-      - workspaceCrn
     properties:
       workspaceCrn:
         type: string
-        description: Workspace crn for which audit events to be fetched.
+        description: Deprecated, please begin to use Resource crn, as this will soon be unsupported.
+        x-deprecated: true
+      resourceCrn:
+        type: string
+        description: Resource crn for which audit events to be fetched. Resource can be workspace or model registry.
   GetAuditEventsResponse:
     type: object
     description: GetAuditEventsResponse containes all the audit events for a given workspace crn.
