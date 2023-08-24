@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.94
+  version: 0.9.95
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -360,6 +360,9 @@ definitions:
       publicEndpointEnabled:
         type: boolean
         description: If true, the CDE endpoint was created in a publicly accessible subnet.
+      networkOutboundType:
+        type: string
+        description: Network outbound type. Currently 'udr' is the only supported.
       previousVersionDeployed:
         type: boolean
         description: The "true" value indicates that the previous version of the CDE service was requested to be deployed.
@@ -697,7 +700,7 @@ definitions:
         default: false
       enablePrivateNetwork:
         type: boolean
-        description: Create CDE with fully private Azure services (AKS, MySQL, etc.) and enable vnet access via private endpoints and private link. This option is available only for Azure services.
+        description: Create a fully private CDE instance on either Amazon or Azure. This includes services such as Kubernetes, MySQL, etc. For Azure, this will also enable virtual network (VNet) access via private endpoints and private link.
       subnets:
         type: array
         items:

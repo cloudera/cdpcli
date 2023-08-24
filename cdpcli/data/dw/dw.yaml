@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.94
+  version: 0.9.95
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -565,8 +565,9 @@ paths:
   /api/v1/dw/createDbc:
     post:
       x-no-compatibility-guarantee: true
+      x-deprecated: true
       summary: Create a Database Catalog.
-      description: Create a Database Catalog.
+      description: 'DEPRECATED: Create a Database Catalog. The Database Catalog creation is deprecated and will be removed in subsequent releases. The Default Database Catalog is getting created during the cluster activation (create-cluster).'
       operationId: createDbc
       parameters:
         - name: input
@@ -2478,7 +2479,8 @@ definitions:
         x-form-factors: public
       isDefault:
         type: boolean
-        description: Is this a Default Database Catalog?
+        x-deprecated: true
+        description: 'NOTE: creating Default Database Catalogs is deprecated and explicitly disabled. Denotes if Default Database Catalog creation needed.'
         default: false
       tenantStorageRole:
         type: string
@@ -3450,6 +3452,11 @@ definitions:
         description: Tags associated with the resources.
         items:
           $ref: '#/definitions/TagRequest'
+      hiveAuthenticationMode:
+        type: string
+        x-nullable: true
+        x-form-factors: private
+        description: 'Sets the authentication mode to use by Hive Server: * `LDAP` * `KERBEROS` Default: `LDAP` if not specified'
       platformJwtAuth:
         type: boolean
         default: false
@@ -4149,12 +4156,24 @@ definitions:
           impalaJdbc:
             type: string
             description: JDBC URL for Impala Virtual Warehouses.
+          impalaKerberosJdbc:
+            type: string
+            x-form-factors: private
+            description: JDBC URL for Impala Virtual Warehouses with Kerberos authentication.
           impalaFENGJdbc:
             type: string
             description: FENG JDBC URL for Impala Virtual Warehouses.
           impalaShell:
             type: string
             description: Command to use impala-shell for Impala Virtual Warehouses.
+          fengImpalaShell:
+            type: string
+            x-form-factors: private
+            description: Command to use impala-shell for Unified Analytics
+          kerberosImpalaShell:
+            type: string
+            x-form-factors: private
+            description: Command to use impala-shell for Impala Virtual Warehouses with Kerberos authentication.
           hue:
             type: string
             description: URL of Hue for both Hive and Impala Virtual Warehouses.
@@ -4228,6 +4247,11 @@ definitions:
         x-form-factors: public,private
         description: Status information on the current state of replicas in the virtual warehouse.
         $ref: '#/definitions/ReplicaStatus'
+      hiveAuthenticationMode:
+        type: string
+        x-nullable: true
+        x-form-factors: private
+        description: 'Authentication mode used by Hive Server: * `LDAP` * `KERBEROS`'
   TagResponse:
     description: A key/value pair attached to some resources.
     type: object
@@ -4441,6 +4465,11 @@ definitions:
       queryIsolationOptions:
         description: Query isolation settings for Hive Virtual Warehouses.
         $ref: '#/definitions/QueryIsolationOptionsRequest'
+      hiveAuthenticationMode:
+        type: string
+        x-nullable: true
+        x-form-factors: private
+        description: 'Sets the authentication mode to use by Hive Server: * `LDAP` * `KERBEROS` If not set then the authentication mode will not be changed during update.'
       platformJwtAuth:
         type: boolean
         x-nullable: true
