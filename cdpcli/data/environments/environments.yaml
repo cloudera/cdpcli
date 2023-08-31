@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.95
+  version: 0.9.96
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1223,6 +1223,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/validateAwsCloudStorage:
+    post:
+      summary: Validates AWS cloud storage settings of the given environment.
+      description: Validates AWS cloud storage settings of the given environment.
+      operationId: validateAwsCloudStorage
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ValidateAwsCloudStorageRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ValidateAwsCloudStorageResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/validateAzureCloudStorage:
+    post:
+      summary: Validates Azure cloud storage settings of the given environment.
+      description: Validates Azure cloud storage settings of the given environment.
+      operationId: validateAzureCloudStorage
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ValidateAzureCloudStorageRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ValidateAzureCloudStorageResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/setCatalog:
     post:
       summary: Sets a catalog for a FreeIPA installation.
@@ -1368,6 +1410,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateOrchestratorStateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/updateProxyConfig:
+    post:
+      summary: Updates the proxy config of the given environment.
+      description: Updates the proxy config of the given environment.
+      operationId: updateProxyConfig
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateProxyConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateProxyConfigResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3655,6 +3718,9 @@ definitions:
         items:
           type: string
         description: The recipes for the FreeIPA cluster.
+      instanceType:
+        type: string
+        description: Custom instance type of FreeIPA instances.
       multiAz:
         type: boolean
         description: Flag which marks that the FreeIPA will be deployed in a multi-availability zone way or not.
@@ -3671,6 +3737,9 @@ definitions:
         items:
           type: string
         description: The recipes for the FreeIPA cluster.
+      instanceType:
+        type: string
+        description: Custom instance type of FreeIPA instances.
   GCPFreeIpaCreationRequest:
     description: Request object for creating FreeIPA in the environment.
     type: object
@@ -3684,6 +3753,9 @@ definitions:
         items:
           type: string
         description: The recipes for the FreeIPA cluster.
+      instanceType:
+        type: string
+        description: Custom instance type of FreeIPA instances.
   FreeIpaImageRequest:
     description: Request object for FreeIPA image.
     type: object
@@ -4419,6 +4491,68 @@ definitions:
   DeleteAuditCredentialResponse:
     type: object
     description: Response object for a delete audit credential request.
+  ValidateAwsCloudStorageRequest:
+    type: object
+    description: Request object for AWS environment cloud storage validation.
+    required:
+      - credentialCrn
+      - storageLocation
+      - instanceProfile
+    properties:
+      credentialCrn:
+        type: string
+        description: The CRN of the credential.
+      storageLocation:
+        type: string
+        description: AWS S3 storage bucket location for logging.
+      instanceProfile:
+        type: string
+        description: AWS instance profile.
+  ValidateAwsCloudStorageResponse:
+    type: object
+    description: Response object for AWS environment cloud storage validation.
+    properties:
+      status:
+        description: Validation result. Allowed values are "OK", "ACCESS_DENIED", "ERROR", "RESOURCE_NOT_FOUND".
+        type: string
+      error:
+        description: Error message if validation failed.
+        type: string
+  ValidateAzureCloudStorageRequest:
+    type: object
+    description: Request object for Azure environment cloud storage validation.
+    required:
+      - credentialCrn
+      - storageLocation
+    properties:
+      credentialCrn:
+        type: string
+        description: The CRN of the credential.
+      storageLocation:
+        type: string
+        description: Azure storage location for logging.
+      managedIdentity:
+        type: string
+        description: Azure managed identity.
+      accountKey:
+        description: Azure account key.
+        type: string
+      accountName:
+        description: Azure account name.
+        type: string
+      secure:
+        description: Azure secure flag.
+        type: boolean
+  ValidateAzureCloudStorageResponse:
+    type: object
+    description: Response object for Azure environment cloud storage validation.
+    properties:
+      status:
+        description: Validation result. Allowed values are "OK", "ACCESS_DENIED", "ERROR", "RESOURCE_NOT_FOUND".
+        type: string
+      error:
+        description: Error message if validation failed.
+        type: string
   SetCatalogRequest:
     type: object
     description: The request object to set catalog for a FreeIPA.
@@ -4599,6 +4733,24 @@ definitions:
   RotateSaltPasswordResponse:
     type: object
     description: Response object for rotating SaltStack user password on FreeIPA instances.
+  UpdateProxyConfigRequest:
+    type: object
+    description: Request object for updating the proxy config of the given environment.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      proxyConfigName:
+        type: string
+        description: The name of the new proxy config for the environment. Either this or the remove proxy flag has to be given.
+      removeProxy:
+        type: boolean
+        description: Flag to indicate that the current proxy config should be removed for the environment. Either this or a proxy config name has to be given.
+  UpdateProxyConfigResponse:
+    type: object
+    description: Response object for updating the proxy config of the given environment.
   UpdateOrchestratorStateRequest:
     type: object
     description: Request object for running orchestrator engine state update on the FreeIPA cluster.

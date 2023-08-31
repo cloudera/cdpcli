@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.95
+  version: 0.9.96
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -898,6 +898,9 @@ definitions:
       skipValidation:
         type: boolean
         description: Skip pre-flight validations if requested
+      privateCluster:
+        type: boolean
+        description: Whether to create a private cluster.
       subnetsForLoadBalancers:
         type: array
         items:

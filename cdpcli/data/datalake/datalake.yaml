@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.95
+  version: 0.9.96
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -733,6 +733,69 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RotatePrivateCertificatesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/describeDatabaseServer:
+    post:
+      summary: Gets external database server details.
+      description: Gets external database server details for Data Lake by cluster CRN
+      operationId: describeDatabaseServer
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeDatabaseServerRequest'
+      responses:
+        200:
+          description: Database server details for the requested resource.
+          schema:
+            $ref: '#/definitions/DescribeDatabaseServerResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/validateAwsCloudStorage:
+    post:
+      summary: Validates AWS cloud storage.
+      description: Validates AWS cloud storage for Data Lake.
+      operationId: validateAwsCloudStorage
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ValidateAwsCloudStorageRequest'
+      responses:
+        200:
+          description: AWS cloud storage validation result for Data Lake.
+          schema:
+            $ref: '#/definitions/ValidateAwsCloudStorageResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/validateAzureCloudStorage:
+    post:
+      summary: Validates Azure cloud storage.
+      description: Validates Azure cloud storage for Data Lake.
+      operationId: validateAzureCloudStorage
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ValidateAzureCloudStorageRequest'
+      responses:
+        200:
+          description: Azure cloud storage validation result for Data Lake.
+          schema:
+            $ref: '#/definitions/ValidateAzureCloudStorageResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2661,6 +2724,112 @@ definitions:
     type: object
     description: Response object for renew certificate request, deprecated.
     x-deprecated: true
+  DescribeDatabaseServerRequest:
+    type: object
+    description: Request object for obtaining Database Server details.
+    properties:
+      clusterCrn:
+        description: Stack CRN of the Data Lake
+        type: string
+  DescribeDatabaseServerResponse:
+    type: object
+    description: Response object for obtaining Database Server details.
+    properties:
+      crn:
+        type: string
+        description: CRN of the database server
+      name:
+        type: string
+        description: Name of the database server
+      description:
+        type: string
+        description: Description of the database server
+      environmentCrn:
+        type: string
+        description: CRN of the environment of the database server
+      host:
+        type: string
+        description: Host of the database server
+      port:
+        type: integer
+        format: int32
+        description: Port of the database server
+      databaseVendor:
+        type: string
+        description: Name of the database vendor (MYSQL, POSTGRES, ...)
+      databaseVendorDisplayName:
+        type: string
+        description: Display name of the database vendor (MySQL, PostgreSQL, ...)
+      creationDate:
+        type: string
+        format: date-time
+        description: Creation date of the database server
+      resourceStatus:
+        type: string
+        description: Ownership status of the database server
+        enum:
+          - UNKNOWN
+          - SERVICE_MANAGED
+          - USER_MANAGED
+      status:
+        type: string
+        description: Status of the database server stack
+        enum:
+          - REQUESTED
+          - CREATE_IN_PROGRESS
+          - AVAILABLE
+          - UPDATE_IN_PROGRESS
+          - UPDATE_REQUESTED
+          - UPDATE_FAILED
+          - CREATE_FAILED
+          - ENABLE_SECURITY_FAILED
+          - DELETE_REQUESTED
+          - PRE_DELETE_IN_PROGRESS
+          - DELETE_IN_PROGRESS
+          - DELETE_FAILED
+          - DELETE_COMPLETED
+          - STOPPED
+          - STOP_REQUESTED
+          - START_REQUESTED
+          - STOP_IN_PROGRESS
+          - START_IN_PROGRESS
+          - START_FAILED
+          - STOP_FAILED
+          - WAIT_FOR_SYNC
+          - MAINTENANCE_MODE_ENABLED
+          - UNKNOWN
+      statusReason:
+        type: string
+        description: Additional status information about the database server stack
+      clusterCrn:
+        type: string
+        description: CRN of the cluster of the database server
+      sslConfig:
+        description: SSL configuration of the database server
+        $ref: '#/definitions/DatabaseServerSslConfig'
+  DatabaseServerSslConfig:
+    description: SSL configuration for the database server
+    type: object
+    properties:
+      sslCertificates:
+        type: array
+        description: Set of SSL certificates for the actual database server
+        uniqueItems: true
+        items:
+          type: string
+      sslCertificateType:
+        type: string
+        description: SSL certificate type
+        enum:
+          - CLOUD_PROVIDER_OWNED
+          - BRING_YOUR_OWN
+          - NONE
+      sslMode:
+        type: string
+        description: SSL enforcement mode for the actual database server
+        enum:
+          - ENABLED
+          - DISABLED
   ImageRequest:
     description: The image request for the datalake. When the 'runtime' parameter is set, only the 'os' parameter can be provided. Otherwise, you can use 'catalog name' and/or 'id' for selecting an image.
     type: object
@@ -2675,6 +2844,100 @@ definitions:
       os:
         type: string
         description: The OS of the image used for cluster instances.
+  ValidateAwsCloudStorageRequest:
+    type: object
+    description: Request object for AWS cloud storage validation.
+    required:
+      - clusterName
+      - dataAccessRole
+      - rangerAuditRole
+      - credentialCrn
+      - blueprintName
+      - storageLocation
+      - instanceProfile
+    properties:
+      clusterName:
+        description: Datalake cluster name.
+        type: string
+      dataAccessRole:
+        description: Data access role.
+        type: string
+      rangerAuditRole:
+        description: Ranger audit role.
+        type: string
+      credentialCrn:
+        description: Credential CRN.
+        type: string
+      blueprintName:
+        description: Name of the blueprint.
+        type: string
+      storageLocation:
+        description: AWS S3 storage bucket base location.
+        type: string
+      instanceProfile:
+        description: AWS instance profile.
+        type: string
+  ValidateAwsCloudStorageResponse:
+    type: object
+    description: AWS cloud storage validation response.
+    properties:
+      status:
+        description: Validation result. Allowed values are "OK", "ACCESS_DENIED", "ERROR", "RESOURCE_NOT_FOUND".
+        type: string
+      error:
+        description: Error message if validation failed.
+        type: string
+  ValidateAzureCloudStorageRequest:
+    type: object
+    description: Request object for Azure cloud storage validation.
+    required:
+      - clusterName
+      - dataAccessRole
+      - rangerAuditRole
+      - credentialCrn
+      - blueprintName
+      - storageLocation
+    properties:
+      clusterName:
+        description: Datalake cluster name.
+        type: string
+      dataAccessRole:
+        description: Data access role.
+        type: string
+      rangerAuditRole:
+        description: Ranger audit role.
+        type: string
+      credentialCrn:
+        description: Credential CRN.
+        type: string
+      blueprintName:
+        description: Name of the blueprint.
+        type: string
+      storageLocation:
+        description: Azure storage base location.
+        type: string
+      managedIdentity:
+        description: Azure managed identity.
+        type: string
+      accountKey:
+        description: Azure account key.
+        type: string
+      accountName:
+        description: Azure account name.
+        type: string
+      secure:
+        description: Azure secure flag.
+        type: boolean
+  ValidateAzureCloudStorageResponse:
+    type: object
+    description: Azure cloud storage validation response.
+    properties:
+      status:
+        description: Validation result. Allowed values are "OK", "ACCESS_DENIED", "ERROR", "RESOURCE_NOT_FOUND".
+        type: string
+      error:
+        description: Error message if validation failed.
+        type: string
   ResizeDatalakeRequest:
     type: object
     description: Datalake resize request.
