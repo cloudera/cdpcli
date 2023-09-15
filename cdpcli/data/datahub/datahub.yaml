@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.96
+  version: 0.9.97
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -143,6 +143,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CreateAWSClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/createAWSGovCloudCluster:
+    post:
+      summary: Creates an AWS Data Hub cluster for GovCloud.
+      description: Creates an AWS Data Hub cluster for GovCloud.
+      operationId: createAWSGovCloudCluster
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAWSGovCloudClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAWSGovCloudClusterResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1200,6 +1221,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datahub/startInstances:
+    post:
+      summary: Starts instances of a particular host group in the Data Hub cluster.
+      description: Starts instances of a particular host group in the Data Hub cluster.
+      operationId: startInstances
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StartInstancesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartInstancesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/stopInstances:
+    post:
+      summary: Stops instances of particular host group in the Data Hub cluster.
+      description: Stops instances of a particular host group in the Data Hub cluster.
+      operationId: stopInstances
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/StopInstancesRequest'
+      responses:
+        200:
+          description: Expected response to a valid stop instances request.
+          schema:
+            $ref: '#/definitions/StopInstancesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/datahub/rotateSaltPassword:
     post:
       summary: Rotate SaltStack user password on Data Hub instances.
@@ -1348,6 +1411,14 @@ definitions:
       endpoints:
         $ref: '#/definitions/Endpoints'
         description: The exposed service api endpoints.
+  ClusterExtension:
+    type: object
+    description: Cluster extensions for Data Hub cluster.
+    x-no-compatibility-guarantee: true
+    properties:
+      customProperties:
+        type: string
+        description: The custom properties JSON, encoded in base64.
   ClouderaManagerDetails:
     type: object
     description: Cloudera Manager details.
@@ -2392,6 +2463,13 @@ definitions:
       - HA
       - NON_HA
       - NONE
+  DatahubLoadBalancerSkuType:
+    type: string
+    description: Represents the Azure load balancer SKU type. The current default is BASIC. To disable the load balancer, use type NONE.
+    enum:
+      - BASIC
+      - STANDARD
+      - NONE
   CreateAWSClusterRequest:
     type: object
     description: Request object for create AWS cluster request.
@@ -2455,6 +2533,10 @@ definitions:
       multiAz:
         type: boolean
         description: Flag that toggles the multi availability zone for the given datahub cluster when you are not sure what subnet IDs can be used. This way the subnet IDs will be used what the environment suggests.
+      clusterExtension:
+        $ref: '#/definitions/ClusterExtension'
+        description: Cluster extensions for the given Data Hub cluster.
+        x-no-compatibility-guarantee: true
       enableLoadBalancer:
         type: boolean
         description: Flag that decides whether to provision a load-balancer to front various service endpoints for the given datahub. This will typically be used for HA cluster shapes.
@@ -2465,6 +2547,74 @@ definitions:
   CreateAWSClusterResponse:
     type: object
     description: Response object for create AWS cluster request.
+    required:
+      - cluster
+    properties:
+      cluster:
+        $ref: '#/definitions/Cluster'
+        description: The cluster.
+  CreateAWSGovCloudClusterRequest:
+    type: object
+    description: Request object for creating AWS  Data Hub cluster request on GovCloud.
+    properties:
+      clusterName:
+        type: string
+        description: The name of the cluster. This name must be unique, must have between 5 and 40 characters, and must contain only lowercase letters, numbers, and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 40
+      clusterDefinition:
+        type: string
+        description: The name or CRN of the cluster definition to use for cluster creation.
+      environment:
+        type: string
+        description: Name or CRN of the environment to use when creating the cluster. The environment must be an AWS GovCloud environment.
+      clusterTemplate:
+        type: string
+        description: Name or CRN of the cluster template to use for cluster creation.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroupRequest'
+        description: Instance group details.
+      subnetId:
+        type: string
+        description: The subnet ID.
+      image:
+        $ref: '#/definitions/ImageRequest'
+        description: The image to be used for cluster creation.
+      tags:
+        type: array
+        description: Tags to be added to  Data Hub related resources.
+        items:
+          $ref: '#/definitions/DatahubResourceTagRequest'
+      requestTemplate:
+        type: string
+        description: JSON template to use for cluster creation. This is different from the cluster template and would be removed in the future.
+      datahubDatabase:
+        $ref: '#/definitions/DatahubDatabaseType'
+        description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+      subnetIds:
+        type: array
+        items:
+          type: string
+        description: List of subnet IDs in case of multi availability zone setup.
+      multiAz:
+        type: boolean
+        description: Flag that toggles the multi availability zone for the given Data Hub cluster when you are not sure what subnet IDs can be used. This way the subnet IDs will be used what the environment suggests.
+      clusterExtension:
+        $ref: '#/definitions/ClusterExtension'
+        description: Cluster extensions for the given Data Hub cluster.
+        x-no-compatibility-guarantee: true
+      enableLoadBalancer:
+        type: boolean
+        description: Flag that decides whether to provision a load-balancer to front various service endpoints for the given datahub. This will typically be used for HA cluster shapes.
+      javaVersion:
+        type: integer
+        format: int32
+        description: Configure the major version of Java on the cluster.
+  CreateAWSGovCloudClusterResponse:
+    type: object
+    description: Response object for create AWS cluster request on GovCloud.
     required:
       - cluster
     properties:
@@ -2514,6 +2664,13 @@ definitions:
       datahubDatabase:
         $ref: '#/definitions/DatahubDatabaseType'
         description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+      loadBalancerSku:
+        description: The SKU for the datahub load balancer. Allowed values are "BASIC", "STANDARD", or "NONE".
+        $ref: '#/definitions/DatahubLoadBalancerSkuType'
+      clusterExtension:
+        $ref: '#/definitions/ClusterExtension'
+        description: Cluster extensions for the given Data Hub cluster.
+        x-no-compatibility-guarantee: true
       enableLoadBalancer:
         type: boolean
         description: Flag that decides whether to provision a load-balancer to front various service endpoints for the given datahub. This will typically be used for HA cluster shapes.
@@ -2573,6 +2730,10 @@ definitions:
       datahubDatabase:
         $ref: '#/definitions/DatahubDatabaseType'
         description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
+      clusterExtension:
+        $ref: '#/definitions/ClusterExtension'
+        description: Cluster extensions for the given Data Hub cluster.
+        x-no-compatibility-guarantee: true
       javaVersion:
         type: integer
         format: int32
@@ -4088,8 +4249,6 @@ definitions:
       targetVersion:
         type: string
         description: The database engine major version to upgrade to.
-        enum:
-          - VERSION_11
   SetCatalogRequest:
     type: object
     description: The request object to set catalog for a DataHub.
@@ -4142,6 +4301,47 @@ definitions:
   RenewPublicCertificateResponse:
     type: object
     description: Response object for renew public certificate request.
+  StartInstancesRequest:
+    type: object
+    description: Request object to start instances of a host group on a Data Hub.
+    required:
+      - cluster
+      - hostGroup
+    properties:
+      cluster:
+        type: string
+        description: The name or CRN of the cluster whose instances are to be started.
+      hostGroup:
+        type: string
+        description: The name of the instance group whose instances are to be started.
+      instanceCount:
+        type: integer
+        description: The number of instances to start.
+        format: int32
+  StartInstancesResponse:
+    type: object
+    description: Response object to start instances of a host group on Data Hub.
+  StopInstancesRequest:
+    type: object
+    description: Request object to stop instances of a host group on a Data Hub.
+    required:
+      - cluster
+      - instanceIds
+    properties:
+      cluster:
+        type: string
+        description: The name or CRN of the cluster whose instances are to be stopped.
+      instanceIds:
+        type: array
+        items:
+          type: string
+        description: The list of instance IDs.
+      forced:
+        type: boolean
+        description: Whether the stop instances operation should be forced or not. Defaults to false.
+  StopInstancesResponse:
+    type: object
+    description: Response object to a stop instances of a host group on a Data Hub.
   RotateSaltPasswordRequest:
     type: object
     description: Request object for rotating SaltStack user password on Data Hub instances.

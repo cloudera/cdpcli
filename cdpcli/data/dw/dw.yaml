@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.96
+  version: 0.9.97
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1940,6 +1940,16 @@ definitions:
         default: false
         x-form-factors: public
         x-entitlement: CDW_STORAGE_ROLES
+      reservedComputeNodes:
+        x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        type: integer
+        format: int32
+        description: Set additional number of nodes to reserve for executors and coordinators to use during autoscaling. Adding more reserved nodes increases your cloud costs.
+      reservedSharedServicesNodes:
+        x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        type: integer
+        format: int32
+        description: Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
       customRegistryOptions:
         description: Options for custom ACR/ECR/Docker registries.
         $ref: '#/definitions/CustomRegistryOptions'
@@ -1974,6 +1984,9 @@ definitions:
       clusterId:
         type: string
         description: The ID of the cluster.
+      operationId:
+        type: string
+        description: The the ID of the backup operation.
       timestamp:
         type: string
         format: date-time
@@ -2012,6 +2025,11 @@ definitions:
       dbcRestorePlans:
         type: array
         description: Information about the restore-plan of the DbCatalogs.
+        items:
+          $ref: '#/definitions/RestoreClusterEntityPlan'
+      hueRestorePlans:
+        type: array
+        description: Information about the restore-plan of Hue.
         items:
           $ref: '#/definitions/RestoreClusterEntityPlan'
       hiveRestorePlans:
@@ -2073,18 +2091,6 @@ definitions:
     type: object
     description: Options for activating an AWS environment.
     properties:
-      privateSubnetIds:
-        type: array
-        description: DEPRECATED in favour of workerSubnetIds and lbSubnetIds field. IDs of private AWS subnets where the cluster should be deployed.
-        x-deprecated: true
-        items:
-          type: string
-      publicSubnetIds:
-        type: array
-        description: DEPRECATED in favour of workerSubnetIds and lbSubnetIds field. IDs of public AWS subnets where the cluster should be deployed.
-        x-deprecated: true
-        items:
-          type: string
       workerSubnetIds:
         type: array
         description: IDs of AWS subnets where the cluster worker nodes should be deployed.
@@ -2127,7 +2133,7 @@ definitions:
         description: Resource ID of the managed identity used by AKS. It is a mandatory parameter for Azure cluster creation.
       subnetId:
         type: string
-        description: ID of Azure subnet where the cluster should be deployed.
+        description: ID of Azure subnet where the cluster should be deployed. It is a mandatory parameter for Azure cluster creation.
       enableAZ:
         type: boolean
         description: Enables Azure Availability Zones for the cluster deployment.
@@ -2150,6 +2156,17 @@ definitions:
           - LoadBalancer
           - UserAssignedNATGateway
           - UserDefinedRouting
+      enablePrivateSQL:
+        type: boolean
+        description: Enables private SQL for the cluster deployment.
+        default: false
+      privateDNSZoneAKS:
+        type: string
+        description: Private DNS zone AKS resource ID.
+      enablePrivateAks:
+        type: boolean
+        description: Enable Azure Private AKS mode. Note that this feature is currently unstable due to critical networking issues within the Azure Software Definition Layer (SDN). This problem prevents the deployment of necessary components and results in unpredictable behavior and instability, impacting operations such as environment activation, VW creation, modification, and start/stop operations. While we work towards a resolution with Microsoft, estimated within the next 6-9 months, we recommend utilizing alternative methods like enabling public endpoints or virtual network peering for accessing your Azure Cluster.
+        default: false
   PrivateCloudActivationOptions:
     type: object
     description: Options for activating a Private Cloud environment.
@@ -3387,6 +3404,11 @@ definitions:
         format: int32
         description: Total number of coordinator replicas scheduled for the virtual warehouse. This number contains the number of coordinator replicas in pending state, as well as the replicas that are already running. If this number is zero, then the coordinator functionality is stopped.
         x-omitempty: false
+      readyCoordinatorReplicas:
+        type: integer
+        format: int32
+        description: Total number of ready coordinator replicas in the virtual warehouse. This number only contains the healthy executor replicas that have already started up and are ready to accept requests. If this number is less than the totalCoordinatorReplicas, then the virtual warehouse might still be starting up or there might be a problem scheduling these replicas.
+        x-omitempty: false
   CreateVwRequest:
     type: object
     description: Request object for the createVw method.
@@ -3425,7 +3447,7 @@ definitions:
         type: integer
         format: int32
         default: 0
-        description: Node Count per compute cluster. Implies 'custom' template, even if you pass template explicitly.
+        description: Nodes per compute cluster. If specified, forces 'template' to be 'custom'
       availabilityZone:
         type: string
         description: This feature works only for AWS cluster type. An availability zone to host compute instances. If not specified, defaults to a randomly selected availability zone inferred from available subnets. In order to query possible options, see "availabilityZones" field of describe-cluster or list-clusters command response.
@@ -3999,6 +4021,16 @@ definitions:
         type: boolean
         default: false
         description: Include Kube system.
+  ExternalBucket:
+    type: object
+    description: External bucket details.
+    properties:
+      name:
+        type: string
+        description: Name of the bucket.
+      accessInfo:
+        $ref: '#/definitions/ExternalBucketAccessInfo'
+        description: AccessInfo of the bucket.
   ClusterSummaryResponse:
     type: object
     description: A Cloudera Data Warehouse cluster.
@@ -4037,6 +4069,16 @@ definitions:
         x-form-factors: public
         type: boolean
         description: Denotes whether the spot instances have been enabled for the cluster. This value is only available for AWS and Azure clusters.
+      reservedComputeNodes:
+        x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        type: integer
+        format: int32
+        description: Number of additional reserved nodes for executors and coordinators to use during autoscaling.
+      reservedSharedServicesNodes:
+        x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        type: integer
+        format: int32
+        description: Number of additional reserved nodes for other services in the cluster.
       computeInstanceTypes:
         type: array
         items:
@@ -4055,6 +4097,20 @@ definitions:
         $ref: '#/definitions/AzureOptionsResponse'
         description: Response object of Azure related cluster options.
         x-form-factors: public
+      description:
+        type: string
+        description: Cluster description.
+      whitelistK8sClusterAccessIpCIDRs:
+        type: string
+        description: List of IP address CIDRs to whitelist for kubernetes cluster access.
+      whitelistWorkloadAccessIpCIDRs:
+        type: string
+        description: List of IP address CIDRs to whitelist for workload access.
+      externalBuckets:
+        type: array
+        description: External buckets attached to the environment.
+        items:
+          $ref: '#/definitions/ExternalBucket'
   DataVisualizationSummary:
     type: object
     description: A Cloudera Data Visualization.
@@ -4077,6 +4133,16 @@ definitions:
       size:
         type: string
         description: The template size for the Cloudera Data Visualization
+      userGroups:
+        type: array
+        items:
+          type: string
+        description: User groups that are allowed to access the Data Visualization.
+      adminGroups:
+        type: array
+        items:
+          type: string
+        description: Admin groups that are allowed to access the Data Visualization.
   DbcSummary:
     type: object
     description: A Database Catalog.
@@ -4143,6 +4209,18 @@ definitions:
       cdhVersion:
         type: string
         description: CDH image version.
+      numOfCores:
+        type: integer
+        format: int32
+        description: Number of cores of the Virtual Warehouse.
+      memoryCapacity:
+        type: integer
+        format: int32
+        description: Memory size of the Virtual Warehouse in MB.
+      nodeCount:
+        type: integer
+        format: int32
+        description: Size of the Virtual Warehouse (node count per compute cluster).
       availabilityZone:
         type: string
         description: Availability zone in which the Virtual Warehouse is running.

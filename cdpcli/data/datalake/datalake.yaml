@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.96
+  version: 0.9.97
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -57,6 +57,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CreateAWSDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/createAWSGovCloudDatalake:
+    post:
+      summary: Creates a Data Lake on AWS GovCloud.
+      description: Creates a Data Lake on AWS GovCloud.
+      operationId: createAWSGovCloudDatalake
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAWSGovCloudDatalakeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAWSGovCloudDatalakeResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1436,6 +1457,64 @@ definitions:
       datalake:
         $ref: '#/definitions/Datalake'
         description: The datalake.
+  CreateAWSGovCloudDatalakeRequest:
+    type: object
+    description: Request object for createing AWS Data Lake request on GovCloud.
+    required:
+      - datalakeName
+      - environmentName
+      - cloudProviderConfiguration
+    properties:
+      datalakeName:
+        type: string
+        description: The Data Lake name. This name must be unique, must have between 5 and 100 characters, and must contain only lowercase letters, numbers and hyphens. Names are case-sensitive.
+        minLength: 5
+        maxLength: 100
+      environmentName:
+        type: string
+        description: The environment name or CRN.
+      cloudProviderConfiguration:
+        $ref: '#/definitions/AWSConfigurationRequest'
+        description: AWS configuration.
+      scale:
+        description: The scale of the datalake. Allowed values are "LIGHT_DUTY" or "MEDIUM_DUTY_HA". Defaults to "LIGHT_DUTY" if not set.
+        $ref: '#/definitions/DatalakeScaleType'
+        x-no-compatibility-guarantee: true
+      tags:
+        type: array
+        description: Tags to be added to Data Lake related resources.
+        items:
+          $ref: '#/definitions/DatalakeResourceTagRequest'
+      runtime:
+        type: string
+        description: Cloudera Runtime version.
+      image:
+        $ref: '#/definitions/ImageRequest'
+        description: The image to use for the datalake. This must not be set if the runtime parameter is provided.
+      enableRangerRaz:
+        type: boolean
+        description: Whether to enable Ranger RAZ for the datalake. Defaults to not being enabled.
+      multiAz:
+        type: boolean
+        description: Controls if the datalake is deployed in a multi-availability zone way.
+      recipes:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroupRecipeRequest'
+        description: Additional recipes that will be attached on the datalake instances (by instance groups, most common ones are like 'master' or 'idbroker').
+      javaVersion:
+        type: integer
+        format: int32
+        description: Configure the major version of Java on the cluster.
+  CreateAWSGovCloudDatalakeResponse:
+    type: object
+    description: Response object for creating AWS Data Lake request on GovCloud.
+    required:
+      - datalake
+    properties:
+      datalake:
+        $ref: '#/definitions/Datalake'
+        description: The Data Lake.
   CreateAzureDatalakeRequest:
     type: object
     description: Request object for create Azure datalake request.
@@ -1470,6 +1549,9 @@ definitions:
       image:
         $ref: '#/definitions/ImageRequest'
         description: The image to use for the datalake. This must not be set if the runtime parameter is provided.
+      loadBalancerSku:
+        description: The SKU for the datalake load balancer. Allowed values are "BASIC", "STANDARD", or "NONE".
+        $ref: '#/definitions/DatalakeLoadBalancerSkuType'
       enableRangerRaz:
         type: boolean
         description: Whether to enable Ranger RAZ for the datalake. Defaults to not being enabled.
@@ -1549,6 +1631,13 @@ definitions:
     enum:
       - LIGHT_DUTY
       - MEDIUM_DUTY_HA
+  DatalakeLoadBalancerSkuType:
+    type: string
+    description: Represents the Azure load balancer SKU type. The current default is BASIC. To disable the load balancer, use type NONE.
+    enum:
+      - BASIC
+      - STANDARD
+      - NONE
   ListDatalakesRequest:
     type: object
     description: Request object for list datalakes request.
@@ -2419,6 +2508,7 @@ definitions:
         description: The database engine major version to upgrade to.
         enum:
           - VERSION_11
+          - VERSION_14
   StartDatabaseUpgradeResponse:
     type: object
     description: Response object to Data Lake database upgrade.
@@ -2426,8 +2516,6 @@ definitions:
       targetVersion:
         type: string
         description: The database engine major version to upgrade to.
-        enum:
-          - VERSION_11
   DatalakeVmLogRequest:
     type: object
     description: Log descriptor, contains a path and label pair. Used for diagnostics collections.
