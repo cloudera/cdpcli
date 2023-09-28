@@ -6,7 +6,7 @@ x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.97
+  version: 0.9.98
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -1626,7 +1626,7 @@ paths:
   /iam/unlockUserInControlPlane:
     post:
       summary: Unlocks user in the CDP control plane.
-      description: Unlocks user in the CDP control plane. This operation is idempotent. Unlocking an active user will succeed and leave the user active.
+      description: Unlocks user in the CDP control plane. This operation is idempotent. Unlocking an active user will succeed and leave the user active. This operation is only supported on Cloudera for Government.
       operationId: unlockUserInControlPlane
       x-form-factors: public
       x-right: iam/unlockUserInControlPlane
@@ -1649,7 +1649,7 @@ paths:
   /iam/unlockMachineUserInControlPlane:
     post:
       summary: Unlocks machine user in the CDP control plane.
-      description: Unlocks machine user in the CDP control plane. This operation is idempotent. Unlocking an active machine user will succeed and leave the machine user active.
+      description: Unlocks machine user in the CDP control plane. This operation is idempotent. Unlocking an active machine user will succeed and leave the machine user active. This operation is only supported on Cloudera for Government.
       operationId: unlockMachineUserInControlPlane
       x-form-factors: public
       x-right: iam/unlockMachineUserInControlPlane
@@ -1791,6 +1791,9 @@ definitions:
         type: string
         description: The username used in all the workload clusters of the user.
         x-no-compatibility-guarantee: true
+      status:
+        type: string
+        description: The current status of the user. The possible status values are ACTIVE, CONTROL_PLANE_LOCKED_OUT, and DEACTIVATED. ACTIVE indicates that the user is active in CDP. An active user can authenticate to the CDP control plane and workload clusters. CONTROL_PLANE_LOCKED_OUT indicates that the user is locked out of the CDP control plane. The locked-out user can no longer authenticate to the control plane but can authenticate to the workload clusters. DEACTIVATED indicates that the user is deactivated in CDP. A deactivated user can neither authenticate to the control plane nor to the workload clusters. Note that more statuses could be added in the future. The statuses other than ACTIVE are only returned on Cloudera for Government.
       workloadPasswordDetails:
         $ref: '#/definitions/WorkloadPasswordDetails'
         description: Information about the workload password for the user.
@@ -1820,6 +1823,9 @@ definitions:
         type: string
         description: The username used in all the workload clusters of the machine user.
         x-no-compatibility-guarantee: true
+      status:
+        type: string
+        description: The current status of the machine user. The possible status values are ACTIVE and CONTROL_PLANE_LOCKED_OUT. ACTIVE indicates that the machine user is active in CDP. An active machine user can authenticate to the CDP control plane and workload clusters. CONTROL_PLANE_LOCKED_OUT indicates that the machine user is locked out of the CDP control plane. The locked-out machine user can no longer authenticate to the control plane but can authenticate to the workload clusters. Note that more statuses could be added in the future. The statuses other than ACTIVE are only returned on Cloudera for Government.
       workloadPasswordDetails:
         $ref: '#/definitions/WorkloadPasswordDetails'
         description: Information about the workload password for the machine user.

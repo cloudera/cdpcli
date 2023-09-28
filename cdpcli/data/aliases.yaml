@@ -1,5 +1,6 @@
 audit: null
 compute: null
+consumption: null
 datacatalog: null
 datahub: null
 datalake: null

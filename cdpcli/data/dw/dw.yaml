@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.97
+  version: 0.9.98
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2276,8 +2276,8 @@ definitions:
             type: object
             description: External bucket definition.
             additionalProperties:
-              description: External bucket access info.
-              $ref: '#/definitions/ExternalBucketAccessInfo'
+              description: External bucket access information.
+              $ref: '#/definitions/UpdateClusterExternalBucketAccessInfo'
       azureUpdate:
         type: object
         description: Additional properties for Azure clusters.
@@ -2287,15 +2287,8 @@ definitions:
             default: false
             description: Renew Azure cluster certificate.
       observabilityConfig:
-        type: object
-        description: Update the cluster observability configurations. You can forward logs from environments activated in Cloudera Data Warehouse (CDW) to observability and monitoring systems such as Datadog, New Relic, or Splun. Please refer to the following Cloudera documentation for more info. https://docs.cloudera.com/data-warehouse/cloud/monitoring/topics/dw-observability-log-forwarding.html
-        properties:
-          logsForwardingConfig:
-            type: string
-            description: Create the log forwarding configuration in a valid fluentd format. Then that configuration is later inserted into a larger fluentd configuration.
-          proxyCABundle:
-            type: string
-            description: Set the proxy CA certificates (PEM Bundle). If you use a TLS-terminating proxy server to inspect outbound internet traffic, you need to provide the proxy server's CA certificates bundle in PEM bundle format when you configure log forwarding.
+        description: Cluster observability configurations to update. You can forward logs from environments activated in Cloudera Data Warehouse (CDW) to observability and monitoring systems such as Datadog, New Relic, or Splunk. Please refer to the following Cloudera documentation for more info. https://docs.cloudera.com/data-warehouse/cloud/monitoring/topics/dw-observability-log-forwarding.html
+        $ref: '#/definitions/UpdateClusterObservabilityConfig'
   ExternalBucketAccessInfo:
     type: object
     description: External bucket definition.
@@ -2309,6 +2302,29 @@ definitions:
       kmsCmkArn:
         type: string
         description: Enable server side encryption with the specified KMS CMK ARN. If the value is empty or unspecified, default server side encryption will be used when the access mode is read-write. Otherwise this value is ignored.
+  UpdateClusterExternalBucketAccessInfo:
+    type: object
+    description: Cluster external bucket definition to update.
+    properties:
+      accessMode:
+        type: string
+        description: Specifies whether the external bucket will be added in read-only or read-write mode.
+        enum:
+          - READ
+          - READWRITE
+      kmsCmkArn:
+        type: string
+        description: Enable server side encryption with the specified KMS CMK ARN. If the value is empty or unspecified, default server side encryption will be used when the access mode is read-write. Otherwise this value is ignored.
+  UpdateClusterObservabilityConfig:
+    type: object
+    description: Cluster observability settings to update.
+    properties:
+      logsForwardingConfig:
+        type: string
+        description: Create the log forwarding configuration in a valid fluentd format. Then that configuration is later inserted into a larger fluentd configuration.
+      proxyCABundle:
+        type: string
+        description: Set the proxy CA certificates (PEM Bundle). If you use a TLS-terminating proxy server to inspect outbound internet traffic, you need to provide the proxy server's CA certificates bundle in PEM bundle format when you configure log forwarding.
   UpdateClusterResponse:
     type: object
     description: Response object for the updateCluster method.

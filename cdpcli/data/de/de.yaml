@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.97
+  version: 0.9.98
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -709,6 +709,11 @@ definitions:
       customAzureFilesConfigs:
         $ref: '#/definitions/CustomAzureFilesConfigs'
         description: CDE uses a default public File Shares storage provisioned by AKS. Enable this option to use your own public/private File Shares.
+      networkOutboundType:
+        type: string
+        enum:
+          - UDR
+        description: Network outbound type. Currently 'udr' is the only supported.
   CustomAzureFilesConfigs:
     type: object
     description: Override Azure Files Configs.

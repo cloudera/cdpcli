@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.97
+  version: 0.9.98
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2894,7 +2894,6 @@ definitions:
       encryptionKey:
         type: string
         description: Key Resource ID of the customer managed encryption key to encrypt GCP resources.
-        x-entitlement: CDP_CB_GCP_DISK_ENCRYPTION_WITH_CMEK
       availabilityZones:
         description: The zones of the environment in the given region. Multi-zone selection is not supported in GCP yet. It accepts only one zone until support is added.
         type: array
