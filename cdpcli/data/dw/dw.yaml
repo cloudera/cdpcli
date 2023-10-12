@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.98
+  version: 0.9.99
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -238,6 +238,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/dw/listEvents:
+    post:
+      x-form-factors: public,private
+      x-mutating: false
+      summary: Get the list of events.
+      description: 'Get the list of events for the given Operation or a specific Service (Cluster, Database Catalog, Virtual Warehouse, or Data Visualization App). Events can belong to a particular Operation which might span across multiple Services. This happens if the given operation affects one or more Services e.g.: restore-cluster. It is also possible to return the events only for a given Service, in this case it is enough to pass the Id of a Service (e.g.: env-sq7hfv, warehouse-1696571829-pps2, compute-1696571962-8dd8, impala-1696572085-cn44).'
+      operationId: listEvents
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListEventsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListEventsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/updateSshKey:
     post:
       x-form-factors: public
@@ -1784,12 +1806,12 @@ definitions:
     properties:
       default:
         type: array
-        description: Default value for the compute instance type usage.
+        description: Default value for the compute instance type usage. This setting is Cluster-wide.
         items:
           type: string
       allowed:
         type: array
-        description: Allowed values for the instance type.
+        description: Allowed values for the instance type. This setting is Cluster-wide.
         items:
           type: string
   DescribeServerSettingRequest:
@@ -1866,6 +1888,56 @@ definitions:
       enabled:
         type: boolean
         description: The state of the setting.
+  ListEventsRequest:
+    x-form-factors: public,private
+    type: object
+    description: Request object for the listEvents method.
+    properties:
+      operationId:
+        type: string
+        description: Filter events based on the operation ID. Either operation ID or service ID is required.
+      serviceId:
+        type: string
+        description: Filter events based on the service ID. It can be Cluster ID, Database Catalog ID, Virtual Warehouse ID or Data Visualization App ID.
+      limit:
+        type: integer
+        format: int32
+        description: Limit the number of returned rows. If not specified then the recent 20 events will be returned. The maximum is 100.
+      ascending:
+        type: boolean
+        default: false
+        description: Provide the result in ascending order, default is descending.
+  ListEventsResponse:
+    x-form-factors: public,private
+    type: object
+    description: Response object for the listEvents method.
+    properties:
+      events:
+        type: array
+        description: List of the events.
+        items:
+          $ref: '#/definitions/Event'
+  Event:
+    x-form-factors: public,private
+    type: object
+    description: Represents a Event.
+    properties:
+      operationId:
+        type: string
+        description: The ID of the operation to which the event belongs.
+      serviceId:
+        type: string
+        description: The ID of the service to which the event belongs.
+      event:
+        type: string
+        description: The name of the event.
+      message:
+        type: string
+        description: Detailed message.
+      timestamp:
+        type: string
+        format: date-time
+        description: The timestamp of the event.
   UpdateSshKeyRequest:
     type: object
     description: Request object for the updateSshKey method.
@@ -2022,6 +2094,12 @@ definitions:
       operationId:
         type: string
         description: The the ID of the restore operation.
+      action:
+        type: string
+        description: 'The cluster action. Possible actions: Create, Skip'
+      message:
+        type: string
+        description: The description of the cluster action.
       dbcRestorePlans:
         type: array
         description: Information about the restore-plan of the DbCatalogs.
@@ -4547,6 +4625,19 @@ definitions:
       vwId:
         type: string
         description: ID of the Virtual Warehouse.
+      template:
+        type: string
+        description: Name of configuration template to use.
+        enum:
+          - xsmall
+          - small
+          - medium
+          - large
+      nodeCount:
+        type: integer
+        format: int32
+        default: 0
+        description: Nodes per compute cluster. If specified, forces 'template' to be 'custom'
       config:
         description: The service configuration to update the VW with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
         $ref: '#/definitions/ServiceConfigReq'

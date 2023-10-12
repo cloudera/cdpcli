@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.98
+  version: 0.9.99
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1631,6 +1631,7 @@ definitions:
     enum:
       - LIGHT_DUTY
       - MEDIUM_DUTY_HA
+      - ENTERPRISE
   DatalakeLoadBalancerSkuType:
     type: string
     description: Represents the Azure load balancer SKU type. The current default is BASIC. To disable the load balancer, use type NONE.

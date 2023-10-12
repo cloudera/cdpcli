@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.98
+  version: 0.9.99
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -1811,6 +1811,7 @@ definitions:
   DeploymentState:
     type: string
     description: The state that the deployment is currently in.
+    x-deprecated-enum-values: SUSPENDING_FLOW
     enum:
       - DEPLOYING
       - GOOD_HEALTH
@@ -1827,6 +1828,10 @@ definitions:
       - STOPPED
       - UNKNOWN
       - IMPORTING_FLOW
+      - STOPPING_FLOW
+      - FLOW_STOPPED
+      - SUSPENDING
+      - RESUMING
   DeploymentStatus:
     type: object
     description: The status of a deployment

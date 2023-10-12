@@ -149,6 +149,16 @@ OPERATION_SHAPES = {
                 'items': {
                     '$ref': '#/definitions/ListenComponent'
                 }
+            },
+            'nodeStorageProfileName': {
+                'type': 'string',
+                'description': 'Node storage profile name',
+                'enum': [
+                    'STANDARD_AWS',
+                    'STANDARD_AZURE',
+                    'PERFORMANCE_AWS',
+                    'PERFORMANCE_AZURE'
+                ]
             }
         }
     },
@@ -530,6 +540,14 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             'clusterSizeName': parameters.get('clusterSizeName', 'EXTRA_SMALL'),
             'staticNodeCount': parameters.get('staticNodeCount', 1)
         }
+
+        # If nodeStorageProfileName is not set, then
+        # sending it as empty in the configuration will trigger
+        # dfx-local to choose the default nodeStorageProfileName for
+        # the given cloud platform
+        nodeStorageProfileName = parameters.get('nodeStorageProfileName', None)
+        if nodeStorageProfileName is not None:
+            deployment_configuration['nodeStorageProfileName'] = nodeStorageProfileName
 
         inboundHostname = parameters.get('inboundHostname', None)
         if inboundHostname is not None:

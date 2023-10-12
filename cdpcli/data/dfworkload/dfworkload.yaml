@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.98
+  version: 0.9.99
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -384,6 +384,136 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/restart-deployment:
+    post:
+      summary: Restart a deployment.
+      description: Initiates restart of a deployment.
+      operationId: restartDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Restart Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/RestartDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestartDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/resume-deployment:
+    post:
+      summary: Resumes a deployment.
+      description: Initiates the deployment resume.
+      operationId: resumeDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Resume Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/ResumeDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ResumeDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/start-flow:
+    post:
+      summary: Starts a flow.
+      description: Starts the NiFi flow of a deployment.
+      operationId: startFlow
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Start Flow
+          required: true
+          schema:
+            $ref: '#/definitions/StartFlowRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartFlowResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/stop-flow:
+    post:
+      summary: Stops a flow.
+      description: Stops the NiFi flow of a deployment.
+      operationId: stopFlow
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Stop Flow
+          required: true
+          schema:
+            $ref: '#/definitions/StopFlowRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StopFlowResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/suspend-deployment:
+    post:
+      summary: Suspends a deployment.
+      description: Initiates the deployment suspend.
+      operationId: suspendDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Suspend Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/SuspendDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SuspendDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/terminate-deployment:
     post:
       summary: Terminates a deployment.
@@ -413,7 +543,7 @@ paths:
   /dfx/api/rpc-v1/deployments/transition-flow:
     post:
       summary: Transitions a flow.
-      description: Transitions the NiFi flow of a deployment to the specified state.
+      description: Transitions the NiFi flow of a deployment to the specified state. Deprecated. Use `start-flow` and `stop-flow` instead.
       operationId: transitionFlow
       x-workload: true
       x-client-only: true
@@ -436,6 +566,8 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      deprecated: true
+      x-deprecated: true
   /dfx/api/rpc-v1/deployments/update-deployment:
     post:
       summary: Updates a deployment.
@@ -1091,6 +1223,15 @@ definitions:
         description: Listen components port and protocol data
         items:
           $ref: '#/definitions/ListenComponent'
+      nodeStorageProfileName:
+        type: string
+        description: Node storage profile name
+        enum:
+          - STANDARD_AWS
+          - STANDARD_AZURE
+          - PERFORMANCE_AWS
+          - PERFORMANCE_AZURE
+          - LOCAL_K8S
       customNarConfigurationCrn:
         type: string
         description: The CRN of the custom NAR configuration.
@@ -1193,93 +1334,6 @@ definitions:
     description: Response object returned during deletion of an Inbound Connection Endpoint
     x-workload: true
     x-client-only: true
-  DeploymentConfiguration:
-    type: object
-    description: Provides all of the configuration that dictates how a flow should be deployed
-    x-workload: true
-    x-client-only: true
-    required:
-      - configurationVersion
-    properties:
-      configurationVersion:
-        type: integer
-        format: int32
-        description: The version of this configuration
-      parameterGroups:
-        type: array
-        description: The list of flow parameter groups
-        items:
-          $ref: '#/definitions/FlowParameterGroup'
-      autoScalingEnabled:
-        type: boolean
-        description: Specifies that auto-scaling should be enabled.
-      flowMetricsScalingEnabled:
-        type: boolean
-        description: Specifies that Flow metrics should be enabled for scaling.
-      autoScaleMinNodes:
-        type: integer
-        format: int32
-        description: The minimum number of nodes that the cluster should allocate. May only be specified when autoScalingEnabled is true.
-      autoScaleMaxNodes:
-        type: integer
-        format: int32
-        description: The maximum number of nodes that the cluster should scale to. May only be specified when autoScalingEnabled is true.
-      staticNodeCount:
-        type: integer
-        format: int32
-        description: The static number of nodes that the cluster should allocate. May only be specified when autoScalingEnabled is false.
-      kpis:
-        type: array
-        description: The list of configured KPIs
-        items:
-          $ref: '#/definitions/ConfiguredKpi'
-      deploymentId:
-        type: string
-        description: The id of the deployment.
-      deploymentCrn:
-        type: string
-        description: The CRN of the deployment.
-      name:
-        type: string
-        description: The name of the deployment
-      cfmNifiVersion:
-        type: string
-        description: The CFM NiFi version associated with the deployment
-      autoStartFlow:
-        type: boolean
-        description: Indicates whether or not the flow should be started during deployment creation
-      clusterSizeName:
-        type: string
-        description: The size of the cluster to deploy
-        enum:
-          - EXTRA_SMALL
-          - SMALL
-          - MEDIUM
-          - LARGE
-      parametersDirty:
-        type: boolean
-        description: Indicates whether or not all current parameter values have successfully been applied to NiFi
-        readOnly: true
-      kpisDirty:
-        type: boolean
-        description: Indicates whether or not the current KPIs have successfully been deployed as alert rules
-        readOnly: true
-      sizingAndScalingDirty:
-        type: boolean
-        description: Indicates whether or not the current sizing and scaling configuration has been successfully applied in Kubernetes
-        readOnly: true
-      lastUpdatedByUsername:
-        type: string
-        description: The username of the last person to update the deployment configuration
-        readOnly: true
-      inboundHostname:
-        type: string
-        description: The inbound hostname
-      listenComponents:
-        type: array
-        description: Listen components port and protocol data
-        items:
-          $ref: '#/definitions/ListenComponent'
   DeploymentStatus:
     type: object
     description: The state and state message associated with a deployment
@@ -1292,13 +1346,14 @@ definitions:
       detailedState:
         type: string
         description: The detailed state that the deployment is currently in
+        x-deprecated-enum-values: FAILED_TO_START,SUSPENDING_FLOW
         enum:
           - GOOD_HEALTH
-          - FAILED_TO_SUSPEND
+          - FAILED_TO_STOP_FLOW
           - FAILED_TO_UPDATE_NIFI_VERSION
-          - FAILED_TO_START
+          - FAILED_TO_START_FLOW
           - FAILED_TO_RESTART
-          - SUSPENDED
+          - FLOW_STOPPED
           - FAILED_TO_DEPLOY
           - FAILED_TO_IMPORT
           - FAILED_TO_UPDATE
@@ -1309,11 +1364,16 @@ definitions:
           - DEPLOYING_FLOW_DEFINITION
           - IMPORTING_FLOW
           - STARTING_FLOW
-          - SUSPENDING_FLOW
+          - STOPPING_FLOW
           - UPDATING
           - UPDATING_NIFI_VERSION
           - CANCELLING_NIFI_VERSION_UPDATE
           - RESTARTING
+          - SUSPENDING
+          - RESUMING
+          - SUSPENDED
+          - FAILED_TO_SUSPEND
+          - FAILED_TO_RESUME
           - TERMINATING
           - CANCEL_REQUESTED
           - STOPPED
@@ -1332,9 +1392,13 @@ definitions:
           - METERING_OFFLINE
           - CERTIFICATE_RENEWED
           - NOT_HEALTHY
+          - EXCESSIVE_OFFLOAD_TIME
+          - FAILED_TO_START
+          - SUSPENDING_FLOW
       state:
         type: string
         description: The state that the deployment is currently in
+        x-deprecated-enum-values: SUSPENDING_FLOW
         enum:
           - DEPLOYING
           - GOOD_HEALTH
@@ -1342,15 +1406,19 @@ definitions:
           - BAD_HEALTH
           - IMPORTING_FLOW
           - STARTING_FLOW
-          - SUSPENDING_FLOW
-          - SUSPENDED
+          - STOPPING_FLOW
+          - FLOW_STOPPED
           - UPDATING
           - TERMINATING
           - RESTARTING
+          - SUSPENDING
+          - RESUMING
+          - SUSPENDED
           - UPGRADING
           - ROLLING_BACK
           - STOPPED
           - UNKNOWN
+          - SUSPENDING_FLOW
       message:
         type: string
         description: Detail message relating to the current status of the deployment
@@ -1433,6 +1501,10 @@ definitions:
         description: The list of referenced assets.
         items:
           $ref: '#/definitions/AssetReference'
+      valueSet:
+        type: boolean
+        description: Indicates if the value of this parameter is set (i.e. not null)
+        readOnly: true
   FlowParameterGroup:
     type: object
     description: A flow parameter group
@@ -1573,7 +1645,7 @@ definitions:
     properties:
       deploymentConfiguration:
         description: The deployment configuration.
-        $ref: '#/definitions/DeploymentConfiguration'
+        $ref: '#/definitions/RpcDeploymentConfiguration'
   GetDeploymentRequestDetailsRequest:
     type: object
     description: Request object for retrieving deployment request details.
@@ -1636,19 +1708,16 @@ definitions:
     description: Request object to retrieve Inbound Connection Endpoint client's certificate.
     x-workload: true
     x-client-only: true
+    required:
+      - environmentCrn
+      - crn
     properties:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
-      id:
-        type: string
-        description: The Inbound Connection Endpoint identifier. Deprecated. Use 'crn' instead
-        x-deprecated: true
       crn:
         type: string
         description: The CRN of the Inbound Connection Endpoint
-    required:
-      - environmentCrn
   InboundConnectionEndpointClientCertificateResponse:
     type: object
     description: Response object that contains the client's certificate.
@@ -1664,19 +1733,16 @@ definitions:
     description: Request object to retrieve Inbound Connection Endpoint client's private key.
     x-workload: true
     x-client-only: true
+    required:
+      - environmentCrn
+      - crn
     properties:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
-      id:
-        type: string
-        description: The Inbound Connection Endpoint identifier. Deprecated. Use 'crn' instead
-        x-deprecated: true
       crn:
         type: string
         description: The CRN of the Inbound Connection Endpoint
-    required:
-      - environmentCrn
   InboundConnectionEndpointClientPrivateKeyResponse:
     type: object
     description: Response object that contains the client's private key.
@@ -1951,6 +2017,60 @@ definitions:
       port:
         type: string
         description: Inbound port
+  NodeStorageProfileMetadata:
+    type: object
+    description: Provides details about the node storage options.
+    x-workload: true
+    x-client-only: true
+    required:
+      - contentRepoSize
+      - flowfileRepoSize
+      - iops
+      - provenanceRepoSize
+      - storageVolumeType
+      - throughput
+    properties:
+      contentRepoSize:
+        type: integer
+        format: int32
+        description: Content repository size
+        readOnly: true
+      provenanceRepoSize:
+        type: integer
+        format: int32
+        description: Provenance repository size
+        readOnly: true
+      flowfileRepoSize:
+        type: integer
+        format: int32
+        description: FlowFile repository size
+        readOnly: true
+      iops:
+        type: string
+        description: IOPS
+        readOnly: true
+      throughput:
+        type: string
+        description: Throughput
+        readOnly: true
+      storageVolumeType:
+        type: string
+        description: Storage volume type
+        readOnly: true
+      name:
+        type: string
+        description: The name of this Storage Profile
+        enum:
+          - LEGACY_STANDARD
+          - LEGACY_PERFORMANCE
+          - STANDARD_AWS
+          - STANDARD_AZURE
+          - PERFORMANCE_AWS
+          - PERFORMANCE_AZURE
+          - LOCAL_K8S
+      text:
+        type: string
+        description: The text (i.e., the human readable name) for this Storage Profile
   RenewInboundConnectionEndpointCertificateRequest:
     type: object
     description: Request object to renew Inbound Connection Endpoint certificate(s)
@@ -1980,6 +2100,57 @@ definitions:
     description: Response object for Inbound Connection Endpoint certificate renewal request
     x-workload: true
     x-client-only: true
+  RestartDeploymentRequest:
+    type: object
+    description: Request object to restart a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+      forceStopFlow:
+        type: boolean
+        description: Whether to force stop the NiFi flow during restart.
+  RestartDeploymentResponse:
+    type: object
+    description: Response object for restarting a deployment request.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployment:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployment'
+  ResumeDeploymentRequest:
+    type: object
+    description: Request object to resume a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+  ResumeDeploymentResponse:
+    type: object
+    description: Response object for resuming a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployment:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployment'
   RpcDeployment:
     type: object
     description: Provides details about a deployment.
@@ -2031,7 +2202,7 @@ definitions:
           enum:
             - VIEW_NIFI
             - START_FLOW
-            - SUSPEND_FLOW
+            - STOP_FLOW
             - EDIT
             - CANCEL_CREATE
             - TERMINATE
@@ -2040,6 +2211,12 @@ definitions:
             - CANCEL_NIFI_VERSION_UPDATE
             - RESTART_DEPLOYMENT
             - MANAGE_DEPLOYMENT
+            - EXPORT
+            - SUSPEND
+            - RESUME
+            - DOWNLOAD_LOG
+            - SUSPEND_FLOW
+          x-deprecated-enum-values: SUSPEND_FLOW
       nifiUrl:
         type: string
         description: The url to open the deployed flow in NiFi
@@ -2090,6 +2267,9 @@ definitions:
       flowCrn:
         type: string
         description: The deployment's current flow CRN
+      creatorCrn:
+        type: string
+        description: The CRN of the user who deployed the flow
       artifactTypeName:
         type: string
         description: The type of artifact of the flow
@@ -2132,6 +2312,107 @@ definitions:
       customNarConfigurationId:
         type: string
         description: The identifier of the custom NAR configuration, if used.
+      nodeStorageProfile:
+        type: string
+        description: The node storage profile
+  RpcDeploymentConfiguration:
+    type: object
+    description: Provides all of the configuration that dictates how a flow should be deployed
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+    properties:
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of this configuration
+      parameterGroups:
+        type: array
+        description: The list of flow parameter groups
+        items:
+          $ref: '#/definitions/FlowParameterGroup'
+      autoScalingEnabled:
+        type: boolean
+        description: Specifies that auto-scaling should be enabled.
+      flowMetricsScalingEnabled:
+        type: boolean
+        description: Specifies that Flow metrics should be enabled for scaling.
+      autoScaleMinNodes:
+        type: integer
+        format: int32
+        description: The minimum number of nodes that the cluster should allocate. May only be specified when autoScalingEnabled is true.
+      autoScaleMaxNodes:
+        type: integer
+        format: int32
+        description: The maximum number of nodes that the cluster should scale to. May only be specified when autoScalingEnabled is true.
+      staticNodeCount:
+        type: integer
+        format: int32
+        description: The static number of nodes that the cluster should allocate. May only be specified when autoScalingEnabled is false.
+      kpis:
+        type: array
+        description: The list of configured KPIs
+        items:
+          $ref: '#/definitions/ConfiguredKpi'
+      deploymentId:
+        type: string
+        description: The id of the deployment.
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment.
+      name:
+        type: string
+        description: The name of the deployment
+      cfmNifiVersion:
+        type: string
+        description: The CFM NiFi version associated with the deployment
+      autoStartFlow:
+        type: boolean
+        description: Indicates whether or not the flow should be started during deployment creation
+      clusterSizeName:
+        type: string
+        description: The size of the cluster to deploy
+        enum:
+          - EXTRA_SMALL
+          - SMALL
+          - MEDIUM
+          - LARGE
+      nodeStorageProfileName:
+        type: string
+        description: Node storage profile name
+        enum:
+          - LEGACY_STANDARD
+          - LEGACY_PERFORMANCE
+          - STANDARD_AWS
+          - STANDARD_AZURE
+          - PERFORMANCE_AWS
+          - PERFORMANCE_AZURE
+          - LOCAL_K8S
+      parametersDirty:
+        type: boolean
+        description: Indicates whether or not all current parameter values have successfully been applied to NiFi
+        readOnly: true
+      kpisDirty:
+        type: boolean
+        description: Indicates whether or not the current KPIs have successfully been deployed as alert rules
+        readOnly: true
+      sizingAndScalingDirty:
+        type: boolean
+        description: Indicates whether or not the current sizing and scaling configuration has been successfully applied in Kubernetes
+        readOnly: true
+      lastUpdatedByUsername:
+        type: string
+        description: The username of the last person to update the deployment configuration
+        readOnly: true
+      inboundHostname:
+        type: string
+        description: The inbound hostname
+      listenComponents:
+        type: array
+        description: Listen components port and protocol data
+        items:
+          $ref: '#/definitions/ListenComponent'
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.
@@ -2182,6 +2463,11 @@ definitions:
         description: The options that are available for determining the size of the deployed cluster
         items:
           $ref: '#/definitions/ClusterSize'
+      nodeStorageProfileMetadata:
+        type: array
+        description: The list of node storage profiles
+        items:
+          $ref: '#/definitions/NodeStorageProfileMetadata'
   ServiceMeta:
     type: object
     description: The meta information about a DataFlow service.
@@ -2218,6 +2504,78 @@ definitions:
       environmentCrn:
         type: string
         description: Crn of associated CDP environment
+  StartFlowRequest:
+    type: object
+    description: Request object for starting the NiFi flow.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+  StartFlowResponse:
+    type: object
+    description: Response object for starting the NiFi flow.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployment:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployment'
+  StopFlowRequest:
+    type: object
+    description: Request object for stopping the NiFi flow.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+  StopFlowResponse:
+    type: object
+    description: Response object for stopping the NiFi flow.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployment:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployment'
+  SuspendDeploymentRequest:
+    type: object
+    description: Request object to suspend a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+  SuspendDeploymentResponse:
+    type: object
+    description: Response object for suspending a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployment:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployment'
   TerminateDeploymentRequest:
     type: object
     description: Request object to terminate a deployment.
@@ -2264,6 +2622,7 @@ definitions:
         enum:
           - STARTED
           - SUSPENDED
+          - STOPPED
   TransitionFlowResponse:
     type: object
     description: Response object for transitioning the state of the NiFi flow.
@@ -2379,6 +2738,14 @@ definitions:
         description: The list of configured KPIs
         items:
           $ref: '#/definitions/ConfiguredKpi'
+      clusterSizeName:
+        type: string
+        description: The deployment t-shirt size
+        enum:
+          - EXTRA_SMALL
+          - SMALL
+          - MEDIUM
+          - LARGE
       assetUpdateRequestCrn:
         type: string
         description: The CRN of the asset update request. Required when updating assets of an existing deployment.
@@ -2390,7 +2757,7 @@ definitions:
     properties:
       deploymentConfiguration:
         description: The deployment configuration.
-        $ref: '#/definitions/DeploymentConfiguration'
+        $ref: '#/definitions/RpcDeploymentConfiguration'
   UpdateNifiVersionRequest:
     type: object
     description: Request object for updating the NiFi version of a deployment.

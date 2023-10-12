@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.98
+  version: 0.9.99
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2133,6 +2133,15 @@ definitions:
         description: The fine-grained policies related to each service.
         items:
           $ref: '#/definitions/CredentialGranularPolicyResponse'
+  GcpCredentialPrerequisitesResponse:
+    type: object
+    description: Response object for getting GCP credential prerequisites.
+    required:
+      - serviceAccountCreationCommand
+    properties:
+      serviceAccountCreationCommand:
+        type: string
+        description: GCP CLI command to create service account encoded in base64.
   GetGovCloudCredentialPrerequisitesRequest:
     type: object
     description: Request object for getting the credential prerequisites for GovCloud for the enabled providers.
@@ -4991,6 +5000,7 @@ definitions:
         enum:
           - AWS
           - AZURE
+          - GCP
         description: The kind of cloud platform.
   GetAuditCredentialPrerequisitesResponse:
     type: object
@@ -5010,6 +5020,9 @@ definitions:
       azure:
         description: Provides the app creation command and role definition Json for Azure credential creation.
         $ref: '#/definitions/AzureCredentialPrerequisitesResponse'
+      gcp:
+        description: Provides the service account creation command for GCP credential creation.
+        $ref: '#/definitions/GcpCredentialPrerequisitesResponse'
   GetGovCloudAuditCredentialPrerequisitesRequest:
     type: object
     description: Request object for getting the audit credential prerequisites for GovCloud for the enabled providers.
