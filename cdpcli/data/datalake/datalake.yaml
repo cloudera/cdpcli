@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.99
+  version: 0.9.100
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -3042,6 +3042,11 @@ definitions:
         description: The target size for the datalake.
         enum:
           - MEDIUM_DUTY_HA
+          - ENTERPRISE
+      multiAz:
+        type: boolean
+        default: false
+        description: Whether to deploy a new datalake in a multi-availability zone way.
   ResizeDatalakeResponse:
     type: object
     description: Datalake resize response.

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.99
+  version: 0.9.100
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1730,6 +1730,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/updateAzureImageTermsPolicy:
+    post:
+      summary: Updates account level Azure Marketplace image policy. CDP is capable to automatically accept Azure Marketplace image terms during cluster deployment. You can use this setting in your account to opt in or opt out this behaviour.
+      description: Updates account level Azure Marketplace image policy. CDP is capable to automatically accept Azure Marketplace image terms during cluster deployment. You can use this setting in your account to opt in or opt out this behaviour.
+      operationId: updateAzureImageTermsPolicy
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAzureImageTermsPolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateAzureImageTermsPolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getAzureImageTermsPolicy:
+    post:
+      summary: Gets account level Azure Marketplace image policy. CDP is capable to automatically accept Azure Marketplace image terms during cluster deployment. You can use this setting in your account to opt in or opt out this behaviour.
+      description: Gets account level Azure Marketplace image policy. CDP is capable to automatically accept Azure Marketplace image terms during cluster deployment. You can use this setting in your account to opt in or opt out this behaviour.
+      operationId: getAzureImageTermsPolicy
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAzureImageTermsPolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAzureImageTermsPolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -1779,6 +1821,11 @@ definitions:
         items:
           type: string
         description: The selected subnets to update the given environment to.
+      endpointAccessGatewaySubnetIds:
+        type: array
+        items:
+          type: string
+        description: The selected subnets to update for the given environment's endpoint access gateway.
   UpdateSubnetResponse:
     type: object
     description: Response object for an update environment subnet request.
@@ -4612,6 +4659,30 @@ definitions:
   SetTelemetryFeaturesResponse:
     type: object
     description: Response object to enable environment level telemetry features.
+  UpdateAzureImageTermsPolicyRequest:
+    type: object
+    description: Request object to enable or disable automatic acceptance of Azure Marketplace image terms.
+    required:
+      - accepted
+    properties:
+      accepted:
+        type: boolean
+        description: Flag to enable or disable automatic acceptance of Azure Marketplace image terms.
+  UpdateAzureImageTermsPolicyResponse:
+    type: object
+    description: Response object to enable or disable automatic acceptance of Azure Marketplace image terms.
+  GetAzureImageTermsPolicyRequest:
+    type: object
+    description: Request object to retrieve current value of setting that controls automatic acceptance of Azure Marketplace image terms.
+  GetAzureImageTermsPolicyResponse:
+    type: object
+    description: Response object to retrieve current value of setting that controls automatic acceptance of Azure Marketplace image terms.
+    required:
+      - accepted
+    properties:
+      accepted:
+        type: boolean
+        description: Flag denoting whether automatic Azure Marketplace image terms acceptance is enabled or disabled.
   GetEnvironmentSettingRequest:
     x-form-factors: private
     type: object

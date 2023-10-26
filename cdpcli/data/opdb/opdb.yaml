@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.99
+  version: 0.9.100
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -367,6 +367,26 @@ definitions:
       databaseName:
         type: string
         description: database name
+      scaleType:
+        description: Optional tags to choose one of the predefined cluster sizes.
+        $ref: '#/definitions/ScaleType'
+      storageType:
+        description: Optional tag to choose the storage types.
+        $ref: '#/definitions/StorageType'
+  ScaleType:
+    type: string
+    description: "Scale type.\n `MICRO` - Create a 2-node cluster (1 gateway and 1 worker) with high availability disabled. `LIGHT` - Create a multi-node cluster with a light master and gateway instance type. `HEAVY` - Create a multi-node cluster with heavy master and gateway instance type."
+    enum:
+      - MICRO
+      - LIGHT
+      - HEAVY
+  StorageType:
+    type: string
+    description: "Storage type for clusters.\n `CLOUD_WITH_EPHEMERAL` - Cloud with ephemeral storage. `CLOUD` - Cloud storage without ephemeral storage. `HDFS` - HDFS storage."
+    enum:
+      - CLOUD_WITH_EPHEMERAL
+      - CLOUD
+      - HDFS
   CreateDatabaseResponse:
     type: object
     description: A response which gives status of the database creation
