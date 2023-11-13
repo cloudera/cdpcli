@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.100
+  version: 0.9.101
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -190,7 +190,7 @@ paths:
   /api/v1/datalake/startDatalakeVerticalScaling:
     post:
       summary: Initiates the vertical scaling on Data Lake.
-      description: Initiates the vertical scaling on Data Lake.
+      description: Initiates the vertical scaling on Data Lake. You have the option to specify 'modifyDisks' or 'instanceTemplate' as parameter.
       operationId: startDatalakeVerticalScaling
       x-mutating: true
       parameters:
@@ -1016,7 +1016,6 @@ definitions:
     required:
       - datalake
       - group
-      - instanceTemplate
     properties:
       datalake:
         type: string
@@ -2510,6 +2509,9 @@ definitions:
         enum:
           - VERSION_11
           - VERSION_14
+      force:
+        type: boolean
+        description: Start the database upgrade flow even if the source and target versions are the same. Can be used to reinitiate an upgrade after a failure.
   StartDatabaseUpgradeResponse:
     type: object
     description: Response object to Data Lake database upgrade.

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.100
+  version: 0.9.101
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -35,6 +35,50 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/AddReadyflowResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/df/cancelDeleteProject:
+    post:
+      summary: Cancels deletion of a Project.
+      description: Cancels deletion of a Project.
+      operationId: cancelDeleteProject
+      x-entitlement: DFX_PROJECTS
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CancelDeleteProjectRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelDeleteProjectResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/df/createProject:
+    post:
+      summary: Creates a Project.
+      description: Creates a Project.
+      operationId: createProject
+      x-entitlement: DFX_PROJECTS
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateProjectRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateProjectResponse'
         default:
           description: The default response on an error.
           schema:
@@ -79,6 +123,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteFlowResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/df/deleteProject:
+    post:
+      summary: Deletes a Project.
+      description: Deletes a Project.
+      operationId: deleteProject
+      x-entitlement: DFX_PROJECTS
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteProjectRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteProjectResponse'
         default:
           description: The default response on an error.
           schema:
@@ -167,6 +233,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DescribeFlowResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/df/describeProject:
+    post:
+      summary: Describes a Project.
+      description: Describes a Project
+      operationId: describeProject
+      x-entitlement: DFX_PROJECTS
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeProjectRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeProjectResponse'
         default:
           description: The default response on an error.
           schema:
@@ -640,6 +728,51 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/df/listProjectFilterOptions:
+    post:
+      summary: List filter options.
+      description: Lists filter options to be used with ListProjects.
+      operationId: listProjectFilterOptions
+      x-entitlement: DFX_PROJECTS
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListProjectFilterOptionsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListProjectFilterOptionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/df/listProjects:
+    post:
+      summary: List Projects.
+      description: Lists Projects.
+      operationId: listProjects
+      x-entitlement: DFX_PROJECT
+      x-paging-default-max-items: 20
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListProjectsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListProjectsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/df/listReadyflows:
     post:
       summary: List ready flows.
@@ -862,6 +995,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/df/updateProject:
+    post:
+      summary: Updates a Project.
+      description: Updates a Project
+      operationId: updateProject
+      x-entitlement: DFX_PROJECTS
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateProjectRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateProjectResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/df/updateService:
     post:
       summary: Update service.
@@ -1265,6 +1420,23 @@ definitions:
       alertFrequencyUnit:
         description: Units of frequency
         $ref: '#/definitions/AlertFrequencyUnit'
+  ProjectMeta:
+    type: object
+    description: Metadata about a project.
+    required:
+      - id
+      - crn
+      - name
+    properties:
+      id:
+        type: string
+        description: The id of the project.
+      crn:
+        type: string
+        description: The crn of the project.
+      name:
+        type: string
+        description: The name of the group.
   ImportFlowDefinitionRequest:
     type: object
     description: Request object for ImportFlowDefinition
@@ -1887,6 +2059,9 @@ definitions:
         type: integer
         format: int64
         description: Current count of active alerts classified as an error
+      project:
+        description: The project information of the deployment.
+        $ref: '#/definitions/ProjectMeta'
   Deployment:
     type: object
     description: A deployment
@@ -1988,6 +2163,9 @@ definitions:
       flowMetricsScalingEnabled:
         type: boolean
         description: Whether or not to use Flow metrics to scale the deployment. May only be specified when autscalingEnabled is true.
+      project:
+        description: The project information of the deployment
+        $ref: '#/definitions/ProjectMeta'
   FilterOption:
     type: object
     description: A filter option
@@ -3097,5 +3275,220 @@ definitions:
         type: integer
         format: int64
         description: The timestamp of the event that triggered this notification
+  Project:
+    type: object
+    description: A Project
+    required:
+      - crn
+      - name
+      - service
+      - created
+      - updated
+      - revision
+    properties:
+      crn:
+        type: string
+        description: The Project CRN.
+      name:
+        type: string
+        description: The Project name.
+      service:
+        description: The DataFlow service information of the Project
+        $ref: '#/definitions/ServiceMeta'
+      created:
+        type: integer
+        format: int64
+        description: The created timestamp.
+      updated:
+        type: integer
+        format: int64
+        description: The last updated timestamp.
+      revision:
+        type: integer
+        format: int32
+        description: The Project revision
+      description:
+        type: string
+        description: The Project description.
+      deleting:
+        type: boolean
+        description: Whether or not the project is currently deleting
+  CreateProjectRequest:
+    type: object
+    description: A request to create a Project
+    required:
+      - name
+      - serviceCrn
+    properties:
+      name:
+        type: string
+        description: The Project name.
+      serviceCrn:
+        type: string
+        description: The service CRN.
+      description:
+        type: string
+        description: The Project description.
+  CreateProjectResponse:
+    type: object
+    description: A response to create a Project
+    properties:
+      project:
+        description: The Project
+        $ref: '#/definitions/Project'
+  ProjectFilterOption:
+    type: object
+    description: A filter option
+    required:
+      - identifier
+      - label
+    properties:
+      identifier:
+        type: string
+        description: The filter identifier
+      label:
+        type: string
+        description: The filter label
+      iconClass:
+        type: string
+        description: The icon class
+  ListProjectFilterOptionsRequest:
+    type: object
+    description: A request to list filter options
+    required:
+      - filterType
+    properties:
+      filterType:
+        type: string
+        description: The type of filter
+  ListProjectFilterOptionsResponse:
+    type: object
+    description: A response to list filter options
+    properties:
+      filterOptions:
+        type: array
+        items:
+          $ref: '#/definitions/ProjectFilterOption'
+        description: The filter options
+  ListProjectsRequest:
+    type: object
+    description: A request to list Projects
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The page size.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: The token pointing to the next element to be retrieved.
+      sorts:
+        type: array
+        items:
+          type: string
+        description: The sort criteria
+      filters:
+        type: array
+        items:
+          type: string
+        description: The filter criteria
+  ListProjectsResponse:
+    type: object
+    description: A response to list Projects
+    properties:
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The page token for requesting the next page of results.
+      projects:
+        type: array
+        x-paging-result: true
+        items:
+          $ref: '#/definitions/Project'
+        description: The listing of Projects.
+  DescribeProjectRequest:
+    type: object
+    description: A request to describe a Project
+    required:
+      - projectCrn
+    properties:
+      projectCrn:
+        type: string
+        description: The Project CRN.
+  DescribeProjectResponse:
+    type: object
+    description: A response to describe a Project
+    required:
+      - project
+    properties:
+      project:
+        description: The Project
+        $ref: '#/definitions/Project'
+  UpdateProjectRequest:
+    type: object
+    description: A request to describe a Project
+    required:
+      - projectCrn
+      - projectRevision
+    properties:
+      projectCrn:
+        type: string
+        description: The Project CRN.
+      projectRevision:
+        type: integer
+        format: int32
+        description: The Project revision
+      projectName:
+        type: string
+        description: The new Project name.
+      projectDescription:
+        type: string
+        description: The new Project description.
+  UpdateProjectResponse:
+    type: object
+    description: A response to describe a Project
+    required:
+      - project
+    properties:
+      project:
+        description: The Project
+        $ref: '#/definitions/Project'
+  DeleteProjectRequest:
+    type: object
+    description: A request to delete a Project
+    required:
+      - projectCrn
+      - projectRevision
+    properties:
+      projectCrn:
+        type: string
+        description: The Project CRN.
+      projectRevision:
+        type: integer
+        format: int32
+        description: The Project revision
+  DeleteProjectResponse:
+    type: object
+    description: A response to delete a Project
+  CancelDeleteProjectRequest:
+    type: object
+    description: A request to cancel the deletion of a Project that is deleting
+    required:
+      - projectCrn
+      - projectRevision
+    properties:
+      projectCrn:
+        type: string
+        description: The Project CRN.
+      projectRevision:
+        type: integer
+        format: int32
+        description: The Project revision
+  CancelDeleteProjectResponse:
+    type: object
+    description: A response to cancelling the deletion of a Project
 x-audit: true
 x-audit-entitlement: AUDIT_API_EVENT_SUBMISSION_DF_API

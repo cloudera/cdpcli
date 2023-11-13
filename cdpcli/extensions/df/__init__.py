@@ -28,6 +28,19 @@ def get_expanded_file_path(file_path):
     return os.path.expandvars(os.path.expanduser(file_path))
 
 
+def create_workload_reporting_task(client, parameters):
+    method = 'post'
+    url = '/dfx/api/rpc-v1/deployments/create-reporting-task-content'
+    file_path = parameters.get('filePath', None)
+    headers = {
+        'Content-Type': 'application/octet-stream',
+        'Deployment-Crn': parameters.get('deploymentCrn', None),
+        'File-Path': file_path,
+    }
+    response = upload_file(client, 'createReportingTask', method, url, headers, file_path)
+    return response
+
+
 def upload_workload_asset(client, parameters):
     method = 'post'
     url = '/dfx/api/rpc-v1/deployments/upload-asset-content'
@@ -88,6 +101,11 @@ class DfExtension(CLIOperationCaller):
                                            operation_model,
                                            parameters,
                                            parsed_globals)
+        elif service_name == 'dfworkload' and operation_name == 'createReportingTask':
+            self._df_workload_create_reporting_task(client_creator,
+                                                    operation_model,
+                                                    parameters,
+                                                    parsed_globals)
         elif service_name == 'dfworkload' and operation_name == 'updateDeployment':
             self._df_workload_update_deployment(client_creator,
                                                 operation_model,
@@ -167,6 +185,13 @@ class DfExtension(CLIOperationCaller):
         client = client_creator('dfworkload')
         operation_name = operation_model.name
         response = upload_workload_asset(client, parameters)
+        self._display_response(operation_name, response, parsed_globals)
+
+    def _df_workload_create_reporting_task(self, client_creator, operation_model,
+                                           parameters, parsed_globals):
+        client = client_creator('dfworkload')
+        operation_name = operation_model.name
+        response = create_workload_reporting_task(client, parameters)
         self._display_response(operation_name, response, parsed_globals)
 
     def _df_workload_update_deployment(self, client_creator, operation_model,

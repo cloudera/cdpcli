@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.100
+  version: 0.9.101
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1119,7 +1119,7 @@ paths:
   /api/v1/datahub/startClusterVerticalScaling:
     post:
       summary: Initiates the vertical scaling on Data Hub cluster.
-      description: Initiates the vertical scaling on Data Hub cluster.
+      description: Initiates the vertical scaling on Data Hub cluster. You have the option to either specify one of 'deleteDisks', 'modifyDisks' or 'addDisks' or 'instanceTemplate' as parameter.
       operationId: startClusterVerticalScaling
       x-mutating: true
       parameters:
@@ -1462,7 +1462,6 @@ definitions:
     required:
       - datahub
       - group
-      - instanceTemplate
     properties:
       datahub:
         type: string
@@ -4242,6 +4241,10 @@ definitions:
         description: The database engine major version to upgrade to.
         enum:
           - VERSION_11
+          - VERSION_14
+      force:
+        type: boolean
+        description: Start the database upgrade flow even if the source and target versions are the same. Can be used to reinitiate an upgrade after a failure.
   StartDatabaseUpgradeResponse:
     type: object
     description: Response object to Data Hub database upgrade.

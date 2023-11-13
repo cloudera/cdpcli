@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.100
+  version: 0.9.101
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -306,6 +306,58 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/create-reporting-task:
+    post:
+      summary: Creates a reporting task.
+      description: Creates a reporting task in a deployment.
+      operationId: createReportingTask
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload,df
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Create Reporting Task
+          required: true
+          schema:
+            $ref: '#/definitions/CreateReportingTaskRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateReportingTaskResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/delete-reporting-task:
+    post:
+      summary: Deletes a reporting task.
+      description: Deletes a reporting task from a deployment.
+      operationId: deleteReportingTask
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Delete Reporting Task
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteReportingTaskRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteReportingTaskResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/get-deployment-configuration:
     post:
       summary: Retrieves the deployment configuration.
@@ -380,6 +432,32 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/GetDeploymentRequestDetailsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/list-reporting-tasks:
+    post:
+      summary: Lists all reporting tasks for a deployment.
+      description: Lists all reporting tasks for a deployment.
+      operationId: listReportingTasks
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: List Reporting Tasks Request
+          required: true
+          schema:
+            $ref: '#/definitions/ListReportingTasksRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListReportingTasksResponse'
         default:
           description: The default response on an error.
           schema:
@@ -840,6 +918,32 @@ paths:
             $ref: '#/definitions/RenewInboundConnectionEndpointCertificateResponse'
         default:
           description: The default response on an error.
+  /dfx/api/rpc-v1/workload-resources/reassign-resources:
+    post:
+      summary: Modifies the project assignment of the given workload resources.
+      description: Modifies the project assignment of the given workload resources.
+      operationId: reassignResources
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Reassign Resources Request
+          required: true
+          schema:
+            $ref: '#/definitions/ReassignResourcesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ReassignResourcesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   AbortAssetUpdateRequestRequest:
     type: object
@@ -1121,6 +1225,9 @@ definitions:
         type: integer
         format: int32
         description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
   CreateCustomNarConfigurationResponse:
     type: object
     description: Response for creating a custom NAR configuration.
@@ -1145,6 +1252,9 @@ definitions:
         type: integer
         format: int32
         description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
       crn:
         type: string
         description: The CRN of the custom NAR configuration to update.
@@ -1235,6 +1345,9 @@ definitions:
       customNarConfigurationCrn:
         type: string
         description: The CRN of the custom NAR configuration.
+      projectCrn:
+        type: string
+        description: The CRN of the project.
   CreateDeploymentResponse:
     type: object
     description: Response object from creating a deployment.
@@ -1256,6 +1369,9 @@ definitions:
       hostname:
         type: string
         description: Fully qualified domain name
+      projectCrn:
+        type: string
+        description: The project CRN to associate this endpoint with, or null to not associate with a project
     required:
       - environmentCrn
   CreateInboundConnectionEndpointResponse:
@@ -1267,6 +1383,33 @@ definitions:
       inboundConnectionEndpointSummary:
         description: Data that describes the Inbound Connection Endpoint.
         $ref: '#/definitions/InboundConnectionEndpointSummary'
+  CreateReportingTaskRequest:
+    type: object
+    description: Request object for creating a reporting task
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - filePath
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      filePath:
+        type: string
+        description: The full local path to the file containing the reporting task definition
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment.
+  CreateReportingTaskResponse:
+    type: object
+    description: Response for creating a reporting task.
+    x-workload: true
+    x-client-only: true
+    properties:
+      crn:
+        type: string
+        description: The CRN of the created reporting task.
   DeleteCustomNarConfigurationRequest:
     type: object
     description: Request object for deleting a custom NAR configuration by CRN.
@@ -1311,6 +1454,9 @@ definitions:
         type: integer
         format: int32
         description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
       crn:
         type: string
         description: The CRN of the custom NAR configuration to update.
@@ -1334,6 +1480,34 @@ definitions:
     description: Response object returned during deletion of an Inbound Connection Endpoint
     x-workload: true
     x-client-only: true
+  DeleteReportingTaskRequest:
+    type: object
+    description: Request object for deleting a reporting task
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+      - reportingTaskCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment.
+      reportingTaskCrn:
+        type: string
+        description: The CRN of the reporting task
+  DeleteReportingTaskResponse:
+    type: object
+    description: Response for deleting a reporting task.
+    x-workload: true
+    x-client-only: true
+    properties:
+      crn:
+        type: string
+        description: The CRN of the deleted reporting task.
   DeploymentStatus:
     type: object
     description: The state and state message associated with a deployment
@@ -1557,6 +1731,9 @@ definitions:
         type: integer
         format: int32
         description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
       crn:
         type: string
         description: The CRN of the custom NAR configuration to update.
@@ -1595,6 +1772,9 @@ definitions:
         type: integer
         format: int32
         description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
       crn:
         type: string
         description: The CRN of the custom NAR configuration to update.
@@ -1789,6 +1969,9 @@ definitions:
         uniqueItems: true
         items:
           $ref: '#/definitions/InboundConnectionEndpointCertificateSummary'
+      projectCrn:
+        type: string
+        description: The CRN of the project.
   KpiContextGroup:
     type: object
     description: Captures the use of a KPI in the context of a process group
@@ -1981,6 +2164,31 @@ definitions:
         description: A list of supported NiFi versions.
         items:
           type: string
+  ListReportingTasksRequest:
+    type: object
+    description: Request object for listing the reporting tasks for a deployment
+    x-workload: true
+    x-client-only: true
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment.
+    required:
+      - environmentCrn
+  ListReportingTasksResponse:
+    type: object
+    description: Response for listing the reporting tasks of a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      reportingTasks:
+        type: array
+        description: The listed reporting tasks.
+        items:
+          $ref: '#/definitions/ReportingTaskSummary'
   ListenComponent:
     type: object
     description: Provides subset of metadata of a Listen* component
@@ -2071,6 +2279,50 @@ definitions:
       text:
         type: string
         description: The text (i.e., the human readable name) for this Storage Profile
+  ProjectMeta:
+    type: object
+    description: The meta information about a project.
+    x-workload: true
+    x-client-only: true
+    properties:
+      id:
+        type: string
+        description: The id of the project
+        readOnly: true
+      crn:
+        type: string
+        description: The CRN of the project
+        readOnly: true
+      name:
+        type: string
+        description: The name of the group
+        readOnly: true
+  ReassignResourcesRequest:
+    type: object
+    description: Request object to reassign resources.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - workloadResourceSummaries
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      workloadResourceSummaries:
+        type: array
+        description: The summaries of the resources being reassigned.
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/RpcWorkloadResourceSummary'
+      destinationProjectCrn:
+        type: string
+        description: The crn of the project to reassign the resources to, or null to unassign the resources.
+  ReassignResourcesResponse:
+    type: object
+    description: Response object from reassigning resources.
+    x-workload: true
+    x-client-only: true
   RenewInboundConnectionEndpointCertificateRequest:
     type: object
     description: Request object to renew Inbound Connection Endpoint certificate(s)
@@ -2100,6 +2352,24 @@ definitions:
     description: Response object for Inbound Connection Endpoint certificate renewal request
     x-workload: true
     x-client-only: true
+  ReportingTaskSummary:
+    type: object
+    description: A reporting task summary
+    x-workload: true
+    x-client-only: true
+    properties:
+      crn:
+        type: string
+        description: The CRN of the reporting task
+      identifier:
+        type: string
+        description: The component's unique identifier
+      name:
+        type: string
+        description: The component's name
+      type:
+        type: string
+        description: The type of the extension component
   RestartDeploymentRequest:
     type: object
     description: Request object to restart a deployment.
@@ -2217,6 +2487,10 @@ definitions:
             - DOWNLOAD_LOG
             - SUSPEND_FLOW
           x-deprecated-enum-values: SUSPEND_FLOW
+      project:
+        description: Simple information about the project this deployment belongs to, or null if does not belong to a project
+        readOnly: true
+        $ref: '#/definitions/ProjectMeta'
       nifiUrl:
         type: string
         description: The url to open the deployed flow in NiFi
@@ -2315,6 +2589,9 @@ definitions:
       nodeStorageProfile:
         type: string
         description: The node storage profile
+      projectCrn:
+        type: string
+        description: The crn of the project this deployment belongs to, or null if does not belong to a project
   RpcDeploymentConfiguration:
     type: object
     description: Provides all of the configuration that dictates how a flow should be deployed
@@ -2413,6 +2690,9 @@ definitions:
         description: Listen components port and protocol data
         items:
           $ref: '#/definitions/ListenComponent'
+      projectCrn:
+        type: string
+        description: The crn of the project this deployment belongs to, or null if does not belong to a project
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.
@@ -2468,6 +2748,20 @@ definitions:
         description: The list of node storage profiles
         items:
           $ref: '#/definitions/NodeStorageProfileMetadata'
+  RpcWorkloadResourceSummary:
+    type: object
+    description: Provides a summary of the workload resource.
+    x-workload: true
+    x-client-only: true
+    required:
+      - resourceCrn
+    properties:
+      resourceCrn:
+        type: string
+        description: The crn of the workload resource.
+      projectCrn:
+        type: string
+        description: The project crn that the resource is assigned to. Should be null if resource is not assigned to a project.
   ServiceMeta:
     type: object
     description: The meta information about a DataFlow service.
@@ -2660,6 +2954,9 @@ definitions:
         type: integer
         format: int32
         description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
       crn:
         type: string
         description: The CRN of the custom NAR configuration to update.
@@ -2687,6 +2984,9 @@ definitions:
         type: integer
         format: int32
         description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
       crn:
         type: string
         description: The CRN of the custom NAR configuration to update.
@@ -2851,6 +3151,9 @@ definitions:
         type: integer
         format: int32
         description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
   ValidateCustomNarConfigurationResponse:
     type: object
     description: Response object for validating custom NAR configuration.

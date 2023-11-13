@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.100
+  version: 0.9.101
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1772,6 +1772,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/updateDataServiceResources:
+    post:
+      summary: Updates Data Service resources of an environment.
+      description: Updates Data Service resources of an environment.
+      operationId: updateDataServiceResources
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateDataServiceResourcesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateDataServiceResourcesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -2877,6 +2898,9 @@ definitions:
       enableOutboundLoadBalancer:
         type: boolean
         description: Whether or not outbound load balancers should be created for Azure environments. The default behavior is to not create the outbound load balancer.
+      dataServices:
+        description: Data Services parameters of the environment.
+        $ref: '#/definitions/DataServicesRequest'
   CreateGCPEnvironmentRequest:
     type: object
     description: Request object for a create GCP environment request.
@@ -2977,10 +3001,10 @@ definitions:
           type: string
       databasePrivateDnsZoneId:
         type: string
-        description: The ID of an existing private DNS zone used for the database.
+        description: The full Azure resource ID of the existing Private DNS Zone used for Flexible Server and Single Server Databases.
       aksPrivateDnsZoneId:
         type: string
-        description: The ID of an existing private DNS zone used for the AKS.
+        description: The full Azure resource ID of an existing Private DNS zone used for the AKS.
   ExistingGCPNetworkRequest:
     type: object
     description: Request object for creating an GCP environment using existing VPC and subnets.
@@ -3245,6 +3269,9 @@ definitions:
       tags:
         description: Environment tags object containing the tag values defined for the environment.
         $ref: '#/definitions/EnvironmentTags'
+      dataServices:
+        description: Data Services parameters of the environment.
+        $ref: '#/definitions/DataServices'
   AuthenticationRequest:
     type: object
     description: Additional SSH key authentication configuration for accessing cluster node.
@@ -3358,10 +3385,10 @@ definitions:
         description: Whether to associate public ip's to the resources within the network.
       databasePrivateDnsZoneId:
         type: string
-        description: The ID of an existing private DNS zone used for the database.
+        description: The full Azure resource ID of the existing Private DNS Zone used for Flexible Server and Single Server Databases.
       aksPrivateDnsZoneId:
         type: string
-        description: The ID of an existing private DNS zone used for the AKS.
+        description: The full Azure resource ID of an existing Private DNS zone used for the AKS.
       enableOutboundLoadBalancer:
         type: boolean
         description: Whether the outbound load balancer was created for this environment.
@@ -5583,3 +5610,57 @@ definitions:
   UpdateOrchestratorStateResponse:
     type: object
     description: Response object for running orchestrator engine state update on the FreeIPA cluster.
+  DataServicesRequest:
+    type: object
+    description: Data Services parameters request of the environment.
+    properties:
+      azure:
+        description: Azure-specific Data Service parameters request.
+        $ref: '#/definitions/AzureDataServicesParametersRequest'
+  DataServices:
+    type: object
+    description: Data Services parameters response of the environment.
+    properties:
+      azure:
+        description: Azure-specific Data Service parameters response.
+        $ref: '#/definitions/AzureDataServicesParameters'
+  AzureDataServicesParametersRequest:
+    description: Azure-specific Data Service parameters request.
+    type: object
+    required:
+      - sharedManagedIdentity
+    properties:
+      sharedManagedIdentity:
+        type: string
+        description: User-assigned managed identity used by the AKS control plane.
+  AzureDataServicesParameters:
+    description: Azure-specific Data Service parameters response.
+    type: object
+    required:
+      - sharedManagedIdentity
+    properties:
+      sharedManagedIdentity:
+        type: string
+        description: User-assigned managed identity used by the AKS control plane.
+  UpdateDataServiceResourcesRequest:
+    type: object
+    description: Update Data Services parameters request of the environment.
+    required:
+      - environment
+      - dataServices
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      dataServices:
+        description: Data Services parameters request of the environment.
+        $ref: '#/definitions/DataServicesRequest'
+  UpdateDataServiceResourcesResponse:
+    type: object
+    description: Response object for an update environment Data Service resource request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: The environment.

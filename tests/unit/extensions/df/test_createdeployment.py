@@ -269,6 +269,7 @@ class TestCreateDeployment(unittest.TestCase):
         flow_version_crn = 'FLOW_VERSION_CRN'
         deployment_name = 'DEPLOYMENT'
         node_storage_profile_name = 'STANDARD_AWS'
+        project_crn = 'PROJECT_CRN'
 
         parameter_group_name = 'ParameterGroup'
         parameter_name = 'Files'
@@ -335,7 +336,8 @@ class TestCreateDeployment(unittest.TestCase):
                 kpi
             ],
             'customNarConfiguration': custom_nar_configuration,
-            'nodeStorageProfileName': node_storage_profile_name
+            'nodeStorageProfileName': node_storage_profile_name,
+            'projectCrn': project_crn
         }
         parsed_args = {}
         parsed_globals = Mock()
@@ -473,7 +475,8 @@ class TestCreateDeployment(unittest.TestCase):
                     kpi
                 ],
                 'customNarConfigurationCrn': custom_nar_configuration_crn,
-                'nodeStorageProfileName': node_storage_profile_name
+                'nodeStorageProfileName': node_storage_profile_name,
+                'projectCrn': project_crn
             },
             create_deployment_parameters[0])
 

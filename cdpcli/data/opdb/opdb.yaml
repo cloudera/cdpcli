@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.100
+  version: 0.9.101
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -367,6 +367,9 @@ definitions:
       databaseName:
         type: string
         description: database name
+      autoScalingParameters:
+        description: Parameters to configure the AutoScaling
+        $ref: '#/definitions/AutoScalingParameters'
       scaleType:
         description: Optional tags to choose one of the predefined cluster sizes.
         $ref: '#/definitions/ScaleType'
@@ -387,6 +390,34 @@ definitions:
       - CLOUD_WITH_EPHEMERAL
       - CLOUD
       - HDFS
+  AutoScalingParameters:
+    type: object
+    description: A Parameters to configure AutoScaling
+    properties:
+      targetedValueForMetric:
+        type: integer
+        format: int64
+        description: The target value of the metric a user expect to maintain for the cluster
+      maxWorkersForDatabase:
+        type: integer
+        format: int32
+        description: Maximum number of worker nodes as per this metrics can be scaled up to.
+      maxWorkersPerBatch:
+        type: integer
+        format: int32
+        description: Maximum number of worker nodes as per this metrics can be scaled up to in one batch.
+      minWorkersForDatabase:
+        type: integer
+        format: int32
+        description: Minimum number of worker nodes as per this metrics can be scaled down to.
+      evaluationPeriod:
+        type: integer
+        format: int64
+        description: Period of metrics(in seconds) needs to be considered.
+      minimumBlockCacheGb:
+        type: integer
+        format: int32
+        description: The amount of block cache, in Gigabytes, which the database should have.
   CreateDatabaseResponse:
     type: object
     description: A response which gives status of the database creation

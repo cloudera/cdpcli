@@ -159,7 +159,13 @@ OPERATION_SHAPES = {
                     'PERFORMANCE_AWS',
                     'PERFORMANCE_AZURE'
                 ]
-            }
+            },
+            'projectCrn': {
+                'type': 'string',
+                'description': 'CRN for the project to assign this deployment to. '
+                               'Not specifying this will result in the '
+                               'deployment to be unassigned to any project.'
+            },
         }
     },
     'CreateDeploymentResponse': {
@@ -548,6 +554,13 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         nodeStorageProfileName = parameters.get('nodeStorageProfileName', None)
         if nodeStorageProfileName is not None:
             deployment_configuration['nodeStorageProfileName'] = nodeStorageProfileName
+
+        # If projectCrn is not set, then
+        # sending it as empty in the configuration will trigger
+        # dfx-local to not assign the created deployment to any project
+        projectCrn = parameters.get('projectCrn', None)
+        if projectCrn is not None:
+            deployment_configuration['projectCrn'] = projectCrn
 
         inboundHostname = parameters.get('inboundHostname', None)
         if inboundHostname is not None:

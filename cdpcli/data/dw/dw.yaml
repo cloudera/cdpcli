@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.100
+  version: 0.9.101
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2040,6 +2040,10 @@ definitions:
       customSubdomain:
         type: string
         description: Custom environment subdomain. Overrides the environment subdomain using a customized domain either in the old subdomain format like ENV_ID.dw or the new format like dw-ENV_NAME.
+      resourcePool:
+        type: string
+        description: The Resource Pool of the cluster.
+        x-form-factors: private
   BackupClusterRequest:
     type: object
     description: Request object for the backupCluster method.
@@ -2058,7 +2062,7 @@ definitions:
         description: The ID of the cluster.
       operationId:
         type: string
-        description: The the ID of the backup operation.
+        description: The ID of the backup operation.
       timestamp:
         type: string
         format: date-time
@@ -2090,10 +2094,10 @@ definitions:
     properties:
       clusterId:
         type: string
-        description: The the ID of the cluster.
+        description: The ID of the cluster.
       operationId:
         type: string
-        description: The the ID of the restore operation.
+        description: The ID of the restore operation.
       action:
         type: string
         description: 'The cluster action. Possible actions: Create, Skip'
@@ -2271,6 +2275,10 @@ definitions:
       dbHue:
         type: string
         description: The name of the HUE database. Not required for embedded databases.
+      dedicatedExecutorNodes:
+        type: boolean
+        description: Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.
+        default: false
   CreateClusterResponse:
     type: object
     description: Response object for the createCluster method.
@@ -3569,11 +3577,16 @@ definitions:
         description: Tags associated with the resources.
         items:
           $ref: '#/definitions/TagRequest'
+      resourcePool:
+        type: string
+        description: The Resource Pool of the Virtual Warehouse.
+        x-form-factors: private
       hiveAuthenticationMode:
         type: string
         x-nullable: true
+        x-deprecated: true
         x-form-factors: private
-        description: 'Sets the authentication mode to use by Hive Server: * `LDAP` * `KERBEROS` Default: `LDAP` if not specified'
+        description: 'DEPRECATED - Sets the authentication mode to use by Hive Server: * `LDAP` * `KERBEROS` Default: `LDAP` if not specified'
       platformJwtAuth:
         type: boolean
         default: false
@@ -4201,6 +4214,10 @@ definitions:
       whitelistWorkloadAccessIpCIDRs:
         type: string
         description: List of IP address CIDRs to whitelist for workload access.
+      resourcePool:
+        type: string
+        description: The name of the Resource Pool the cluster is in.
+        x-form-factors: private
       externalBuckets:
         type: array
         description: External buckets attached to the environment.
@@ -4228,6 +4245,10 @@ definitions:
       size:
         type: string
         description: The template size for the Cloudera Data Visualization
+      resourcePool:
+        type: string
+        description: The name of the Resource Pool the Cloudera Data Visualization is in.
+        x-form-factors: private
       userGroups:
         type: array
         items:
@@ -4265,6 +4286,10 @@ definitions:
         type: string
         format: date-time
         description: Creation date of Database Catalog.
+      resourcePool:
+        type: string
+        description: The name of the Resource Pool the Database Catalog is in.
+        x-form-factors: private
   VwSummary:
     type: object
     description: A Virtual Warehouse.
@@ -4420,11 +4445,16 @@ definitions:
         x-form-factors: public,private
         description: Status information on the current state of replicas in the virtual warehouse.
         $ref: '#/definitions/ReplicaStatus'
+      resourcePool:
+        type: string
+        description: The name of the Resource Pool the Virtual Warehouse is in.
+        x-form-factors: private
       hiveAuthenticationMode:
         type: string
         x-nullable: true
+        x-deprecated: true
         x-form-factors: private
-        description: 'Authentication mode used by Hive Server: * `LDAP` * `KERBEROS`'
+        description: 'DEPRECATED - Authentication mode used by Hive Server: * `LDAP` * `KERBEROS`'
   TagResponse:
     description: A key/value pair attached to some resources.
     type: object
@@ -4654,8 +4684,9 @@ definitions:
       hiveAuthenticationMode:
         type: string
         x-nullable: true
+        x-deprecated: true
         x-form-factors: private
-        description: 'Sets the authentication mode to use by Hive Server: * `LDAP` * `KERBEROS` If not set then the authentication mode will not be changed during update.'
+        description: 'DEPRECATED - Sets the authentication mode to use by Hive Server: * `LDAP` * `KERBEROS` If not set then the authentication mode will not be changed during update.'
       platformJwtAuth:
         type: boolean
         x-nullable: true
@@ -4783,6 +4814,10 @@ definitions:
         items:
           type: string
         description: Admin groups to allow configuration access to Data Visualization for selected users
+      resourcePool:
+        type: string
+        description: The Resource Pool of the Cloudera Data Visualization.
+        x-form-factors: private
   ConfigContentDiff:
     type: object
     description: Difference between two ConfigContents.
@@ -5219,8 +5254,14 @@ definitions:
         type: string
         description: Specified name for the backup. If not set, the name will be blank.
       namespaceName:
+        x-deprecated: true
         type: string
-        description: Namespace of the potential candidate for backup. If not set, all of the Data Warehouse namespaces will be backed up.
+        description: DEPRECATED in favor of the namespaceNames. Namespace of the potential candidate for backup. If not set, all of the Data Warehouse namespaces will be backed up.
+      namespaceNames:
+        type: array
+        description: If both namespaceName and namespaceNames are set, the namespaceName will be ignored! A list of namespace of the potential candidates for backup. If not set, all of the Data Warehouse namespaces will be backed up.
+        items:
+          type: string
   CreateBackupResponse:
     type: object
     x-form-factors: private
