@@ -5,8 +5,9 @@ x-form-factors: public,private
 x-altus-releases: PUBLIC
 x-cdp-releases: PUBLIC
 x-audit: true
+x-extensions: pvcapipath
 info:
-  version: 0.9.101
+  version: 0.9.102
   title: Cloudera IAM Service
   license:
     name: Apache 2.0

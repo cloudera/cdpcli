@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.101
+  version: 0.9.102
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -3011,7 +3011,6 @@ definitions:
     required:
       - networkName
       - subnetNames
-      - sharedProjectId
     properties:
       networkName:
         type: string
@@ -4407,6 +4406,10 @@ definitions:
       instanceType:
         type: string
         description: Custom instance type of FreeIPA instances.
+      multiAz:
+        type: boolean
+        default: false
+        description: Flag that enables deployment of the FreeIPA in a multi-availability zone.
   GCPFreeIpaCreationRequest:
     description: Request object for creating FreeIPA in the environment.
     type: object

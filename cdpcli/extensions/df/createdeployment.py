@@ -317,6 +317,7 @@ class CreateDeployment(ServiceOperation):
             clidriver=clidriver,
             name=OPERATION_CLI_NAME,
             parent_name=SERVICE_NAME,
+            service_model=service_model,
             operation_model=CreateDeploymentOperationModel(service_model),
             operation_caller=CreateDeploymentOperationCaller())
 

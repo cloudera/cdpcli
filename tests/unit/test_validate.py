@@ -96,6 +96,18 @@ class TestValidateTypes(BaseTestValidate):
              'Invalid type for parameter mapparam',
              'Invalid type for parameter blobparam'])
 
+    def test_validate_enum_has_valid_value(self):
+        errors = self.get_validation_error_message(
+            self.resolver.get_shape_by_name('enumtest', 'EnumTest'),
+            {'status': 'RUNNING'})
+        self.assertEqual(errors.generate_report(), '')
+
+    def test_validate_enum_has_invalid_value(self):
+        self.assert_has_validation_errors(
+            self.resolver.get_shape_by_name('enumtest', 'EnumTest'),
+            {'status': 'INVALID'},
+            ['Invalid value for parameter status'])
+
     def test_datetime_type_accepts_datetime_object(self):
         errors = self.get_validation_error_message(
             self.resolver.get_shape_by_name('typestest', 'TypesTest'),

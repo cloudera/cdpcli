@@ -21,7 +21,7 @@ from cdpcli.utils import is_absolute_url
 LOG = logging.getLogger('cdpcli.extensions.redirect')
 
 
-def register(operation_callers, operation_model):
+def register(operation_callers, operation_model, form_factor):
     """
     Register an extension to run before or after the CLI command.
     To replace the original CLI caller:

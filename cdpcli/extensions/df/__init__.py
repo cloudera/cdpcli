@@ -132,17 +132,20 @@ class DfExtension(CLIOperationCaller):
         url = operation_model.http['requestUri']
         method = 'post'
 
-        # Encode the name, description, and comments fields.
+        # Encode the name, description, and comments, and flow version tags fields.
         # The df api expects them to be URI encoded.
         flowName = self._encode_value(parameters.get('name', None))
         flowDescription = self._encode_value(parameters.get('description', None))
         flowComment = self._encode_value(parameters.get('comments', None))
+        flowVersionTags = self._encode_value(self._get_tags_as_json(
+            parameters.get('tags', None)))
 
         headers = {
             'Content-Type': 'application/json',
             'Flow-Definition-Name': flowName,
             'Flow-Definition-Description': flowDescription,
-            'Flow-Definition-Comments': flowComment
+            'Flow-Definition-Comments': flowComment,
+            'Flow-Definition-Tags': flowVersionTags
         }
 
         file_path = parameters.get('file', None)
@@ -159,9 +162,13 @@ class DfExtension(CLIOperationCaller):
 
         # Encode the comments fields, the df api expects them to be URI encoded.
         flowComment = self._encode_value(parameters.get('comments', None))
+        flowVersionTags = self._encode_value(self._get_tags_as_json(
+            parameters.get('tags', None)))
+
         headers = {
             'Content-Type': 'application/json',
-            'Flow-Definition-Comments': flowComment
+            'Flow-Definition-Comments': flowComment,
+            'Flow-Definition-Tags': flowVersionTags
         }
         file_path = parameters.get('file', None)
         response = upload_file(client, operation_name,
@@ -206,14 +213,14 @@ class DfExtension(CLIOperationCaller):
             deployment_crn = parameters.get('deploymentCrn', None)
             environment_crn = parameters.get('environmentCrn', None)
             asset_update_request_crn = self._get_asset_update_request_crn(
-                    df_workload_client, environment_crn, deployment_crn)
+                df_workload_client, environment_crn, deployment_crn)
 
             LOG.debug('Asset Update Request CRN [%s]' % asset_update_request_crn)
             parameters['assetUpdateRequestCrn'] = asset_update_request_crn
 
             try:
                 self._upload_asset_references(
-                        df_workload_client, asset_update_request_crn, parameters)
+                    df_workload_client, asset_update_request_crn, parameters)
             except CdpCLIError:
                 df_workload_client.abort_asset_update_request(
                     deploymentCrn=deployment_crn,
@@ -260,8 +267,8 @@ class DfExtension(CLIOperationCaller):
                                       environment_crn,
                                       deployment_crn):
         response = df_workload_client.create_asset_update_request(
-                deploymentCrn=deployment_crn,
-                environmentCrn=environment_crn
+            deploymentCrn=deployment_crn,
+            environmentCrn=environment_crn
         )
         return response.get('assetUpdateRequestCrn', None)
 
@@ -295,3 +302,9 @@ class DfExtension(CLIOperationCaller):
                                 path, name = os.path.split(file_path)
                                 asset_reference['name'] = name
                                 asset_reference['path'] = path
+
+    def _get_tags_as_json(self, tags):
+        if tags:
+            return '{ "tags": ' + json.dumps(tags) + '}'
+        else:
+            return None

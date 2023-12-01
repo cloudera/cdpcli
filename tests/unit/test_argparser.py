@@ -50,8 +50,9 @@ class TestArgTableArgParser(unittest.TestCase):
             Mock(spec=CLIDriver),
             'submit-spark-job',
             'dataeng',
-            '',
-            service_model.operation_model('submitSparkJob'))
+            service_model,
+            service_model.operation_model('submitSparkJob'),
+            '')
         self.parser = ArgTableArgParser(service_operation.arg_table)
 
     def testArsParsedCorrectly(self):

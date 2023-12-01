@@ -326,7 +326,11 @@ class TestCompleter(BaseCompleterTest):
         self.assert_completion(completer, 'cdp ', ['foo'])
 
 
-class MockModel:
+class MockServiceModel:
+    pass
+
+
+class MockOperationModel:
     is_hidden = False
     is_deprecated = False
 
@@ -360,7 +364,8 @@ class MockCLIDriverFactory(object):
     def _create_operation_command(self, clidriver, name, command):
         argument_table = self.create_argument_table(
             command.get('arguments', []))
-        operation = ServiceOperation(clidriver, name, 'parent', None, MockModel())
+        operation = ServiceOperation(clidriver, name, 'parent', MockServiceModel(),
+                                     MockOperationModel(), None)
         operation._arg_table = argument_table
         return operation
 

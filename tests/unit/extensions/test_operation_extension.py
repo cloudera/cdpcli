@@ -55,8 +55,9 @@ class TestOperationExtension(unittest.TestCase):
             Mock(spec=CLIDriver),
             'create-director',
             'directors',
-            operation_caller,
-            self.service_model.operation_model('createDirector'))
+            self.service_model,
+            self.service_model.operation_model('createDirector'),
+            operation_caller)
         with self.assertRaises(ExtensionImportError) as context:
             service_operation(self.client_creator, [], self.parsed_globals)
         self.assertTrue(
@@ -68,7 +69,7 @@ class TestOperationExtension(unittest.TestCase):
         extension_caller = Mock()
         extension_caller.invoke.return_value = False
         test_obj = Mock()
-        test_obj.register = lambda operation_callers, operation_model: \
+        test_obj.register = lambda operation_callers, operation_model, form_factor: \
             operation_callers.insert(0, extension_caller)
         module_obj = {'cdpcli.extensions.test': test_obj}
 
@@ -78,8 +79,9 @@ class TestOperationExtension(unittest.TestCase):
                 Mock(spec=CLIDriver),
                 'upload-data',
                 'directors',
-                operation_caller,
-                self.service_model.operation_model('uploadData'))
+                self.service_model,
+                self.service_model.operation_model('uploadData'),
+                operation_caller)
             service_operation(self.client_creator, [], self.parsed_globals)
             self.assertFalse(operation_caller.invoke.called)
 
@@ -97,10 +99,10 @@ class TestOperationExtension(unittest.TestCase):
             extension_call_list.append(2)
         extension_caller_2.invoke.return_value = True
         test_obj_1 = Mock()
-        test_obj_1.register = lambda operation_callers, operation_model: \
+        test_obj_1.register = lambda operation_callers, operation_model, form_factor: \
             operation_callers.insert(0, extension_caller_1)
         test_obj_2 = Mock()
-        test_obj_2.register = lambda operation_callers, operation_model: \
+        test_obj_2.register = lambda operation_callers, operation_model, form_factor: \
             operation_callers.insert(0, extension_caller_2)
         module_obj = {'cdpcli.extensions.test1': test_obj_1,
                       'cdpcli.extensions.test2': test_obj_2}
@@ -111,8 +113,9 @@ class TestOperationExtension(unittest.TestCase):
                 Mock(spec=CLIDriver),
                 'inject-data',
                 'directors',
-                operation_caller,
-                self.service_model.operation_model('injectData'))
+                self.service_model,
+                self.service_model.operation_model('injectData'),
+                operation_caller)
             service_operation(self.client_creator, [], self.parsed_globals)
             self.assertTrue(operation_caller.invoke.called)
             self.assertEquals(1, operation_caller.invoke.call_count)
@@ -122,6 +125,52 @@ class TestOperationExtension(unittest.TestCase):
         self.assertTrue(extension_caller_2.invoke.called)
         self.assertEquals(1, extension_caller_2.invoke.call_count)
         self.assertEquals([1, 2], extension_call_list)
+
+    def test_service_level_extension(self):
+        extension_caller = Mock()
+        extension_caller.invoke.return_value = False
+        test_obj = Mock()
+        test_obj.register = lambda operation_callers, operation_model, form_factor: \
+            operation_callers.insert(0, extension_caller)
+        module_obj = {'cdpcli.extensions.test3': test_obj}
+
+        with patch('importlib.import_module', new=module_obj.get):
+            operation_caller = Mock()
+            service_operation = ServiceOperation(
+                Mock(spec=CLIDriver),
+                'download-data',
+                'directors',
+                self.service_model,
+                self.service_model.operation_model('downloadData'),
+                operation_caller)
+            service_operation(self.client_creator, [], self.parsed_globals)
+            self.assertFalse(operation_caller.invoke.called)
+
+        self.assertTrue(extension_caller.invoke.called)
+        self.assertEquals(1, extension_caller.invoke.call_count)
+
+    def test_service_level_extension_overridden_by_empty_operation_config(self):
+        extension_caller = Mock()
+        extension_caller.invoke.return_value = False
+        test_obj = Mock()
+        test_obj.register = lambda operation_callers, operation_model, form_factor: \
+            operation_callers.insert(0, extension_caller)
+        module_obj = {'cdpcli.extensions.test3': test_obj}
+
+        with patch('importlib.import_module', new=module_obj.get):
+            operation_caller = Mock()
+            service_operation = ServiceOperation(
+                Mock(spec=CLIDriver),
+                'delete-data',
+                'directors',
+                self.service_model,
+                self.service_model.operation_model('deleteData'),
+                operation_caller)
+            service_operation(self.client_creator, [], self.parsed_globals)
+            self.assertTrue(operation_caller.invoke.called)
+            self.assertEquals(1, operation_caller.invoke.call_count)
+
+        self.assertFalse(extension_caller.invoke.called)
 
     def test_operation_extensions_update_parsed_globals(self):
         # noinspection PyShadowingNames
@@ -148,7 +197,7 @@ class TestOperationExtension(unittest.TestCase):
         extension_caller = Mock()
         extension_caller.invoke = _invoke_to_update_parsed_globals
         test_obj = Mock()
-        test_obj.register = lambda operation_callers, operation_model: \
+        test_obj.register = lambda operation_callers, operation_model, form_factor: \
             operation_callers.insert(0, extension_caller)
         module_obj = {'cdpcli.extensions.test': test_obj}
 
@@ -159,8 +208,9 @@ class TestOperationExtension(unittest.TestCase):
                 Mock(spec=CLIDriver),
                 'upload-data',
                 'directors',
-                operation_caller,
-                self.service_model.operation_model('uploadData'))
+                self.service_model,
+                self.service_model.operation_model('uploadData'),
+                operation_caller)
             service_operation(self.client_creator, [], self.parsed_globals)
             self.assertTrue(operation_caller.invoke.called)
             self.assertEquals(1, operation_caller.invoke.call_count)

@@ -402,6 +402,12 @@ class ServiceModel(object):
     def form_factors(self):
         return self._service_data.get("x-form-factors", "public").split(',')
 
+    @CachedProperty
+    def extensions(self):
+        if "x-extensions" in self._service_data:
+            return self._service_data['x-extensions'].split(',')
+        return None
+
 
 class DenormalizedStructureBuilder(object):
     """Build a StructureShape from a denormalized model.

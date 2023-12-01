@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.101
+  version: 0.9.102
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1520,7 +1520,6 @@ definitions:
       detailedState:
         type: string
         description: The detailed state that the deployment is currently in
-        x-deprecated-enum-values: FAILED_TO_START,SUSPENDING_FLOW
         enum:
           - GOOD_HEALTH
           - FAILED_TO_STOP_FLOW
@@ -1569,10 +1568,10 @@ definitions:
           - EXCESSIVE_OFFLOAD_TIME
           - FAILED_TO_START
           - SUSPENDING_FLOW
+        x-deprecated-enum-values: FAILED_TO_START,SUSPENDING_FLOW
       state:
         type: string
         description: The state that the deployment is currently in
-        x-deprecated-enum-values: SUSPENDING_FLOW
         enum:
           - DEPLOYING
           - GOOD_HEALTH
@@ -1593,6 +1592,7 @@ definitions:
           - STOPPED
           - UNKNOWN
           - SUSPENDING_FLOW
+        x-deprecated-enum-values: SUSPENDING_FLOW
       message:
         type: string
         description: Detail message relating to the current status of the deployment

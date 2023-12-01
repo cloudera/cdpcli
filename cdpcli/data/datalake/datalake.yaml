@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.101
+  version: 0.9.102
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1563,6 +1563,10 @@ definitions:
         type: integer
         format: int32
         description: Configure the major version of Java on the cluster.
+      multiAz:
+        type: boolean
+        default: false
+        description: Creates CDP datalake distributed across multiple availability zones in an Azure region.
   CreateAzureDatalakeResponse:
     type: object
     description: Response object for create Azure datalake request.

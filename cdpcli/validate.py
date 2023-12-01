@@ -92,6 +92,16 @@ def length_check(name, value, shape, error_type, errors):
                       valid_range=[min_allowed, max_allowed])
 
 
+def enum_check(name, value, shape, error_type, errors):
+    failed = False
+    if shape.enum:
+        if value not in shape.enum:
+            failed = True
+    if failed:
+        errors.report(name, error_type, param=value,
+                      valid_values=shape.enum)
+
+
 class ValidationErrors(object):
     def __init__(self):
         self._errors = []
@@ -122,10 +132,8 @@ class ValidationErrors(object):
                    str(type(additional['param'])),
                    ', '.join(additional['valid_types']))
         elif error_type == 'invalid enum':
-            return ('Invalid value for parameter %s, value: %s, type: %s, valid '
-                    'values: %s') \
+            return 'Invalid value for parameter %s, value: %s, valid values: %s' \
                 % (name, additional['param'],
-                   str(type(additional['param'])),
                    ', '.join(additional['valid_values']))
         elif error_type == 'invalid range':
             min_allowed = additional['valid_range'][0]
@@ -212,6 +220,7 @@ class ParamValidator(object):
     @type_check(valid_types=six.string_types)
     def _validate_string(self, param, shape, errors, name):
         length_check(name, len(param), shape, 'invalid length', errors)
+        enum_check(name, param, shape, 'invalid enum', errors)
 
     @type_check(valid_types=(list, tuple))
     def _validate_array(self, param, shape, errors, name):

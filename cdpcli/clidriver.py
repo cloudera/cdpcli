@@ -416,6 +416,7 @@ class ServiceCommand(CLICommand):
                 clidriver=self._clidriver,
                 name=cli_name,
                 parent_name=self._name,
+                service_model=service_model,
                 operation_model=operation_model,
                 operation_caller=CLIOperationCaller())
         register_ext, register_cmd = get_extension_registers(self._name)
@@ -488,7 +489,8 @@ class ServiceOperation(object):
     }
     DEFAULT_ARG_CLASS = CLIArgument
 
-    def __init__(self, clidriver, name, parent_name, operation_caller, operation_model):
+    def __init__(self, clidriver, name, parent_name, service_model,
+                 operation_model, operation_caller):
         self._clidriver = clidriver
         self._arg_table = None
         self._name = name
@@ -499,6 +501,7 @@ class ServiceOperation(object):
         # order and if any returns 'False' no other callers will be called.
         self._operation_callers = [operation_caller]
         self._lineage = [self]
+        self._service_model = service_model
         self._operation_model = operation_model
         self._UNDOCUMENTED = self._operation_model.is_deprecated
 
@@ -638,14 +641,20 @@ class ServiceOperation(object):
                 self._operation_callers.insert(0, cli_argument)
 
     def _handle_extensions(self):
-        if self._operation_model.extensions:
+        # operation level extension configuration overrides service level configuration.
+        extensions = self._operation_model.extensions
+        if extensions is None:
+            extensions = self._service_model.extensions
+        if extensions:
             # Iterate in reversed order to keep the execution order:
             # First extension should run first.
-            for ext_name in reversed(self._operation_model.extensions):
+            for ext_name in [x for x in reversed(extensions) if x]:
                 register_ext, register_cmd = get_extension_registers(ext_name)
                 if register_ext is None:
                     raise ExtensionImportError(ext_name=ext_name, err='Not Found')
-                register_ext(self._operation_callers, self._operation_model)
+                register_ext(self._operation_callers,
+                             self._operation_model,
+                             self._clidriver.get_form_factor())
 
     def _invoke_operation_callers(self,
                                   client_creator,
@@ -699,7 +708,7 @@ class FilteredServiceOperation(ServiceOperation):
 
     def __init__(self, clidriver, name, parent_name, form_factor, operation_form_factors):
         super().__init__(clidriver, name, parent_name,
-                         operation_caller=None, operation_model=None)
+                         operation_caller=None, operation_model=None, service_model=None)
         self._form_factor = form_factor
         self._operation_form_factors = operation_form_factors
 

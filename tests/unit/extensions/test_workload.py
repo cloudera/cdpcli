@@ -21,7 +21,7 @@ class TestWorkloadExtension(unittest.TestCase):
 
     def test_workload_extension_register(self):
         operation_callers = [Mock()]
-        register(operation_callers, None)
+        register(operation_callers, None, None)
         self.assertEqual(2, len(operation_callers))
         self.assertIsInstance(operation_callers[0], WorkloadServiceDiscovery)
 
