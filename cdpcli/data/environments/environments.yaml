@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.102
+  version: 0.9.103
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -310,6 +310,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateAzureEncryptionResourcesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/updateAzureDatabaseResources:
+    post:
+      summary: Update the Azure database resources for the environment.
+      description: Updates the Azure database resources for the environment. Enables deploying private Flexible Server for the existing environment.
+      operationId: updateAzureDatabaseResources
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAzureDatabaseResourcesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateAzureDatabaseResourcesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2898,6 +2919,11 @@ definitions:
       enableOutboundLoadBalancer:
         type: boolean
         description: Whether or not outbound load balancers should be created for Azure environments. The default behavior is to not create the outbound load balancer.
+      flexibleServerSubnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnets delegated for Flexible Server database. Accepts either the name or the full resource id.
       dataServices:
         description: Data Services parameters of the environment.
         $ref: '#/definitions/DataServicesRequest'
@@ -3075,6 +3101,36 @@ definitions:
       resourceEncryptionParameters:
         $ref: '#/definitions/AzureResourceEncryptionParameters'
         description: Object containing details of encryption parameters for Azure cloud.
+  UpdateAzureDatabaseResourcesRequest:
+    type: object
+    description: Request object for updating Azure Database resources.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      databasePrivateDnsZoneId:
+        type: string
+        description: The full Azure resource ID of the existing Private DNS Zone used for Flexible Server and Single Server Databases.
+        x-no-paramfile: true
+      flexibleServerSubnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnets delegated for Flexible Server database. Accepts either the name or the full resource id.
+  UpdateAzureDatabaseResourcesResponse:
+    type: object
+    description: Response object for a update Azure Database resources request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: The environment summary.
+      azureDatabaseResources:
+        $ref: '#/definitions/AzureDatabaseResources'
+        description: Object containing details of database resources for Azure cloud.
   UpdateAwsDiskEncryptionParametersRequest:
     type: object
     description: Request object for updating AWS encryption parameters.
@@ -3123,6 +3179,19 @@ definitions:
       diskEncryptionSetId:
         type: string
         description: ID of the Disk Encryption Set created in Azure which is used to encrypt Managed Disks of FreeIPA, Data Lake, Data Hub and PostgreSQL.
+  AzureDatabaseResources:
+    type: object
+    description: Object containing details of database resources for Azure cloud.
+    properties:
+      databasePrivateDnsZoneId:
+        type: string
+        description: The full Azure resource ID of the existing Private DNS Zone used for Flexible Server and Single Server Databases.
+        x-no-paramfile: true
+      flexibleServerSubnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnets delegated for Flexible Server database. Accepts either the name or the full resource id.
   DescribeEnvironmentRequest:
     type: object
     description: Request object for a describe environment request.
@@ -3391,6 +3460,11 @@ definitions:
       enableOutboundLoadBalancer:
         type: boolean
         description: Whether the outbound load balancer was created for this environment.
+      flexibleServerSubnetIds:
+        type: array
+        items:
+          type: string
+        description: The subnets delegated for Flexible Server database. Accepts either the name or the full resource id.
   NetworkGcpParams:
     type: object
     description: GCP network parameters.
@@ -4496,6 +4570,10 @@ definitions:
         uniqueItems: true
         items:
           $ref: '#/definitions/FreeIpaInstance'
+      instanceCountByGroup:
+        type: integer
+        format: int32
+        description: The number of FreeIPA instances to create per group when creating FreeIPA in environment.
   FreeIpaInstance:
     type: object
     description: Object for a FreeIPA instance providing specific information about the instance.
