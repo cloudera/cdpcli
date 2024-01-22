@@ -60,9 +60,22 @@ OPERATION_SHAPES = {
                 'type': 'string',
                 'description': 'Unique name for the deployment.'
             },
+            'fromArchive': {
+                'type': 'string',
+                'description': 'The name of the deployment configuration archive to '
+                               'import deployment configurations from. This argument '
+                               'cannot be used with --import-parameters-from.'
+            },
+            'importParametersFrom': {
+                'type': 'string',
+                'description': 'The name of deployment configuration archive to '
+                               'import parameter groups values from. This argument '
+                               'cannot be used when using the --from-archive argument.'
+            },
             'clusterSizeName': {
                 'type': 'string',
-                'description': 'Size for the cluster. The default is EXTRA_SMALL.',
+                'description': 'Size for the cluster. The default is EXTRA_SMALL. This '
+                               'argument will be ignored if --from-archive is used.',
                 'enum': [
                     'EXTRA_SMALL',
                     'SMALL',
@@ -72,23 +85,35 @@ OPERATION_SHAPES = {
             },
             'staticNodeCount': {
                 'type': 'integer',
-                'description': 'The static number of nodes provisioned. The default is 1.'
+                'description': 'The static number of nodes provisioned. '
+                               'The default is 1. '
+                               'This argument will be ignored if --from-archive is used.'
             },
             'autoScalingEnabled': {
                 'type': 'boolean',
-                'description': 'Automatic node scaling. The default is disabled.'
+                'description': 'Automatic node scaling. The default is disabled. '
+                               'This argument will be ignored if --from-archive is used.'
+            },
+            'flowMetricsScalingEnabled': {
+                'type': 'boolean',
+                'description': 'Flow metrics enabled for scaling. '
+                               'The default is disabled. '
+                               'This argument will be ignored if --from-archive is used.'
             },
             'autoScaleMinNodes': {
                 'type': 'integer',
-                'description': 'The minimum number of nodes for automatic scaling.'
+                'description': 'The minimum number of nodes for automatic scaling. '
+                               'This argument will be ignored if --from-archive is used.'
             },
             'autoScaleMaxNodes': {
                 'type': 'integer',
-                'description': 'The maximum number of nodes for automatic scaling.'
+                'description': 'The maximum number of nodes for automatic scaling. '
+                               'This argument will be ignored if --from-archive is used.'
             },
             'cfmNifiVersion': {
                 'type': 'string',
-                'description': 'The CFM NiFi version. Defaults to the latest version.'
+                'description': 'The CFM NiFi version. Defaults to the latest version. '
+                               'This argument will be ignored if --from-archive is used.'
             },
             'autoStartFlow': {
                 'type': 'boolean',
@@ -96,21 +121,27 @@ OPERATION_SHAPES = {
             },
             'parameterGroups': {
                 'type': 'array',
-                'description': 'Parameter groups with each requiring a value or assets.',
+                'description': 'Parameter groups with each requiring a value or assets. '
+                               'If --from-archive or --import-parameters-from is used, '
+                               'then parameters defined here will override what is '
+                               'defined in the archive. Sensitive parameters must '
+                               'always be specified here.',
                 'items': {
                     '$ref': '#/definitions/DeploymentFlowParameterGroup'
                 }
             },
             'kpis': {
                 'type': 'array',
-                'description': 'Key Performance Indicators with associated alerts.',
+                'description': 'Key Performance Indicators with associated alerts. '
+                               'This argument will be ignored if --from-archive is used.',
                 'items': {
                     '$ref': '#/definitions/DeploymentKeyPerformanceIndicator'
                 }
             },
             'customNarConfiguration': {
                 'type': 'object',
-                'description': 'Custom NAR configuration properties',
+                'description': 'Custom NAR configuration properties. '
+                               'This argument will be ignored if --from-archive is used.',
                 'required': [
                     'username',
                     'password',
@@ -141,18 +172,21 @@ OPERATION_SHAPES = {
             'inboundHostname': {
                 'type': 'string',
                 'description':
-                    'The FQDN of inbound host or just the prefix part of the hostname'
+                    'The FQDN of inbound host or just the prefix part of the hostname. '
+                    'This argument will be ignored if --from-archive is used.'
             },
             'listenComponents': {
                 'type': 'array',
-                'description': 'Listen components port and protocol data',
+                'description': 'Listen components port and protocol data. '
+                               'This argument will be ignored if --from-archive is used.',
                 'items': {
                     '$ref': '#/definitions/ListenComponent'
                 }
             },
             'nodeStorageProfileName': {
                 'type': 'string',
-                'description': 'Node storage profile name',
+                'description': 'Node storage profile name. '
+                               'This argument will be ignored if --from-archive is used.',
                 'enum': [
                     'STANDARD_AWS',
                     'STANDARD_AZURE',
@@ -164,7 +198,8 @@ OPERATION_SHAPES = {
                 'type': 'string',
                 'description': 'CRN for the project to assign this deployment to. '
                                'Not specifying this will result in the '
-                               'deployment to be unassigned to any project.'
+                               'deployment to be unassigned to any project. '
+                               'This argument will be ignored if --from-archive is used.'
             },
         }
     },
@@ -357,6 +392,8 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                parsed_globals):
         df_client = client_creator('df')
 
+        self._validate_operation_parameters(parameters)
+
         service_crn = parameters.get('serviceCrn', None)
         flow_version_crn = parameters.get('flowVersionCrn', None)
         deployment_request_crn = self._initiate_deployment(
@@ -381,6 +418,17 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                 df_workload_client, deployment_request_crn, environment_crn, parameters)
         self._display_response(operation_model.name, response, parsed_globals)
 
+    def _validate_operation_parameters(self,
+                                       parameters):
+        from_archive = parameters.get('fromArchive', None)
+
+        if from_archive is not None:
+            if parameters.get('importParametersFrom', None) is not None:
+                raise DfExtensionError(err_msg='Cannot use both --from-archive and '
+                                               '--import-parameters-from arguments.',
+                                       service_name='df',
+                                       operation_name='createDeployment')
+
     def _create_deployment(self,
                            df_workload_client,
                            deployment_request_crn,
@@ -389,14 +437,42 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         """
         Create Deployment on Workload using initiated Deployment Request CRN
         """
-        deployment_configuration = self._get_deployment_configuration(
-                deployment_request_crn, parameters)
+        # initialize custom_nar_configuration because it's not always used
+        # but necessary for clean-up in event of error
+        custom_nar_configuration = None
 
-        custom_nar_configuration = self._process_custom_nar_configuration(
-                df_workload_client, environment_crn, parameters)
-        if custom_nar_configuration is not None:
-            nar_configuration_crn = custom_nar_configuration['crn']
-            deployment_configuration['customNarConfigurationCrn'] = nar_configuration_crn
+        from_archive = parameters.get('fromArchive', None)
+        if from_archive is not None:
+            import_deployment_configuration = self._import_deployment(
+                df_workload_client,
+                deployment_request_crn,
+                from_archive,
+                environment_crn
+            )
+            LOG.debug('Imported Deployment Configuration %s',
+                      import_deployment_configuration)
+            deployment_configuration = self._process_import_deployment_configuration(
+                deployment_request_crn,
+                parameters,
+                import_deployment_configuration
+            )
+        else:
+            import_parameters_from = parameters.get('importParametersFrom', None)
+
+            if import_parameters_from is not None:
+                self._import_deployment(df_workload_client,
+                                        deployment_request_crn,
+                                        import_parameters_from,
+                                        environment_crn)
+            deployment_configuration = self._get_deployment_configuration(
+                    deployment_request_crn, parameters)
+
+            custom_nar_configuration = self._process_custom_nar_configuration(
+                    df_workload_client, environment_crn, parameters)
+            if custom_nar_configuration is not None:
+                nar_configuration_crn = custom_nar_configuration['crn']
+                deployment_configuration['customNarConfigurationCrn'] \
+                    = nar_configuration_crn
 
         try:
             deployment_configuration['environmentCrn'] = environment_crn
@@ -534,6 +610,72 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         LOG.debug('Updated Custom NAR Configuration CRN [%s]', crn)
         return response
 
+    def _process_import_deployment_configuration(self,
+                                                 deployment_request_crn,
+                                                 parameters,
+                                                 imported_deployment_configuration):
+        deployment_configuration = {
+            'name': parameters.get('deploymentName', None),
+            'deploymentRequestCrn': deployment_request_crn,
+            'configurationVersion': INITIAL_CONFIGURATION_VERSION
+        }
+
+        # This maps the field name in the imported_deployment_configuration
+        # to the one expected in the create_deployment_configuration.
+        # These items also do not require special handling.
+        standard_config_items = {
+            'clusterSizeName': 'clusterSizeName',
+            'staticNodeCount': 'staticNodeCount',
+            'cfmNifiVersion': 'cfmNifiVersion',
+            'customNarConfigurationCrn': 'customNarConfigurationCrn',
+            'nodeStorageProfile': 'nodeStorageProfileName',
+            'projectCrn': 'projectCrn'
+        }
+
+        items = standard_config_items.items()
+        for (imported_deployment_config_item, deployment_config_item) in items:
+            value = imported_deployment_configuration.get(
+                imported_deployment_config_item,
+                None
+            )
+            if value is not None:
+                deployment_configuration[deployment_config_item] = value
+
+        # autoStartFlow should always be passed in
+        autoStartFlow = parameters.get('autoStartFlow', None)
+        if autoStartFlow is not None:
+            deployment_configuration['autoStartFlow'] = autoStartFlow
+
+        # special handling for autoscaling configuration items
+        self._process_scaling_parameters(deployment_configuration,
+                                         imported_deployment_configuration)
+
+        # special handling for inbound connection parameters
+        inboundHostname = imported_deployment_configuration.get('inboundHostName', None)
+        if inboundHostname is not None:
+            deployment_configuration['inboundHostname'] = inboundHostname
+            deployment_configuration['listenComponents'] = \
+                imported_deployment_configuration.get('listenComponents', None)
+
+        # special handling for KPIs in order to unset KPI IDs
+        kpis = imported_deployment_configuration.get('kpis', None)
+        if kpis is not None:
+            if type(kpis) is not list:
+                raise DfExtensionError(err_msg='KPIs from archive not a list',
+                                       service_name='df',
+                                       operation_name='createDeployment')
+            for kpi in kpis:
+                kpi.pop('id', None)
+
+            deployment_configuration['kpis'] = kpis
+
+        # parameter groups from the CLI arguments should always be passed in
+        parameterGroups = parameters.get('parameterGroups', None)
+        if parameterGroups:
+            deployment_configuration['parameterGroups'] = parameterGroups
+
+        return deployment_configuration
+
     def _get_deployment_configuration(self,
                                       deployment_request_crn,
                                       parameters):
@@ -569,18 +711,7 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             deployment_configuration['listenComponents'] = \
                 parameters.get('listenComponents', None)
 
-        autoScalingEnabled = parameters.get('autoScalingEnabled', None)
-        if autoScalingEnabled is not None:
-            deployment_configuration['autoScalingEnabled'] = autoScalingEnabled
-        if autoScalingEnabled:
-            del deployment_configuration['staticNodeCount']
-
-            autoScaleMinNodes = parameters.get('autoScaleMinNodes', None)
-            if autoScaleMinNodes:
-                deployment_configuration['autoScaleMinNodes'] = autoScaleMinNodes
-            autoScaleMaxNodes = parameters.get('autoScaleMaxNodes', None)
-            if autoScaleMaxNodes:
-                deployment_configuration['autoScaleMaxNodes'] = autoScaleMaxNodes
+        self._process_scaling_parameters(deployment_configuration, parameters)
 
         autoStartFlow = parameters.get('autoStartFlow', None)
         if autoStartFlow is not None:
@@ -613,6 +744,25 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                     unit['label'] = id.capitalize()
                     unit['abbreviation'] = id[:1].lower()
         return kpis
+
+    def _process_scaling_parameters(self, deployment_configuration, parameters):
+        autoScalingEnabled = parameters.get('autoScalingEnabled', None)
+        if autoScalingEnabled is not None:
+            deployment_configuration['autoScalingEnabled'] = autoScalingEnabled
+        if autoScalingEnabled:
+            deployment_configuration.pop('staticNodeCount', None)
+
+            flowMetricsScalingEnabled = parameters.get('flowMetricsScalingEnabled', None)
+            if flowMetricsScalingEnabled is not None:
+                deployment_configuration['flowMetricsScalingEnabled'] \
+                    = flowMetricsScalingEnabled
+
+            autoScaleMinNodes = parameters.get('autoScaleMinNodes', None)
+            if autoScaleMinNodes:
+                deployment_configuration['autoScaleMinNodes'] = autoScaleMinNodes
+            autoScaleMaxNodes = parameters.get('autoScaleMaxNodes', None)
+            if autoScaleMaxNodes:
+                deployment_configuration['autoScaleMaxNodes'] = autoScaleMaxNodes
 
     def _upload_assets(self,
                        df_workload_client,
@@ -752,3 +902,23 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                     'abort deployment request with CRN: [%s]',
                     deployment_request_crn
                 )
+
+    def _import_deployment(self,
+                           df_workload_client,
+                           deployment_request_crn,
+                           archive_name,
+                           environment_crn):
+        """
+        This function imports deployment configuration.
+        """
+        parameters = {
+            'deploymentRequestCrn': deployment_request_crn,
+            'archiveName': archive_name,
+            'environmentCrn': environment_crn
+        }
+        http, response = df_workload_client.make_api_call(
+            'importDeployment', parameters)
+        LOG.debug('Imported deployment configuration from archive with name: [%s]'
+                  'and for deployment request with CRN: [%s]',
+                  archive_name, deployment_request_crn)
+        return response['rpcImportedDeploymentConfiguration']

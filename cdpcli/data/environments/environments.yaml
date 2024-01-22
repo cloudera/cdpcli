@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.104
+  version: 0.9.105
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -331,6 +331,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateAzureDatabaseResourcesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/updateAzureAvailabilityZones:
+    post:
+      summary: Update the Availability Zones for the Azure environment.
+      description: Updates the Availability Zones for the Azure environment.
+      operationId: updateAzureAvailabilityZones
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAzureAvailabilityZonesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateAzureAvailabilityZonesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2919,6 +2940,11 @@ definitions:
       enableOutboundLoadBalancer:
         type: boolean
         description: Whether or not outbound load balancers should be created for Azure environments. The default behavior is to not create the outbound load balancer.
+      availabilityZones:
+        description: The zones of the environment in the given region.
+        type: array
+        items:
+          type: string
       flexibleServerSubnetIds:
         type: array
         items:
@@ -3131,6 +3157,30 @@ definitions:
       azureDatabaseResources:
         $ref: '#/definitions/AzureDatabaseResources'
         description: Object containing details of database resources for Azure cloud.
+  UpdateAzureAvailabilityZonesRequest:
+    type: object
+    description: Request object to update Availability Zones for Azure environment.
+    required:
+      - environment
+      - availabilityZones
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      availabilityZones:
+        type: array
+        items:
+          type: string
+        description: List of availability zones for the environment.
+  UpdateAzureAvailabilityZonesResponse:
+    type: object
+    description: Response object for a update Azure Availability Zones request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: The environment summary.
   UpdateAwsDiskEncryptionParametersRequest:
     type: object
     description: Request object for updating AWS encryption parameters.
@@ -4574,6 +4624,9 @@ definitions:
         type: integer
         format: int32
         description: The number of FreeIPA instances to create per group when creating FreeIPA in environment.
+      multiAz:
+        type: boolean
+        description: Whether the given FreeIPA is deployed in a multi-availability zone way or not.
   FreeIpaInstance:
     type: object
     description: Object for a FreeIPA instance providing specific information about the instance.

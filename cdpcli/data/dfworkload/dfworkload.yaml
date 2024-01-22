@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.104
+  version: 0.9.105
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -358,6 +358,32 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/export-deployment:
+    post:
+      summary: Export deployment configuration.
+      description: Exports deployment configuration.
+      operationId: exportDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Export Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/ExportDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ExportDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/get-deployment-configuration:
     post:
       summary: Retrieves the deployment configuration.
@@ -432,6 +458,58 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/GetDeploymentRequestDetailsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/import-deployment:
+    post:
+      summary: Import deployment configuration.
+      description: Imports deployment configuration from archive with provided archive name.
+      operationId: importDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Import Deployment Configuration Request
+          required: true
+          schema:
+            $ref: '#/definitions/ImportDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ImportDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/list-deployment-archives:
+    post:
+      summary: Lists the exported archive metadata of all deployments.
+      description: Lists the exported archive metadata of all deployments.
+      operationId: listDeploymentArchives
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: List Deployment Archives Request
+          required: true
+          schema:
+            $ref: '#/definitions/ListDeploymentArchivesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDeploymentArchivesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -772,6 +850,30 @@ paths:
           description: Expected response to a valid inboundConnectionEndpointClientCertificateRequest.
           schema:
             $ref: '#/definitions/InboundConnectionEndpointClientCertificateResponse'
+        default:
+          description: The default response on an error.
+  /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-certificates-encoded:
+    post:
+      summary: Get Inbound Connection Endpoint Client Certificates (in PEM encoding)
+      description: Get Inbound Connection Endpoint Client Certificates (in PEM encoding)
+      operationId: getClientCertificatesEncoded
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Get Inbound Connection Endpoint client's certificates
+          required: true
+          schema:
+            $ref: '#/definitions/InboundConnectionEndpointClientCertificatesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyResponse'
         default:
           description: The default response on an error.
   /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-private-key-encoded:
@@ -1566,6 +1668,7 @@ definitions:
           - CERTIFICATE_RENEWED
           - NOT_HEALTHY
           - EXCESSIVE_OFFLOAD_TIME
+          - NIFI_BULLETIN_WARNING
           - FAILED_TO_START
           - SUSPENDING_FLOW
         x-deprecated-enum-values: FAILED_TO_START,SUSPENDING_FLOW
@@ -1644,6 +1747,33 @@ definitions:
       message:
         type: string
         description: The error message.
+  ExportDeploymentRequest:
+    type: object
+    description: Request object to export deployment configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+      archiveDescription:
+        type: string
+        description: The description about deployment configuration export archive
+  ExportDeploymentResponse:
+    type: object
+    description: Response object for exporting a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      archiveName:
+        type: string
+        description: The exported deployment configuration archive name .
   FlowParameter:
     type: object
     description: A flow parameter
@@ -1850,6 +1980,33 @@ definitions:
       deploymentConfigurationMetadata:
         description: The deployment configuration metadata.
         $ref: '#/definitions/RpcDeploymentConfigurationMetadata'
+  ImportDeploymentRequest:
+    type: object
+    description: Request object to import deployment configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentRequestCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentRequestCrn:
+        type: string
+        description: The CRN of the deployment request.
+      archiveName:
+        type: string
+        description: Search term to filter exported archives by deployment name.
+  ImportDeploymentResponse:
+    type: object
+    description: Response object for importing deployment configuration.
+    x-workload: true
+    x-client-only: true
+    properties:
+      rpcImportedDeploymentConfiguration:
+        description: The imported deployment configuration.
+        $ref: '#/definitions/RpcImportedDeploymentConfiguration'
   InboundConnectionEndpointCertificateSummary:
     type: object
     description: Inbound Connection Endpoint Certificate Summary
@@ -1908,6 +2065,21 @@ definitions:
         type: string
         description: The client's encoded certificate.
         readOnly: true
+  InboundConnectionEndpointClientCertificatesRequest:
+    type: object
+    description: Request object to retrieve Inbound Connection Endpoint client's certificates.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - crn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      crn:
+        type: string
+        description: The CRN of the Inbound Connection Endpoint
   InboundConnectionEndpointClientPrivateKeyRequest:
     type: object
     description: Request object to retrieve Inbound Connection Endpoint client's private key.
@@ -2119,6 +2291,31 @@ definitions:
         type: integer
         format: int64
         description: The conversion factor to use to normalize values with this unit into a common unit
+  ListDeploymentArchivesRequest:
+    type: object
+    description: Request object to list exported archives of all deployments matching the search term.
+    x-workload: true
+    x-client-only: true
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      searchTerm:
+        type: string
+        description: Search term to filter exported archives by deployment name.
+    required:
+      - environmentCrn
+  ListDeploymentArchivesResponse:
+    type: object
+    description: Response for listing the deployment configuration backup archives.
+    x-workload: true
+    x-client-only: true
+    properties:
+      archives:
+        type: array
+        description: The deployment configuration exported archives.
+        items:
+          $ref: '#/definitions/RpcDeploymentArchiveMetadata'
   ListInboundConnectionEndpointsRequest:
     type: object
     description: Request object to use to list Inbound Connection Endpoints
@@ -2592,6 +2789,46 @@ definitions:
       projectCrn:
         type: string
         description: The crn of the project this deployment belongs to, or null if does not belong to a project
+  RpcDeploymentArchiveMetadata:
+    type: object
+    description: Provides the metadata about deployment exported archive
+    x-workload: true
+    x-client-only: true
+    properties:
+      workloadVersion:
+        type: string
+        description: The version of workload when deployment configuration is exported.
+        readOnly: true
+      deploymentName:
+        type: string
+        description: The name of the deployment
+        readOnly: true
+      flowName:
+        type: string
+        description: The name of the flow
+        readOnly: true
+      archiveName:
+        type: string
+        description: The name of the exported deployment archive
+        readOnly: true
+      modifiedTime:
+        type: integer
+        format: int64
+        description: The time when the deployment archive is created or modified
+        readOnly: true
+      archiveDescription:
+        type: string
+        description: The description provided during deployment configuration export
+        readOnly: true
+      uploadTime:
+        type: integer
+        format: int64
+        description: The time when the deployment archive is uploaded to cloud
+        readOnly: true
+      projectCrn:
+        type: string
+        description: The CRN of the project that exported deployment is assigned to.
+        readOnly: true
   RpcDeploymentConfiguration:
     type: object
     description: Provides all of the configuration that dictates how a flow should be deployed
@@ -2748,6 +2985,83 @@ definitions:
         description: The list of node storage profiles
         items:
           $ref: '#/definitions/NodeStorageProfileMetadata'
+  RpcImportedDeploymentConfiguration:
+    type: object
+    description: Contains the configuration data imported from exported archive.
+    x-workload: true
+    x-client-only: true
+    properties:
+      autoScalingEnabled:
+        type: boolean
+        description: The auto-scaling flag value retrieved from archive
+        readOnly: true
+      flowMetricsScalingEnabled:
+        type: boolean
+        description: The flow-metrics flag value retrieved from archive
+        readOnly: true
+      autoScaleMinNodes:
+        type: integer
+        format: int32
+        description: The cluster's minimum number of nodes value retrieved from archive
+        readOnly: true
+      autoScaleMaxNodes:
+        type: integer
+        format: int32
+        description: The cluster's maximum number of nodes value retrieved from archive
+        readOnly: true
+      staticNodeCount:
+        type: integer
+        format: int32
+        description: The cluster's static node count retrieved from archive
+        readOnly: true
+      clusterSizeName:
+        type: string
+        description: The cluster size name retrieved from archive
+        readOnly: true
+        enum:
+          - EXTRA_SMALL
+          - SMALL
+          - MEDIUM
+          - LARGE
+      kpis:
+        type: array
+        description: The list of configured KPIs imported from archive
+        readOnly: true
+        items:
+          $ref: '#/definitions/ConfiguredKpi'
+      flowParameterGroups:
+        type: array
+        description: The flow parameter groups with values imported from archive
+        readOnly: true
+        items:
+          $ref: '#/definitions/FlowParameterGroup'
+      cfmNifiVersion:
+        type: string
+        description: The CFM NiFi version retrieved from archive
+        readOnly: true
+      inboundHostName:
+        type: string
+        description: The FQDN of inbound hostname constructed with prefix imported from archive
+        readOnly: true
+      listenComponents:
+        type: array
+        description: The concatenated list of Nifi listen components imported from archive and flow
+        readOnly: true
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ListenComponent'
+      nodeStorageProfile:
+        type: string
+        description: The node storage profile imported from archive
+        readOnly: true
+      projectCrn:
+        type: string
+        description: The project CRN retrieved from backup
+        readOnly: true
+      customNarConfigurationCrn:
+        type: string
+        description: The CRN of the custom NAR configuration.
+        readOnly: true
   RpcWorkloadResourceSummary:
     type: object
     description: Provides a summary of the workload resource.

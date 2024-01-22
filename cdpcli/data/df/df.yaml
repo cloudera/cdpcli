@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.104
+  version: 0.9.105
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -57,6 +57,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CancelDeleteProjectResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/df/createFlowVersionTag:
+    post:
+      summary: Create flow version tag.
+      description: Creates a new tag for the specified flow version
+      operationId: createFlowVersionTag
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateFlowVersionTagRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateFlowVersionTagResponse'
         default:
           description: The default response on an error.
           schema:
@@ -123,6 +145,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteFlowResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/df/deleteFlowVersionTag:
+    post:
+      summary: Delete flow version tag.
+      description: Deletes the specified flow version tag.
+      operationId: deleteFlowVersionTag
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteFlowVersionTagRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteFlowVersionTagResponse'
         default:
           description: The default response on an error.
           schema:
@@ -683,6 +727,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/df/listFlowDefinitionVersions:
+    post:
+      summary: List flow definition versions.
+      description: Lists flow definition versions for a flow
+      operationId: listFlowDefinitionVersions
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListFlowDefinitionVersionsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListFlowDefinitionVersionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/df/listFlowDefinitions:
     post:
       summary: List flow definitions.
@@ -701,6 +767,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListFlowDefinitionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/df/listFlowVersionTags:
+    post:
+      summary: List flow version tags.
+      description: Lists tags for the specified flow version
+      operationId: listFlowVersionTags
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListFlowVersionTagsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListFlowVersionTagsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1456,6 +1544,11 @@ definitions:
       comments:
         type: string
         description: The comments of the flow.
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/FlowDefinitionTagData'
+        description: The list of tags for the initial flow definition version
   ImportFlowDefinitionResponse:
     type: object
     description: Response object for ImportFlowDefinition
@@ -1509,6 +1602,11 @@ definitions:
       comments:
         type: string
         description: The comments of the flow version.
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/FlowDefinitionVersionTagData'
+        description: The tags for the flow version.
   ImportFlowDefinitionVersionResponse:
     type: object
     description: Response object for ImportFlowDefinitionVersion
@@ -1539,6 +1637,11 @@ definitions:
       comments:
         type: string
         description: Comments about the flow
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/FlowVersionTag'
+        description: The tags for the flow version.
   FlowSummary:
     type: object
     description: A summarized version of a flow, mostly useful in listing flows
@@ -1674,6 +1777,11 @@ definitions:
         type: integer
         format: int32
         description: The number of draft flows associated with the version.
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/FlowVersionTag'
+        description: The list of tags associated with the flow version.
   ListFlowDefinitionsRequest:
     type: object
     description: Request object for the ListFlowDefinitions method.
@@ -1954,6 +2062,128 @@ definitions:
         format: byte
         description: the flow definition.
         x-skip-logging: true
+  CreateFlowVersionTagRequest:
+    type: object
+    description: Request object for the CreateFlowVersionTag method.
+    required:
+      - flowVersionCrn
+      - tagName
+    properties:
+      flowVersionCrn:
+        type: string
+        description: The flow version CRN.
+      tagName:
+        type: string
+        description: The name of the version tag.
+      tagColor:
+        type: string
+        description: The color of the version tag (optional).
+  CreateFlowVersionTagResponse:
+    type: object
+    description: Response object for the CreateVersionTag method.
+    required:
+      - flowVersionTag
+    properties:
+      flowVersionTag:
+        description: Flow version tag details.
+        $ref: '#/definitions/FlowVersionTag'
+  DeleteFlowVersionTagRequest:
+    type: object
+    description: Request object for the DeleteFlowVersionTag method.
+    required:
+      - flowVersionCrn
+      - tagName
+    properties:
+      flowVersionCrn:
+        type: string
+        description: The flow version CRN.
+      tagName:
+        type: string
+        description: The name of the tag.
+  DeleteFlowVersionTagResponse:
+    type: object
+    description: Response object for the DeleteVersionTag method.
+    required:
+      - flowVersionTag
+    properties:
+      flowVersionTag:
+        description: Flow version tag details.
+        $ref: '#/definitions/FlowVersionTag'
+  FlowDefinitionTagData:
+    type: object
+    description: A representation of an artifact version tag.
+    required:
+      - tagName
+    properties:
+      tagName:
+        type: string
+        description: The name of the version tag.
+      tagColor:
+        type: string
+        description: The color of the version tag (optional).
+  FlowDefinitionVersionTagData:
+    type: object
+    description: A representation of an artifact version tag.
+    required:
+      - tagName
+    properties:
+      tagName:
+        type: string
+        description: The name of the version tag.
+      tagColor:
+        type: string
+        description: The color of the version tag (optional).
+  FlowVersionTag:
+    type: object
+    description: A representation of an artifact version tag.
+    required:
+      - tagName
+    properties:
+      tagName:
+        type: string
+        description: The name of the version tag.
+      tagColor:
+        type: string
+        description: The color of the version tag (optional).
+  ListFlowVersionTagsRequest:
+    type: object
+    description: Request object for the ListFlowVersionTags method.
+    required:
+      - flowVersionCrn
+    properties:
+      flowVersionCrn:
+        type: string
+        description: The flow version CRN.
+  ListFlowVersionTagsResponse:
+    type: object
+    description: Response object for the ListFlowVersionTags method.
+    properties:
+      flowVersionTags:
+        type: array
+        items:
+          $ref: '#/definitions/FlowVersionTag'
+        description: The flow version tag data.
+  ListFlowDefinitionVersionsRequest:
+    type: object
+    description: Request object for the ListFlowDefinitionVersions method.
+    required:
+      - flowCrn
+    properties:
+      flowCrn:
+        type: string
+        description: The flow CRN
+      searchTerm:
+        type: string
+        description: Search term to use in the list of tags
+  ListFlowDefinitionVersionsResponse:
+    type: object
+    description: Response object for the ListFlowDefinitionVersions method.
+    properties:
+      flowVersions:
+        type: array
+        items:
+          $ref: '#/definitions/FlowVersion'
+        description: The list of matching flow versions
   InitiateDeploymentRequest:
     type: object
     description: A request to initiate a deployment

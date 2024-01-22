@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.104
+  version: 0.9.105
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -354,6 +354,31 @@ definitions:
         items:
           $ref: '#/definitions/DiagnosticsBundle'
         description: List of diagnostics operations
+  InstanceGroupType:
+    type: string
+    description: "InstanceGroup Type.\n `WORKER` - WORKER value of the InstanceGroup name. `LEADER` - LEADER value of the InstanceGroup name. `MASTER` - MASTER value of the InstanceGroup name. `GATEWAY` - GATEWAY value of the InstanceGroup name. `STRONGMETA` - STRONGMETA value of the InstanceGroup name. `EDGE` - EDGE value of the InstanceGroup name."
+    enum:
+      - WORKER
+      - LEADER
+      - MASTER
+      - GATEWAY
+      - STRONGMETA
+      - EDGE
+  CustomRecipe:
+    type: object
+    description: Describe a custom recipe.
+    required:
+      - names
+      - instanceGroup
+    properties:
+      names:
+        type: array
+        items:
+          type: string
+        description: Name of the recipe.
+      instanceGroup:
+        description: Instance group to apply the recipe to.
+        $ref: '#/definitions/InstanceGroupType'
   CreateDatabaseRequest:
     type: object
     description: A request to create the database
@@ -370,12 +395,20 @@ definitions:
       autoScalingParameters:
         description: Parameters to configure the AutoScaling
         $ref: '#/definitions/AutoScalingParameters'
+      image:
+        description: Image details for the database.
+        $ref: '#/definitions/Image'
       scaleType:
         description: Optional tags to choose one of the predefined cluster sizes.
         $ref: '#/definitions/ScaleType'
       storageType:
         description: Optional tag to choose the storage types.
         $ref: '#/definitions/StorageType'
+      recipes:
+        type: array
+        items:
+          $ref: '#/definitions/CustomRecipe'
+        description: Custom recipes for the database.
   ScaleType:
     type: string
     description: "Scale type.\n `MICRO` - Create a 2-node cluster (1 gateway and 1 worker) with high availability disabled. `LIGHT` - Create a multi-node cluster with a light master and gateway instance type. `HEAVY` - Create a multi-node cluster with heavy master and gateway instance type."
@@ -827,4 +860,17 @@ definitions:
       osPatchLevel:
         type: string
         description: Operation System patch level.
+  Image:
+    type: object
+    description: Details of an Image.
+    required:
+      - id
+      - catalog
+    properties:
+      id:
+        type: string
+        description: Image ID for the database.
+      catalog:
+        type: string
+        description: Catalog name for the image.
 x-audit: true

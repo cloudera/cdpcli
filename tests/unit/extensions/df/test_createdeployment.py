@@ -949,3 +949,565 @@ class TestCreateDeployment(unittest.TestCase):
         self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
         self.assertEqual(2, self.df_workload_client.make_api_call.call_count)
         self.assertEqual(1, self.df_workload_client.make_request.call_count)
+
+    def test_invoke_create_deployment_from_archive(self):
+        # in this test, just ensure whenever there is an
+        # archive_<parameter> variable value that it has different value from the
+        # <parameter> variable value
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+        node_storage_profile_name = 'STANDARD_AWS'
+        archive_node_storage_profile_name = 'PERFORMANCE_AWS'
+        project_crn = 'PROJECT_CRN'
+        archive_project_crn = 'ARCHIVE_PROJECT_CRN'
+
+        parameter_group_name = 'ParameterGroup'
+        parameter_name = 'test-param-name'
+        parameter_value = 'test-param-value'
+        archive_parameter_value = 'archive_parameter_value'
+        parameter_group = {
+            'name': parameter_group_name,
+            'parameters': [
+                {
+                    'name': parameter_name,
+                    'value': parameter_value
+                }
+            ]
+        }
+        archive_parameter_group = {
+            'name': parameter_group_name,
+            'parameters': [
+                {
+                    'name': parameter_name,
+                    'value': archive_parameter_value
+                }
+            ]
+        }
+
+        frequencyUnit = {
+            'id': 'MINUTES'
+        }
+        frequencyUnitUpdated = {
+            'id': 'MINUTES',
+            'label': 'Minutes',
+            'abbreviation': 'm'
+        }
+        threshold = 75.5
+        kpi = {
+            'metricId': 'cpuUtilization',
+            'alert': {
+                'thresholdMoreThan': {
+                    'unitId': 'percentage',
+                    'value': threshold
+                },
+                'frequencyTolerance': {
+                    'unit': frequencyUnit,
+                    'value': 2.5
+                }
+            }
+        }
+
+        archive_threshold = 85.5
+        archive_kpi_id = 'archive-kpi-id'
+        archive_kpi = {
+            'id': archive_kpi_id,
+            'metricId': 'cpuUtilization',
+            'alert': {
+                'thresholdMoreThan': {
+                    'unitId': 'percentage',
+                    'value': archive_threshold
+                },
+                'frequencyTolerance': {
+                    'unit': frequencyUnitUpdated,
+                    'value': 2.5
+                }
+            }
+        }
+
+        custom_nar_configuration = {
+            'username': 'USER',
+            'password': 'PROTECTED',
+            'storageLocation': 's3a://bucket',
+            'configurationVersion': 0
+        }
+
+        cluster_size_name = 'MEDIUM'
+        archive_cluster_size_name = 'SMALL'
+        auto_scaling_enabled = False
+        archive_auto_scaling_enabled = True
+        archive_flow_metrics_scaling_enabled = True
+        archive_auto_scaling_min_nodes = 1
+        archive_auto_scaling_max_nodes = 3
+        static_node_count = 2
+        cfm_nifi_version = '1.14.0'
+        archive_cfm_nifi_version = '1.21.0'
+        auto_start_flow = False
+        archive_custom_nar_configuration_crn = 'ARCHIVE_NAR_CONFIGURATION_CRN'
+        inbound_hostname = 'test-inbound-hostname'
+        archive_inbound_hostname = 'archive-test-inbound-hostname'
+        listen_component = {
+            'listenComponentType': 'ListenHTTP',
+            'protocol': 'TCP',
+            'port': 4321
+        }
+        archive_listen_component = {
+            'listenComponentType': 'ListenHTTP',
+            'protocol': 'TCP',
+            'port': 1234
+        }
+
+        # this is what's passed into the CLI call
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'fromArchive': 'test-archive-name',
+            'clusterSizeName': cluster_size_name,
+            'autoScalingEnabled': auto_scaling_enabled,
+            'staticNodeCount': static_node_count,
+            'cfmNifiVersion': cfm_nifi_version,
+            'autoStartFlow': auto_start_flow,
+            'parameterGroups': [
+                parameter_group
+            ],
+            'kpis': [
+                kpi
+            ],
+            'inboundHostname': inbound_hostname,
+            'listenComponents': [
+                listen_component
+            ],
+            'customNarConfiguration': custom_nar_configuration,
+            'nodeStorageProfileName': node_storage_profile_name,
+            'projectCrn': project_crn
+        }
+
+        # this is what the importDeployment call will return
+        # and what should get used
+        import_deployment_configuration = {
+            'rpcImportedDeploymentConfiguration': {
+                'clusterSizeName': archive_cluster_size_name,
+                'autoScalingEnabled': archive_auto_scaling_enabled,
+                'flowMetricsScalingEnabled': archive_flow_metrics_scaling_enabled,
+                'autoScaleMinNodes': archive_auto_scaling_min_nodes,
+                'autoScaleMaxNodes': archive_auto_scaling_max_nodes,
+                'cfmNifiVersion': archive_cfm_nifi_version,
+                'kpis': [
+                    archive_kpi
+                ],
+                'customNarConfigurationCrn': archive_custom_nar_configuration_crn,
+                'nodeStorageProfile': archive_node_storage_profile_name,
+                'projectCrn': archive_project_crn,
+                'flowParameterGroups': [
+                    archive_parameter_group
+                ],
+                'inboundHostName': archive_inbound_hostname,
+                'listenComponents': [
+                    archive_listen_component
+                ]
+            }
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        initiate_request_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        create_deployment_parameters = []
+        deployment_crn = 'DEPLOYMENT_CRN'
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'createDeployment':
+                create_response = {
+                    'deployment': {
+                        'crn': deployment_crn
+                    }
+                }
+                create_deployment_parameters.append(args[1])
+                return (Mock(status_code=200), create_response)
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'importDeployment':
+                import_response = import_deployment_configuration
+                return(Mock(status_code=200), import_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                      parameters, parsed_args, parsed_globals)
+
+        self.assertEquals(
+            {
+                'serviceCrn': service_crn,
+                'flowVersionCrn': flow_version_crn
+            },
+            initiate_request_parameters[0])
+
+        self.assertEquals('Bearer ' + token, parsed_globals.access_token)
+        self.assertEquals(workload_url, parsed_globals.endpoint_url)
+
+        expected_create_deployment_parameters = {
+            'environmentCrn': environment_crn,
+            'deploymentRequestCrn': deployment_request_crn,
+            'name': deployment_name,
+            'configurationVersion': 0,
+            'clusterSizeName': archive_cluster_size_name,
+            'cfmNifiVersion': archive_cfm_nifi_version,
+            'autoStartFlow': auto_start_flow,
+            'autoScalingEnabled': archive_auto_scaling_enabled,
+            'flowMetricsScalingEnabled': archive_flow_metrics_scaling_enabled,
+            'autoScaleMinNodes': archive_auto_scaling_min_nodes,
+            'autoScaleMaxNodes': archive_auto_scaling_max_nodes,
+            'parameterGroups': [
+                parameter_group
+            ],
+            'kpis': [
+                archive_kpi
+            ],
+            'inboundHostname': archive_inbound_hostname,
+            'listenComponents': [
+                archive_listen_component
+            ],
+            'customNarConfigurationCrn': archive_custom_nar_configuration_crn,
+            'nodeStorageProfileName': archive_node_storage_profile_name,
+            'projectCrn': archive_project_crn,
+        }
+        self.assertEquals(
+            expected_create_deployment_parameters,
+            create_deployment_parameters[0]
+        )
+
+    def test_invoke_create_deployment_import_parameters_from_archive(self):
+        # in this test, just ensure whenever there is an
+        # archive_<parameter> variable value that it has different value from the
+        # <parameter> variable value
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+        node_storage_profile_name = 'STANDARD_AWS'
+        archive_node_storage_profile_name = 'PERFORMANCE_AWS'
+        project_crn = 'PROJECT_CRN'
+        archive_project_crn = 'ARCHIVE_PROJECT_CRN'
+
+        parameter_group_name = 'ParameterGroup'
+        parameter_name = 'test-param-name'
+        parameter_value = 'test-param-value'
+        archive_parameter_value = 'archive_parameter_value'
+        parameter_group = {
+            'name': parameter_group_name,
+            'parameters': [
+                {
+                    'name': parameter_name,
+                    'value': parameter_value
+                }
+            ]
+        }
+        archive_parameter_group = {
+            'name': parameter_group_name,
+            'parameters': [
+                {
+                    'name': parameter_name,
+                    'value': archive_parameter_value
+                }
+            ]
+        }
+
+        frequencyUnit = {
+            'id': 'MINUTES'
+        }
+        frequencyUnitUpdated = {
+            'id': 'MINUTES',
+            'label': 'Minutes',
+            'abbreviation': 'm'
+        }
+        threshold = 75.5
+        kpi = {
+            'metricId': 'cpuUtilization',
+            'alert': {
+                'thresholdMoreThan': {
+                    'unitId': 'percentage',
+                    'value': threshold
+                },
+                'frequencyTolerance': {
+                    'unit': frequencyUnit,
+                    'value': 2.5
+                }
+            }
+        }
+
+        archive_threshold = 85.5
+        archive_kpi_id = 'archive-kpi-id'
+        archive_kpi = {
+            'id': archive_kpi_id,
+            'metricId': 'cpuUtilization',
+            'alert': {
+                'thresholdMoreThan': {
+                    'unitId': 'percentage',
+                    'value': archive_threshold
+                },
+                'frequencyTolerance': {
+                    'unit': frequencyUnitUpdated,
+                    'value': 2.5
+                }
+            }
+        }
+
+        custom_nar_configuration = {
+            'username': 'USER',
+            'password': 'PROTECTED',
+            'storageLocation': 's3a://bucket',
+            'configurationVersion': 0
+        }
+
+        cluster_size_name = 'MEDIUM'
+        archive_cluster_size_name = 'SMALL'
+        auto_scaling_enabled = False
+        archive_auto_scaling_enabled = True
+        archive_flow_metrics_scaling_enabled = True
+        archive_auto_scaling_min_nodes = 1
+        archive_auto_scaling_max_nodes = 3
+        static_node_count = 2
+        cfm_nifi_version = '1.14.0'
+        archive_cfm_nifi_version = '1.21.0'
+        auto_start_flow = False
+        custom_nar_configuration_crn = 'NAR_CONFIGURATION_CRN'
+        archive_custom_nar_configuration_crn = 'ARCHIVE_NAR_CONFIGURATION_CRN'
+        inbound_hostname = 'test-inbound-hostname'
+        archive_inbound_hostname = 'archive-test-inbound-hostname'
+        listen_component = {
+            'listenComponentType': 'ListenHTTP',
+            'protocol': 'TCP',
+            'port': 4321
+        }
+        archive_listen_component = {
+            'listenComponentType': 'ListenHTTP',
+            'protocol': 'TCP',
+            'port': 1234
+        }
+
+        # this is what's passed into the CLI call
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'import_parameters_from': 'test-archive-name',
+            'clusterSizeName': cluster_size_name,
+            'autoScalingEnabled': auto_scaling_enabled,
+            'staticNodeCount': static_node_count,
+            'cfmNifiVersion': cfm_nifi_version,
+            'autoStartFlow': auto_start_flow,
+            'parameterGroups': [
+                parameter_group
+            ],
+            'kpis': [
+                kpi
+            ],
+            'inboundHostname': inbound_hostname,
+            'listenComponents': [
+                listen_component
+            ],
+            'customNarConfiguration': custom_nar_configuration,
+            'nodeStorageProfileName': node_storage_profile_name,
+            'projectCrn': project_crn
+        }
+
+        # this is what the importDeployment call will return
+        # and what should get used
+        import_deployment_configuration = {
+            'rpcImportedDeploymentConfiguration': {
+                'clusterSizeName': archive_cluster_size_name,
+                'autoScalingEnabled': archive_auto_scaling_enabled,
+                'flowMetricsScalingEnabled': archive_flow_metrics_scaling_enabled,
+                'autoScaleMinNodes': archive_auto_scaling_min_nodes,
+                'autoScaleMaxNodes': archive_auto_scaling_max_nodes,
+                'cfmNifiVersion': archive_cfm_nifi_version,
+                'kpis': [
+                    archive_kpi
+                ],
+                'customNarConfigurationCrn': archive_custom_nar_configuration_crn,
+                'nodeStorageProfile': archive_node_storage_profile_name,
+                'projectCrn': archive_project_crn,
+                'flowParameterGroups': [
+                    archive_parameter_group
+                ],
+                'inboundHostName': archive_inbound_hostname,
+                'listenComponents': [
+                    archive_listen_component
+                ]
+            }
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        initiate_request_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        create_deployment_parameters = []
+        create_custom_nar_configuration_params = []
+        deployment_crn = 'DEPLOYMENT_CRN'
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'createDeployment':
+                create_response = {
+                    'deployment': {
+                        'crn': deployment_crn
+                    }
+                }
+                create_deployment_parameters.append(args[1])
+                return (Mock(status_code=200), create_response)
+            elif operation_name == 'getDefaultCustomNarConfiguration':
+                error = {
+                    'error': {
+                        'code': '404',
+                        'message': 'Not Found'
+                    }
+                }
+                raise ClientError(error, operation_name, 'dfworkload', 404, 'requestId')
+            elif operation_name == 'createCustomNarConfiguration':
+                create_custom_nar_configuration_params.append(args[1])
+                configuration_response = deepcopy(custom_nar_configuration)
+                configuration_response['crn'] = custom_nar_configuration_crn
+                return (Mock(status_code=200), configuration_response)
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'importDeployment':
+                import_response = import_deployment_configuration
+                return(Mock(status_code=200), import_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                      parameters, parsed_args, parsed_globals)
+
+        self.assertEquals(
+            {
+                'serviceCrn': service_crn,
+                'flowVersionCrn': flow_version_crn
+            },
+            initiate_request_parameters[0])
+
+        self.assertEquals('Bearer ' + token, parsed_globals.access_token)
+        self.assertEquals(workload_url, parsed_globals.endpoint_url)
+
+        kpi['alert']['frequencyTolerance']['unit'] = frequencyUnitUpdated
+        expected_create_deployment_parameters = {
+            'environmentCrn': environment_crn,
+            'deploymentRequestCrn': deployment_request_crn,
+            'name': deployment_name,
+            'configurationVersion': 0,
+            'clusterSizeName': cluster_size_name,
+            'cfmNifiVersion': cfm_nifi_version,
+            'autoStartFlow': auto_start_flow,
+            'autoScalingEnabled': auto_scaling_enabled,
+            'staticNodeCount': static_node_count,
+            'parameterGroups': [
+                parameter_group
+            ],
+            'kpis': [
+                kpi
+            ],
+            'inboundHostname': inbound_hostname,
+            'listenComponents': [
+                listen_component
+            ],
+            'customNarConfigurationCrn': custom_nar_configuration_crn,
+            'nodeStorageProfileName': node_storage_profile_name,
+            'projectCrn': project_crn
+        }
+        self.assertEquals(
+            expected_create_deployment_parameters,
+            create_deployment_parameters[0]
+        )
+
+        custom_nar_configuration['environmentCrn'] = environment_crn
+        self.assertEquals(
+            custom_nar_configuration,
+            create_custom_nar_configuration_params[0]
+        )
+
+    def test_error_from_archive_and_import_parameters_from_specified(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'fromArchive': 'test-archive-name',
+            'importParametersFrom': 'test-archive-name'
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        with self.assertRaises(DfExtensionError) as context:
+            self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                          parameters, parsed_args, parsed_globals)
+
+        expected_error_msg = ('Cannot use both --from-archive and '
+                              '--import-parameters-from arguments.')
+        self.assertTrue(expected_error_msg in str(context.exception))

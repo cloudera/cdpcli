@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.104
+  version: 0.9.105
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1119,7 +1119,7 @@ paths:
   /api/v1/datahub/startClusterVerticalScaling:
     post:
       summary: Initiates the vertical scaling on Data Hub cluster.
-      description: Initiates the vertical scaling on Data Hub cluster. You have the option to either specify one of 'deleteDisks', 'modifyDisks' or 'addDisks' or 'instanceTemplate' as parameter.
+      description: Initiates the vertical scaling on Data Hub cluster. You have the option to either specify one of 'modifyDisks' or 'instanceTemplate' as parameter.
       operationId: startClusterVerticalScaling
       x-mutating: true
       parameters:
@@ -2421,6 +2421,11 @@ definitions:
       recoveryMode:
         type: string
         description: Recovery mode for the instance group.
+      availabilityZones:
+        type: array
+        items:
+          type: string
+        description: List of availability zones that this instance group is associated with.
   GCPInstanceGroupRequest:
     type: object
     description: Configurations for instance group
