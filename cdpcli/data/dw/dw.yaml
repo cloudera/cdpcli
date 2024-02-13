@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.105
+  version: 0.9.106
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0

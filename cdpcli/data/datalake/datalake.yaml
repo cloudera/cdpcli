@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.105
+  version: 0.9.106
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1129,6 +1129,11 @@ definitions:
         items:
           type: string
         description: List of availability zones that this instance group is associated with.
+      recipes:
+        type: array
+        description: The recipe names for the Datalake cluster.
+        items:
+          type: string
   Instance:
     type: object
     description: Object which holds some details of an instance for the given cluster.
@@ -1560,6 +1565,9 @@ definitions:
         enum:
           - FLEXIBLE_SERVER
           - SINGLE_SERVER
+      flexibleServerDelegatedSubnetId:
+        type: string
+        description: This argument allows you to specify the subnet ID for the subnet within which you want to configure your Azure Flexible Server.
       recipes:
         type: array
         items:

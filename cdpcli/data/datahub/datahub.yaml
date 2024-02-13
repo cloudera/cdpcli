@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.105
+  version: 0.9.106
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1460,6 +1460,11 @@ definitions:
         items:
           type: string
         description: List of availability zones that this instance group is associated with.
+      recipes:
+        type: array
+        description: The recipe names for the Data Hub cluster.
+        items:
+          type: string
   StartClusterVerticalScalingRequest:
     type: object
     description: The request object for Data Hub vertical scaling.
@@ -2695,6 +2700,9 @@ definitions:
         enum:
           - FLEXIBLE_SERVER
           - SINGLE_SERVER
+      flexibleServerDelegatedSubnetId:
+        type: string
+        description: Allows you to specify the subnet ID for the subnet within which you want to configure your Azure Flexible Server.
       javaVersion:
         type: integer
         format: int32
