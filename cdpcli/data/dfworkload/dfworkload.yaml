@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.106
+  version: 0.9.107
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1359,7 +1359,7 @@ definitions:
         description: The CRN of the project.
       crn:
         type: string
-        description: The CRN of the custom NAR configuration to update.
+        description: The CRN of the custom resource configuration to update.
   CreateDeploymentRequest:
     type: object
     description: Request object to create a deployment.
@@ -1561,7 +1561,7 @@ definitions:
         description: The CRN of the project.
       crn:
         type: string
-        description: The CRN of the custom NAR configuration to update.
+        description: The CRN of the custom resource configuration to update.
   DeleteInboundConnectionEndpointRequest:
     type: object
     description: Request object that contains the identifier of the Inbound Connection Endpoint to delete
@@ -1866,7 +1866,7 @@ definitions:
         description: The CRN of the project.
       crn:
         type: string
-        description: The CRN of the custom NAR configuration to update.
+        description: The CRN of the custom resource configuration to update.
   GetDefaultCustomNarConfigurationRequest:
     type: object
     description: Request object for retrieving the default custom NAR configuration.
@@ -1907,7 +1907,7 @@ definitions:
         description: The CRN of the project.
       crn:
         type: string
-        description: The CRN of the custom NAR configuration to update.
+        description: The CRN of the custom resource configuration to update.
   GetDeploymentConfigurationMetadataRequest:
     type: object
     description: Request object for retrieving deployment configuration metadata.
@@ -3303,7 +3303,7 @@ definitions:
         description: The CRN of the project.
       crn:
         type: string
-        description: The CRN of the custom NAR configuration to update.
+        description: The CRN of the custom resource configuration to update.
   UpdateDeploymentRequest:
     type: object
     description: Provides all of the configuration that dictates how a flow should be deployed

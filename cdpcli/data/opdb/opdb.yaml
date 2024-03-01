@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.106
+  version: 0.9.107
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -354,6 +354,16 @@ definitions:
         items:
           $ref: '#/definitions/DiagnosticsBundle'
         description: List of diagnostics operations
+  KeyValuePair:
+    type: object
+    description: Generic key-value type, because map<> is not supported
+    properties:
+      key:
+        type: string
+        description: Key
+      value:
+        type: string
+        description: Value
   InstanceGroupType:
     type: string
     description: "InstanceGroup Type.\n `WORKER` - WORKER value of the InstanceGroup name. `LEADER` - LEADER value of the InstanceGroup name. `MASTER` - MASTER value of the InstanceGroup name. `GATEWAY` - GATEWAY value of the InstanceGroup name. `STRONGMETA` - STRONGMETA value of the InstanceGroup name. `EDGE` - EDGE value of the InstanceGroup name."
@@ -395,9 +405,36 @@ definitions:
       autoScalingParameters:
         description: Parameters to configure the AutoScaling
         $ref: '#/definitions/AutoScalingParameters'
+      subnetId:
+        type: string
+        description: Override subnet where the database will be deployed. Disables Multi-AZ if set.
+      customUserTags:
+        type: array
+        items:
+          $ref: '#/definitions/KeyValuePair'
+        description: Optional tags to apply to launched infrastructure resources
+      disableMultiAz:
+        type: boolean
+        description: Disable deployment into multiple availability-zones (the database will be deployed into one subnet).
+      attachedStorageForWorkers:
+        description: Attached storage for the worker nodes for AWS, Azure, and GCP cloud providers.
+        $ref: '#/definitions/AttachedStorageForWorkers'
+      disableKerberos:
+        type: boolean
+        description: Disable Kerberos authentication.
+      numEdgeNodes:
+        type: integer
+        format: int32
+        description: Number of edge nodes to be created for the database. A positive, non-zero number is required. The default value is 0.
       image:
         description: Image details for the database.
         $ref: '#/definitions/Image'
+      disableJwtAuth:
+        type: boolean
+        description: Disable OAuth Bearer (JWT) authentication scheme.
+      enableRegionCanary:
+        type: boolean
+        description: To enable the region canary for the database.
       scaleType:
         description: Optional tags to choose one of the predefined cluster sizes.
         $ref: '#/definitions/ScaleType'
@@ -409,6 +446,33 @@ definitions:
         items:
           $ref: '#/definitions/CustomRecipe'
         description: Custom recipes for the database.
+      enableGrafana:
+        type: boolean
+        description: To enable grafana server for the database.
+  VolumeType:
+    type: string
+    description: "Volume Type.\n `HDD` - Hard disk drives (HDD) volume type. Default is HDD. `SSD` - Solid disk drives (SSD) volume type. `LOCAL_SSD` - Local SSD volume type."
+    enum:
+      - HDD
+      - SSD
+      - LOCAL_SSD
+  AttachedStorageForWorkers:
+    type: object
+    description: Attached storage for the worker nodes for AWS, Azure, and GCP cloud providers.
+    properties:
+      volumeCount:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 8
+        description: 'The number of Volumes. Default is 4. Valid Range: Minimum value of 1, maximum value 8.'
+      volumeSize:
+        type: integer
+        format: int32
+        description: The target size of the volume, in GiB. Default is 2048.
+      volumeType:
+        description: The volume type. This parameter can be HDD or SSD. Default is HDD.
+        $ref: '#/definitions/VolumeType'
   ScaleType:
     type: string
     description: "Scale type.\n `MICRO` - Create a 2-node cluster (1 gateway and 1 worker) with high availability disabled. `LIGHT` - Create a multi-node cluster with a light master and gateway instance type. `HEAVY` - Create a multi-node cluster with heavy master and gateway instance type."

@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.106
+  version: 0.9.107
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -735,7 +735,7 @@ paths:
       summary: Creates a SAML provider in CDP.
       description: Creates a SAML provider in CDP.
       operationId: createSamlProvider
-      x-form-factors: public
+      x-form-factors: public,private
       x-right: iam/createSamlProvider
       x-mutating: true
       parameters:
@@ -758,7 +758,7 @@ paths:
       summary: Deletes a SAML provider in CDP account.
       description: Deletes a SAML provider in CDP account.
       operationId: deleteSamlProvider
-      x-form-factors: public
+      x-form-factors: public,private
       x-right: iam/deleteSamlProvider
       x-mutating: true
       parameters:
@@ -781,7 +781,7 @@ paths:
       summary: Lists SAML providers in CDP account.
       description: Lists SAML providers in CDP account.
       operationId: listSamlProviders
-      x-form-factors: public
+      x-form-factors: public,private
       x-right: iam/listSamlProviders
       x-paging-default-max-items: 100
       x-mutating: false
@@ -805,7 +805,7 @@ paths:
       summary: Describes one SAML provider.
       description: Describes one SAML provider.
       operationId: describeSamlProvider
-      x-form-factors: public
+      x-form-factors: public,private
       x-right: iam/listSamlProviders
       x-mutating: false
       parameters:
@@ -828,7 +828,7 @@ paths:
       summary: Updates a SAML provider in CDP.
       description: Updates a SAML provider in CDP.
       operationId: updateSamlProvider
-      x-form-factors: public
+      x-form-factors: public,private
       x-right: iam/updateSamlProvider
       x-mutating: true
       parameters:
@@ -2046,6 +2046,7 @@ definitions:
       enableScim:
         type: boolean
         description: Whether SCIM is enabled on this SAML provider. System for Cross-domain Identity Management (SCIM) version 2.0 is a standard for automating the provisioning of user and group identity information from identity provider to CDP. It is omitted for Cloudera for Government.
+        x-form-factors: public
       scimUrl:
         type: string
         description: The SCIM URL if SCIM is enabled. It is omitted for Cloudera for Government.
@@ -2287,6 +2288,7 @@ definitions:
       enableScim:
         type: boolean
         description: Whether to enable SCIM on this SAML provider. System for Cross-domain Identity Management (SCIM) version 2.0 is a standard for automating the provisioning of user and group identity information from identity provider to CDP. It is not supported for Cloudera for Government.
+        x-form-factors: public
   CreateSamlProviderResponse:
     type: object
     description: Response object for a creating SAML provider request.
@@ -2385,6 +2387,7 @@ definitions:
       enableScim:
         type: boolean
         description: Whether to enable SCIM on this SAML provider. System for Cross-domain Identity Management (SCIM) version 2.0 is a standard for automating the provisioning of user and group identity information from identity provider to CDP. It is not supported for Cloudera for Government.
+        x-form-factors: public
   UpdateSamlProviderResponse:
     type: object
     description: Response object for an updating SAML provider request.
@@ -3651,6 +3654,7 @@ definitions:
     enum:
       - DE
       - DF
+      - OPDB
   CreateScimAccessTokenRequest:
     type: object
     description: Request object to create the SCIM access token.

@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.106
+  version: 0.9.107
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -398,7 +398,7 @@ paths:
       x-mutating: true
       x-no-compatibility-guarantee: true
       summary: Creates a backup from the cluster configuration and settings.
-      description: Creates a backup from the configuration and settings, including all the connected DbCatalogs, Virtual Warehouses and Data Visualisation Apps. The returned data may be used to restore all the entities by using the "restore-cluster" command.
+      description: Creates a backup from the configuration and settings, including all the connected DbCatalogs, Virtual Warehouses and Data Visualisation Apps. The returned data may be used to restore all the entities by using the "restore-cluster" command. The CDW doesn't provide centralized management of the backups. Learn more at https://docs.cloudera.com/data-warehouse/cloud/backup-and-restore/topics/dw-environment-reactivation.html
       operationId: backupCluster
       parameters:
         - name: input
@@ -420,7 +420,7 @@ paths:
       x-mutating: true
       x-no-compatibility-guarantee: true
       summary: Restores the cluster from a backup data made by "backup-cluster" command.
-      description: Restores the cluster from a backup data made by "backup-cluster" command. The operation restores the default DbCatalog configuration, the Virtual Warehouses and the Data Visualisation Apps.
+      description: Restores the cluster from a backup data made by "backup-cluster" command. The operation restores the default DbCatalog configuration, the Virtual Warehouses and the Data Visualisation Apps. Learn more at https://docs.cloudera.com/data-warehouse/cloud/backup-and-restore/topics/dw-environment-reactivation.html
       operationId: restoreCluster
       parameters:
         - name: input
