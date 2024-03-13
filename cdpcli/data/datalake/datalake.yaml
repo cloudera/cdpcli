@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.107
+  version: 0.9.108
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -2025,6 +2025,9 @@ definitions:
       failureReason:
         type: string
         description: Reason for the failure.
+      totalPredictedDurationInMinutes:
+        type: string
+        description: Predicted total duration for the backup process, in minutes.
   RestoreDatalakeRequest:
     type: object
     description: Request to restore datalake from backup. Restore does not restore the database by default.
@@ -2381,6 +2384,9 @@ definitions:
       durationInMinutes:
         type: string
         description: The duration of each operation, in minutes.
+      predictedDurationInMinutes:
+        type: string
+        description: Predicted duration of the operation, in minutes.
   ImageComponentVersions:
     type: object
     description: Versions of the image components
@@ -2465,6 +2471,9 @@ definitions:
       skipBackupValidation:
         type: boolean
         description: Skips the validation steps that run prior to the backup. Redundant if --skip-backup is included. If this option is not provided, the validations are performed by default.
+      rollingUpgradeEnabled:
+        type: boolean
+        description: Enables the ability to perform rolling runtime upgrade.
   UpgradeDatalakeResponse:
     type: object
     description: Response object for upgrade datalake request.

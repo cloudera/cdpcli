@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.107
+  version: 0.9.108
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -18,6 +18,177 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/v1/de/createBackup:
+    post:
+      summary: Backup Cloudera Data Engineering(CDE) Service
+      description: Initiates service backup and returns a backup ID, which can be used for log retrieval, restoration, deletion, and backup cancellation. Service backup includes the definition of the Service and its Virtual Clusters along with Virtual Clusters contents (jobs, resources, and credentials).
+      operationId: createBackup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateBackupRequest'
+      responses:
+        200:
+          description: Response object for Create Backup command.
+          schema:
+            $ref: '#/definitions/CreateBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/cancelBackup:
+    post:
+      summary: Cancel Cloudera Data Engineering(CDE) Service Backup
+      description: Cancel a currently running backup operation using the associated backup ID. The operation must be in a 'pending' state.
+      operationId: cancelBackup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CancelBackupRequest'
+      responses:
+        200:
+          description: Response object for Cancel Backup command.
+          schema:
+            $ref: '#/definitions/CancelBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/deleteBackup:
+    post:
+      summary: Delete Cloudera Data Engineering(CDE) Service Backup
+      description: Delete a backup using the associated backup ID.
+      operationId: deleteBackup
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteBackupRequest'
+      responses:
+        200:
+          description: Response object for Delete Backup command.
+          schema:
+            $ref: '#/definitions/DeleteBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/describeBackup:
+    post:
+      summary: Describe Cloudera Data Engineering(CDE) Service Backup
+      description: Describe a backup using the associated backup ID.
+      operationId: describeBackup
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeBackupRequest'
+      responses:
+        200:
+          description: Response object for Describe Backup command.
+          schema:
+            $ref: '#/definitions/DescribeBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/getBackupLogs:
+    post:
+      summary: Retrieve Cloudera Data Engineering(CDE) Service Backup Logs
+      description: Retrieve backup logs using the associated backup ID.
+      operationId: getBackupLogs
+      x-paging-default-max-items: 50
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetBackupLogsRequest'
+      responses:
+        200:
+          description: Response object for Get Backup Logs command.
+          schema:
+            $ref: '#/definitions/GetBackupLogsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/getServiceInitLogs:
+    post:
+      summary: Retrieve Cloudera Data Engineering(CDE) Service Initialization Logs
+      description: Retrieve service initialization logs, if any.
+      operationId: getServiceInitLogs
+      x-paging-default-max-items: 50
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetServiceInitLogsRequest'
+      responses:
+        200:
+          description: Response object for Get Service Init Logs command.
+          schema:
+            $ref: '#/definitions/GetServiceInitLogsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/listBackups:
+    post:
+      summary: List Cloudera Data Engineering(CDE) Service Backups
+      description: List all service backups.
+      operationId: listBackups
+      x-paging-default-max-items: 10
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListBackupsRequest'
+      responses:
+        200:
+          description: Response object for List Backups command.
+          schema:
+            $ref: '#/definitions/ListBackupsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/restoreService:
+    post:
+      summary: Restore Cloudera Data Engineering(CDE) Service
+      description: Initiates the service restoration process and returns the ID of the service being restored.
+      operationId: restoreService
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestoreServiceRequest'
+      responses:
+        200:
+          description: Response object for Restore Service command.
+          schema:
+            $ref: '#/definitions/RestoreServiceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/de/createVc:
     post:
       summary: Create Virtual Cluster
@@ -337,6 +508,9 @@ definitions:
       logLocation:
         type: string
         description: Location for the log files of jobs.
+      backupLocation:
+        type: string
+        description: Base location for the service backup archives.
       dataLakeAtlasUIEndpoint:
         type: string
         description: Endpoint of Data Lake Atlas.
@@ -987,3 +1161,340 @@ definitions:
       Vc:
         description: Updated Virtual Cluster.
         $ref: '#/definitions/VcDescription'
+  CreateBackupRequest:
+    type: object
+    description: Request object for Create Backup command.
+    required:
+      - serviceId
+    properties:
+      serviceId:
+        type: string
+        description: Service ID of the service to backup.
+      description:
+        type: string
+        description: Backup description.
+      backupPath:
+        type: string
+        description: Backup file relative path. The path should not include file name, and be relative to the service backup location. The service backup location can be found in the service description obtained via the 'describe-service' command.
+      includeVc:
+        type: boolean
+        default: true
+        description: Whether to backup service virtual clusters. By default, virtual clusters are backed up.
+      timeout:
+        type: integer
+        format: int32
+        description: Backup operation timeout in seconds.
+      backupVcContentOptions:
+        $ref: '#/definitions/BackupContentOptions'
+        description: Backup virtual cluster content options.
+  BackupContentOptions:
+    type: object
+    description: Backup virtual cluster content options.
+    properties:
+      includeJobs:
+        type: boolean
+        default: true
+        description: Whether to backup jobs. By default, jobs are backed up.
+      includeJobResources:
+        type: boolean
+        default: true
+        description: Whether to backup job resources. By default, job resources are backed up.
+      includeResources:
+        type: boolean
+        default: true
+        description: Whether to backup resources. By default, resources are backed up.
+      includeResourceCredentials:
+        type: boolean
+        default: true
+        description: Whether to backup resource credentials. By default, resource credentials are backed up.
+      includeCredentials:
+        type: boolean
+        default: true
+        description: Whether to backup credentials. By default, credentials are backed up.
+      includeCredentialSecrets:
+        type: boolean
+        default: true
+        description: Whether to backup credential secrets. Secrets are obfuscated while storing. By default, credential secrets are backed up.
+      jobFilter:
+        type: array
+        items:
+          type: string
+        description: Filter jobs for backup using 'fieldname(operator)argument' syntax. Here, 'fieldname' is one of the job fields (e.g. name, type, etc.), and 'operator' is one of ('eq', 'noteq', 'lte', 'lt', 'gte', 'gt', 'in', 'notin', 'like', 'rlike', 'is', 'isnot'). Multiple filters are ANDed. For example, 'name(eq)SparkPi'. This will only take effect if jobs are backed up, as controlled by the 'includeJobs' option.
+      resourceFilter:
+        type: array
+        items:
+          type: string
+        description: Filter resources for backup using 'fieldname(operator)argument' syntax. Here, 'fieldname' is one of the resource fields (e.g. name, type, status, etc.), and 'operator' is one of ('eq', 'noteq', 'lte', 'lt', 'gte', 'gt', 'in', 'notin', 'like', 'rlike', 'is', 'isnot'). Multiple filters are ANDed. For example, 'name(eq)test-resource'. This will only take effect if resources are backed up, as controlled by the 'includeResources' option.
+      credentialFilter:
+        type: array
+        items:
+          type: string
+        description: Filter credentials for backup using 'fieldname(operator)argument' syntax. Here, 'fieldname' is one of the credential fields (e.g. name, type, etc.), and 'operator' is one of ('eq', 'noteq', 'lte', 'lt', 'gte', 'gt', 'in', 'notin', 'like', 'rlike', 'is', 'isnot'). Multiple filters are ANDed. For example, 'name(eq)test-credential'. This will only take effect if credentials are backed up, as controlled by the 'includeCredentials' option.
+      validateArchive:
+        type: boolean
+        default: false
+        description: Whether to validate backup archive. By default, backup archive is not validated.
+  CreateBackupResponse:
+    type: object
+    description: Response object for Create Backup command.
+    required:
+      - backupID
+    properties:
+      backupID:
+        type: integer
+        format: int64
+        description: Backup ID, which can be used for log retrieval, restoration, deletion, and backup cancellation.
+  CancelBackupRequest:
+    type: object
+    description: Request object for Cancel Backup command.
+    required:
+      - backupID
+    properties:
+      backupID:
+        type: integer
+        format: int64
+        description: The ID of the backup to cancel.
+  CancelBackupResponse:
+    type: object
+    description: Response object for Cancel Backup command.
+  DeleteBackupRequest:
+    type: object
+    description: Request object for Delete Backup command.
+    required:
+      - backupID
+    properties:
+      backupID:
+        type: integer
+        format: int64
+        description: The ID of the backup to delete.
+  DeleteBackupResponse:
+    type: object
+    description: Response object for Delete Backup command.
+  DescribeBackupRequest:
+    type: object
+    description: Request object for Describe Backup command.
+    required:
+      - backupID
+    properties:
+      backupID:
+        type: integer
+        format: int64
+        description: The ID of the backup to describe.
+  DescribeBackupResponse:
+    type: object
+    description: Response object for Describe Backup command.
+    required:
+      - backup
+    properties:
+      backup:
+        $ref: '#/definitions/Backup'
+        description: Service backup.
+  Backup:
+    type: object
+    description: Service backup object.
+    required:
+      - id
+      - serviceID
+      - serviceName
+      - serviceVersion
+      - environmentName
+      - environmentCrn
+      - creator
+      - creatorCrn
+      - cloudPlatform
+      - status
+      - created
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: Backup ID.
+      serviceID:
+        type: string
+        description: Service ID of a backed-up CDE service.
+      serviceName:
+        type: string
+        description: Name of a backed-up CDE service.
+      serviceVersion:
+        type: string
+        description: Version of a backed-up CDE service.
+      environmentName:
+        type: string
+        description: Name of CDP environment with which a backed-up CDE service was associated.
+      environmentCrn:
+        type: string
+        description: CRN of CDP environment with which a backed-up CDE service was associated.
+      creator:
+        type: string
+        description: The workload name of the user who created this backup.
+      creatorCrn:
+        type: string
+        description: CRN of of the user who created this backup.
+      cloudPlatform:
+        type: string
+        description: The cloud platform where a backed-up CDE service was enabled.
+      status:
+        type: string
+        description: Backup status.
+      created:
+        type: string
+        description: The time when the backup was created.
+      description:
+        type: string
+        description: Backup description.
+      errorMessage:
+        type: string
+        description: Error message, only set when there is an error.
+  GetBackupLogsRequest:
+    type: object
+    description: Request object for Get Backup Logs command.
+    required:
+      - backupID
+    properties:
+      backupID:
+        type: integer
+        format: int64
+        description: The ID of the backup.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 1000
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  GetBackupLogsResponse:
+    type: object
+    description: Response object for the Get Backup Logs command.
+    required:
+      - logs
+    properties:
+      logs:
+        type: array
+        description: Contains the logs of the backup operation.
+        items:
+          type: string
+        x-paging-result: true
+        x-skip-logging: true
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If there are no additional results, the string is empty.
+  GetServiceInitLogsRequest:
+    type: object
+    description: Request object for Get Service Init Logs command.
+    required:
+      - serviceID
+    properties:
+      serviceID:
+        type: string
+        description: The service ID of the service.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 500
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  GetServiceInitLogsResponse:
+    type: object
+    description: Response object for the Get Service Init Logs command.
+    required:
+      - logs
+    properties:
+      logs:
+        type: array
+        description: Contains the logs of the service initialization operation.
+        items:
+          type: string
+        x-paging-result: true
+        x-skip-logging: true
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If there are no additional results, the string is empty.
+  ListBackupsRequest:
+    type: object
+    description: Request object for List Backups command.
+    properties:
+      order:
+        $ref: '#/definitions/Order'
+        description: Whether ordering is ascending ('ASC') or descending ('DESC'), default 'DESC'.
+      orderBy:
+        type: string
+        default: id
+        description: The 'fieldname' to order by, default "id". Here 'fieldname' is one of ('id', 'clusterID', 'cdeVersion', 'environment', 'environmentCrn', 'created', 'status').
+      filter:
+        type: array
+        items:
+          type: string
+        description: Filter backups using 'fieldname(operator)argument' syntax. Here 'fieldname' is one of ('id', 'clusterID', 'cdeVersion', 'environment', 'environmentCrn', 'created', 'status') and 'operator' is one of ('eq', 'noteq', 'lte', 'lt', 'gte', 'gt', 'in', 'notin', 'like', 'rlike', 'is', 'isnot'). Multiple filters are ANDed. For example, 'status(eq)failed'.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 500
+        x-paging-page-size: true
+        description: The size of each page.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListBackupsResponse:
+    type: object
+    description: Response object for List Backups command.
+    required:
+      - backups
+    properties:
+      backups:
+        type: array
+        items:
+          $ref: '#/definitions/Backup'
+        x-paging-result: true
+        description: The backups.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If there are no additional results, the string is empty.
+  Order:
+    type: string
+    description: Order.
+    enum:
+      - ASC
+      - DESC
+  RestoreServiceRequest:
+    type: object
+    description: Request object for Restore Service command.
+    required:
+      - backupID
+      - environmentCrn
+    properties:
+      backupID:
+        type: integer
+        format: int64
+        description: The ID of the backup to restore from.
+      environmentCrn:
+        type: string
+        description: CRN of the CDP environment with which a restored CDE service will be associated. Currently, CDE service can be restored only to the same CDP environment, with which a backed-up service was associated.
+      serviceId:
+        type: string
+        description: Specify the restored service ID. If not specified, the service ID from the backup will be reused.
+      serviceName:
+        type: string
+        description: Specify the restored service name. If not specified, the service name from the backup will be reused.
+  RestoreServiceResponse:
+    type: object
+    description: Response object for Restore Service command.
+    required:
+      - serviceID
+    properties:
+      serviceID:
+        type: string
+        description: The ID of the service being restored.

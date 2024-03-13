@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.107
+  version: 0.9.108
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2930,6 +2930,9 @@ definitions:
         items:
           type: string
         description: The subnets to use for endpoint access gateway.
+      encryptionAtHost:
+        type: boolean
+        description: When this is enabled, we will provision resources with host encrypted true flag.
       encryptionKeyUrl:
         type: string
         description: URL of the key which will be used to encrypt the Azure Managed Disks, if entitlement has been granted.

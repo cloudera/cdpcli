@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.107
+  version: 0.9.108
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2008,8 +2008,9 @@ definitions:
         description: Set up worker node with public IP address. In AWS it is created in public subnets.
       enableStorageRoles:
         type: boolean
-        description: Enable Storage Roles
+        description: DEPRECATED - Enable Storage Roles
         default: false
+        x-deprecated: true
         x-form-factors: public
         x-entitlement: CDW_STORAGE_ROLES
       reservedComputeNodes:
@@ -2597,15 +2598,18 @@ definitions:
         description: Version of the Database Catalog.
         default: ''
         x-form-factors: public
+      memorySize:
+        type: string
+        description: Set Metastore container memory size. If not provided, small will apply.
+        enum:
+          - small
+          - medium
+          - large
       isDefault:
         type: boolean
         x-deprecated: true
         description: 'NOTE: creating Default Database Catalogs is deprecated and explicitly disabled. Denotes if Default Database Catalog creation needed.'
         default: false
-      tenantStorageRole:
-        type: string
-        description: Tenant Storage Role if the feature is enabled for the account.
-        default: ''
       dbMetastore:
         type: string
         description: The name of the Metastore database.
@@ -3147,9 +3151,6 @@ definitions:
       dbcId:
         type: string
         description: ID of the Database Catalog to rebuild.
-      keepImageVersion:
-        type: boolean
-        description: true - keep the current image version. false - set to latest image version when rebuilding the Database Catalog. If not provided, the latest image version will be set.
   RebuildDbcResponse:
     type: object
     description: Response object for the rebuildDbc method.
@@ -3722,9 +3723,6 @@ definitions:
       vwId:
         type: string
         description: ID of the Virtual Warehouse to rebuild.
-      keepImageVersion:
-        type: boolean
-        description: Set it to true to keep the current image version. Set it to false to use the latest image version when rebuilding the Virtual Warehouse. If not provided, the latest image version will be set.
   RebuildVwResponse:
     type: object
     description: Response object for the rebuildVw method.
@@ -4168,11 +4166,6 @@ definitions:
       cloudPlatform:
         type: string
         description: The cloud platform of the environment that was used to create this cluster.
-      enableStorageRoles:
-        type: boolean
-        description: Enable Storage Roles checkbox was checked when creating/activating this cluster.
-        x-form-factors: public
-        x-entitlement: CDW_STORAGE_ROLES
       enableSpotInstances:
         x-form-factors: public
         type: boolean
@@ -4272,6 +4265,9 @@ definitions:
       name:
         type: string
         description: The name of the Database Catalog.
+      memorySize:
+        type: string
+        description: Metastore container memory size.
       status:
         type: string
         description: 'Status of the Database Catalog. Possible values are: Creating, Created, Accepted, Starting, Running, Stopping, Stopped, Updating, PreUpdate, Upgrading, PreUpgrade, Restarting, Deleting, Waiting, Failed, Error.'
@@ -4707,6 +4703,13 @@ definitions:
       dbcId:
         type: string
         description: ID of the Database Catalog.
+      memorySize:
+        type: string
+        description: Set Metastore container memory size. If not provided, small will apply.
+        enum:
+          - small
+          - medium
+          - large
       config:
         description: The service configuration to update the DBC with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
         $ref: '#/definitions/ServiceConfigReq'

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.107
+  version: 0.9.108
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -4210,6 +4210,9 @@ definitions:
       showLatestAvailableImagePerRuntime:
         type: boolean
         description: Returns the latest image that is eligible for the upgrade for each runtime version with at least one available upgrade candidate.
+      rollingUpgradeEnabled:
+        type: boolean
+        description: Enables the ability to perform rolling runtime upgrade.
   UpgradeClusterResponse:
     type: object
     description: Response object for upgrade datahub request.

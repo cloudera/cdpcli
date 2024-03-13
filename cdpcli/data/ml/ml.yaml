@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.107
+  version: 0.9.108
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -1046,7 +1046,6 @@ definitions:
     required:
       - environmentName
       - workspaceName
-      - provisionK8sRequest
     properties:
       environmentName:
         type: string
@@ -1951,10 +1950,6 @@ definitions:
       environmentName:
         type: string
         description: The environment for the model registry to create.
-      createWorkspacePayload:
-        description: Deprecated. The create workspace request on which model registry helm chart is deployed.
-        x-deprecated: true
-        $ref: '#/definitions/CreateWorkspaceRequest'
       usePublicLoadBalancer:
         type: boolean
         description: The boolean flag to request a public load balancer. By default, a private load balancer is used.
