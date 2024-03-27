@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.108
+  version: 0.9.109
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -830,8 +830,8 @@ paths:
             $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-certificate-encoded:
     post:
-      summary: Get Inbound Connection Endpoint Client Certificate (in PEM encoding)
-      description: Get Inbound Connection Endpoint Client Certificate (in PEM encoding)
+      summary: Get Inbound Connection Endpoint Client Certificate (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
+      description: Get Inbound Connection Endpoint Client Certificate (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
       operationId: getClientCertificateEncoded
       x-workload: true
       x-client-only: true
@@ -852,6 +852,7 @@ paths:
             $ref: '#/definitions/InboundConnectionEndpointClientCertificateResponse'
         default:
           description: The default response on an error.
+      x-deprecated: true
   /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-certificates-encoded:
     post:
       summary: Get Inbound Connection Endpoint Client Certificates (in PEM encoding)
@@ -878,8 +879,8 @@ paths:
           description: The default response on an error.
   /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-private-key-encoded:
     post:
-      summary: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding)
-      description: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding)
+      summary: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
+      description: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
       operationId: getClientPrivateKeyEncoded
       x-workload: true
       x-client-only: true
@@ -900,6 +901,7 @@ paths:
             $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyResponse'
         default:
           description: The default response on an error.
+      x-deprecated: true
   /dfx/api/rpc-v1/inbound-connection-endpoints/create-inbound-connection-endpoint:
     post:
       summary: Create Inbound Connection Endpoint
@@ -1177,17 +1179,28 @@ definitions:
     description: Cluster scaling parameters
     x-workload: true
     x-client-only: true
+    required:
+      - name
     properties:
       name:
         type: string
         description: The name of this Cluster Size
+        enum:
+          - EXTRA_SMALL
+          - SMALL
+          - MEDIUM
+          - LARGE
+      coresPerNode:
+        type: number
+        format: double
+        description: The number of CPU Cores per node
+      memoryLimit:
+        type: number
+        format: double
+        description: The memory limit
       text:
         type: string
         description: The text (i.e., the human readable name) for this Cluster Size
-      coresPerNode:
-        type: integer
-        format: int32
-        description: The number of CPU Cores per node
       heapSize:
         type: number
         format: double
@@ -1195,10 +1208,6 @@ definitions:
       enabled:
         type: boolean
         description: Flag to signal whether this ClusterSize is enabled
-      memoryLimit:
-        type: number
-        format: double
-        description: The memory limit
   ConfiguredAlert:
     type: object
     description: An alert configuration that specifies a configured frequency with lower and/or upper thresholds
@@ -1367,7 +1376,6 @@ definitions:
     x-client-only: true
     required:
       - environmentCrn
-      - clusterSizeName
       - configurationVersion
       - deploymentRequestCrn
       - name
@@ -1382,14 +1390,6 @@ definitions:
       name:
         type: string
         description: The name of the deployment
-      clusterSizeName:
-        type: string
-        description: The size of the cluster to deploy
-        enum:
-          - EXTRA_SMALL
-          - SMALL
-          - MEDIUM
-          - LARGE
       deploymentRequestCrn:
         type: string
         description: The CRN of the deployment request.
@@ -1427,6 +1427,15 @@ definitions:
       autoStartFlow:
         type: boolean
         description: Indicates whether or not the flow should be started during deployment creation
+      clusterSizeName:
+        type: string
+        description: The size of the cluster to deploy. Deprecated. Use 'clusterSize.name' instead
+        enum:
+          - EXTRA_SMALL
+          - SMALL
+          - MEDIUM
+          - LARGE
+        x-deprecated: true
       inboundHostname:
         type: string
         description: The FQDN of inbound hostname or just the prefix part
@@ -2693,20 +2702,28 @@ definitions:
         description: The url to open the deployed flow in NiFi
       clusterSize:
         type: string
-        description: The initial size of the deployment
+        description: The initial size of the deployment. Deprecated. Use 'clusterSizeParams.name' instead
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+        x-deprecated: true
       coresPerNode:
         type: integer
         format: int32
-        description: The number of cores per node for the deployment
+        description: The number of cores per node for the deployment. Deprecated. Use 'clusterSizeParams.coresPerNode' instead
+        x-deprecated: true
       heapSize:
         type: number
         format: double
-        description: The heap size for the deployment
+        description: The heap size for the deployment. Deprecated. Use 'clusterSizeParams.heapSize' instead
+        x-deprecated: true
+      memoryLimit:
+        type: number
+        format: double
+        description: The memory limit of the deployment. Deprecated. Use 'clusterSizeParams.memoryLimit' instead
+        x-deprecated: true
       autoscalingEnabled:
         type: boolean
         description: Whether or not autoscaling is enabled for this deployment
@@ -2767,10 +2784,6 @@ definitions:
       cfmNifiVersion:
         type: string
         description: The CFM NiFi version associated with the deployment
-      memoryLimit:
-        type: number
-        format: double
-        description: The memory limit of the deployment
       inboundConnectionEndpointId:
         type: string
         description: The ID of Inbound Connection Endpoint assigned to the deployment
@@ -2886,12 +2899,13 @@ definitions:
         description: Indicates whether or not the flow should be started during deployment creation
       clusterSizeName:
         type: string
-        description: The size of the cluster to deploy
+        description: The size of the cluster to deploy. Deprecated. Use 'clusterSize.name' instead
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+        x-deprecated: true
       nodeStorageProfileName:
         type: string
         description: Node storage profile name
@@ -3354,12 +3368,13 @@ definitions:
           $ref: '#/definitions/ConfiguredKpi'
       clusterSizeName:
         type: string
-        description: The deployment t-shirt size
+        description: The deployment t-shirt size. Deprecated. Use 'clusterSize.name' instead
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+        x-deprecated: true
       assetUpdateRequestCrn:
         type: string
         description: The CRN of the asset update request. Required when updating assets of an existing deployment.

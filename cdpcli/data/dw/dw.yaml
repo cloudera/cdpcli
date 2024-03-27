@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.108
+  version: 0.9.109
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -4347,6 +4347,10 @@ definitions:
           hiveJdbc:
             type: string
             description: JDBC URL for Hive Virtual Warehouses.
+          hiveKerberosJdbc:
+            type: string
+            x-form-factors: private
+            description: JDBC URL with Kerberos authentication for Hive Virtual Warehouses in Private Cloud.
           impalaJdbc:
             type: string
             description: JDBC URL for Impala Virtual Warehouses.
@@ -4357,6 +4361,10 @@ definitions:
           impalaFENGJdbc:
             type: string
             description: FENG JDBC URL for Impala Virtual Warehouses.
+          impalaFengKerberosJdbc:
+            type: string
+            x-form-factors: private
+            description: Unified Analytics JDBC URL with Kerberos authentication for Impala Virtual Warehouses in Private Cloud.
           impalaShell:
             type: string
             description: Command to use impala-shell for Impala Virtual Warehouses.
@@ -4364,6 +4372,10 @@ definitions:
             type: string
             x-form-factors: private
             description: Command to use impala-shell for Unified Analytics
+          fengKerberosImpalaShell:
+            type: string
+            x-form-factors: private
+            description: Command to use impala-shell for Unified Analytics with Kerberos authentication in Private Cloud.
           kerberosImpalaShell:
             type: string
             x-form-factors: private

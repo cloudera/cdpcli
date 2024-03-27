@@ -25,7 +25,7 @@ class TestClassifyDeployment(unittest.TestCase):
         public_urls = [
             # Examples for service, env URLs
             # Public Cloud URLs follow the same format for dev/int/stage/prod(altus,cdp)
-            "https://console.mow-dev.cloudera.com/",
+            "https://console.dps.mow-dev.cloudera.com/",
             "http://console.thunderhead-int.cloudera.com/",
             "https://iamapi.thunderhead-stage.cloudera.com",
             "https://api.cdp.mow-int.cloudera.com/",

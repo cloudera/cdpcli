@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.108
+  version: 0.9.109
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -823,7 +823,7 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/datalake/resizeDatalake:
     post:
-      summary: Resizes the given datalake to the given target size. Currently, the only valid use of this is for resizing a light duty datalake to a medium duty datalake.
+      summary: Resizes the given datalake to the given target size.
       description: Resizes the datalake to the given size.
       operationId: resizeDatalake
       x-mutating: true
@@ -838,6 +838,27 @@ paths:
           description: Expected response to a valid resize datalake request.
           schema:
             $ref: '#/definitions/ResizeDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/scaleHorizontally:
+    post:
+      summary: Horizontally scale the Data Lake nodes, to add additional compute nodes to the cluster.
+      description: Horizontally scale the target host group in the Data Lake cluster. The possible option for the instance group are raz_scale_out, hms_scale_out, kafka_scale_out, solr_scale_out, storage_scale_out
+      operationId: scaleHorizontally
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ScaleHorizontallyRequest'
+      responses:
+        200:
+          description: Successful response to a valid Data Lake horizontal scaling request.
+          schema:
+            $ref: '#/definitions/ScaleHorizontallyResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3068,7 +3089,7 @@ definitions:
         description: The name or CRN of the datalake.
       targetSize:
         type: string
-        description: The target size for the datalake.
+        description: The target size for the datalake. The resize target size can be MEDIUM_DUTY or ENTERPRISE. If the runtime version >= 7.2.17 target size is ENTERPRISE. If not, the target size is MEDIUM_DUTY.
         enum:
           - MEDIUM_DUTY_HA
           - ENTERPRISE
@@ -3101,6 +3122,39 @@ definitions:
       cloudbreakVersion:
         type: string
         description: The Cloudbreak version used to create the data lake.
+  ScaleHorizontallyRequest:
+    type: object
+    description: Data Lake horizontal scaling request.
+    required:
+      - datalakeName
+      - instanceGroupName
+      - instanceGroupDesiredCount
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the Data Lake
+      instanceGroupName:
+        type: string
+        description: The target host group name to be scaled.
+        enum:
+          - solr_scale_out
+          - hms_scale_out
+          - raz_scale_out
+          - kafka_scale_out
+          - storage_scale_out
+      instanceGroupDesiredCount:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 40
+        description: The target number of the scaling operation. If the desired count is less than the actual node count the scaling action will be a downscale operation.
+  ScaleHorizontallyResponse:
+    type: object
+    description: Data Lake horizontal scaling response
+    properties:
+      datalakeName:
+        type: string
+        description: The name of the datalake.
   ReplaceRecipesRequest:
     type: object
     description: The request for replacing recipes.
