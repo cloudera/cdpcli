@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.109
+  version: 0.9.111
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -777,6 +777,26 @@ definitions:
         type: array
         items:
           type: string
+      fullAccessUsers:
+        description: Users with full access.
+        type: array
+        items:
+          type: string
+      fullAccessGroups:
+        description: Groups with full access.
+        type: array
+        items:
+          type: string
+      viewOnlyUsers:
+        description: Users with view only access.
+        type: array
+        items:
+          type: string
+      viewOnlyGroups:
+        description: Groups with view only access.
+        type: array
+        items:
+          type: string
   ListServicesRequest:
     type: object
     description: Request object for ListServices method.
@@ -1122,12 +1142,12 @@ definitions:
         items:
           type: string
       viewOnlyUsers:
-        description: Users with View only access
+        description: Users with view only access.
         type: array
         items:
           type: string
       viewOnlyGroups:
-        description: Groups with view only access
+        description: Groups with view only access.
         type: array
         items:
           type: string
@@ -1174,6 +1194,26 @@ definitions:
       aclUsers:
         description: Comma-separated Workload usernames of CDP users to be granted access to the Virtual Cluster.
         type: string
+      fullAccessUsers:
+        description: Users with full access.
+        type: array
+        items:
+          type: string
+      fullAccessGroups:
+        description: Groups with full access.
+        type: array
+        items:
+          type: string
+      viewOnlyUsers:
+        description: Users with view only access.
+        type: array
+        items:
+          type: string
+      viewOnlyGroups:
+        description: Groups with view only access.
+        type: array
+        items:
+          type: string
   UpdateVcResponse:
     type: object
     description: Response object for updateVc method.

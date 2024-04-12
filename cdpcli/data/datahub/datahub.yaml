@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.109
+  version: 0.9.111
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1217,6 +1217,28 @@ paths:
           description: Expected response to a valid sync datahub CM component versions request.
           schema:
             $ref: '#/definitions/SyncComponentVersionsFromCmResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/getVmTypes:
+    post:
+      summary: Creates a recommendation that advises virtual machine types for the given cluster template based on the given properties.
+      description: Creates a recommendation that advises virtual machine types for the given cluster template based on the given properties.
+      operationId: getVmTypes
+      x-mutating: false
+      x-no-compatibility-guarantee: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetVmTypesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetVmTypesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -4129,6 +4151,40 @@ definitions:
         description: Array of log descriptors. (useful for diagnostics collection filtering)
         items:
           $ref: '#/definitions/DatahubVmLogResponse'
+  GetVmTypesRequest:
+    x-no-compatibility-guarantee: true
+    type: object
+    description: Request object for fetching the available virtual machine types based on the given parameters.
+    required:
+      - clusterTemplate
+      - credential
+      - region
+    properties:
+      clusterTemplate:
+        type: string
+        description: The name of the given cluster template.
+      credential:
+        type: string
+        description: The name or CRN of the credential that is required to access the cloud provider.
+      region:
+        type: string
+        description: The region where we should look for the supported VM types.
+      availabilityZone:
+        type: string
+        description: The selected availability zone.
+      clusterDefinitionName:
+        type: string
+        description: The name of the cluster definition.
+  GetVmTypesResponse:
+    x-no-compatibility-guarantee: true
+    type: object
+    description: Response object from the VM type fetch operation.
+    properties:
+      vmTypes:
+        description: The supported VM types based on the given parameters.
+        type: array
+        items:
+          type: string
   RotateAutoTlsCertificatesRequest:
     type: object
     description: Request object to rotate autotls certificates on datahub's hosts, deprecated.

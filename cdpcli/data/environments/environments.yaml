@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.109
+  version: 0.9.111
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1835,6 +1835,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/updateCustomDockerRegistry:
+    post:
+      summary: Updates custom docker registry CRN of an environment.
+      description: Updates custom docker registry CRN of an environment.
+      operationId: updateCustomDockerRegistry
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateCustomDockerRegistryRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateCustomDockerRegistryResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -2375,6 +2396,9 @@ definitions:
       encryptionKeyArn:
         type: string
         description: ARN of the AWS KMS CMK to use for the server-side encryption of AWS storage resources.
+      customDockerRegistry:
+        description: Configures the desired custom docker registry for data services.
+        $ref: '#/definitions/CustomDockerRegistryRequest'
   CreateAWSGovCloudEnvironmentRequest:
     type: object
     description: Request object for a create AWS GovCloud environment request.
@@ -2466,6 +2490,9 @@ definitions:
       encryptionKeyArn:
         type: string
         description: ARN of the AWS KMS CMK to use for the server-side encryption of AWS storage resources.
+      customDockerRegistry:
+        description: Configures the desired custom docker registry for data services.
+        $ref: '#/definitions/CustomDockerRegistryRequest'
   CreateAWSGovCloudEnvironmentResponse:
     type: object
     description: Response object for a create AWS GovCloud environment request.
@@ -2933,6 +2960,9 @@ definitions:
       encryptionAtHost:
         type: boolean
         description: When this is enabled, we will provision resources with host encrypted true flag.
+      userManagedIdentity:
+        type: string
+        description: User managed identity for encryption.
       encryptionKeyUrl:
         type: string
         description: URL of the key which will be used to encrypt the Azure Managed Disks, if entitlement has been granted.
@@ -2956,6 +2986,9 @@ definitions:
       dataServices:
         description: Data Services parameters of the environment.
         $ref: '#/definitions/DataServicesRequest'
+      customDockerRegistry:
+        description: Configures the desired custom docker registry for data services.
+        $ref: '#/definitions/CustomDockerRegistryRequest'
   CreateGCPEnvironmentRequest:
     type: object
     description: Request object for a create GCP environment request.
@@ -3034,6 +3067,9 @@ definitions:
         type: array
         items:
           type: string
+      customDockerRegistry:
+        description: Configures the desired custom docker registry for data services.
+        $ref: '#/definitions/CustomDockerRegistryRequest'
   ExistingAzureNetworkRequest:
     type: object
     description: Request object for creating an Azure environment using existing VNet and subnets.
@@ -3118,6 +3154,9 @@ definitions:
       encryptionKeyResourceGroupName:
         type: string
         description: Name of the existing Azure resource group hosting the Azure Key Vault containing customer managed key which will be used to encrypt the Azure Managed Disks. It is required only when the entitlement is granted and the resource group of the key vault is different from the resource group in which the environment is to be created. Omitting it implies that, the key vault containing the encryption key is present in the same resource group where the environment would be created.
+      userManagedIdentity:
+        type: string
+        description: User managed identity for encryption.
   UpdateAzureEncryptionResourcesResponse:
     type: object
     description: Response object for a update Azure encryption resources request.
@@ -3232,6 +3271,9 @@ definitions:
       diskEncryptionSetId:
         type: string
         description: ID of the Disk Encryption Set created in Azure which is used to encrypt Managed Disks of FreeIPA, Data Lake, Data Hub and PostgreSQL.
+      userManagedIdentity:
+        type: string
+        description: User managed identity for encryption.
   AzureDatabaseResources:
     type: object
     description: Object containing details of database resources for Azure cloud.
@@ -3393,6 +3435,9 @@ definitions:
       dataServices:
         description: Data Services parameters of the environment.
         $ref: '#/definitions/DataServices'
+      customDockerRegistry:
+        description: The configured custom docker registry for data services on the environment.
+        $ref: '#/definitions/CustomDockerRegistryResponse'
   AuthenticationRequest:
     type: object
     description: Additional SSH key authentication configuration for accessing cluster node.
@@ -4320,6 +4365,9 @@ definitions:
         description: A list of issues the node is having
         items:
           type: string
+      instanceId:
+        type: string
+        description: The instance ID for the instance.
   GetFreeipaStatusResponse:
     type: object
     description: The overall status of the FreeIPA cluster.
@@ -5795,6 +5843,46 @@ definitions:
   UpdateDataServiceResourcesResponse:
     type: object
     description: Response object for an update environment Data Service resource request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: The environment.
+  CustomDockerRegistryRequest:
+    description: The desired custom docker registry for data services to be used.
+    type: object
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the desired custom docker registry for data services to be used.
+  CustomDockerRegistryResponse:
+    description: The configured custom docker registry for data services.
+    type: object
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the configured custom docker registry for data services on the environment.
+  UpdateCustomDockerRegistryRequest:
+    description: The desired custom docker registry for data services to be used.
+    type: object
+    required:
+      - environment
+      - customDockerRegistry
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      customDockerRegistry:
+        type: string
+        description: The CRN of the desired custom docker registry for data services to be used.
+  UpdateCustomDockerRegistryResponse:
+    description: The environment with the updated custom docker registry for data services.
+    type: object
     required:
       - environment
     properties:

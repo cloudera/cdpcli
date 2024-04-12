@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.109
+  version: 0.9.111
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1461,6 +1461,9 @@ definitions:
       enableRangerRaz:
         type: boolean
         description: Whether to enable Ranger RAZ for the datalake. Defaults to not being enabled.
+      enableRangerRms:
+        type: boolean
+        description: Whether to enable Ranger RMS for the datalake. Defaults to not being enabled.
       multiAz:
         type: boolean
         description: Controls if the datalake is deployed in a multi-availability zone way.

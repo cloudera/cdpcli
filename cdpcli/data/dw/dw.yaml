@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.109
+  version: 0.9.111
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2254,16 +2254,15 @@ definitions:
     type: object
     description: Options for activating a Private Cloud environment.
     x-form-factors: private
-    required:
-      - delegationUsername
-      - delegationPassword
     properties:
       delegationUsername:
+        x-deprecated: true
         type: string
-        description: Name of delegation user. This user is used between Hue - Impala to create a session, as Hue should not pass the user credentials, instead Hue authenticates with the delegation user, then this user will impersonate the logged in user. This means that the Delegation User and Password should be able to authenticate through LDAP.
+        description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Name of delegation user. This user is used between Hue - Impala to create a session, as Hue should not pass the user credentials, instead Hue authenticates with the delegation user, then this user will impersonate the logged in user. This means that the Delegation User and Password should be able to authenticate through LDAP.'
       delegationPassword:
+        x-deprecated: true
         type: string
-        description: Password of delegation user.
+        description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Password of delegation user.'
       securityContextConstraintName:
         type: string
         description: The name of the Hive Security Context Constraint.
