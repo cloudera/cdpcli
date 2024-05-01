@@ -22,12 +22,25 @@ import urllib.parse
 import urllib.request
 
 from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, CDP_PRIVATE_KEY_KEY_NAME
-from cdpcli.exceptions import InteractiveLoginError
+from cdpcli.exceptions import DeviceLoginError, InteractiveLoginError
 from cdpcli.extensions.configure import CREDENTIAL_FILE_COMMENT
 from cdpcli.extensions.interactivelogin import LoginCommand
 import mock
 from tests import unittest
 from tests.unit import FakeContext
+
+
+class MockResponse:
+    def __init__(self, json_data, status_code, text=None):
+        self.json_data = json_data
+        self.status_code = status_code
+        self.text = text
+
+    def json(self):
+        return self.json_data
+
+    def text(self):
+        return self.text
 
 
 class TestLoginCommand(unittest.TestCase):
@@ -46,7 +59,8 @@ class TestLoginCommand(unittest.TestCase):
                          expected_account_id=None,
                          expected_idp=None,
                          expected_return_url_port=None,
-                         expected_extra_query=None):
+                         expected_extra_query=None,
+                         device_login=False):
         url_parsed = urllib.parse.urlsplit(login_url)
         url_params = urllib.parse.parse_qs(url_parsed.query)
         self.assertEqual(url_parsed.scheme, 'https')
@@ -57,16 +71,20 @@ class TestLoginCommand(unittest.TestCase):
         if expected_idp is not None:
             num_expected_queries += 1
             self.assertEqual(url_params.get('idp'), [expected_idp])
-        if expected_return_url_port is None:
-            self.assertEqual(len(url_params.get('returnUrl')), 1)
-            self.assertRegex(
-                url_params.get('returnUrl')[0],
-                'http://localhost:\\d+/interactiveLogin')
+
+        if device_login:
+            self.assertEqual(len(url_params.get('clientId')), 1)
         else:
-            self.assertEqual(len(url_params.get('returnUrl')), 1)
-            self.assertEqual(
-                url_params.get('returnUrl')[0],
-                'http://localhost:%d/interactiveLogin' % expected_return_url_port)
+            if expected_return_url_port is None:
+                self.assertEqual(len(url_params.get('returnUrl')), 1)
+                self.assertRegex(
+                    url_params.get('returnUrl')[0],
+                    'http://localhost:\\d+/interactiveLogin')
+            else:
+                self.assertEqual(len(url_params.get('returnUrl')), 1)
+                self.assertEqual(
+                    url_params.get('returnUrl')[0],
+                    'http://localhost:%d/interactiveLogin' % expected_return_url_port)
         if expected_extra_query is not None:
             num_expected_queries += 1
             self.assertEqual(
@@ -123,6 +141,160 @@ class TestLoginCommand(unittest.TestCase):
                               expected_hostname='consoleauth.altus.cloudera.com',
                               expected_path='/login',
                               expected_account_id='test-account-guid')
+
+    def test_device_login_command(self):
+        try:
+            args = [
+                '--account-id',
+                'test-account-guid',
+                '--timeout',
+                '1',
+                '--use-device-code']
+            parsed_globals = mock.Mock()
+            parsed_globals.cdp_region = None
+            self.login(self.context, args=args, parsed_globals=parsed_globals)
+        except DeviceLoginError:
+            pass
+        self.assertEqual(self.open_new_browser.call_count, 0)
+
+    def mock_device_login(*args, **kwargs):
+        if "/deviceAuthorization" in kwargs['url']:
+            return MockResponse({
+                "deviceCode": "value1",
+                "userCode": "value2",
+                "expiresIn": {"low": 60},
+                "verificationUrl": "https://consoleauth.altus.cloudera.com:443/"
+                                   "deviceLogin",
+                "accessKeyUrl": "https://consoleauth.altus.cloudera.com:443/"
+                                "deviceAccessKey"
+            }, 200)
+        elif "/deviceAccessKey" in kwargs['url']:
+            return MockResponse({
+                "privateKey": "bar",
+                "accessKeyId": "foo"
+            }, 200)
+
+        return MockResponse(None, 500)
+
+    def mock_device_login_wrong_account(*args, **kwargs):
+        if "/deviceAuthorization" in kwargs['url']:
+            return MockResponse(None, 404, 'No account found with id.')
+        else:
+            return MockResponse(None, 500)
+
+    def mock_device_login_timeout(*args, **kwargs):
+        if "/deviceAuthorization" in kwargs['url']:
+            return MockResponse({
+                "deviceCode": "value1",
+                "userCode": "value2",
+                "expiresIn": {"low": 5},
+                "verificationUrl": "https://consoleauth.altus.cloudera.com:443/"
+                                   "deviceLogin",
+                "accessKeyUrl": "https://consoleauth.altus.cloudera.com:443/"
+                                "deviceAccessKey"
+            }, 200)
+        elif "/deviceAccessKey" in kwargs['url']:
+            return MockResponse(None, 401)
+        else:
+            return MockResponse(None, 500)
+
+    @mock.patch('requests.get', side_effect=mock_device_login)
+    @mock.patch('requests.post', side_effect=mock_device_login)
+    def test_device_login_command_succeeded_with_account_id_and_idp(
+            self, mock_get, mock_post):
+        args = [
+            '--account-id',
+            'foobar',
+            '--identity-provider',
+            'testidp',
+            '--use-device-code',
+            '--timeout',
+            '1']
+        parsed_globals = mock.Mock()
+        self.login(self.context, args=args, parsed_globals=parsed_globals)
+
+        self.assert_credentials_file_updated_with(
+            {CDP_ACCESS_KEY_ID_KEY_NAME: 'foo',
+             CDP_PRIVATE_KEY_KEY_NAME: 'bar'},
+            config_file_comment=CREDENTIAL_FILE_COMMENT)
+
+    def test_device_login_command_failed_missing_account_id(self):
+        args = ['--use-device-code', '--timeout', '1']
+        parsed_globals = mock.Mock()
+        parsed_globals.profile = 'myname'
+        self.context.effective_profile = 'myname'
+        try:
+            self.login(self.context, args=args, parsed_globals=parsed_globals)
+        except Exception as e:
+            self.assertEqual(str(e), 'The following argument is required: --account-id.')
+
+    @mock.patch('requests.get', side_effect=mock_device_login_wrong_account)
+    def test_device_login_command_failed_wrong_account_id(self, mock_get):
+        args = ['--account-id', 'foobar', '--use-device-code', '--timeout', '1']
+        parsed_globals = mock.Mock()
+        parsed_globals.profile = 'myname'
+        self.context.effective_profile = 'myname'
+        try:
+            self.login(self.context, args=args, parsed_globals=parsed_globals)
+        except Exception as e:
+            self.assertEqual(str(e), 'Device Login failed: No account found with id..')
+
+    @mock.patch('requests.get', side_effect=mock_device_login)
+    @mock.patch('requests.post', side_effect=mock_device_login)
+    def test_device_login_command_succeeded_missing_idp(self, mock_get, mock_post):
+        args = ['--account-id', 'foobar', '--use-device-code', '--timeout', '1']
+        parsed_globals = mock.Mock()
+        self.login(self.context, args=args, parsed_globals=parsed_globals)
+
+        self.assert_credentials_file_updated_with(
+            {CDP_ACCESS_KEY_ID_KEY_NAME: 'foo',
+             CDP_PRIVATE_KEY_KEY_NAME: 'bar'},
+            config_file_comment=CREDENTIAL_FILE_COMMENT)
+
+    @mock.patch('requests.get', side_effect=mock_device_login)
+    @mock.patch('requests.post', side_effect=mock_device_login)
+    def test_device_login_command_succeeded_url_from_cli(self, mock_get, mock_post):
+        args = ['--account-id', 'foobar', '--use-device-code', '--timeout', '1',
+                '--login-url', 'http://localhost:8982/consoleauth/deviceAuthorization']
+        parsed_globals = mock.Mock()
+        self.login(self.context, args=args, parsed_globals=parsed_globals)
+
+        self.assert_credentials_file_updated_with(
+            {CDP_ACCESS_KEY_ID_KEY_NAME: 'foo',
+             CDP_PRIVATE_KEY_KEY_NAME: 'bar'},
+            config_file_comment=CREDENTIAL_FILE_COMMENT)
+
+    @mock.patch('requests.get', side_effect=mock_device_login)
+    @mock.patch('requests.post', side_effect=mock_device_login)
+    def test_device_login_command_succeeded_for_profile(self, mock_get, mock_post):
+        args = ['--account-id', 'foobar', '--use-device-code', '--timeout', '1']
+        parsed_globals = mock.Mock()
+        parsed_globals.profile = 'myname'
+        self.context.effective_profile = 'myname'
+        self.login(self.context, args=args, parsed_globals=parsed_globals)
+
+        self.assert_credentials_file_updated_with(
+            {CDP_ACCESS_KEY_ID_KEY_NAME: 'foo',
+             CDP_PRIVATE_KEY_KEY_NAME: 'bar',
+             '__section__': 'myname'},
+            config_file_comment=CREDENTIAL_FILE_COMMENT)
+
+    @mock.patch('requests.get', side_effect=mock_device_login_timeout)
+    @mock.patch('requests.post', side_effect=mock_device_login_timeout)
+    def test_device_login_command_timeout(self, mock_get, mock_post):
+        args = [
+            '--account-id',
+            'foobar',
+            '--identity-provider',
+            'testidp',
+            '--use-device-code',
+            '--timeout',
+            '1']
+        parsed_globals = mock.Mock()
+        try:
+            self.login(self.context, args=args, parsed_globals=parsed_globals)
+        except BaseException as e:
+            self.assertEqual(str(e), 'Device Login failed: Login timeout.')
 
     def test_login_command_succeeded(self):
         login_result = {'succeeded': False}
@@ -335,6 +507,7 @@ class TestLoginCommand(unittest.TestCase):
         parsed_args.account_id = 'test'
         parsed_args.identity_provider = 'test'
         parsed_args.login_url = 'https://unit.test/auth/?accountId=foo&idp=bar'
+        parsed_args.use_device_code = False
         parsed_args.no_save_token = False
         parsed_globals = mock.Mock()
         config = {
@@ -356,6 +529,7 @@ class TestLoginCommand(unittest.TestCase):
         parsed_args.identity_provider = 'bar'
         parsed_args.login_url = 'https://unit.test/auth/?id=abc'
         parsed_args.no_save_token = False
+        parsed_args.use_device_code = False
         parsed_globals = mock.Mock()
         config = {
             'account_id': 'test',
@@ -372,12 +546,37 @@ class TestLoginCommand(unittest.TestCase):
                               expected_return_url_port=10101,
                               expected_extra_query={'key': 'id', 'value': 'abc'})
 
+    def test_device_login_url_from_input_parameter(self):
+        parsed_args = mock.Mock()
+        parsed_args.account_id = 'foo'
+        parsed_args.identity_provider = 'bar'
+        parsed_args.login_url = 'https://unit.test/auth/?id=abc'
+        parsed_args.no_save_token = False
+        parsed_args.use_device_code = True
+        parsed_globals = mock.Mock()
+        config = {
+            'account_id': 'test',
+            'identity_provider': 'test',
+            'login_url': 'http://test'
+        }
+        login_url = self.login._resolve_login_url(
+            parsed_args, parsed_globals, config, 10101)
+        self.assert_login_url(login_url=login_url,
+                              expected_hostname='unit.test',
+                              expected_path='/auth/',
+                              expected_account_id='foo',
+                              expected_idp='bar',
+                              expected_return_url_port=10101,
+                              expected_extra_query={'key': 'id', 'value': 'abc'},
+                              device_login=True)
+
     def test_login_url_from_config(self):
         parsed_args = mock.Mock()
         parsed_args.account_id = None
         parsed_args.identity_provider = None
         parsed_args.login_url = None
         parsed_args.no_save_token = False
+        parsed_args.use_device_code = False
         parsed_globals = mock.Mock()
         config = {
             'account_id': 'foo',
@@ -393,3 +592,31 @@ class TestLoginCommand(unittest.TestCase):
                               expected_idp='bar',
                               expected_return_url_port=10101,
                               expected_extra_query={'key': 'id', 'value': 'abc'})
+
+    def test_device_login_url_from_config(self):
+        parsed_args = mock.Mock()
+        parsed_args.account_id = None
+        parsed_args.identity_provider = None
+        parsed_args.login_url = None
+        parsed_args.no_save_token = False
+        parsed_args.use_device_code = True
+        parsed_globals = mock.Mock()
+        config = {
+            'account_id': 'foo',
+            'identity_provider': 'bar',
+            'device_login_url': 'https://unit.test/auth/?id=abc',
+        }
+        login_url = self.login._resolve_login_url(
+            parsed_args, parsed_globals, config, 10101)
+        self.assert_login_url(login_url=login_url,
+                              expected_hostname='unit.test',
+                              expected_path='/auth/',
+                              expected_account_id='foo',
+                              expected_idp='bar',
+                              expected_return_url_port=10101,
+                              expected_extra_query={'key': 'id', 'value': 'abc'},
+                              device_login=True)
+
+
+if __name__ == '__main__':
+    unittest.main()

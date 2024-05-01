@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.111
+  version: 0.9.112
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1130,6 +1130,11 @@ definitions:
       enableRangerRaz:
         type: boolean
         description: Whether Ranger RAZ is enabled for the datalake.
+      tags:
+        type: array
+        description: Datalake tags object containing the tag values defined for the datalake.
+        items:
+          $ref: '#/definitions/DatalakeResourceTag'
   InstanceGroup:
     type: object
     description: The type of the instance group which also contains the actual instance(s)
@@ -1332,6 +1337,11 @@ definitions:
       multiAz:
         type: boolean
         description: Flag which marks that the datalake is deployed in a multi-availability zone way or not.
+      tags:
+        type: array
+        description: Datalake tags object containing the tag values defined for the datalake.
+        items:
+          $ref: '#/definitions/DatalakeResourceTag'
   DatalakeResourceTagRequest:
     type: object
     description: Tag for a datalake resource.
@@ -1348,6 +1358,19 @@ definitions:
   DatalakeResourceGCPTagRequest:
     type: object
     description: A label that can be attached to GCP Data Lake resources. Please refer to Google documentation for the rules https://cloud.google.com/compute/docs/labeling-resources#label_format.
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: The key of tag.
+      value:
+        type: string
+        description: The value of the tag.
+  DatalakeResourceTag:
+    type: object
+    description: Tag for a datalake resource.
     required:
       - key
       - value
@@ -3100,6 +3123,19 @@ definitions:
         type: boolean
         default: false
         description: Whether to deploy a new datalake in a multi-availability zone way.
+      customInstanceTypes:
+        type: array
+        items:
+          $ref: '#/definitions/CustomInstanceType'
+        description: Any custom instance type to override defaults.
+      customInstanceDisks:
+        type: array
+        items:
+          $ref: '#/definitions/CustomInstanceDisk'
+        description: Any custom instance disk size to override defaults.
+      customDatabaseComputeStorage:
+        $ref: '#/definitions/CustomDatabaseComputeStorage'
+        description: Any custom database properties to override defaults.
   ResizeDatalakeResponse:
     type: object
     description: Datalake resize response.
@@ -3125,6 +3161,11 @@ definitions:
       cloudbreakVersion:
         type: string
         description: The Cloudbreak version used to create the data lake.
+      tags:
+        type: array
+        description: Datalake tags object containing the tag values defined for the datalake.
+        items:
+          $ref: '#/definitions/DatalakeResourceTag'
   ScaleHorizontallyRequest:
     type: object
     description: Data Lake horizontal scaling request.
@@ -3313,3 +3354,35 @@ definitions:
   UpdateOrchestratorStateResponse:
     type: object
     description: Response object for running orchestrator engine state update on the Data Lake cluster.
+  CustomInstanceType:
+    type: object
+    description: Request object for modified instance type.
+    properties:
+      name:
+        type: string
+        description: The name of the modified instance.
+      instanceType:
+        type: string
+        description: The modified instance type
+  CustomInstanceDisk:
+    type: object
+    description: Request object for modified instance disk.
+    properties:
+      name:
+        type: string
+        description: The name of the modified instance.
+      diskSize:
+        type: integer
+        format: int32
+        description: The modified disk size
+  CustomDatabaseComputeStorage:
+    type: object
+    description: Request object for modified database storage properties.
+    properties:
+      instanceType:
+        type: string
+        description: The modified instance type.
+      storageSize:
+        type: integer
+        format: int32
+        description: The modified storage size for the database.

@@ -55,6 +55,7 @@ class EndpointResolver(object):
     ENDPOINT_URL_KEY_NAME = 'endpoint_url'
     CDP_ENDPOINT_URL_KEY_NAME = 'cdp_endpoint_url'
     LOGIN_URL_KEY_NAME = 'login_url'
+    DEVICE_LOGIN_URL_KEY_NAME = 'device_login_url'
     CDP_REGION_KEY_NAME = 'cdp_region'
 
     def _construct_altus_endpoint(self, service_name, scheme, region, port):
@@ -68,7 +69,7 @@ class EndpointResolver(object):
         """
         if region in ['default', 'us-west-1']:
             return "%s://%sapi.us-west-1.altus.cloudera.com:%d" % \
-                   (scheme, service_name, port)
+                (scheme, service_name, port)
         elif region == 'usg-1':
             return "%s://api.%s.cdp.clouderagovt.com:%d" % (scheme, region, port)
         else:
@@ -90,24 +91,25 @@ class EndpointResolver(object):
         else:
             return "%s://%s.%s.cdp.cloudera.com:%d" % (scheme, prefix, region, port)
 
-    def _construct_login_endpoint(self, scheme, region, port):
+    def _construct_login_endpoint(self, scheme, region, port, path="login"):
         """Construct a login URL to a CDP service.
 
         :param scheme: URL scheme, e.g., 'https'
         :param port: service port
         :param region: service region
+        :param path: URL path
         :returns: CDP login URL
         """
         if region == 'default':
             region = 'us-west-1'
         if region == 'us-west-1':
-            return "%s://consoleauth.altus.cloudera.com:%d/login" % (scheme, port)
+            return "%s://consoleauth.altus.cloudera.com:%d/%s" % (scheme, port, path)
         elif region == 'usg-1':
-            return "%s://console.%s.cdp.clouderagovt.com:%d/consoleauth/login" % \
-                   (scheme, region, port)
+            return "%s://console.%s.cdp.clouderagovt.com:%d/consoleauth/%s" % \
+                (scheme, region, port, path)
         else:
-            return "%s://console.%s.cdp.cloudera.com:%d/consoleauth/login" % \
-                   (scheme, region, port)
+            return "%s://console.%s.cdp.cloudera.com:%d/consoleauth/%s" % \
+                (scheme, region, port, path)
 
     def _substitute_custom_endpoint(self, endpoint_url, service_name, prefix, products):
         """Applies string formatting for one %s value.
@@ -165,13 +167,22 @@ class EndpointResolver(object):
             return self._substitute_custom_endpoint(explicit_endpoint_url,
                                                     service_name, prefix, products)
 
-        if service_name == 'LOGIN':
+        if service_name == 'LOGIN' or service_name == "DEVICELOGIN":
             # Login endpoint
-            endpoint_from_config = config.get(EndpointResolver.LOGIN_URL_KEY_NAME)
+            if service_name == 'DEVICELOGIN':
+                endpoint_from_config = config.get(
+                    EndpointResolver.DEVICE_LOGIN_URL_KEY_NAME)
+            else:
+                endpoint_from_config = config.get(EndpointResolver.LOGIN_URL_KEY_NAME)
             if endpoint_from_config is not None:
                 return endpoint_from_config
             region = self._read_region_from_config(region, config)
-            return self._construct_login_endpoint(scheme, region, port)
+            if service_name == 'DEVICELOGIN':
+                login_url_path = "deviceAuthorization"
+            else:
+                login_url_path = "login"
+            return self._construct_login_endpoint(
+                scheme, region, port, login_url_path)
 
         if products == ['CDP']:
             # If a CDP endpoint base URL has been configured, use it, swapping in the

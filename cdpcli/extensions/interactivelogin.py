@@ -16,18 +16,23 @@ import os
 import socket
 import socketserver
 import sys
+import time
+from time import sleep
 import urllib.parse as urlparse
+import uuid
 import webbrowser
 
 from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, CDP_PRIVATE_KEY_KEY_NAME
 from cdpcli.endpoint import EndpointResolver
-from cdpcli.exceptions import InteractiveLoginError, MissingArgumentError, ProfileNotFound
+from cdpcli.exceptions import DeviceLoginError, InteractiveLoginError, \
+    MissingArgumentError, ProfileNotFound
 from cdpcli.extensions.commands import BasicCommand
 from cdpcli.extensions.configure import CREDENTIAL_FILE_COMMENT
 from cdpcli.extensions.writer import ConfigFileWriter
-
+import requests
 
 DEFAULT_LOGIN_TIMEOUT = 600
+DEVICE_LOGIN_WAIT_SLEEP = 5
 
 
 class LoginHttpServer(socketserver.TCPServer):
@@ -102,12 +107,18 @@ class LoginHttpHandler(httpserver.SimpleHTTPRequestHandler):
         if isinstance(private_key, list):
             private_key = private_key[0]
         if access_key_id is None or private_key is None:
-            sys.stderr.write('Login failed: Missing access key id or private key\n')
+            sys.stderr.write(
+                'Login failed: Missing access key id or private key\n')
             self._send_response(400, b'Missing access key id or private key')
             return
 
         # save the access token.
-        self._save_access_token(access_key_id, private_key)
+        save_access_token(
+            self.server.context,
+            self.server.config_writer,
+            access_key_id,
+            private_key)
+
         # send close browser HTML to the client.
         self._send_response(200, LoginHttpHandler.CLOSE_BROWSER_HTML)
 
@@ -115,21 +126,6 @@ class LoginHttpHandler(httpserver.SimpleHTTPRequestHandler):
         self.send_response(status_code)
         self.end_headers()
         self.wfile.write(body)
-
-    def _save_access_token(self, access_key_id, private_key):
-        # V3/ECDSA private key has '\n' in the string.
-        private_key = private_key.replace('\n', '\\n')
-        credential_file_values = {CDP_ACCESS_KEY_ID_KEY_NAME: access_key_id,
-                                  CDP_PRIVATE_KEY_KEY_NAME: private_key}
-        profile_name = self.server.context.effective_profile
-        if profile_name is not None:
-            credential_file_values['__section__'] = profile_name
-        shared_credentials_filename = os.path.expanduser(
-            self.server.context.get_config_variable('credentials_file'))
-        self.server.config_writer.update_config(
-            credential_file_values,
-            shared_credentials_filename,
-            config_file_comment=CREDENTIAL_FILE_COMMENT)
 
 
 class LoginCommand(BasicCommand):
@@ -143,6 +139,7 @@ class LoginCommand(BasicCommand):
         'cdp login'
         ' [--account-id account-id]'
         ' [--identity-provider identity-provider-name]'
+        ' [--use-device-code]'
     )
     EXAMPLES = (
         'To login interactively::\n'
@@ -152,16 +149,18 @@ class LoginCommand(BasicCommand):
     SUBCOMMANDS = []
     ARG_TABLE = [
         {'name': 'account-id',
-         'help_text': ('The account-id of the tenant to login. This is a required '
-                       'parameter. \'cdp configure set account_id <account-id>\' '
-                       'could be used to set the default account-id to be used if '
-                       'this parameter is not provided.'),
+         'help_text': (
+             'The account-id of the tenant to login. This is a required '
+             'parameter. \'cdp configure set account_id <account-id>\' '
+             'could be used to set the default account-id to be used if '
+             'this parameter is not provided.'),
          'action': 'store',
          'required': False,  # the account id could also come from config file.
          'cli_type_name': 'string'},
         {'name': 'identity-provider',
-         'help_text': ('The name or CRN of IdP which will be used to authenticate users. '
-                       'The default IdP will be used if not provided.'),
+         'help_text': (
+             'The name or CRN of IdP which will be used to authenticate users. '
+             'The default IdP will be used if not provided.'),
          'action': 'store',
          'required': False,
          'cli_type_name': 'string'},
@@ -174,8 +173,9 @@ class LoginCommand(BasicCommand):
          'no_paramfile': True,
          'cli_type_name': 'string'},
         {'name': 'port',
-         'help_text': ('The listening port number for CLI to receive the access token. '
-                       'A random un-used port will be assigned if not provided.'),
+         'help_text': (
+             'The listening port number for CLI to receive the access token. '
+             'A random un-used port will be assigned if not provided.'),
          'action': 'store',
          'required': False,
          'hidden': True,
@@ -187,6 +187,15 @@ class LoginCommand(BasicCommand):
          'required': False,
          'hidden': True,
          'cli_type_name': 'integer'},
+        {'name': 'use-device-code',
+         'help_text': (
+             "Use CDP's authentication flow based on the device code. "
+             "Use this to authorize the device if it can't launch a "
+             "browser, e.g. in remote SSH."),
+         'action': 'store_true',
+         'required': False,
+         'default': False,
+         'cli_type_name': 'boolean'},
     ]
 
     def __init__(self, config_writer=None, open_new_browser=None):
@@ -216,9 +225,16 @@ class LoginCommand(BasicCommand):
         if timeout is None:
             timeout = DEFAULT_LOGIN_TIMEOUT
 
-        login_url = self._resolve_login_url(parsed_args, parsed_globals, config, port)
-        self._open_new_browser(login_url)
-        self._run_http_server(port, timeout, context)
+        if parsed_args.use_device_code:
+            client_id = uuid.uuid4()
+            login_url = self._resolve_login_url(parsed_args, parsed_globals,
+                                                config, port, client_id)
+            self._handle_device_login(login_url, client_id, context)
+        else:
+            login_url = self._resolve_login_url(parsed_args, parsed_globals,
+                                                config, port)
+            self._open_new_browser(login_url)
+            self._run_http_server(port, timeout, context)
 
     @staticmethod
     def _open_new_browser(url):
@@ -232,14 +248,20 @@ class LoginCommand(BasicCommand):
         s.close()
         return port
 
-    def _resolve_login_url(self, parsed_args, parsed_globals, config, return_url_port):
+    def _resolve_login_url(self, parsed_args, parsed_globals, config,
+                           return_url_port, client_id=None):
+        if parsed_args.use_device_code:
+            service_name = "DEVICELOGIN"
+        else:
+            service_name = "LOGIN"
+
         # get the login URL from input parameter or config file.
         endpoint_resolver = EndpointResolver()
         login_url = endpoint_resolver.resolve(
             explicit_endpoint_url=parsed_args.login_url,
             config=config,
             region=parsed_globals.cdp_region,
-            service_name='LOGIN',
+            service_name=service_name,
             prefix=None,
             products=['CDP'],
             scheme='https',
@@ -266,8 +288,12 @@ class LoginCommand(BasicCommand):
             if idp is not None:
                 url_params['idp'] = idp
 
-        return_url = 'http://localhost:%d/interactiveLogin' % return_url_port
-        url_params['returnUrl'] = return_url
+        if parsed_args.use_device_code:
+            url_params['clientId'] = client_id
+        else:
+            return_url = 'http://localhost:%d/interactiveLogin' % return_url_port
+            url_params['returnUrl'] = return_url
+
         url_query = urlparse.urlencode(url_params, doseq=True)
         url_parsed = url_parsed._replace(query=url_query)
         return urlparse.urlunsplit(url_parsed)
@@ -280,3 +306,67 @@ class LoginCommand(BasicCommand):
             httpd.handle_request()
         finally:
             httpd.server_close()
+
+    def _handle_device_login(self, login_url, client_id, context):
+        # Authorize device for cdpcli login
+        authorize_device = requests.get(url=login_url)
+
+        if (authorize_device.status_code != 200):
+            raise DeviceLoginError(err_msg=authorize_device.text)
+
+        # Print user instructions for completing device login
+        authorize_device_response = authorize_device.json()
+        device_code = authorize_device_response.get('deviceCode')
+        user_code = authorize_device_response.get('userCode')
+        device_login_timeout = authorize_device_response.get('expiresIn').get(
+            'low')
+        verification_url = authorize_device_response.get('verificationUrl')
+        access_key_url = authorize_device_response.get('accessKeyUrl')
+
+        sys.stdout.write(f"To sign in, use a web browser to open the page "
+                         f"{verification_url} and enter the code "
+                         f"{user_code} to authenticate.\n")
+
+        # Wait for user to complete device login flow
+        data = {
+            "clientId": client_id,
+            "deviceCode": device_code,
+            "userCode": user_code
+        }
+        fetch_device_access_key = requests.post(url=access_key_url, data=data)
+
+        device_login_timeout_time = time.time() + device_login_timeout
+        while (fetch_device_access_key.status_code == 401 or
+               fetch_device_access_key.status_code == 404) and \
+                time.time() < device_login_timeout_time:
+            fetch_device_access_key = requests.post(url=access_key_url,
+                                                    data=data)
+            sleep(DEVICE_LOGIN_WAIT_SLEEP)
+
+        # Write cdp api keys to config file
+        if fetch_device_access_key.status_code == 200:
+            device_access_key_response = fetch_device_access_key.json()
+
+            # write access key to config file.
+            private_key = device_access_key_response.get("privateKey")
+            access_key_id = device_access_key_response.get("accessKeyId")
+            save_access_token(context, self._config_writer, access_key_id, private_key)
+            sys.stdout.write("Device login is successful.\n")
+        else:
+            raise DeviceLoginError(err_msg='Login timeout')
+
+
+def save_access_token(context, config_writer, access_key_id, private_key):
+    # V3/ECDSA private key has '\n' in the string.
+    private_key = private_key.replace('\n', '\\n')
+    credential_file_values = {CDP_ACCESS_KEY_ID_KEY_NAME: access_key_id,
+                              CDP_PRIVATE_KEY_KEY_NAME: private_key}
+    profile_name = context.effective_profile
+    if profile_name is not None:
+        credential_file_values['__section__'] = profile_name
+    shared_credentials_filename = os.path.expanduser(
+        context.get_config_variable('credentials_file'))
+    config_writer.update_config(
+        credential_file_values,
+        shared_credentials_filename,
+        config_file_comment=CREDENTIAL_FILE_COMMENT)

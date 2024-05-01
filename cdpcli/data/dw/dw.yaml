@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.111
+  version: 0.9.112
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -3260,7 +3260,8 @@ definitions:
         description: DEPRECATED in favor of the top level impalaHASettings object. Enables a backup instance for Impala catalog to ensure high availability.
       podConfigName:
         type: string
-        description: Name of the pod configuration.
+        x-deprecated: true
+        description: DEPRECATED - Name of the pod configuration.
   ImpalaOptionsCreateRequest:
     type: object
     description: Impala specific options. It cannot be provided for Virtual Warehouse types other than Impala.
@@ -3432,7 +3433,8 @@ definitions:
         description: DEPRECATED in favor of the top level impalaHASettings object. Denotes whether a backup instance for Impala catalog is enabled.
       podConfigName:
         type: string
-        description: Name of the pod configuration.
+        x-deprecated: true
+        description: DEPRECATED - Name of the pod configuration.
   ImpalaHASettingsOptionsResponse:
     type: object
     description: Impala High Availability settings for a Virtual Warehouse.
@@ -5267,13 +5269,9 @@ definitions:
       backupName:
         type: string
         description: Specified name for the backup. If not set, the name will be blank.
-      namespaceName:
-        x-deprecated: true
-        type: string
-        description: DEPRECATED in favor of the namespaceNames. Namespace of the potential candidate for backup. If not set, all of the Data Warehouse namespaces will be backed up.
       namespaceNames:
         type: array
-        description: If both namespaceName and namespaceNames are set, the namespaceName will be ignored! A list of namespace of the potential candidates for backup. If not set, all of the Data Warehouse namespaces will be backed up.
+        description: A list of namespace of the potential candidates for backup. If not set, all of the Data Warehouse namespaces will be backed up.
         items:
           type: string
   CreateBackupResponse:

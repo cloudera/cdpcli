@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.111
+  version: 0.9.112
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1193,11 +1193,11 @@ definitions:
       coresPerNode:
         type: number
         format: double
-        description: The number of CPU Cores per node
+        description: The number of CPU Cores per node (will be truncated to the nearest integer).
       memoryLimit:
         type: number
         format: double
-        description: The memory limit
+        description: The memory limit (will be truncated to the nearest integer).
       text:
         type: string
         description: The text (i.e., the human readable name) for this Cluster Size
@@ -1386,7 +1386,7 @@ definitions:
       configurationVersion:
         type: integer
         format: int32
-        description: The version of this configuration
+        description: The version of this configuration.
       name:
         type: string
         description: The name of the deployment
@@ -1395,7 +1395,7 @@ definitions:
         description: The CRN of the deployment request.
       parameterGroups:
         type: array
-        description: The list of flow parameter groups
+        description: The list of flow parameter groups.
         items:
           $ref: '#/definitions/FlowParameterGroup'
       autoScalingEnabled:
@@ -1418,7 +1418,7 @@ definitions:
         description: The static number of nodes that the cluster should allocate. May only be specified when autoScalingEnabled is false.
       kpis:
         type: array
-        description: The list of configured KPIs
+        description: The list of configured KPIs.
         items:
           $ref: '#/definitions/ConfiguredKpi'
       cfmNifiVersion:
@@ -2844,7 +2844,7 @@ definitions:
         readOnly: true
   RpcDeploymentConfiguration:
     type: object
-    description: Provides all of the configuration that dictates how a flow should be deployed
+    description: Provides all of the configuration that dictates how a flow should be deployed.
     x-workload: true
     x-client-only: true
     required:
@@ -2853,10 +2853,10 @@ definitions:
       configurationVersion:
         type: integer
         format: int32
-        description: The version of this configuration
+        description: The version of this configuration.
       parameterGroups:
         type: array
-        description: The list of flow parameter groups
+        description: The list of flow parameter groups.
         items:
           $ref: '#/definitions/FlowParameterGroup'
       autoScalingEnabled:
@@ -2879,7 +2879,7 @@ definitions:
         description: The static number of nodes that the cluster should allocate. May only be specified when autoScalingEnabled is false.
       kpis:
         type: array
-        description: The list of configured KPIs
+        description: The list of configured KPIs.
         items:
           $ref: '#/definitions/ConfiguredKpi'
       deploymentId:
@@ -2893,22 +2893,21 @@ definitions:
         description: The name of the deployment
       cfmNifiVersion:
         type: string
-        description: The CFM NiFi version associated with the deployment
+        description: The CFM NiFi version associated with the deployment.
       autoStartFlow:
         type: boolean
-        description: Indicates whether or not the flow should be started during deployment creation
+        description: Indicates whether or not the flow should be started during deployment creation.
       clusterSizeName:
         type: string
-        description: The size of the cluster to deploy. Deprecated. Use 'clusterSize.name' instead
+        description: The size of the cluster to deploy.
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
-        x-deprecated: true
       nodeStorageProfileName:
         type: string
-        description: Node storage profile name
+        description: Node storage profile name.
         enum:
           - LEGACY_STANDARD
           - LEGACY_PERFORMANCE
@@ -2919,31 +2918,31 @@ definitions:
           - LOCAL_K8S
       parametersDirty:
         type: boolean
-        description: Indicates whether or not all current parameter values have successfully been applied to NiFi
+        description: Indicates whether or not all current parameter values have successfully been applied to NiFi.
         readOnly: true
       kpisDirty:
         type: boolean
-        description: Indicates whether or not the current KPIs have successfully been deployed as alert rules
+        description: Indicates whether or not the current KPIs have successfully been deployed as alert rules.
         readOnly: true
       sizingAndScalingDirty:
         type: boolean
-        description: Indicates whether or not the current sizing and scaling configuration has been successfully applied in Kubernetes
+        description: Indicates whether or not the current sizing and scaling configuration has been successfully applied in Kubernetes.
         readOnly: true
       lastUpdatedByUsername:
         type: string
-        description: The username of the last person to update the deployment configuration
+        description: The username of the last person to update the deployment configuration.
         readOnly: true
       inboundHostname:
         type: string
-        description: The inbound hostname
+        description: The inbound hostname.
       listenComponents:
         type: array
-        description: Listen components port and protocol data
+        description: Listen components port and protocol data.
         items:
           $ref: '#/definitions/ListenComponent'
       projectCrn:
         type: string
-        description: The crn of the project this deployment belongs to, or null if does not belong to a project
+        description: The crn of the project this deployment belongs to, or null if does not belong to a project.
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.
@@ -3007,30 +3006,30 @@ definitions:
     properties:
       autoScalingEnabled:
         type: boolean
-        description: The auto-scaling flag value retrieved from archive
+        description: The auto-scaling flag value retrieved from archive.
         readOnly: true
       flowMetricsScalingEnabled:
         type: boolean
-        description: The flow-metrics flag value retrieved from archive
+        description: The flow-metrics flag value retrieved from archive.
         readOnly: true
       autoScaleMinNodes:
         type: integer
         format: int32
-        description: The cluster's minimum number of nodes value retrieved from archive
+        description: The cluster's minimum number of nodes value retrieved from archive.
         readOnly: true
       autoScaleMaxNodes:
         type: integer
         format: int32
-        description: The cluster's maximum number of nodes value retrieved from archive
+        description: The cluster's maximum number of nodes value retrieved from archive.
         readOnly: true
       staticNodeCount:
         type: integer
         format: int32
-        description: The cluster's static node count retrieved from archive
+        description: The cluster's static node count retrieved from archive.
         readOnly: true
       clusterSizeName:
         type: string
-        description: The cluster size name retrieved from archive
+        description: The cluster size name retrieved from archive.
         readOnly: true
         enum:
           - EXTRA_SMALL
@@ -3039,38 +3038,38 @@ definitions:
           - LARGE
       kpis:
         type: array
-        description: The list of configured KPIs imported from archive
+        description: The list of configured KPIs imported from archive.
         readOnly: true
         items:
           $ref: '#/definitions/ConfiguredKpi'
       flowParameterGroups:
         type: array
-        description: The flow parameter groups with values imported from archive
+        description: The flow parameter groups with values imported from archive.
         readOnly: true
         items:
           $ref: '#/definitions/FlowParameterGroup'
       cfmNifiVersion:
         type: string
-        description: The CFM NiFi version retrieved from archive
+        description: The CFM NiFi version retrieved from archive.
         readOnly: true
       inboundHostName:
         type: string
-        description: The FQDN of inbound hostname constructed with prefix imported from archive
+        description: The FQDN of inbound hostname constructed with prefix imported from archive.
         readOnly: true
       listenComponents:
         type: array
-        description: The concatenated list of Nifi listen components imported from archive and flow
+        description: The concatenated list of Nifi listen components imported from archive and flow.
         readOnly: true
         uniqueItems: true
         items:
           $ref: '#/definitions/ListenComponent'
       nodeStorageProfile:
         type: string
-        description: The node storage profile imported from archive
+        description: The node storage profile imported from archive.
         readOnly: true
       projectCrn:
         type: string
-        description: The project CRN retrieved from backup
+        description: The project CRN retrieved from backup.
         readOnly: true
       customNarConfigurationCrn:
         type: string
@@ -3334,13 +3333,13 @@ definitions:
       configurationVersion:
         type: integer
         format: int32
-        description: The version of this configuration
+        description: The version of this configuration.
       deploymentCrn:
         type: string
         description: The CRN of the existing deployment to be updated.
       parameterGroups:
         type: array
-        description: The list of flow parameter groups
+        description: The list of flow parameter groups.
         items:
           $ref: '#/definitions/FlowParameterGroup'
       autoScalingEnabled:
@@ -3363,7 +3362,7 @@ definitions:
         description: The static number of nodes that the cluster should allocate. May only be specified when autoScalingEnabled is false.
       kpis:
         type: array
-        description: The list of configured KPIs
+        description: The list of configured KPIs.
         items:
           $ref: '#/definitions/ConfiguredKpi'
       clusterSizeName:

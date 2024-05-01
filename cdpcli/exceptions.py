@@ -274,6 +274,14 @@ class InteractiveLoginError(CdpCLIError):
     fmt = 'Login failed: {err_msg}.'
 
 
+class DeviceLoginError(CdpCLIError):
+
+    """
+    Login failed.
+    """
+    fmt = 'Device Login failed: {err_msg}.'
+
+
 class WrongSvcFormFactorError(CdpCLIError):
 
     """
