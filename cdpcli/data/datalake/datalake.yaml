@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.112
+  version: 0.9.113
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -966,6 +966,48 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateOrchestratorStateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/updateToAwsImdsV2:
+    post:
+      summary: Updates Data Lake AWS cluster to use IMDSv2.
+      description: Updates Data Lake AWS cluster to use IMDSv2.
+      operationId: updateToAwsImdsV2
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateToAwsImdsV2Request'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateToAwsImdsV2Response'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/updateToAwsImdsV1:
+    post:
+      summary: Updates Data Lake AWS cluster to use IMDSv1.
+      description: Updates Data Lake AWS cluster to use IMDSv1.
+      operationId: updateToAwsImdsV1
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateToAwsImdsV1Request'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateToAwsImdsV1Response'
         default:
           description: The default response on an error.
           schema:
@@ -3354,6 +3396,30 @@ definitions:
   UpdateOrchestratorStateResponse:
     type: object
     description: Response object for running orchestrator engine state update on the Data Lake cluster.
+  UpdateToAwsImdsV2Request:
+    description: Request object for updating Data Lake to use AWS IMDSv2.
+    type: object
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the Data Lake.
+  UpdateToAwsImdsV2Response:
+    type: object
+    description: Response object for updating Data Lake to AWS IMDSv2.
+  UpdateToAwsImdsV1Request:
+    description: Request object for updating Data Lake to use AWS IMDSv1.
+    type: object
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the Data Lake.
+  UpdateToAwsImdsV1Response:
+    type: object
+    description: Response object for updating Data Lake to AWS IMDSv1.
   CustomInstanceType:
     type: object
     description: Request object for modified instance type.

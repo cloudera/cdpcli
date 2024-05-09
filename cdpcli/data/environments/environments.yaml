@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.112
+  version: 0.9.113
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -247,6 +247,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateAzureCredentialResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/updateAwsCredential:
+    post:
+      summary: Updates an AWS credential that can be attached to an environment. The credential is used for authorization to provision resources such as compute instances within your cloud provider account.
+      description: Updates an AWS credential.
+      operationId: updateAwsCredential
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAwsCredentialRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateAwsCredentialResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1856,6 +1877,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/updateFreeipaToAwsImdsV2:
+    post:
+      summary: Updates FreeIPA AWS cluster to use IMDSv2.
+      description: Updates FreeIPA AWS cluster to use IMDSv2.
+      operationId: updateFreeipaToAwsImdsV2
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateFreeipaToAwsImdsV2Request'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateFreeipaToAwsImdsV2Response'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/updateFreeipaToAwsImdsV1:
+    post:
+      summary: Updates FreeIPA AWS cluster to use IMDSv1.
+      description: Updates FreeIPA AWS cluster to use IMDSv1.
+      operationId: updateFreeipaToAwsImdsV1
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateFreeipaToAwsImdsV1Request'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateFreeipaToAwsImdsV1Response'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -2062,6 +2125,37 @@ definitions:
       description:
         type: string
         description: A description for the credential.
+  UpdateAwsCredentialRequest:
+    type: object
+    description: Request object for an update AWS credential request.
+    required:
+      - credentialName
+      - roleArn
+    properties:
+      credentialName:
+        type: string
+        description: The name of the credential.
+      roleArn:
+        type: string
+        description: The ARN of the delegated access role.
+      description:
+        type: string
+        description: A description for the credential.
+      skipOrgPolicyDecisions:
+        type: boolean
+        default: false
+        description: Whether to skip organizational policy decision checks or not.
+      verifyPermissions:
+        type: boolean
+        default: false
+        description: Whether to verify permissions upon saving or not.
+  UpdateAwsCredentialResponse:
+    type: object
+    properties:
+      credential:
+        description: The credential object.
+        $ref: '#/definitions/Credential'
+    description: Response object for an update AWS credential request.
   CreateGCPCredentialResponse:
     type: object
     description: Response object for a create GCP credential request.
@@ -2962,6 +3056,10 @@ definitions:
         description: When this is enabled, we will provision resources with host encrypted true flag.
       userManagedIdentity:
         type: string
+        description: User managed identity for encryption. (deprecated)
+        x-deprecated: true
+      encryptionUserManagedIdentity:
+        type: string
         description: User managed identity for encryption.
       encryptionKeyUrl:
         type: string
@@ -3156,6 +3254,10 @@ definitions:
         description: Name of the existing Azure resource group hosting the Azure Key Vault containing customer managed key which will be used to encrypt the Azure Managed Disks. It is required only when the entitlement is granted and the resource group of the key vault is different from the resource group in which the environment is to be created. Omitting it implies that, the key vault containing the encryption key is present in the same resource group where the environment would be created.
       userManagedIdentity:
         type: string
+        description: User managed identity for encryption. (deprecated)
+        x-deprecated: true
+      encryptionUserManagedIdentity:
+        type: string
         description: User managed identity for encryption.
   UpdateAzureEncryptionResourcesResponse:
     type: object
@@ -3272,6 +3374,10 @@ definitions:
         type: string
         description: ID of the Disk Encryption Set created in Azure which is used to encrypt Managed Disks of FreeIPA, Data Lake, Data Hub and PostgreSQL.
       userManagedIdentity:
+        type: string
+        description: User managed identity for encryption. (deprecated)
+        x-deprecated: true
+      encryptionUserManagedIdentity:
         type: string
         description: User managed identity for encryption.
   AzureDatabaseResources:
@@ -5889,3 +5995,27 @@ definitions:
       environment:
         $ref: '#/definitions/Environment'
         description: The environment.
+  UpdateFreeipaToAwsImdsV2Request:
+    description: The related environment where we update the corresponding FreeIPA to use AWS IMDSv2.
+    type: object
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+  UpdateFreeipaToAwsImdsV2Response:
+    type: object
+    description: Response object for updating corresponding FreeIPA of the given environment to AWS IMDSv2.
+  UpdateFreeipaToAwsImdsV1Request:
+    description: The related environment where we update the corresponding FreeIPA to use AWS IMDSv1.
+    type: object
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+  UpdateFreeipaToAwsImdsV1Response:
+    type: object
+    description: Response object for updating corresponding FreeIPA of the given environment to AWS IMDSv1.
