@@ -1,199 +1,10 @@
 Metadata-Version: 2.1
 Name: cdpcli
-Version: 0.9.112
+Version: 0.9.111.post0.dev1
 Summary: Cloudera CDP Command Line Interface
 Home-page: https://console.cdp.cloudera.com/
 Author: Cloudera, Inc.
 License: Apache License 2.0
-Description: # Cloudera CDP Command Line Interface
-        
-        This package provides a unified command line interface to the Cloudera Data
-        Platform (CDP) control plane API.
-        
-        ## Prerequisites
-        
-        * Python 3.6 or higher
-        
-        Earlier versions of Python are no longer supported for new releases, as of
-        January 2021. Previous CLI releases shall continue to work under earlier Python
-        versions.
-        
-        Starting with version 0.9.24, the requests and urllib3 libraries are no longer
-        bundled with the CLI. When upgrading, watch for those new dependencies to be
-        installed.
-        
-        ## Installation
-        
-        To install using `pip` from the
-        [cdpcli PyPI project](https://pypi.org/project/cdpcli/):
-        
-        ```
-        $ pip install cdpcli
-        ```
-        
-        To install from source:
-        
-        ```
-        $ git clone git@github.com:cloudera/cdpcli.git
-        $ cd cdpcli
-        $ pip install .
-        ```
-        
-        ### Beta CLI
-        
-        An alternative CLI exposing beta functionality is available in its own package.
-        
-        ```
-        $ pip install cdpcli-beta
-        ```
-        
-        Do not install both the regular and beta CLIs in the same Python environment,
-        as they use the same entry points and therefore conflict.
-        
-        Any features exposed in the beta CLI that are not available in the regular CLI
-        are still under development. They are not yet supported, may not work, and are
-        subject to change in incompatible ways, including removal. Do not rely on beta
-        features for production use.
-        
-        ## Configuring
-        
-        API calls through the CDP CLI require a key pair issued from the CDP control
-        plane. Use the CDP console to generate keys, following [documented
-        instructions](https://docs.cloudera.com/cdp/latest/cli/topics/mc-cli-generating-an-api-access-key.html).
-        Then, run `cdp configure` to provide the credentials to the CLI.
-        
-        ```
-        $ cdp configure
-        CDP Access Key ID [None]: xxx
-        CDP Private Key [None]: yyy
-        ```
-        
-        Credentials are stored under the "default" profile in *$HOME/.cdp/credentials*,
-        using the ini file format.
-        
-        ```
-        [default]
-        cdp_access_key_id = xxx
-        cdp_private_key = yyy
-        ```
-        
-        ### Profiles
-        
-        If you need to access the API as more than one user, set up a named profile for
-        each user. Each profile stores a separate set of credentials.
-        
-        ```
-        $ cdp configure --profile my-other-user
-        ```
-        
-        The credentials for a profile are stored in *$HOME/.cdp/credentials* under a
-        section named for the profile.
-        
-        ### Credential Environment Variables
-        
-        An alternative to storing credentials in *$HOME/.cdp/credentials* is to pass
-        them using the environment variables `CDP_ACCESS_KEY_ID` and `CDP_PRIVATE_KEY`.
-        However, these variables are ignored when the `--profile` option is used when
-        running the CLI (see below).
-        
-        ### Base Endpoint URL and Form Factor
-        
-        The CLI may be used to access
-        [CDP Private Cloud](https://docs.cloudera.com/cdp-private-cloud/latest/overview/topics/cdppvc-overview.html)
-        control planes. Contact your control plane administrator to obtain the required
-        base endpoint URL value for your installation. Set the value in
-        *$HOME/.cdp/config*, another configuration file that uses the ini file format.
-        Create a section named for the profile which should work with the private cloud
-        control plane.
-        
-        ```
-        [profile private1]
-        cdp_endpoint_url = https://cdp-private.example.com
-        ```
-        
-        The CLI guesses whether it is using CDP Public Cloud or CDP Private Cloud based
-        on the base endpoint URL. If you find that it is guessing incorrectly, you can
-        configure use of either *form factor* in *$HOME/.cdp/config*. Valid form factor
-        values are "public" and "private".
-        
-        ```
-        [profile private1]
-        form_factor = private
-        ```
-        
-        ## Running
-        
-        Basic syntax:
-        
-        ```
-        cdp [options] <command> <subcommand> [parameters]
-        ```
-        
-        Examples:
-        
-        ```
-        $ cdp iam get-user
-        $ cdp environments describe-environments --environment-name myenv1
-        ```
-        
-        ### Help
-        
-        For general help, use any of these commands.
-        
-        ```
-        $ cdp help
-        $ cdp --help
-        $ cdp # no arguments
-        ```
-        
-        Most CLI commands correspond to API services. Subcommands correspond to
-        operations in services.
-        
-        * For help on any command, run its `help` subcommand, or pass the `--help` parameter.
-        * For help on any subcommand, pass the `help` or `--help` parameter.
-        
-        The same help content is available in online
-        [API documentation](https://cloudera.github.io/cdp-dev-docs/api-docs/).
-        
-        ### Profiles
-        
-        By default, the CLI uses credentials in the "default" profile. Use a different
-        profile by passing the `--profile` option.
-        
-        ```
-        $ cdp --profile my-other-user iam get-user
-        ```
-        
-        ### Base Endpoint URL and Form Factor
-        
-        By default, the CLI works with
-        [CDP Public Cloud](https://docs.cloudera.com/cdp/latest/overview/topics/cdp-overview.html)
-        and calculates API endpoints accordingly. If you are using CDP Private Cloud, be
-        sure to provide the base endpoint URL for your private cloud control plane. You
-        can do so by setting it in *$HOME/.cdp/config* for the desired profile, or
-        through the `--endpoint-url` option, which supersedes the configuration.
-        
-        ```
-        $ cdp --endpoint-url https://other.cdp-private.example.com ...
-        ```
-        
-        The CLI guesses whether it is using CDP Public Cloud or CDP Private Cloud based
-        on the base endpoint URL. If you find that it is guessing incorrectly, you can
-        force use of either *form factor* by either setting it in *$HOME/.cdp/config*
-        for the desired profile, or through the `--form-factor` option, which supersedes
-        the configuration. Specifying a form factor does not alter the base endpoint URL
-         in use.
-        
-        ```
-        $ cdp --form-factor private ...
-        ```
-        
-        ## License
-        
-        The CDP CLI is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-        with a [supplemental license disclaimer](https://console.cdp.cloudera.com/downloads/LICENSE_SUPPLEMENTAL_DISCLAIMER.txt).
-        
-Platform: UNKNOWN
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: System Administrators
@@ -206,3 +17,203 @@ Classifier: Programming Language :: Python :: 3.7
 Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+License-File: LICENSE_SUPPLEMENTAL_DISCLAIMER.txt
+Requires-Dist: python-dateutil<3.0.0,>=2.1
+Requires-Dist: docutils==0.14
+Requires-Dist: pyyaml>=3.11
+Requires-Dist: colorama!=0.3.8,!=0.3.9,!=0.4.2,>=0.2.5
+Requires-Dist: asn1crypto>=0.21.1
+Requires-Dist: rsa>=3.4.2
+Requires-Dist: pure25519>=0.0.1
+Requires-Dist: ecdsa>=0.17.0
+Requires-Dist: requests>=2.21.0
+Requires-Dist: urllib3>=1.21.1
+
+# Cloudera CDP Command Line Interface
+
+This package provides a unified command line interface to the Cloudera Data
+Platform (CDP) control plane API.
+
+## Prerequisites
+
+* Python 3.6 or higher
+
+Earlier versions of Python are no longer supported for new releases, as of
+January 2021. Previous CLI releases shall continue to work under earlier Python
+versions.
+
+Starting with version 0.9.24, the requests and urllib3 libraries are no longer
+bundled with the CLI. When upgrading, watch for those new dependencies to be
+installed.
+
+## Installation
+
+To install using `pip` from the
+[cdpcli PyPI project](https://pypi.org/project/cdpcli/):
+
+```
+$ pip install cdpcli
+```
+
+To install from source:
+
+```
+$ git clone git@github.com:cloudera/cdpcli.git
+$ cd cdpcli
+$ pip install .
+```
+
+### Beta CLI
+
+An alternative CLI exposing beta functionality is available in its own package.
+
+```
+$ pip install cdpcli-beta
+```
+
+Do not install both the regular and beta CLIs in the same Python environment,
+as they use the same entry points and therefore conflict.
+
+Any features exposed in the beta CLI that are not available in the regular CLI
+are still under development. They are not yet supported, may not work, and are
+subject to change in incompatible ways, including removal. Do not rely on beta
+features for production use.
+
+## Configuring
+
+API calls through the CDP CLI require a key pair issued from the CDP control
+plane. Use the CDP console to generate keys, following [documented
+instructions](https://docs.cloudera.com/cdp/latest/cli/topics/mc-cli-generating-an-api-access-key.html).
+Then, run `cdp configure` to provide the credentials to the CLI.
+
+```
+$ cdp configure
+CDP Access Key ID [None]: xxx
+CDP Private Key [None]: yyy
+```
+
+Credentials are stored under the "default" profile in *$HOME/.cdp/credentials*,
+using the ini file format.
+
+```
+[default]
+cdp_access_key_id = xxx
+cdp_private_key = yyy
+```
+
+### Profiles
+
+If you need to access the API as more than one user, set up a named profile for
+each user. Each profile stores a separate set of credentials.
+
+```
+$ cdp configure --profile my-other-user
+```
+
+The credentials for a profile are stored in *$HOME/.cdp/credentials* under a
+section named for the profile.
+
+### Credential Environment Variables
+
+An alternative to storing credentials in *$HOME/.cdp/credentials* is to pass
+them using the environment variables `CDP_ACCESS_KEY_ID` and `CDP_PRIVATE_KEY`.
+However, these variables are ignored when the `--profile` option is used when
+running the CLI (see below).
+
+### Base Endpoint URL and Form Factor
+
+The CLI may be used to access
+[CDP Private Cloud](https://docs.cloudera.com/cdp-private-cloud/latest/overview/topics/cdppvc-overview.html)
+control planes. Contact your control plane administrator to obtain the required
+base endpoint URL value for your installation. Set the value in
+*$HOME/.cdp/config*, another configuration file that uses the ini file format.
+Create a section named for the profile which should work with the private cloud
+control plane.
+
+```
+[profile private1]
+cdp_endpoint_url = https://cdp-private.example.com
+```
+
+The CLI guesses whether it is using CDP Public Cloud or CDP Private Cloud based
+on the base endpoint URL. If you find that it is guessing incorrectly, you can
+configure use of either *form factor* in *$HOME/.cdp/config*. Valid form factor
+values are "public" and "private".
+
+```
+[profile private1]
+form_factor = private
+```
+
+## Running
+
+Basic syntax:
+
+```
+cdp [options] <command> <subcommand> [parameters]
+```
+
+Examples:
+
+```
+$ cdp iam get-user
+$ cdp environments describe-environments --environment-name myenv1
+```
+
+### Help
+
+For general help, use any of these commands.
+
+```
+$ cdp help
+$ cdp --help
+$ cdp # no arguments
+```
+
+Most CLI commands correspond to API services. Subcommands correspond to
+operations in services.
+
+* For help on any command, run its `help` subcommand, or pass the `--help` parameter.
+* For help on any subcommand, pass the `help` or `--help` parameter.
+
+The same help content is available in online
+[API documentation](https://cloudera.github.io/cdp-dev-docs/api-docs/).
+
+### Profiles
+
+By default, the CLI uses credentials in the "default" profile. Use a different
+profile by passing the `--profile` option.
+
+```
+$ cdp --profile my-other-user iam get-user
+```
+
+### Base Endpoint URL and Form Factor
+
+By default, the CLI works with
+[CDP Public Cloud](https://docs.cloudera.com/cdp/latest/overview/topics/cdp-overview.html)
+and calculates API endpoints accordingly. If you are using CDP Private Cloud, be
+sure to provide the base endpoint URL for your private cloud control plane. You
+can do so by setting it in *$HOME/.cdp/config* for the desired profile, or
+through the `--endpoint-url` option, which supersedes the configuration.
+
+```
+$ cdp --endpoint-url https://other.cdp-private.example.com ...
+```
+
+The CLI guesses whether it is using CDP Public Cloud or CDP Private Cloud based
+on the base endpoint URL. If you find that it is guessing incorrectly, you can
+force use of either *form factor* by either setting it in *$HOME/.cdp/config*
+for the desired profile, or through the `--form-factor` option, which supersedes
+the configuration. Specifying a form factor does not alter the base endpoint URL
+ in use.
+
+```
+$ cdp --form-factor private ...
+```
+
+## License
+
+The CDP CLI is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+with a [supplemental license disclaimer](https://console.cdp.cloudera.com/downloads/LICENSE_SUPPLEMENTAL_DISCLAIMER.txt).
