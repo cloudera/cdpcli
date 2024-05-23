@@ -101,8 +101,11 @@ cdpcli/extensions/configure/get.py
 cdpcli/extensions/configure/list.py
 cdpcli/extensions/configure/set.py
 cdpcli/extensions/df/__init__.py
+cdpcli/extensions/df/changeflowversion.py
 cdpcli/extensions/df/createdeployment.py
+cdpcli/extensions/df/model.py
 cdpcli/extensions/df/register.py
+cdpcli/extensions/df/retrychangeflowversion.py
 cdpcli/thirdparty/__init__.py
 cdpcli/thirdparty/six.py
 tests/unit/__init__.py
@@ -147,5 +150,7 @@ tests/unit/extensions/configure/test_get.py
 tests/unit/extensions/configure/test_list.py
 tests/unit/extensions/configure/test_set.py
 tests/unit/extensions/df/__init__.py
+tests/unit/extensions/df/test_changeflowversion.py
 tests/unit/extensions/df/test_createdeployment.py
+tests/unit/extensions/df/test_retrychangeflowversion.py
 tests/unit/extensions/df/test_upload_file.py

@@ -72,6 +72,97 @@ def upload_file(client, operation_name, method, url, headers, file_path):
     return parsed_response
 
 
+def initiate_deployment(df_client,
+                        service_crn,
+                        flow_version_crn,
+                        deployment_crn):
+    """
+    Initiate Deployment on Control Plane using Service CRN and Flow Version CRN
+    """
+    deployment_parameters = {
+        'serviceCrn': service_crn,
+        'flowVersionCrn': flow_version_crn
+    }
+    if deployment_crn is not None:
+        deployment_parameters['deploymentCrn'] = deployment_crn
+    http, response = df_client.make_api_call(
+            'initiateDeployment', deployment_parameters)
+    request_crn = response.get('deploymentRequestCrn', None)
+    url = response.get('dfxLocalUrl', None)
+    LOG.debug('Initiated Deployment Request CRN [%s] URL [%s] for deployment '
+              'CRN [%s]', request_crn, url, deployment_crn)
+    return request_crn
+
+
+def get_environment_crn(df_client,
+                        service_crn):
+    """
+    Get Environment CRN using Service CRN
+    """
+    http, response = df_client.make_api_call(
+            'listDeployableServicesForNewDeployments', {})
+    services = response.get('services', [])
+
+    for service in services:
+        crn = service.get('crn', None)
+        if service_crn == crn:
+            environment_crn = service.get('environmentCrn', None)
+            LOG.debug('Found Environment CRN [%s]', environment_crn)
+            return environment_crn
+    raise DfExtensionError(err_msg='Environment CRN not found for Service CRN',
+                           service_name='df',
+                           operation_name='listDeployableServicesForNewDeployments')
+
+
+def get_deployment_request_details(df_workload_client,
+                                   deployment_request_crn,
+                                   environment_crn):
+    """
+    This function fetches the deployment request details
+    from the workload, and triggers the download of the flow.
+    This also triggers the registration of the deployment
+    details in the workload.
+    This should be done right after the deployment is
+    initiated due to the limited TTL of the resources
+    generated during the deployment initiation.
+    """
+    parameters = {
+        'deploymentRequestCrn': deployment_request_crn,
+        'environmentCrn': environment_crn
+    }
+    http, response = df_workload_client.make_api_call(
+        'getDeploymentRequestDetails', parameters)
+    LOG.debug('Obtained Deployment Request Details for CRN [%s]',
+              deployment_request_crn)
+    return response
+
+
+def get_asset_update_request_crn(df_workload_client,
+                                 environment_crn,
+                                 deployment_crn):
+    response = df_workload_client.create_asset_update_request(
+        deploymentCrn=deployment_crn,
+        environmentCrn=environment_crn
+    )
+    return response.get('assetUpdateRequestCrn', None)
+
+
+def process_kpis(kpis):
+    """
+    Process Key Performance Indicators and set required unit properties
+    """
+    for kpi in kpis:
+        alert = kpi.get('alert', None)
+        if alert:
+            frequency_tolerance = alert.get('frequencyTolerance', None)
+            if frequency_tolerance:
+                unit = frequency_tolerance['unit']
+                id = unit['id']
+                unit['label'] = id.capitalize()
+                unit['abbreviation'] = id[:1].lower()
+    return kpis
+
+
 class DfExtension(CLIOperationCaller):
     def invoke(self,
                client_creator,
@@ -205,14 +296,14 @@ class DfExtension(CLIOperationCaller):
                                        parameters, parsed_globals):
         kpis = parameters.get('kpis', None)
         if kpis:
-            self._process_kpis(kpis)
+            process_kpis(kpis)
 
         if self._has_asset_references(parameters):
             df_workload_client = client_creator('dfworkload')
 
             deployment_crn = parameters.get('deploymentCrn', None)
             environment_crn = parameters.get('environmentCrn', None)
-            asset_update_request_crn = self._get_asset_update_request_crn(
+            asset_update_request_crn = get_asset_update_request_crn(
                 df_workload_client, environment_crn, deployment_crn)
 
             LOG.debug('Asset Update Request CRN [%s]' % asset_update_request_crn)
@@ -228,20 +319,6 @@ class DfExtension(CLIOperationCaller):
                     assetUpdateRequestCrn=asset_update_request_crn
                 )
                 raise
-
-    def _process_kpis(self, kpis):
-        """
-        Process Key Performance Indicators and set required unit properties
-        """
-        for kpi in kpis:
-            alert = kpi.get('alert', None)
-            if alert:
-                frequency_tolerance = alert.get('frequencyTolerance', None)
-                if frequency_tolerance:
-                    unit = frequency_tolerance['unit']
-                    id = unit['id']
-                    unit['label'] = id.capitalize()
-                    unit['abbreviation'] = id[:1].lower()
 
     def _has_asset_references(self,
                               parameters):

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.113
+  version: 0.9.114
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -1010,7 +1010,7 @@ definitions:
         description: The value for the tag.
   ProvisionK8sRequest:
     type: object
-    description: Request object for workspace provision.
+    description: Request object for workspace provision. Required in public cloud.
     required:
       - instanceGroups
       - environmentName

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.113
+  version: 0.9.114
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -2197,6 +2197,9 @@ definitions:
       flowVersionCrn:
         type: string
         description: The flow version CRN.
+      deploymentCrn:
+        type: string
+        description: The deployment CRN for a deployment where change flow version is being performed.
   InitiateDeploymentResponse:
     type: object
     description: A response from initiating a deployment
@@ -2234,6 +2237,7 @@ definitions:
       - FLOW_STOPPED
       - SUSPENDING
       - RESUMING
+      - CHANGING_FLOW_VERSION
   DeploymentStatus:
     type: object
     description: The status of a deployment
@@ -2640,6 +2644,23 @@ definitions:
       - NFS_PROVISIONER
       - REDIS
       - VAULT
+  EncryptionParameters:
+    type: object
+    description: The encryption parameters used by the DataFlow service for K8s secret encryption and EBS volume encryption.
+    required:
+      - encryptionStrategy
+    properties:
+      encryptionStrategy:
+        description: The encryption strategy used by the DataFlow service.
+        $ref: '#/definitions/EncryptionStrategy'
+      encryptionKeyArn:
+        type: string
+        description: The AWS KMS key ARN used for encryption of Kubernetes secrets and EBS volumes.
+  EncryptionStrategy:
+    type: string
+    description: The encryption strategy used by the DataFlow service.
+    enum:
+      - ENVIRONMENT_LEVEL
   ServiceState:
     type: string
     description: The state of the service.
@@ -2886,6 +2907,9 @@ definitions:
       serviceCidr:
         type: string
         description: CIDR range from which to assign IPs to internal services in the kubernetes cluster.
+      encryptionParameters:
+        description: The encryption parameters used by DataFlow service for encrypting K8s secrets and EBS volumes.
+        $ref: '#/definitions/EncryptionParameters'
   ListServicesRequest:
     type: object
     description: Request object for the ListServices method.
@@ -3308,6 +3332,11 @@ definitions:
         type: string
         x-paging-input-token: true
         description: The token pointing to the next element to be retrieved.
+      uuids:
+        type: array
+        items:
+          type: string
+        description: List of UUIDs to list in the response.
   DiagnosticsStatus:
     type: string
     description: Diagnostics status enum.
@@ -3420,6 +3449,9 @@ definitions:
       collectionScope:
         description: Collection scope.
         $ref: '#/definitions/DiagnosticsCollectionScope'
+      includeNifiDiagnostics:
+        type: boolean
+        description: Indicates if the heap and thread dumps are needed for a flow.
   StartGetDiagnosticsCollectionResponse:
     type: object
     description: Response object for StartGetDiagnosticsCollection.

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.113
+  version: 0.9.114
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -176,6 +176,136 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/custom-python-configurations/create-custom-python-configuration:
+    post:
+      summary: Create the custom Python configuration.
+      description: Create the custom Python configuration.
+      operationId: createCustomPythonConfiguration
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Create Custom Python Configuration Request
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCustomPythonConfigurationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateCustomPythonConfigurationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/custom-python-configurations/delete-custom-python-configuration:
+    post:
+      summary: Deletes an orphaned custom Python configuration.
+      description: Deletes an orphaned custom Python configuration.
+      operationId: deleteCustomPythonConfiguration
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Delete Custom Python Configuration Request
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteCustomPythonConfigurationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteCustomPythonConfigurationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/custom-python-configurations/get-custom-python-configuration:
+    post:
+      summary: Get a custom Python configuration.
+      description: Get a custom Python configuration.
+      operationId: getCustomPythonConfiguration
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Get Custom Python Configuration Request
+          required: true
+          schema:
+            $ref: '#/definitions/GetCustomPythonConfigurationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetCustomPythonConfigurationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/custom-python-configurations/update-custom-python-configuration:
+    post:
+      summary: Update the custom Python configuration.
+      description: Update the custom Python configuration.
+      operationId: updateCustomPythonConfiguration
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Update Custom Python Configuration Request
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateCustomPythonConfigurationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateCustomPythonConfigurationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/custom-python-configurations/validate-custom-python-configuration:
+    post:
+      summary: Validates the custom Python configuration.
+      description: Validates the custom Python configuration.
+      operationId: validateCustomPythonConfiguration
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Validate Custom Python Configuration Request
+          required: true
+          schema:
+            $ref: '#/definitions/ValidateCustomPythonConfigurationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ValidateCustomPythonConfigurationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/abort-asset-update-request:
     post:
       summary: Aborts asset update request.
@@ -228,6 +358,32 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/cancel-change-flow-version:
+    post:
+      summary: Cancel change flow version for an existing deployment.
+      description: Cancel change flow version for an existing deployment.
+      operationId: cancelChangeFlowVersion
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Cancel Change Flow Version Request
+          required: true
+          schema:
+            $ref: '#/definitions/CancelChangeFlowVersionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelChangeFlowVersionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/cancel-nifi-version-update:
     post:
       summary: Cancels a NiFi version update for a deployment.
@@ -250,6 +406,32 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CancelNifiVersionUpdateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/change-flow-version:
+    post:
+      summary: Change flow version of a running deployment.
+      description: Change flow version of a running deployment.
+      operationId: changeFlowVersion
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Change Flow Version Request
+          required: true
+          schema:
+            $ref: '#/definitions/ChangeFlowVersionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ChangeFlowVersionResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1150,6 +1332,55 @@ definitions:
       environmentProvided:
         type: boolean
         description: Whether or not the asset is provided automatically by the environment. If true, the asset cannot removed or replaced.
+  BasicClusterSize:
+    type: object
+    description: Cluster scaling parameters.
+    x-workload: true
+    x-client-only: true
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: The name of this Cluster Size.
+        enum:
+          - EXTRA_SMALL
+          - SMALL
+          - MEDIUM
+          - LARGE
+          - CUSTOM
+      coresPerNode:
+        type: number
+        format: double
+        description: The number of CPU Cores per node (will be truncated to the nearest integer).
+      memoryLimit:
+        type: number
+        format: double
+        description: The memory limit (will be truncated to the nearest integer).
+  CancelChangeFlowVersionRequest:
+    type: object
+    description: Request object for cancel change flow version of a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The crn of the deployment to cancel change flow version.
+  CancelChangeFlowVersionResponse:
+    type: object
+    description: Response object for cancel change flow version of a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deploymentConfiguration:
+        description: The deployment configuration.
+        $ref: '#/definitions/RpcDeploymentConfiguration'
   CancelNifiVersionUpdateRequest:
     type: object
     description: Request object for cancelling a NiFi version update for a deployment.
@@ -1174,9 +1405,60 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  ChangeFlowVersionRequest:
+    type: object
+    description: Request object for change flow version of a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The crn of the deployment being updated.
+      parameterGroups:
+        type: array
+        description: The list of flow parameter groups.
+        items:
+          $ref: '#/definitions/FlowParameterGroup'
+      kpis:
+        type: array
+        description: The list of configured KPIs.
+        items:
+          $ref: '#/definitions/ConfiguredKpi'
+      strategy:
+        type: string
+        description: The strategy to use during change flow version.
+        enum:
+          - STOP_AND_PROCESS_DATA
+          - STOP_AND_EMPTY_QUEUES
+          - ONLY_RESTART_AFFECTED_COMPONENTS
+      waitForFlowToStopInMinutes:
+        type: integer
+        format: int32
+        description: The max time in minutes to wait for the flow to process data.
+      deploymentRequestCrn:
+        type: string
+        description: The CRN of the deployment request.
+      assetUpdateRequestCrn:
+        type: string
+        description: The CRN of the asset update request. Required when updating assets of an existing deployment.
+  ChangeFlowVersionResponse:
+    type: object
+    description: Response object for change flow version of a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deploymentConfiguration:
+        description: The deployment configuration.
+        $ref: '#/definitions/RpcDeploymentConfiguration'
   ClusterSize:
     type: object
-    description: Cluster scaling parameters
+    description: Cluster scaling parameters.
     x-workload: true
     x-client-only: true
     required:
@@ -1184,12 +1466,13 @@ definitions:
     properties:
       name:
         type: string
-        description: The name of this Cluster Size
+        description: The name of this Cluster Size.
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+          - CUSTOM
       coresPerNode:
         type: number
         format: double
@@ -1200,14 +1483,17 @@ definitions:
         description: The memory limit (will be truncated to the nearest integer).
       text:
         type: string
-        description: The text (i.e., the human readable name) for this Cluster Size
+        description: The text (i.e., the human readable name) for this Cluster Size.
       heapSize:
         type: number
         format: double
-        description: The heap size
+        description: The heap size.
       enabled:
         type: boolean
-        description: Flag to signal whether this ClusterSize is enabled
+        description: Flag to signal whether this ClusterSize is enabled.
+      customClusterSizeLimits:
+        description: Custom cluster size limits.
+        $ref: '#/definitions/CustomClusterSizeLimits'
   ConfiguredAlert:
     type: object
     description: An alert configuration that specifies a configured frequency with lower and/or upper thresholds
@@ -1369,6 +1655,67 @@ definitions:
       crn:
         type: string
         description: The CRN of the custom resource configuration to update.
+  CreateCustomPythonConfigurationRequest:
+    type: object
+    description: Request object for creating a custom Python configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - configurationVersion
+      - password
+      - storageLocation
+      - username
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      username:
+        type: string
+        description: The username used to access the storage location
+      password:
+        type: string
+        description: The password used to access the storage location
+      storageLocation:
+        type: string
+        description: The storage location, such as an S3 bucket or ADLS container
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
+  CreateCustomPythonConfigurationResponse:
+    type: object
+    description: Response for creating a custom Python configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+      - password
+      - storageLocation
+      - username
+    properties:
+      username:
+        type: string
+        description: The username used to access the storage location
+      password:
+        type: string
+        description: The password used to access the storage location
+      storageLocation:
+        type: string
+        description: The storage location, such as an S3 bucket or ADLS container
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
+      crn:
+        type: string
+        description: The CRN of the custom resource configuration to update.
   CreateDeploymentRequest:
     type: object
     description: Request object to create a deployment.
@@ -1389,7 +1736,7 @@ definitions:
         description: The version of this configuration.
       name:
         type: string
-        description: The name of the deployment
+        description: The name of the deployment.
       deploymentRequestCrn:
         type: string
         description: The CRN of the deployment request.
@@ -1423,30 +1770,34 @@ definitions:
           $ref: '#/definitions/ConfiguredKpi'
       cfmNifiVersion:
         type: string
-        description: The CFM NiFi version associated with the deployment
+        description: The CFM NiFi version associated with the deployment.
       autoStartFlow:
         type: boolean
-        description: Indicates whether or not the flow should be started during deployment creation
+        description: Indicates whether or not the flow should be started during deployment creation.
       clusterSizeName:
         type: string
-        description: The size of the cluster to deploy. Deprecated. Use 'clusterSize.name' instead
+        description: The size of the cluster to deploy. Deprecated. Use 'clusterSize.name' instead.
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+          - CUSTOM
         x-deprecated: true
+      clusterSize:
+        description: The size of the cluster to deploy.
+        $ref: '#/definitions/BasicClusterSize'
       inboundHostname:
         type: string
-        description: The FQDN of inbound hostname or just the prefix part
+        description: The FQDN of inbound hostname or just the prefix part.
       listenComponents:
         type: array
-        description: Listen components port and protocol data
+        description: Listen components port and protocol data.
         items:
           $ref: '#/definitions/ListenComponent'
       nodeStorageProfileName:
         type: string
-        description: Node storage profile name
+        description: Node storage profile name.
         enum:
           - STANDARD_AWS
           - STANDARD_AZURE
@@ -1456,6 +1807,9 @@ definitions:
       customNarConfigurationCrn:
         type: string
         description: The CRN of the custom NAR configuration.
+      customPythonConfigurationCrn:
+        type: string
+        description: The CRN of the custom Python configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -1521,6 +1875,28 @@ definitions:
       crn:
         type: string
         description: The CRN of the created reporting task.
+  CustomClusterSizeLimits:
+    type: object
+    description: Limits for the custom cluster size type.
+    x-workload: true
+    x-client-only: true
+    properties:
+      maximumCpuCoresPerNode:
+        type: number
+        format: double
+        description: The maximum number of CPU Cores per node, that fit on the node type.
+      minimumCpuCoresPerNode:
+        type: number
+        format: double
+        description: The minimum number of CPU Cores per node, that fit on the node type.
+      maximumMemoryLimit:
+        type: number
+        format: double
+        description: The upper memory limit that is available on the node type.
+      minimumMemoryLimit:
+        type: number
+        format: double
+        description: The lower memory limit that is available on the node type.
   DeleteCustomNarConfigurationRequest:
     type: object
     description: Request object for deleting a custom NAR configuration by CRN.
@@ -1544,6 +1920,56 @@ definitions:
   DeleteCustomNarConfigurationResponse:
     type: object
     description: Response object for deleting a custom NAR configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+      - password
+      - storageLocation
+      - username
+    properties:
+      username:
+        type: string
+        description: The username used to access the storage location
+      password:
+        type: string
+        description: The password used to access the storage location
+      storageLocation:
+        type: string
+        description: The storage location, such as an S3 bucket or ADLS container
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
+      crn:
+        type: string
+        description: The CRN of the custom resource configuration to update.
+  DeleteCustomPythonConfigurationRequest:
+    type: object
+    description: Request object for deleting a custom Python configuration by CRN.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - configurationVersion
+      - customPythonConfigurationCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      customPythonConfigurationCrn:
+        type: string
+        description: The CRN of the custom Python configuration to delete.
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+  DeleteCustomPythonConfigurationResponse:
+    type: object
+    description: Response object for deleting a custom python configuration.
     x-workload: true
     x-client-only: true
     required:
@@ -1621,7 +2047,7 @@ definitions:
         description: The CRN of the deleted reporting task.
   DeploymentStatus:
     type: object
-    description: The state and state message associated with a deployment
+    description: The state and state message associated with a deployment.
     x-workload: true
     x-client-only: true
     required:
@@ -1630,7 +2056,7 @@ definitions:
     properties:
       detailedState:
         type: string
-        description: The detailed state that the deployment is currently in
+        description: The detailed state that the deployment is currently in.
         enum:
           - GOOD_HEALTH
           - FAILED_TO_STOP_FLOW
@@ -1653,6 +2079,11 @@ definitions:
           - UPDATING_NIFI_VERSION
           - CANCELLING_NIFI_VERSION_UPDATE
           - RESTARTING
+          - CHANGING_FLOW_VERSION
+          - FAILED_TO_PREPARE_FOR_CHANGE_FLOW_VERSION
+          - FAILED_TO_CHANGE_FLOW_VERSION
+          - CANCELLING_CHANGE_FLOW_VERSION
+          - FAILED_TO_CANCEL_CHANGE_FLOW_VERSION
           - SUSPENDING
           - RESUMING
           - SUSPENDED
@@ -1674,6 +2105,7 @@ definitions:
           - METRICS_UNAVAILABLE
           - METERING_WARNING
           - METERING_OFFLINE
+          - PROMETHEUS_APPROACHING_MEMORY_LIMIT
           - CERTIFICATE_RENEWED
           - NOT_HEALTHY
           - EXCESSIVE_OFFLOAD_TIME
@@ -1683,7 +2115,7 @@ definitions:
         x-deprecated-enum-values: FAILED_TO_START,SUSPENDING_FLOW
       state:
         type: string
-        description: The state that the deployment is currently in
+        description: The state that the deployment is currently in.
         enum:
           - DEPLOYING
           - GOOD_HEALTH
@@ -1693,6 +2125,7 @@ definitions:
           - STARTING_FLOW
           - STOPPING_FLOW
           - FLOW_STOPPED
+          - CHANGING_FLOW_VERSION
           - UPDATING
           - TERMINATING
           - RESTARTING
@@ -1707,7 +2140,7 @@ definitions:
         x-deprecated-enum-values: SUSPENDING_FLOW
       message:
         type: string
-        description: Detail message relating to the current status of the deployment
+        description: Detail message relating to the current status of the deployment.
   DescribeInboundConnectionEndpointRequest:
     type: object
     description: Request object that contains the identifier of the Inbound Connection Endpoint to describe
@@ -1849,6 +2282,51 @@ definitions:
   GetCustomNarConfigurationResponse:
     type: object
     description: Response object for retrieving a custom NAR configuration by CRN.
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+      - password
+      - storageLocation
+      - username
+    properties:
+      username:
+        type: string
+        description: The username used to access the storage location
+      password:
+        type: string
+        description: The password used to access the storage location
+      storageLocation:
+        type: string
+        description: The storage location, such as an S3 bucket or ADLS container
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
+      crn:
+        type: string
+        description: The CRN of the custom resource configuration to update.
+  GetCustomPythonConfigurationRequest:
+    type: object
+    description: Request object for retrieving a custom Python configuration by CRN.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - customPythonConfigurationCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      customPythonConfigurationCrn:
+        type: string
+        description: The CRN of the custom Python configuration to retrieve.
+  GetCustomPythonConfigurationResponse:
+    type: object
+    description: Response object for retrieving a custom Python configuration by CRN.
     x-workload: true
     x-client-only: true
     required:
@@ -2639,39 +3117,39 @@ definitions:
     properties:
       name:
         type: string
-        description: The name of the deployment
+        description: The name of the deployment.
       status:
-        description: The status of the deployment
+        description: The status of the deployment.
         $ref: '#/definitions/DeploymentStatus'
       service:
-        description: Simple information about the DataFlow service of the deployment
+        description: Simple information about the DataFlow service of the deployment.
         $ref: '#/definitions/ServiceMeta'
       crn:
         type: string
-        description: The CRN of the deployment
+        description: The CRN of the deployment.
       activeInfoAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as an info
+        description: Current count of active alerts classified as an info.
       activeWarningAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as a warning
+        description: Current count of active alerts classified as a warning.
       activeErrorAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as an error
+        description: Current count of active alerts classified as an error.
       created:
         type: integer
         format: int64
-        description: Timestamp of the creation of the deployment
+        description: Timestamp of the creation of the deployment.
       updated:
         type: integer
         format: int64
-        description: Timestamp of the last time the deployment was modified
+        description: Timestamp of the last time the deployment was modified.
       validActions:
         type: array
-        description: Valid actions that can be applied to the deployment in its current state
+        description: Valid actions that can be applied to the deployment in its current state.
         uniqueItems: true
         items:
           type: string
@@ -2691,117 +3169,127 @@ definitions:
             - SUSPEND
             - RESUME
             - DOWNLOAD_LOG
+            - CHANGE_FLOW_VERSION
+            - RETRY_CHANGE_FLOW_VERSION
+            - CANCEL_CHANGE_FLOW_VERSION
             - SUSPEND_FLOW
           x-deprecated-enum-values: SUSPEND_FLOW
       project:
-        description: Simple information about the project this deployment belongs to, or null if does not belong to a project
+        description: Simple information about the project this deployment belongs to, or null if does not belong to a project.
         readOnly: true
         $ref: '#/definitions/ProjectMeta'
       nifiUrl:
         type: string
-        description: The url to open the deployed flow in NiFi
+        description: The url to open the deployed flow in NiFi.
       clusterSize:
         type: string
-        description: The initial size of the deployment. Deprecated. Use 'clusterSizeParams.name' instead
+        description: The initial size of the deployment. Deprecated. Use 'clusterSizeParams.name' instead.
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+          - CUSTOM
         x-deprecated: true
       coresPerNode:
         type: integer
         format: int32
-        description: The number of cores per node for the deployment. Deprecated. Use 'clusterSizeParams.coresPerNode' instead
+        description: The number of cores per node for the deployment. Deprecated. Use 'clusterSizeParams.coresPerNode' instead.
         x-deprecated: true
       heapSize:
         type: number
         format: double
-        description: The heap size for the deployment. Deprecated. Use 'clusterSizeParams.heapSize' instead
+        description: The heap size for the deployment. Deprecated. Use 'clusterSizeParams.heapSize' instead.
         x-deprecated: true
       memoryLimit:
         type: number
         format: double
-        description: The memory limit of the deployment. Deprecated. Use 'clusterSizeParams.memoryLimit' instead
+        description: The memory limit of the deployment. Deprecated. Use 'clusterSizeParams.memoryLimit' instead.
         x-deprecated: true
+      clusterSizeParams:
+        description: The initial size of the deployment.
+        $ref: '#/definitions/ClusterSize'
       autoscalingEnabled:
         type: boolean
-        description: Whether or not autoscaling is enabled for this deployment
+        description: Whether or not autoscaling is enabled for this deployment.
       flowMetricsScalingEnabled:
         type: boolean
-        description: Whether or not flow metrics scaling is enabled for this deployment
+        description: Whether or not flow metrics scaling is enabled for this deployment.
       autoscaleMinNodes:
         type: integer
         format: int32
-        description: The minimum number of nodes that the deployment will allocate; can only be used when autoscalingEnabled is true
+        description: The minimum number of nodes that the deployment will allocate; can only be used when autoscalingEnabled is true.
       autoscaleMaxNodes:
         type: integer
         format: int32
-        description: The maximum number of nodes that the deployment can scale up to; can only be used when autoscalingEnabled is true
+        description: The maximum number of nodes that the deployment can scale up to; can only be used when autoscalingEnabled is true.
       staticNodeCount:
         type: integer
         format: int32
-        description: The static number of nodes of the deployment; can only be used when autoscalingEnabled is false
+        description: The static number of nodes of the deployment; can only be used when autoscalingEnabled is false.
       flowName:
         type: string
-        description: The name of the flow
+        description: The name of the flow.
       flowVersion:
         type: integer
         format: int32
-        description: The version of the flow
+        description: The version of the flow.
       flowVersionCrn:
         type: string
-        description: The deployment's current flow version CRN
+        description: The deployment's current flow version CRN.
       flowCrn:
         type: string
-        description: The deployment's current flow CRN
+        description: The deployment's current flow CRN.
       creatorCrn:
         type: string
-        description: The CRN of the user who deployed the flow
+        description: The CRN of the user who deployed the flow.
       artifactTypeName:
         type: string
-        description: The type of artifact of the flow
+        description: The type of artifact of the flow.
       currentNodeCount:
         type: integer
         format: int32
-        description: The current node count
+        description: The current node count.
       deployedByUsername:
         type: string
-        description: The username of the person who deployed the flow
+        description: The username of the person who deployed the flow.
       deployedByName:
         type: string
-        description: The name of the person who deployed the flow
+        description: The name of the person who deployed the flow.
       dfxLocalUrl:
         type: string
-        description: Base URL to the CDF Local instance running this deployment
+        description: Base URL to the CDF Local instance running this deployment.
       configurationVersion:
         type: integer
         format: int32
-        description: The current version of the deployment's configuration
+        description: The current version of the deployment's configuration.
       lastUpdatedByUsername:
         type: string
-        description: The username of the last person to update the deployment
+        description: The username of the last person to update the deployment.
       cfmNifiVersion:
         type: string
-        description: The CFM NiFi version associated with the deployment
+        description: The CFM NiFi version associated with the deployment.
       inboundConnectionEndpointId:
         type: string
-        description: The ID of Inbound Connection Endpoint assigned to the deployment
+        description: The ID of Inbound Connection Endpoint assigned to the deployment.
       testSession:
         type: boolean
-        description: Indicates this deployment was created as a test session for designing a flow
+        description: Indicates this deployment was created as a test session for designing a flow.
       flowDesignerId:
         type: string
         description: The ID of the flow design for a test session deployment.
       customNarConfigurationId:
         type: string
         description: The identifier of the custom NAR configuration, if used.
+      customPythonConfigurationId:
+        type: string
+        description: The identifier of the custom python configuration, if used.
       nodeStorageProfile:
         type: string
-        description: The node storage profile
+        description: The node storage profile.
       projectCrn:
         type: string
-        description: The crn of the project this deployment belongs to, or null if does not belong to a project
+        description: The crn of the project this deployment belongs to, or null if does not belong to a project.
   RpcDeploymentArchiveMetadata:
     type: object
     description: Provides the metadata about deployment exported archive
@@ -2899,12 +3387,17 @@ definitions:
         description: Indicates whether or not the flow should be started during deployment creation.
       clusterSizeName:
         type: string
-        description: The size of the cluster to deploy.
+        description: The size of the cluster to deploy. Deprecated, use clusterSize.name instead.
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+          - CUSTOM
+        x-deprecated: true
+      clusterSize:
+        description: The size of the cluster to deploy.
+        $ref: '#/definitions/BasicClusterSize'
       nodeStorageProfileName:
         type: string
         description: Node storage profile name.
@@ -2943,6 +3436,9 @@ definitions:
       projectCrn:
         type: string
         description: The crn of the project this deployment belongs to, or null if does not belong to a project.
+      assetConfigurationAvailable:
+        type: boolean
+        description: Indicates whether the cluster is configured to accept FILE/FILES type parameters.
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.
@@ -3029,13 +3525,18 @@ definitions:
         readOnly: true
       clusterSizeName:
         type: string
-        description: The cluster size name retrieved from archive.
+        description: The cluster size name retrieved from archive. Deprecated, use clusterSize.name instead.
         readOnly: true
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+          - CUSTOM
+        x-deprecated: true
+      clusterSize:
+        description: The deployment t-shirt size.
+        $ref: '#/definitions/BasicClusterSize'
       kpis:
         type: array
         description: The list of configured KPIs imported from archive.
@@ -3074,6 +3575,10 @@ definitions:
       customNarConfigurationCrn:
         type: string
         description: The CRN of the custom NAR configuration.
+        readOnly: true
+      customPythonConfigurationCrn:
+        type: string
+        description: The CRN of the custom Python configuration.
         readOnly: true
   RpcWorkloadResourceSummary:
     type: object
@@ -3164,6 +3669,10 @@ definitions:
       deploymentCrn:
         type: string
         description: The deployment crn.
+      waitForFlowToStopInMinutes:
+        type: integer
+        format: int32
+        description: The max time in minutes to wait for flow to stop.
   StopFlowResponse:
     type: object
     description: Response object for stopping the NiFi flow.
@@ -3317,9 +3826,74 @@ definitions:
       crn:
         type: string
         description: The CRN of the custom resource configuration to update.
+  UpdateCustomPythonConfigurationRequest:
+    type: object
+    description: Request object to update a custom Python configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - configurationVersion
+      - crn
+      - password
+      - storageLocation
+      - username
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      username:
+        type: string
+        description: The username used to access the storage location
+      password:
+        type: string
+        description: The password used to access the storage location
+      storageLocation:
+        type: string
+        description: The storage location, such as an S3 bucket or ADLS container
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+      crn:
+        type: string
+        description: The CRN of the custom Python configuration to update.
+      projectCrn:
+        type: string
+        description: The CRN of the project.
+  UpdateCustomPythonConfigurationResponse:
+    type: object
+    description: Response object for updating a custom Python configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+      - password
+      - storageLocation
+      - username
+    properties:
+      username:
+        type: string
+        description: The username used to access the storage location
+      password:
+        type: string
+        description: The password used to access the storage location
+      storageLocation:
+        type: string
+        description: The storage location, such as an S3 bucket or ADLS container
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
+      crn:
+        type: string
+        description: The CRN of the custom resource configuration to update.
   UpdateDeploymentRequest:
     type: object
-    description: Provides all of the configuration that dictates how a flow should be deployed
+    description: Provides all of the configuration that dictates how a flow should be deployed.
     x-workload: true
     x-client-only: true
     required:
@@ -3367,13 +3941,17 @@ definitions:
           $ref: '#/definitions/ConfiguredKpi'
       clusterSizeName:
         type: string
-        description: The deployment t-shirt size. Deprecated. Use 'clusterSize.name' instead
+        description: The deployment t-shirt size. Deprecated. Use 'clusterSize.name' instead.
         enum:
           - EXTRA_SMALL
           - SMALL
           - MEDIUM
           - LARGE
+          - CUSTOM
         x-deprecated: true
+      clusterSize:
+        description: The deployment t-shirt size.
+        $ref: '#/definitions/BasicClusterSize'
       assetUpdateRequestCrn:
         type: string
         description: The CRN of the asset update request. Required when updating assets of an existing deployment.
@@ -3485,5 +4063,41 @@ definitions:
   ValidateCustomNarConfigurationResponse:
     type: object
     description: Response object for validating custom NAR configuration.
+    x-workload: true
+    x-client-only: true
+  ValidateCustomPythonConfigurationRequest:
+    type: object
+    description: Request object for validating a custom Python configuration.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - configurationVersion
+      - password
+      - storageLocation
+      - username
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      username:
+        type: string
+        description: The username used to access the storage location
+      password:
+        type: string
+        description: The password used to access the storage location
+      storageLocation:
+        type: string
+        description: The storage location, such as an S3 bucket or ADLS container
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of the configuration
+      projectCrn:
+        type: string
+        description: The CRN of the project.
+  ValidateCustomPythonConfigurationResponse:
+    type: object
+    description: Response object for validating custom Python configuration.
     x-workload: true
     x-client-only: true

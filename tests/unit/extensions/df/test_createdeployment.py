@@ -161,6 +161,7 @@ class TestCreateDeployment(unittest.TestCase):
                 'name': deployment_name,
                 'configurationVersion': 0,
                 'clusterSizeName': 'EXTRA_SMALL',
+                'clusterSize': {'name': 'EXTRA_SMALL'},
                 'staticNodeCount': 1
             },
             create_deployment_parameters[0])
@@ -171,12 +172,20 @@ class TestCreateDeployment(unittest.TestCase):
         flow_version_crn = 'FLOW_VERSION_CRN'
         deployment_name = 'DEPLOYMENT'
 
+        cluster_size_name = 'EXTRA_SMALL'
+        cluster_size = {
+            'name': cluster_size_name,
+            'coresPerNode': 2.0,
+            'memoryLimit': 4.0
+        }
         auto_scale_min_nodes = 1
         auto_scale_max_nodes = 3
         parameters = {
             'serviceCrn': service_crn,
             'flowVersionCrn': flow_version_crn,
             'deploymentName': deployment_name,
+            'clusterSizeName': cluster_size_name,
+            'clusterSize': cluster_size,
             'autoScalingEnabled': True,
             'autoScaleMinNodes': auto_scale_min_nodes,
             'autoScaleMaxNodes': auto_scale_max_nodes,
@@ -256,6 +265,11 @@ class TestCreateDeployment(unittest.TestCase):
                 'name': deployment_name,
                 'configurationVersion': 0,
                 'clusterSizeName': 'EXTRA_SMALL',
+                'clusterSize': {
+                    'name': 'EXTRA_SMALL',
+                    'coresPerNode': 2.0,
+                    'memoryLimit': 4.0
+                },
                 'autoScalingEnabled': True,
                 'autoScaleMinNodes': auto_scale_min_nodes,
                 'autoScaleMaxNodes': auto_scale_max_nodes,
@@ -509,6 +523,11 @@ class TestCreateDeployment(unittest.TestCase):
         }
 
         cluster_size_name = 'MEDIUM'
+        cluster_size = {
+            'name': cluster_size_name,
+            'coresPerNode': 6.0,
+            'memoryLimit': 12.0
+        }
         auto_scaling_enabled = False
         static_node_count = 2
         cfm_nifi_version = '1.14.0'
@@ -517,7 +536,7 @@ class TestCreateDeployment(unittest.TestCase):
             'serviceCrn': service_crn,
             'flowVersionCrn': flow_version_crn,
             'deploymentName': deployment_name,
-            'clusterSizeName': cluster_size_name,
+            'clusterSize': cluster_size,
             'autoScalingEnabled': auto_scaling_enabled,
             'staticNodeCount': static_node_count,
             'cfmNifiVersion': cfm_nifi_version,
@@ -624,6 +643,7 @@ class TestCreateDeployment(unittest.TestCase):
                 'name': deployment_name,
                 'configurationVersion': 0,
                 'clusterSizeName': cluster_size_name,
+                'clusterSize': cluster_size,
                 'staticNodeCount': static_node_count,
                 'cfmNifiVersion': cfm_nifi_version,
                 'autoStartFlow': auto_start_flow,
@@ -1208,6 +1228,137 @@ class TestCreateDeployment(unittest.TestCase):
             create_deployment_parameters[0]
         )
 
+    def test_invoke_create_deployment_from_archive_new_cluster_size_format(self):
+        # in this test, just ensure whenever there is an
+        # archive_<parameter> variable value that it has different value from the
+        # <parameter> variable value
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+        node_storage_profile_name = 'STANDARD_AWS'
+        archive_node_storage_profile_name = 'PERFORMANCE_AWS'
+
+        cluster_size = {'name': 'MEDIUM'}
+        archive_cluster_size = {
+            'name': 'CUSTOM',
+            'coresPerNode': 12.0,
+            'memoryLimit': 15.0
+        }
+        auto_scaling_enabled = False
+        static_node_count = 2
+        cfm_nifi_version = '1.14.0'
+        archive_cfm_nifi_version = '1.21.0'
+        auto_start_flow = False
+
+        # this is what's passed into the CLI call
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'fromArchive': 'test-archive-name',
+            'clusterSize': cluster_size,
+            'autoScalingEnabled': auto_scaling_enabled,
+            'staticNodeCount': static_node_count,
+            'cfmNifiVersion': cfm_nifi_version,
+            'autoStartFlow': auto_start_flow,
+            'nodeStorageProfileName': node_storage_profile_name
+        }
+
+        # this is what the importDeployment call will return
+        # and what should get used
+        import_deployment_configuration = {
+            'rpcImportedDeploymentConfiguration': {
+                'clusterSize': archive_cluster_size,
+                'autoScalingEnabled': auto_scaling_enabled,
+                'cfmNifiVersion': archive_cfm_nifi_version,
+                'nodeStorageProfile': archive_node_storage_profile_name
+            }
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        initiate_request_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        create_deployment_parameters = []
+        deployment_crn = 'DEPLOYMENT_CRN'
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'createDeployment':
+                create_response = {
+                    'deployment': {
+                        'crn': deployment_crn
+                    }
+                }
+                create_deployment_parameters.append(args[1])
+                return (Mock(status_code=200), create_response)
+            elif operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'importDeployment':
+                import_response = import_deployment_configuration
+                return(Mock(status_code=200), import_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                      parameters, parsed_args, parsed_globals)
+
+        self.assertEquals(
+            {
+                'serviceCrn': service_crn,
+                'flowVersionCrn': flow_version_crn
+            },
+            initiate_request_parameters[0])
+
+        self.assertEquals('Bearer ' + token, parsed_globals.access_token)
+        self.assertEquals(workload_url, parsed_globals.endpoint_url)
+
+        expected_create_deployment_parameters = {
+            'environmentCrn': environment_crn,
+            'deploymentRequestCrn': deployment_request_crn,
+            'name': deployment_name,
+            'configurationVersion': 0,
+            'clusterSize': archive_cluster_size,
+            'cfmNifiVersion': archive_cfm_nifi_version,
+            'autoStartFlow': auto_start_flow,
+            'autoScalingEnabled': auto_scaling_enabled,
+            'nodeStorageProfileName': archive_node_storage_profile_name
+        }
+        self.assertEquals(
+            expected_create_deployment_parameters,
+            create_deployment_parameters[0]
+        )
+
     def test_invoke_create_deployment_import_parameters_from_archive(self):
         # in this test, just ensure whenever there is an
         # archive_<parameter> variable value that it has different value from the
@@ -1511,3 +1662,221 @@ class TestCreateDeployment(unittest.TestCase):
         expected_error_msg = ('Cannot use both --from-archive and '
                               '--import-parameters-from arguments.')
         self.assertTrue(expected_error_msg in str(context.exception))
+
+    def test_create_deployment_error_cluster_size_mismatch(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+
+        cluster_size_name = 'EXTRA_SMALL'
+        cluster_size = {
+            'name': 'CUSTOM',
+            'coresPerNode': 2.0,
+            'memoryLimit': 5.0
+        }
+
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'clusterSizeName': cluster_size_name,
+            'clusterSize': cluster_size
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        initiate_request_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'abortDeploymentRequest':
+                return (Mock(status_code=200), {})
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        with self.assertRaises(DfExtensionError) as context:
+            self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                          parameters, parsed_args, parsed_globals)
+
+        self.assertTrue('Cluster size name mismatch' in str(context.exception))
+        self.assertEqual(2, self.df_client.make_api_call.call_count)
+        self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
+        self.assertEqual(2, self.df_workload_client.make_api_call.call_count)
+
+    def test_create_deployment_name_not_provided_in_cluster_size(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+
+        cluster_size_name = 'EXTRA_SMALL'
+        cluster_size = {
+            'coresPerNode': 2.0,
+            'memoryLimit': 5.0
+        }
+
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'clusterSizeName': cluster_size_name,
+            'clusterSize': cluster_size
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        initiate_request_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'abortDeploymentRequest':
+                return (Mock(status_code=200), {})
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        with self.assertRaises(DfExtensionError) as context:
+            self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                          parameters, parsed_args, parsed_globals)
+
+        self.assertTrue('Cluster size name is not provided' in str(context.exception))
+        self.assertEqual(2, self.df_client.make_api_call.call_count)
+        self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
+        self.assertEqual(2, self.df_workload_client.make_api_call.call_count)
+
+    def test_create_deployment_name_not_provided_in_cluster_size_no_old_format(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_name = 'DEPLOYMENT'
+
+        cluster_size = {
+            'coresPerNode': 2.0,
+            'memoryLimit': 5.0
+        }
+
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentName': deployment_name,
+            'clusterSize': cluster_size
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+        workload_url = 'https://localhost.localdomain/'
+
+        initiate_request_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'listDeployableServicesForNewDeployments':
+                return self._get_deployable_services(service_crn, environment_crn)
+            elif operation_name == 'initiateDeployment':
+                initiate_deployment_response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': workload_url
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), initiate_deployment_response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+
+        token = 'WORKLOAD_TOKEN'
+        auth_token_response = {
+            'token': token,
+            'endpointUrl': workload_url
+        }
+        self.iam_client.generate_workload_auth_token.return_value = auth_token_response
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'getDeploymentRequestDetails':
+                return (Mock(status_code=200), {})
+            elif operation_name == 'abortDeploymentRequest':
+                return (Mock(status_code=200), {})
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        with self.assertRaises(DfExtensionError) as context:
+            self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                          parameters, parsed_args, parsed_globals)
+
+        self.assertTrue('Cluster size name is not provided' in str(context.exception))
+        self.assertEqual(2, self.df_client.make_api_call.call_count)
+        self.assertEqual(1, self.iam_client.generate_workload_auth_token.call_count)
+        self.assertEqual(2, self.df_workload_client.make_api_call.call_count)

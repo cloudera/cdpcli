@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.113
+  version: 0.9.114
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1852,13 +1852,16 @@ definitions:
         description: Indicates update requirements for the change to take effect.
   DescribeServerSettingItemRequiresUpdate:
     type: string
-    description: Indicates an update requirement for the change to take effect. `ENVIRONMENT` - Means that the environments need to be updated/recreated for the setting change to take effect. `DBC` - Means that the Database Catalogs need an update/recreation. `VW` - Means that the Virtual Warehouses need the update/recreation. `VIZ` - Means that the Dataviz need the update/recreation.
+    description: Indicates an update requirement for the change to take effect. `ENVIRONMENT` - Means that the environments need to be updated/recreated for the setting change to take effect. `DBC` - Means that the Database Catalogs need an update/recreation. `IMPALA` - Means that the Impala Virtual Warehouses need the update/recreation. `HIVE` - Means that the Hive Virtual Warehouses need the update/recreation. `TRINO` - Means that the Trino Virtual Warehouses need the update/recreation. `VIZ` - Means that the Dataviz need the update/recreation. `CDW_HUE` - Means that the CDW Hues need an update/recreation.
     x-form-factors: private
     enum:
       - ENVIRONMENT
       - DBC
-      - VW
+      - IMPALA
+      - HIVE
+      - TRINO
       - VIZ
+      - CDW_HUE
   UpdateServerSettingRequest:
     type: object
     description: Request object for the updateServerSetting method.

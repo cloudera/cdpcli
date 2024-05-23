@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.113
+  version: 0.9.114
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -3401,7 +3401,7 @@ definitions:
     properties:
       environmentName:
         type: string
-        description: The names or CRN of the environment.
+        description: The names or CRN of the environment. In case of hybrid environments this can be only CRN.
   DescribeEnvironmentResponse:
     type: object
     description: Response object for a describe environment request.
