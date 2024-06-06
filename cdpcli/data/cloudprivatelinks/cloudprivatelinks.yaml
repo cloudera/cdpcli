@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.114
+  version: 0.9.115
   title: Cloudera CloudPrivateLinks API Service
   license:
     name: Apache 2.0
@@ -281,11 +281,6 @@ definitions:
       region:
         type: string
         description: Region where the private link service exists.
-      serviceComponents:
-        type: array
-        items:
-          type: string
-        description: CDP service component name [API/DBUSAPI/IAMAPI/CCMV2/CONSOLEAUTH].
       serviceGroup:
         type: string
         description: CDP service group. Currently supported "CDP-CONTROL-PLANE" for PaaS.

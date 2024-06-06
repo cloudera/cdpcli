@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.114
+  version: 0.9.115
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -2017,6 +2017,14 @@ definitions:
       backupCrn:
         type: string
         description: The CRN of the backup that this model registry is created from.
+      whitelistAuthorizedIPRanges:
+        type: boolean
+        description: Whether to whitelist only authorizedIPRanges given or all public IPs
+      authorizedIPRanges:
+        type: array
+        items:
+          type: string
+        description: The whitelist of CIDR blocks which can access the API server.
   CreateModelRegistryResponse:
     type: object
     description: Response for creating model registry request.

@@ -306,7 +306,7 @@ class ChangeFlowVersionOperationCaller(CLIOperationCaller):
             request['waitForFlowToStopInMinutes'] = flow_bleed_out_time
 
         kpis = parameters.get('kpis', None)
-        if kpis:
+        if kpis is not None:
             request['kpis'] = process_kpis(kpis)
 
         # perform upload of asset references then set parameterGroups in request

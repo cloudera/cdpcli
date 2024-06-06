@@ -279,6 +279,224 @@ class TestChangeFlowVersion(unittest.TestCase):
             change_flow_version_parameters[0]
         )
 
+    def test_invoke_change_flow_version_success_preserve_kpis(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_crn = 'DEPLOYMENT_CRN'
+        strategy = 'STOP_AND_PROCESS_DATA'
+        wait_for_flow_to_stop_in_minutes = 20
+
+        # KPIs should be unset to preserve KPIs.
+        # This is different than KPIs being an empty list,
+        # which unsets existing KPIs while performing
+        # change flow version in the backend.
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentCrn': deployment_crn,
+            'strategy': strategy,
+            'waitForFlowToStopInMinutes': wait_for_flow_to_stop_in_minutes
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+
+        initiate_request_parameters = []
+        get_deployment_request_details_parameters = []
+        change_flow_version_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'initiateDeployment':
+                response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': WORKLOAD_URL
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), response)
+            elif operation_name == 'listDeployableServicesForNewDeployments':
+                response = {
+                    'services': [
+                        {
+                            'crn': service_crn,
+                            'environmentCrn': environment_crn
+                        }
+                    ]
+                }
+                return (Mock(status_code=200), response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'getDeploymentRequestDetails':
+                get_deployment_request_details_parameters.append(args[1])
+                return (Mock(status_code=200), {})
+            elif operation_name == 'changeFlowVersion':
+                # the fields here correspond to the
+                # ChangeFlowVersionResponse object in DFX
+                response = {
+                    'deploymentConfiguration': {
+                        'deploymentCrn': deployment_crn
+                    }
+                }
+                change_flow_version_parameters.append(args[1])
+                return (Mock(status_code=200), response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                      parameters, parsed_args, parsed_globals)
+
+        self.assertEquals(
+            {
+                'serviceCrn': service_crn,
+                'flowVersionCrn': flow_version_crn,
+                'deploymentCrn': deployment_crn
+            },
+            initiate_request_parameters[0]
+        )
+
+        self.assertEquals('Bearer ' + TOKEN, parsed_globals.access_token)
+        self.assertEquals(WORKLOAD_URL, parsed_globals.endpoint_url)
+
+        self.assertEquals(
+            {
+                'deploymentRequestCrn': deployment_request_crn,
+                'environmentCrn': environment_crn
+            },
+            get_deployment_request_details_parameters[0]
+        )
+
+        self.assertEquals(
+            {
+                'environmentCrn': environment_crn,
+                'deploymentRequestCrn': deployment_request_crn,
+                'deploymentCrn': deployment_crn,
+                'strategy': strategy,
+                'waitForFlowToStopInMinutes': wait_for_flow_to_stop_in_minutes
+            },
+            change_flow_version_parameters[0]
+        )
+
+    def test_invoke_change_flow_version_success_unset_kpis(self):
+        self.maxDiff = 2000
+        service_crn = 'SERVICE_CRN'
+        flow_version_crn = 'FLOW_VERSION_CRN'
+        deployment_crn = 'DEPLOYMENT_CRN'
+        strategy = 'STOP_AND_PROCESS_DATA'
+        wait_for_flow_to_stop_in_minutes = 20
+
+        parameters = {
+            'serviceCrn': service_crn,
+            'flowVersionCrn': flow_version_crn,
+            'deploymentCrn': deployment_crn,
+            'strategy': strategy,
+            'waitForFlowToStopInMinutes': wait_for_flow_to_stop_in_minutes,
+            # KPIs should be set to empty list to unset kpis.
+            # This is different than KPIs not being provided,
+            # which preserves existing KPIs for change flow version
+            # in the backend.
+            'kpis': []
+        }
+
+        parsed_args = {}
+        parsed_globals = Mock()
+        parsed_globals.output = 'json'
+
+        environment_crn = 'ENVIRONMENT_CRN'
+        deployment_request_crn = 'DEPLOYMENT_REQUEST_CRN'
+
+        initiate_request_parameters = []
+        get_deployment_request_details_parameters = []
+        change_flow_version_parameters = []
+
+        def _df_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'initiateDeployment':
+                response = {
+                    'deploymentRequestCrn': deployment_request_crn,
+                    'dfxLocalUrl': WORKLOAD_URL
+                }
+                initiate_request_parameters.append(args[1])
+                return (Mock(status_code=200), response)
+            elif operation_name == 'listDeployableServicesForNewDeployments':
+                response = {
+                    'services': [
+                        {
+                            'crn': service_crn,
+                            'environmentCrn': environment_crn
+                        }
+                    ]
+                }
+                return (Mock(status_code=200), response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        def _df_workload_make_api_call(*args, **kwargs):
+            operation_name = args[0]
+            if operation_name == 'getDeploymentRequestDetails':
+                get_deployment_request_details_parameters.append(args[1])
+                return (Mock(status_code=200), {})
+            elif operation_name == 'changeFlowVersion':
+                # the fields here correspond to the
+                # ChangeFlowVersionResponse object in DFX
+                response = {
+                    'deploymentConfiguration': {
+                        'deploymentCrn': deployment_crn
+                    }
+                }
+                change_flow_version_parameters.append(args[1])
+                return (Mock(status_code=200), response)
+            else:
+                raise Exception('Unexpected make_api_call [' + operation_name + ']')
+
+        self.df_client.make_api_call.side_effect = _df_make_api_call
+        self.df_workload_client.make_api_call.side_effect = _df_workload_make_api_call
+
+        self.deployment_caller.invoke(self.client_creator, self.deployment_model,
+                                      parameters, parsed_args, parsed_globals)
+
+        self.assertEquals(
+            {
+                'serviceCrn': service_crn,
+                'flowVersionCrn': flow_version_crn,
+                'deploymentCrn': deployment_crn
+            },
+            initiate_request_parameters[0]
+        )
+
+        self.assertEquals('Bearer ' + TOKEN, parsed_globals.access_token)
+        self.assertEquals(WORKLOAD_URL, parsed_globals.endpoint_url)
+
+        self.assertEquals(
+            {
+                'deploymentRequestCrn': deployment_request_crn,
+                'environmentCrn': environment_crn
+            },
+            get_deployment_request_details_parameters[0]
+        )
+
+        self.assertEquals(
+            {
+                'environmentCrn': environment_crn,
+                'deploymentRequestCrn': deployment_request_crn,
+                'deploymentCrn': deployment_crn,
+                'strategy': strategy,
+                'waitForFlowToStopInMinutes': wait_for_flow_to_stop_in_minutes,
+                'kpis': []
+            },
+            change_flow_version_parameters[0]
+        )
+
     def test_invoke_change_flow_version_environment_crn_not_found(self):
         self.maxDiff = 2000
         service_crn = 'SERVICE_CRN'

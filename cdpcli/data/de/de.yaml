@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.114
+  version: 0.9.115
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -574,6 +574,9 @@ definitions:
       root_vol_size:
         type: string
         description: Root Volume Size.
+      allPurposeInstanceGroupDetails:
+        $ref: '#/definitions/AllPurposeInstanceGroupDetailsResponse'
+        description: Resource details for the nodes used in All Purpose Virtual Clusters.
   VcSummary:
     type: object
     description: CDE virtual cluster summary.
@@ -670,6 +673,9 @@ definitions:
       vcTier:
         type: string
         description: Tier of the Virtual Cluster.
+      sessionTimeout:
+        type: string
+        description: Default timeout for Sessions.
   VcResources:
     type: object
     properties:
@@ -706,6 +712,34 @@ definitions:
         type: string
         description: Space separated key value-pairs for overriding chart values. The key and the value must be separated using a colon(:) For eg- "airflow.enabled:true safari.enabled:true".
     description: Response object containing chart value overrides.
+  AllPurposeInstanceGroupDetailsResponse:
+    type: object
+    description: Instance group details for the All purpose Tier.
+    properties:
+      instance_type:
+        type: string
+        description: Instance type of the cluster for CDE Service.
+      min_instances:
+        type: string
+        description: Minimum number of Instances for the CDE Service.
+      max_instances:
+        type: string
+        description: Maximum number of Instances for the CDE Service.
+      min_spot_instances:
+        type: string
+        description: Minimum number of Spot instances for the CDE Service.
+      max_spot_instances:
+        type: string
+        description: Maximum number of Spot Instances for the CDE Service.
+      initial_instances:
+        type: string
+        description: Initial number of Instances when the service is enabled.
+      initial_spot_instances:
+        type: string
+        description: Initial number of spot Instances when the service is enabled.
+      root_vol_size:
+        type: string
+        description: EBS volume size in GB.
   SmtpConfigRequest:
     type: object
     description: SMTP config request object.
@@ -908,6 +942,37 @@ definitions:
         enum:
           - UDR
         description: Network outbound type. Currently 'udr' is the only supported.
+      allPurposeInstanceType:
+        type: string
+        description: Instance type of the cluster for CDE Service for the All Purpose Instance Group.
+      allPurposeMinimumInstances:
+        type: integer
+        format: int32
+        description: Minimum Instances for the CDE Service for the All Purpose Instance Group.
+      allPurposeMaximumInstances:
+        type: integer
+        format: int32
+        description: Maximum Instances for the CDE Service for the All Purpose Instance Group.
+      allPurposeMinimumSpotInstances:
+        type: integer
+        format: int32
+        description: Minimum Spot instances for the CDE Service for the All Purpose Instance Group.
+      allPurposeMaximumSpotInstances:
+        type: integer
+        format: int32
+        description: Maximum Spot Instances for the CDE Service for the All Purpose Instance Group.
+      allPurposeInitialInstances:
+        type: integer
+        format: int32
+        description: Initial Instances when the service is enabled for the All Purpose Instance Group.
+      allPurposeInitialSpotInstances:
+        type: integer
+        format: int32
+        description: Initial spot Instances when the service is enabled for the All Purpose Instance Group.
+      allPurposeRootVolumeSize:
+        type: integer
+        format: int32
+        description: EBS volume size in GB for the All Purpose Instance Group.
   CustomAzureFilesConfigs:
     type: object
     description: Override Azure Files Configs.
@@ -966,6 +1031,22 @@ definitions:
         items:
           type: string
         description: List of CIDRs that would be allowed to access the load balancer.
+      allPurposeMinimumInstances:
+        type: integer
+        format: int32
+        description: Minimum number of instances for the CDE service for the All Purpose Instance Group.
+      allPurposeMaximumInstances:
+        type: integer
+        format: int32
+        description: Maximum number of instances for the CDE service for the All Purpose Instance Group.
+      allPurposeMinimumSpotInstances:
+        type: integer
+        format: int32
+        description: Minimum number of spot instances for the CDE service for the All Purpose Instance Group.
+      allPurposeMaximumSpotInstances:
+        type: integer
+        format: int32
+        description: Maximum number of spot instances for the CDE service for the All Purpose Instance Group.
   UpdateServiceResponse:
     type: object
     description: Response object for UpdateService request.
@@ -1128,6 +1209,9 @@ definitions:
         enum:
           - ALLP
           - CORE
+      sessionTimeout:
+        type: string
+        description: Set a default timeout for your sessions. The default option is 8 hours. This option can be overridden when creating a new session.
       aclUsers:
         description: Comma-separated Workload usernames of CDP users to be granted access to the Virtual Cluster.
         type: string

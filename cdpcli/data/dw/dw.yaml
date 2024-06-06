@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.114
+  version: 0.9.115
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1744,6 +1744,94 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/dw/listResourceTemplates:
+    post:
+      summary: Get default resource allocation templates.
+      description: This command provides a predefined set of available resource configuration in CDW. Users allowed to tailor these default CPU and Memory settings according their needs using the 'update-resource'  command. Setting up these values correctly is crucial when creating a Hive / Impala and DataViz instances using the 'create-vw' / 'create-data-visualisation' commands. The 'id' of the response object has to be supplied in the 'create-vw' / 'create-data-visualisation' command 'template' field respectively, in order to specify the chosen resource allocation size. Please note, the 'default' fields in the response denotes default supplied value if the 'template' not specified in the create commands. These templates are versioned, so users are able to roll-back to a particular version. Existing resources not affected by roll-back. Learn more about each of the resource allocations with the 'describe-resource' command.
+      operationId: listResourceTemplates
+      x-mutating: false
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListResourceTemplatesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListResourceTemplatesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/createResourceTemplate:
+    post:
+      summary: Create a resource allocation template.
+      description: This command's purpose is to facilitate the creation of resource templates in CDW. Users are allowed to tailor default CPU and Memory settings according to their needs. Setting up these values correctly is crucial when creating Hive / Impala and DataViz instances using the 'create-vw' / 'create-data-visualisation' commands. The 'id' of the response object must be supplied in the 'create-vw' / 'create-data-visualisation' command 'template' field to specify the chosen resource allocation size. Please note, that the 'default' fields in the response denote the default supplied value if the 'template' is not specified in the create commands. These templates are versioned so that users can rollback to a particular version. Existing resources are not affected by rollback. Learn more about each resource allocation with the 'describe-resource' command.
+      operationId: createResourceTemplate
+      x-mutating: true
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateResourceTemplateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateResourceTemplateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/updateResourceTemplate:
+    post:
+      summary: Update a resource allocation template.
+      description: This command's purpose is to facilitate the update of resource templates in CDW. Users are allowed to tailor default CPU and Memory settings according to their needs. Setting up these values correctly is crucial when creating Hive / Impala and DataViz instances using the 'create-vw' / 'create-data-visualisation' commands. The 'id' of the response object must be supplied in the 'create-vw' / 'create-data-visualisation' command 'template' field to specify the chosen resource allocation size. Please note, that the 'default' fields in the response denote the default supplied value if the 'template' is not specified in the create commands. These templates are versioned so that users can rollback to a particular version. Existing resources are not affected by rollback. Learn more about each resource allocation with the 'describe-resource' command.
+      operationId: updateResourceTemplate
+      x-mutating: true
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateResourceTemplateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateResourceTemplateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/deleteResourceTemplate:
+    post:
+      summary: Delete a resource allocation template.
+      description: This command's purpose is to facilitate the delete of resource templates in CDW.
+      operationId: deleteResourceTemplate
+      x-mutating: true
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteResourceTemplateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteResourceTemplateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -2048,6 +2136,20 @@ definitions:
         type: string
         description: The Resource Pool of the cluster.
         x-form-factors: private
+  KeyPairCredentials:
+    x-form-factors: private
+    type: object
+    description: Certificate and private key pair credentials, that could be used ie mutual TLS connections therefore these must belong together.
+    required:
+      - certificate
+      - privateKey
+    properties:
+      certificate:
+        type: string
+        description: The content of certificate PEM file.
+      privateKey:
+        type: string
+        description: The content of private key PEM file.
   BackupClusterRequest:
     type: object
     description: Request object for the backupCluster method.
@@ -2282,6 +2384,9 @@ definitions:
         type: boolean
         description: Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.
         default: false
+      dbClientCredentials:
+        $ref: '#/definitions/KeyPairCredentials'
+        description: A certificate and private key pair belonging together for mutual SSL handshake when Database Catalog (aka DBC) connects to the metastore database.
   CreateClusterResponse:
     type: object
     description: Response object for the createCluster method.
@@ -2379,6 +2484,10 @@ definitions:
       observabilityConfig:
         description: Cluster observability configurations to update. You can forward logs from environments activated in Cloudera Data Warehouse (CDW) to observability and monitoring systems such as Datadog, New Relic, or Splunk. Please refer to the following Cloudera documentation for more info. https://docs.cloudera.com/data-warehouse/cloud/monitoring/topics/dw-observability-log-forwarding.html
         $ref: '#/definitions/UpdateClusterObservabilityConfig'
+      resourcePool:
+        type: string
+        description: Used to set the resource pool of the Private Cloud Data Services clusters that are not enrolled for quota management.
+        x-form-factors: private
   ExternalBucketAccessInfo:
     type: object
     description: External bucket definition.
@@ -3588,6 +3697,15 @@ definitions:
         type: boolean
         default: false
         description: Value of 'true' automatically configures the Virtual Warehouse to support JWTs issues by the CDP JWT token provider.  Value of 'false' does not enable JWT auth on the Virtual Warehouse.  If this field is not specified, it defaults to 'false'.
+      ebsLLAPSpillGB:
+        type: integer
+        format: int32
+        description: Provides EBS gp3 volume as temporary storage space for Hive LLAP cache, and improves query performance. Configurable only at Virtual Warehouse creation. Using EBS volumes incurs additional costs.
+      hiveServerHaMode:
+        type: string
+        x-nullable: true
+        x-form-factors: private
+        description: 'Set Hive Server High Availability mode in Private Cloud: * `DISABLED` (default) - Disables Hive Server high availability. * `ACTIVE_PASSIVE` - Runs two Hive Server instances, one active and one passive. Hive session failover is not supported in this setup.'
   TagRequest:
     description: A key/value pair that can be attached to some resources.
     type: object
@@ -4282,6 +4400,13 @@ definitions:
         type: string
         description: The name of the Resource Pool the Database Catalog is in.
         x-form-factors: private
+      resources:
+        type: object
+        x-nullable: true
+        x-form-factors: private
+        description: The actual resources used by the Database Catalog.
+        additionalProperties:
+          $ref: '#/definitions/ApplicationResources'
   VwSummary:
     type: object
     description: A Virtual Warehouse.
@@ -4459,6 +4584,22 @@ definitions:
         x-deprecated: true
         x-form-factors: private
         description: 'DEPRECATED - Authentication mode used by Hive Server: * `LDAP` * `KERBEROS`'
+      ebsLLAPSpillGB:
+        type: integer
+        format: int32
+        description: Provides EBS gp3 volume as temporary storage space for Hive LLAP cache, and improves query performance. Configurable only at Virtual Warehouse creation. Using EBS volumes incurs additional costs.
+      hiveServerHaMode:
+        type: string
+        x-nullable: true
+        x-form-factors: private
+        description: 'Hive Server High Availability mode in Private Cloud: * `DISABLED` - Hive Server high availability is disabled. * `ACTIVE_PASSIVE` - Hive Server high availability is enabled with one active and one passive instances. Hive session failover is not supported in this setup.'
+      resources:
+        type: object
+        x-nullable: true
+        x-form-factors: private
+        description: The actual resources used by the Virtual Warehouse.
+        additionalProperties:
+          $ref: '#/definitions/ApplicationResources'
   TagResponse:
     description: A key/value pair attached to some resources.
     type: object
@@ -4695,6 +4836,15 @@ definitions:
         type: boolean
         x-nullable: true
         description: Value of 'true' automatically configures the Virtual Warehouse to support JWTs issues by the CDP JWT token provider.  Value of 'false' does not enable JWT auth on the Virtual Warehouse.  If this field is not specified, it defaults to 'false'.
+      resourcePool:
+        type: string
+        description: Used to set the resource pool of the Virtual Warehouses that are not enrolled for quota management.
+        x-form-factors: private
+      hiveServerHaMode:
+        type: string
+        x-nullable: true
+        x-form-factors: private
+        description: 'If specified, modifies Hive Server High Availability mode in Private Cloud: * `DISABLED` - Disables Hive Server high availability. * `ACTIVE_PASSIVE` - Runs two Hive Server instances, one active and one passive. Hive session failover is not supported in this setup.'
   UpdateVwResponse:
     type: object
     description: Response object for the updateVw method.
@@ -5590,4 +5740,354 @@ definitions:
         description: A list of available namespaces for backup, corresponding to the CDW entities.
         items:
           type: string
+  ListResourceTemplatesRequest:
+    type: object
+    description: Request object for the listResourceTemplates method.
+    x-mutating: false
+    x-form-factors: private
+  ListResourceTemplatesResponse:
+    type: object
+    description: The response object for the listResourceTemplates method.
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      templates:
+        type: array
+        description: Array of the resource templates.
+        items:
+          $ref: '#/definitions/ResourceTemplateResponse'
+  CreateResourceTemplateRequest:
+    type: object
+    description: Request object for the createResourceTemplate method.
+    x-mutating: true
+    x-form-factors: private
+    properties:
+      id:
+        type: string
+        description: ID of the template.
+        x-nullable: false
+      name:
+        type: string
+        description: Name of the template.
+        x-nullable: false
+      description:
+        type: string
+        description: Description of the template.
+        x-nullable: false
+      entityType:
+        type: string
+        description: 'Entity type for which the template will be created. (Possible values: impala, hive, trino, hue, dbc, viz).'
+        x-nullable: false
+      resources:
+        type: object
+        description: The resource values of the template.
+        x-nullable: false
+        additionalProperties:
+          $ref: '#/definitions/CreateApplicationResources'
+  CreateResourceTemplateResponse:
+    type: object
+    description: The response object for the createResourceTemplate method.
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      templateId:
+        type: string
+        description: The id of the new template.
+  CreateApplicationResources:
+    type: object
+    description: The resource requirements of a component.
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      cpu:
+        type: number
+        format: float
+        description: Overall CPU requirements.
+      memory:
+        type: string
+        description: Overall memory requirements.
+      breakdown:
+        description: Breakdown of the service memory requirements.
+        x-nullable: true
+        $ref: '#/definitions/CreateApplicationResourcesBreakdown'
+      ephemeralStorage:
+        type: string
+        description: Temporary storage for CDW pods, used for storing configurations and temporary data needed during a process. The lifespan of ephemeral storage is tied to the pod.
+        x-nullable: true
+      localStorageSize:
+        description: Local disk size requirements.
+        x-nullable: true
+        $ref: '#/definitions/CreateApplicationResourcesLocalStorageSize'
+  CreateApplicationResourcesBreakdown:
+    type: object
+    description: Breakdown of the service memory requirements like Xms, Xss etc.
+    x-nullable: true
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      xms:
+        type: string
+        description: Java VM configuration for -Xms (initial and minimum heap size).
+        x-nullable: true
+      xmx:
+        type: string
+        description: Java VM configuration for -Xmx (maximum heap size).
+      headroom:
+        type: string
+        description: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.
+        x-nullable: true
+      xss:
+        type: string
+        description: Java VM configuration for -Xss (thread stack size).
+        x-nullable: true
+      maxDirectMemorySize:
+        type: string
+        description: Java VM configuration for -XX:MaxDirectMemorySize (limit for Direct Byte Buffers).
+        x-nullable: true
+      waitQueueSize:
+        type: integer
+        format: int32
+        description: Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.
+        x-nullable: true
+  CreateApplicationResourcesLocalStorageSize:
+    type: object
+    description: Storage related information.
+    x-nullable: true
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      scratch:
+        type: string
+        description: Local disk space used for writing scratch data.
+      cache:
+        type: string
+        description: Local disk space used for writing cache data.
+      overhead:
+        type: string
+        description: Local disk space used for writing other temporary data, tools, etc.
+  UpdateResourceTemplateRequest:
+    type: object
+    description: Request object for the updateResourceTemplate method.
+    x-mutating: true
+    x-form-factors: private
+    properties:
+      templateId:
+        type: string
+        description: The ID of the template.
+      name:
+        type: string
+        description: Name of the template.
+        x-nullable: false
+      description:
+        type: string
+        description: Description of the template.
+        x-nullable: false
+      resources:
+        type: object
+        description: The resource values of the template.
+        x-nullable: false
+        additionalProperties:
+          $ref: '#/definitions/UpdateApplicationResources'
+  UpdateResourceTemplateResponse:
+    type: object
+    description: The response object for the updateResourceTemplate method.
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      templateId:
+        type: string
+        description: The id of the updated template.
+  UpdateApplicationResources:
+    type: object
+    description: The resource requirements of a component.
+    x-mutating: true
+    x-form-factors: private
+    properties:
+      cpu:
+        type: number
+        format: float
+        description: Overall CPU requirements.
+      memory:
+        type: string
+        description: Overall memory requirements.
+      breakdown:
+        description: Breakdown of the service memory requirements.
+        x-nullable: true
+        $ref: '#/definitions/UpdateApplicationResourcesBreakdown'
+      ephemeralStorage:
+        type: string
+        description: Temporary storage for CDW pods, used for storing configurations and temporary data needed during a process. The lifespan of ephemeral storage is tied to the pod.
+        x-nullable: true
+      localStorageSize:
+        description: Local disk size requirements.
+        x-nullable: true
+        $ref: '#/definitions/UpdateApplicationResourcesLocalStorageSize'
+  UpdateApplicationResourcesBreakdown:
+    type: object
+    description: Breakdown of the service memory requirements.
+    x-nullable: true
+    x-mutating: true
+    x-form-factors: private
+    properties:
+      xms:
+        type: string
+        description: Java VM configuration for -Xms (initial and minimum heap size).
+        x-nullable: true
+      xmx:
+        type: string
+        description: Java VM configuration for -Xmx (maximum heap size).
+      headroom:
+        type: string
+        description: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.
+        x-nullable: true
+      xss:
+        type: string
+        description: Java VM configuration for -Xss (thread stack size).
+        x-nullable: true
+      maxDirectMemorySize:
+        type: string
+        description: Java VM configuration for -XX:MaxDirectMemorySize (limit for Direct Byte Buffers).
+        x-nullable: true
+      waitQueueSize:
+        type: integer
+        format: int32
+        description: Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.
+        x-nullable: true
+  UpdateApplicationResourcesLocalStorageSize:
+    type: object
+    description: Storage related information.
+    x-nullable: true
+    x-mutating: true
+    x-form-factors: private
+    properties:
+      scratch:
+        type: string
+        description: Local disk space used for writing scratch data.
+      cache:
+        type: string
+        description: Local disk space used for writing cache data.
+      overhead:
+        type: string
+        description: Local disk space used for writing other temporary data, tools, etc.
+  DeleteResourceTemplateRequest:
+    type: object
+    description: Request object for the deleteResourceTemplate method.
+    x-mutating: true
+    x-form-factors: private
+    properties:
+      templateId:
+        type: string
+        description: The ID of the template.
+        x-nullable: false
+      templateVersion:
+        type: integer
+        format: int32
+        description: Version of the template.
+        x-nullable: false
+  DeleteResourceTemplateResponse:
+    type: object
+    description: The response object for the deleteResourceTemplate method.
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      templateId:
+        type: string
+        description: The id of the deleted template.
+  ApplicationResources:
+    type: object
+    description: The resource requirements of a component.
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      cpu:
+        type: number
+        format: float
+        description: Overall CPU requirements.
+      memory:
+        type: string
+        description: Overall memory requirements.
+      breakdown:
+        description: Breakdown of the service memory requirements.
+        x-nullable: true
+        $ref: '#/definitions/ApplicationResourcesBreakdown'
+      ephemeralStorage:
+        type: string
+        description: Temporary storage for CDW pods, used for storing configurations and temporary data needed during a process. The lifespan of ephemeral storage is tied to the pod.
+        x-nullable: true
+      localStorageSize:
+        description: Local disk size requirements.
+        x-nullable: true
+        $ref: '#/definitions/ApplicationResourcesLocalStorageSize'
+  ApplicationResourcesBreakdown:
+    type: object
+    description: Breakdown of the service memory requirements.
+    x-nullable: true
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      xms:
+        type: string
+        description: Java VM configuration for -Xms (initial and minimum heap size).
+        x-nullable: true
+      xmx:
+        type: string
+        description: Java VM configuration for -Xmx (maximum heap size).
+      headroom:
+        type: string
+        description: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.
+        x-nullable: true
+      xss:
+        type: string
+        description: Java VM configuration for -Xss (thread stack size).
+        x-nullable: true
+      maxDirectMemorySize:
+        type: string
+        description: Java VM configuration for -XX:MaxDirectMemorySize (limit for Direct Byte Buffers).
+        x-nullable: true
+      waitQueueSize:
+        type: integer
+        format: int32
+        description: Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.
+        x-nullable: true
+  ApplicationResourcesLocalStorageSize:
+    type: object
+    description: Storage related information.
+    x-nullable: true
+    x-mutating: false
+    x-form-factors: private
+    properties:
+      scratch:
+        type: string
+        description: Local disk space used for writing scratch data.
+      cache:
+        type: string
+        description: Local disk space used for writing cache data.
+      overhead:
+        type: string
+        description: Local disk space used for writing other temporary data, tools, etc.
+  ResourceTemplateResponse:
+    type: object
+    x-mutating: false
+    x-form-factors: private
+    description: Resource template.
+    properties:
+      id:
+        type: string
+        description: Identifier of the template.
+      name:
+        type: string
+        description: Name of the template.
+      version:
+        type: integer
+        format: int32
+        description: Version number.
+      entityType:
+        type: string
+        description: 'The type of the entity, which can be one of the following: Hive, Impala, Hue, DataViz.'
+      description:
+        type: string
+        description: Short description.
+      isDefault:
+        type: boolean
+        description: Denotes whether it is the default template or not.
 x-audit: true
