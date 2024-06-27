@@ -21,7 +21,6 @@ import os
 import sys
 
 from cdpcli import ARGPARSE_DASH_ENCODING
-from cdpcli.compat import six
 
 
 LOG = logging.getLogger('cdpcli.argparser')
@@ -67,21 +66,21 @@ class CLIArgParser(argparse.ArgumentParser):
             # default to utf-8.
             terminal_encoding = 'utf-8'
         for arg, value in vars(parsed).items():
-            if isinstance(value, six.binary_type):
+            if isinstance(value, bytes):
                 setattr(parsed,
                         arg,
                         self._decode_dash_if_necessary(
                             value.decode(terminal_encoding)))
-            elif isinstance(value, six.string_types):
+            elif isinstance(value, str):
                 setattr(parsed, arg, self._decode_dash_if_necessary(value))
             elif isinstance(value, list):
                 encoded = []
                 for v in value:
-                    if isinstance(v, six.binary_type):
+                    if isinstance(v, bytes):
                         encoded.append(self._decode_dash_if_necessary(
                             v.decode(terminal_encoding)))
                     else:
-                        if isinstance(v, six.string_types):
+                        if isinstance(v, str):
                             v = self._decode_dash_if_necessary(v)
                         encoded.append(v)
                 setattr(parsed, arg, encoded)

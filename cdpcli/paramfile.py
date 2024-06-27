@@ -14,10 +14,9 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import locale
 import os
 
-from cdpcli.compat import compat_open
-from cdpcli.compat import six
 import requests
 
 
@@ -37,7 +36,7 @@ def get_paramfile(path, parsed_globals):
 
     """
     data = None
-    if isinstance(path, six.string_types):
+    if isinstance(path, str):
         for prefix, function_spec in PREFIX_MAP.items():
             if path.startswith(prefix):
                 function, kwargs = function_spec
@@ -49,7 +48,8 @@ def get_paramfile(path, parsed_globals):
 def get_file(prefix, path, mode, parsed_globals):
     file_path = os.path.expandvars(os.path.expanduser(path[len(prefix):]))
     try:
-        with compat_open(file_path, mode) as f:
+        encoding = locale.getpreferredencoding() if 'b' not in mode else None
+        with open(file_path, mode, encoding=encoding) as f:
             return f.read()
     except UnicodeDecodeError:
         raise ResourceLoadingError(

@@ -15,11 +15,10 @@
 # language governing permissions and limitations under the License.
 
 import base64
+from collections import OrderedDict
+import json
 
 from cdpcli import validate
-from cdpcli.compat import json
-from cdpcli.compat import OrderedDict
-from cdpcli.compat import six
 
 
 def create_serializer():
@@ -35,7 +34,7 @@ class Serializer(object):
         # Returns the base64-encoded version of value, handling
         # both strings and bytes. The returned value is a string
         # via the default encoding.
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = value.encode(self.DEFAULT_ENCODING)
         return base64.b64encode(value).strip().decode(
             self.DEFAULT_ENCODING)
@@ -93,9 +92,9 @@ class Serializer(object):
         # Blob args must be base64 encoded.
         # If value type is string/text, it is already base64 encoded, verified
         # in validate.py.
-        # Use isinstance(six.string_types) because a string could be either str
+        # Use isinstance(str) because a string could be either str
         # or unicode in python2.
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             serialized[key] = value
         else:
             serialized[key] = self._get_base64(value)

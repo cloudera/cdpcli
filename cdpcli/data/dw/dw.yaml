@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.115
+  version: 0.9.117
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -5834,8 +5834,9 @@ definitions:
         description: Java VM configuration for -Xmx (maximum heap size).
       headroom:
         type: string
-        description: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.
+        description: 'DEPRECATED: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.'
         x-nullable: true
+        x-deprecated: true
       xss:
         type: string
         description: Java VM configuration for -Xss (thread stack size).
@@ -5847,8 +5848,9 @@ definitions:
       waitQueueSize:
         type: integer
         format: int32
-        description: Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.
+        description: 'DEPRECATED: Set the hive.query.isolation.slots.per.node configuration value instead. Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.'
         x-nullable: true
+        x-deprecated: true
   CreateApplicationResourcesLocalStorageSize:
     type: object
     description: Storage related information.
@@ -5938,8 +5940,9 @@ definitions:
         description: Java VM configuration for -Xmx (maximum heap size).
       headroom:
         type: string
-        description: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.
+        description: 'DEPRECATED: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.'
         x-nullable: true
+        x-deprecated: true
       xss:
         type: string
         description: Java VM configuration for -Xss (thread stack size).
@@ -5951,8 +5954,9 @@ definitions:
       waitQueueSize:
         type: integer
         format: int32
-        description: Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.
+        description: 'DEPRECATED: Set the hive.query.isolation.slots.per.node configuration value instead. Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.'
         x-nullable: true
+        x-deprecated: true
   UpdateApplicationResourcesLocalStorageSize:
     type: object
     description: Storage related information.
@@ -6034,8 +6038,9 @@ definitions:
         description: Java VM configuration for -Xmx (maximum heap size).
       headroom:
         type: string
-        description: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.
+        description: 'DEPRECATED: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.'
         x-nullable: true
+        x-deprecated: true
       xss:
         type: string
         description: Java VM configuration for -Xss (thread stack size).
@@ -6047,8 +6052,9 @@ definitions:
       waitQueueSize:
         type: integer
         format: int32
-        description: Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.
+        description: 'DEPRECATED: Set the hive.query.isolation.slots.per.node configuration value instead. Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.'
         x-nullable: true
+        x-deprecated: true
   ApplicationResourcesLocalStorageSize:
     type: object
     description: Storage related information.

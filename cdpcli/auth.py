@@ -15,14 +15,14 @@
 # language governing permissions and limitations under the License.
 
 from base64 import b64decode, urlsafe_b64encode
+from collections import OrderedDict
 from email.utils import formatdate
 import hashlib
+import json
 import logging
+from urllib.parse import urlsplit
 
 from asn1crypto import keys, pem
-from cdpcli.compat import json
-from cdpcli.compat import OrderedDict
-from cdpcli.compat import urlsplit
 from cdpcli.exceptions import NoCredentialsError
 from ecdsa import SigningKey
 from ecdsa.util import sigencode_der

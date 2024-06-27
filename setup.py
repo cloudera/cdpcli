@@ -32,7 +32,7 @@ setup(
     license='Apache License 2.0',
     author='Cloudera, Inc.',
     classifiers=setup_common.get_classifiers(release),
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     install_requires=setup_common.get_requirements(),
     entry_points=setup_common.get_entry_points(),

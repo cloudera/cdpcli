@@ -15,6 +15,7 @@
 # language governing permissions and limitations under the License.
 
 from collections import namedtuple
+import json
 import logging
 import os
 
@@ -23,8 +24,6 @@ from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, \
                    CDP_PRIVATE_KEY_KEY_NAME
 from cdpcli.auth import AccessTokenAuth
 from cdpcli.auth import Ed25519v1Auth
-import cdpcli.compat
-from cdpcli.compat import json
 from cdpcli.configloader import raw_config_parse
 from cdpcli.exceptions import ConfigNotFound
 from cdpcli.exceptions import MalformedCredentialsError
@@ -112,12 +111,6 @@ class Credentials(object):
         self.private_key = private_key
         self.access_token = access_token
         self.method = method
-        self._normalize()
-
-    def _normalize(self):
-        self.access_key_id = cdpcli.compat.ensure_unicode(self.access_key_id)
-        self.private_key = cdpcli.compat.ensure_unicode(self.private_key)
-        self.access_token = cdpcli.compat.ensure_unicode(self.access_token)
 
     def get_frozen_credentials(self):
         return ReadOnlyCredentials(self.access_key_id,

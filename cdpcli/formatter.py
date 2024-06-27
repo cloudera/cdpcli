@@ -14,9 +14,10 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-from cdpcli import compat
+import json
+import sys
+
 from cdpcli import text
-from cdpcli.compat import json
 from cdpcli.paginate import PageIterator
 from cdpcli.table import ColorizedStyler
 from cdpcli.table import MultiTable
@@ -33,7 +34,7 @@ class Formatter(object):
         self._args = args
 
     def _get_default_stream(self):
-        return compat.get_stdout_text_writer()
+        return sys.stdout
 
     def _flush_stream(self, stream):
         try:

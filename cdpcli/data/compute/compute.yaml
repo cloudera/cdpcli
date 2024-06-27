@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.115
+  version: 0.9.117
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -191,8 +191,7 @@ definitions:
         x-form-factors: public
       includeDeleted:
         type: boolean
-        description: Include deleted clusters in the response. Optional.
-        default: false
+        description: Include deleted clusters in the response.
         x-form-factors: public
   ListClusterItem:
     type: object
@@ -290,6 +289,14 @@ definitions:
         description: Map of labels associated with this cluster.
         additionalProperties:
           type: string
+      isDefault:
+        type: boolean
+        description: The cluster which is automatically created for every containerized environment.
+        x-form-factors: public
+      clusterShape:
+        type: string
+        description: The clusterShape represents the shape of the cluster, which can be "Embedded" or "Externalized".
+        x-form-factors: public
   ListClustersResponse:
     type: object
     description: List clusters response.

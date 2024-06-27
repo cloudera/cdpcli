@@ -14,7 +14,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from cdpcli import ADDITIONAL_PROPERTIES
 from cdpcli import LIST_TYPE
@@ -23,7 +23,6 @@ from cdpcli import OBJECT_TYPE
 from cdpcli import REF_KEY
 from cdpcli import REF_NAME_PREFIX
 from cdpcli import TYPE_KEY
-from cdpcli.compat import OrderedDict
 from cdpcli.utils import CachedProperty
 from cdpcli.utils import instance_cache
 

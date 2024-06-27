@@ -20,7 +20,6 @@ import threading
 import time
 
 from cdpcli.cdprequest import create_request_object
-from cdpcli.compat import six
 from cdpcli.exceptions import EndpointConnectionError
 from cdpcli.parser import ResponseParserFactory
 from requests.exceptions import ConnectionError
@@ -299,7 +298,7 @@ class Endpoint(object):
     def _encode_headers(self, headers):
         # In place encoding of headers to utf-8 if they are unicode.
         for key, value in headers.items():
-            if isinstance(value, six.text_type):
+            if isinstance(value, str):
                 # We have to do this because request.headers is not
                 # normal dictionary.  It has the (unintuitive) behavior
                 # of aggregating repeated setattr calls for the same

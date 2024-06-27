@@ -18,7 +18,6 @@ import os
 import struct
 import sys
 
-from cdpcli.compat import six
 import colorama
 
 
@@ -401,7 +400,7 @@ class Section(object):
         self._update_max_widths(row)
 
     def _format_row(self, row):
-        return [six.text_type(r) for r in row]
+        return [str(r) for r in row]
 
     def _update_max_widths(self, row):
         if not self._max_widths:

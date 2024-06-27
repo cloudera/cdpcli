@@ -14,6 +14,8 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+from collections import OrderedDict
+import copy
 import logging
 import platform
 import socket
@@ -35,9 +37,6 @@ from cdpcli.arguments import UnknownArgumentError
 from cdpcli.clicommand import CLICommand
 from cdpcli.client import ClientCreator
 from cdpcli.client import Context
-from cdpcli.compat import copy_kwargs
-from cdpcli.compat import OrderedDict
-from cdpcli.compat import six
 from cdpcli.config import Config
 from cdpcli.endpoint import EndpointCreator
 from cdpcli.endpoint import EndpointResolver
@@ -121,7 +120,7 @@ class CLIDriver(object):
         except Exception as e:
             LOG.debug("Exception caught in main()", exc_info=True)
             sys.stderr.write("\n")
-            sys.stderr.write("%s\n" % six.text_type(e))
+            sys.stderr.write("%s\n" % str(e))
             return 255
 
     def _get_loader(self):
@@ -233,7 +232,7 @@ class CLIDriver(object):
         cli_data = self._get_cli_data()
         cli_arguments = cli_data.get('options', None)
         for option in cli_arguments:
-            option_params = copy_kwargs(cli_arguments[option])
+            option_params = copy.copy(cli_arguments[option])
             cli_argument = self._create_cli_argument(option, option_params)
             cli_argument.add_to_arg_table(argument_table)
         return argument_table

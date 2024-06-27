@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.115
+  version: 0.9.117
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -4907,6 +4907,13 @@ definitions:
       password:
         type: string
         description: The proxy password.
+      inboundProxyCidr:
+        type: array
+        items:
+          type: string
+          x-hidden: true
+          x-hidden-reason: IN_DEVELOPMENT
+        description: Allow these CIDR for Inbound communication.
   CreateProxyConfigRequest:
     type: object
     description: Request object for a create proxy config request.

@@ -15,15 +15,14 @@
 # language governing permissions and limitations under the License.
 
 import functools
+from http.client import HTTPMessage
+from http.client import HTTPResponse
 import select
 import socket
 import sys
+from urllib.parse import urlsplit
+from urllib.parse import urlunsplit
 
-from cdpcli.compat import HTTPHeaders
-from cdpcli.compat import HTTPResponse
-from cdpcli.compat import six
-from cdpcli.compat import urlsplit
-from cdpcli.compat import urlunsplit
 from cdpcli.exceptions import UnseekableStreamError
 from cdpcli.utils import is_absolute_url
 from requests import models
@@ -104,7 +103,7 @@ class CdpRequest(models.RequestEncodingMixin, models.Request):
             self.auth_path = kwargs['auth_path']
             del kwargs['auth_path']
         models.Request.__init__(self, *args, **kwargs)
-        headers = HTTPHeaders()
+        headers = HTTPMessage()
         if self.headers is not None:
             for key, value in self.headers.items():
                 headers[key] = value
@@ -135,7 +134,7 @@ class CdpRequest(models.RequestEncodingMixin, models.Request):
         p = models.PreparedRequest()
         p.prepare_headers({})
         p.prepare_body(self.data, self.files)
-        if isinstance(p.body, six.text_type):
+        if isinstance(p.body, str):
             p.body = p.body.encode('utf-8')
         return p.body
 
@@ -176,8 +175,8 @@ class CdpPreparedRequest(models.PreparedRequest):
         # the same result as if we had actually reset the stream (we'll send
         # the entire body contents again if we need to).
         # Same case if the body is a string/bytes type.
-        if self.body is None or isinstance(self.body, six.text_type) or \
-                isinstance(self.body, six.binary_type):
+        if self.body is None or isinstance(self.body, str) or \
+                isinstance(self.body, bytes):
             return
         try:
             self.body.seek(0)
@@ -280,10 +279,10 @@ class CdpHTTPConnection(HTTPConnection):
     def _convert_to_bytes(self, mixed_buffer):
         # Take a list of mixed str/bytes and convert it
         # all into a single bytestring.
-        # Any six.text_types will be encoded as utf-8.
+        # Any string will be encoded as utf-8.
         bytes_buffer = []
         for chunk in mixed_buffer:
-            if isinstance(chunk, six.text_type):
+            if isinstance(chunk, str):
                 bytes_buffer.append(chunk.encode('utf-8'))
             else:
                 bytes_buffer.append(chunk)

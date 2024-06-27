@@ -18,7 +18,6 @@ import base64
 import datetime
 import decimal
 
-from cdpcli.compat import six
 from cdpcli.exceptions import ParamValidationError
 from cdpcli.utils import parse_to_aware_datetime
 
@@ -48,7 +47,7 @@ def type_check(valid_types):
 
         def _type_check(param, errors, name):
             if not isinstance(param, valid_types):
-                valid_type_names = [six.text_type(t) for t in valid_types]
+                valid_type_names = [str(t) for t in valid_types]
                 errors.report(name, 'invalid type', param=param,
                               valid_types=valid_type_names)
                 return False
@@ -205,19 +204,19 @@ class ParamValidator(object):
     def _validate_boolean(self, param, shape, errors, name):
         pass
 
-    @type_check(valid_types=six.integer_types)
+    @type_check(valid_types=(int,))
     def _validate_integer(self, param, shape, errors, name):
         range_check(name, param, shape, 'invalid range', errors)
 
-    @type_check(valid_types=(float, decimal.Decimal) + six.integer_types)
+    @type_check(valid_types=(float, decimal.Decimal, int))
     def _validate_float(self, param, shape, errors, name):
         range_check(name, param, shape, 'invalid range', errors)
 
-    @type_check(valid_types=(float, decimal.Decimal) + six.integer_types)
+    @type_check(valid_types=(float, decimal.Decimal, int))
     def _validate_double(self, param, shape, errors, name):
         range_check(name, param, shape, 'invalid range', errors)
 
-    @type_check(valid_types=six.string_types)
+    @type_check(valid_types=(str,))
     def _validate_string(self, param, shape, errors, name):
         length_check(name, len(param), shape, 'invalid length', errors)
         enum_check(name, param, shape, 'invalid enum', errors)
@@ -235,13 +234,13 @@ class ParamValidator(object):
         # to a datetime.
         is_valid_type = self._type_check_datetime(param)
         if not is_valid_type:
-            valid_type_names = [six.text_type(datetime), 'timestamp-string']
+            valid_type_names = [str(datetime), 'timestamp-string']
             errors.report(name, 'invalid type', param=param,
                           valid_types=valid_type_names)
 
-    @type_check(valid_types=(bytes, bytearray, six.string_types))
+    @type_check(valid_types=(bytes, bytearray, str))
     def _validate_blob(self, param, shape, errors, name):
-        if isinstance(param, six.string_types):
+        if isinstance(param, str):
             try:
                 bytes = base64.b64decode(param)
                 length_check(name, len(bytes), shape, 'invalid length', errors)

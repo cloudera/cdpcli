@@ -14,15 +14,15 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+from collections import OrderedDict
+import json
+
 from cdpcli import COMPLEX_TYPES
 from cdpcli import LIST_TYPE
 from cdpcli import MAP_TYPE
 from cdpcli import OBJECT_TYPE
 from cdpcli import SCALAR_TYPES
 from cdpcli import shorthand
-from cdpcli.compat import json
-from cdpcli.compat import OrderedDict
-from cdpcli.compat import six
 from cdpcli.paramfile import get_paramfile
 from cdpcli.paramfile import ResourceLoadingError
 
@@ -82,7 +82,7 @@ def _check_for_uri_param(param, value, parsed_globals):
     try:
         return get_paramfile(value, parsed_globals)
     except ResourceLoadingError as e:
-        raise ParamError(param.cli_name, six.text_type(e))
+        raise ParamError(param.cli_name, str(e))
 
 
 def unpack_cli_arg(cli_argument, value):
@@ -113,7 +113,7 @@ def _unpack_cli_arg(argument_model, value, cli_name):
         return _unpack_complex_cli_arg(
             argument_model, value, cli_name)
     else:
-        return six.text_type(value)
+        return str(value)
 
 
 def _unpack_complex_cli_arg(argument_model, value, cli_name):
@@ -128,7 +128,7 @@ def _unpack_complex_cli_arg(argument_model, value, cli_name):
                     % (e, value))
         raise ParamError(cli_name, "Invalid JSON:\n%s" % value)
     elif type_name == LIST_TYPE:
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             if value.lstrip()[0] == '[':
                 return json.loads(value, object_pairs_hook=OrderedDict)
         elif isinstance(value, list) and len(value) == 1:
@@ -161,7 +161,7 @@ def unpack_scalar_cli_arg(argument_model, value, cli_name=''):
         # TODO: losing precision on double types
         return float(value)
     elif argument_model.type_name == 'boolean':
-        if isinstance(value, six.string_types) and value.lower() == 'false':
+        if isinstance(value, str) and value.lower() == 'false':
             return False
         return bool(value)
     else:
@@ -283,7 +283,7 @@ class ParamShorthand(object):
             check_val = value[0]
         else:
             check_val = value
-        if isinstance(check_val, six.string_types) and check_val.strip().startswith(
+        if isinstance(check_val, str) and check_val.strip().startswith(
                 ('[', '{')):
             return False
         model = cli_argument.argument_model

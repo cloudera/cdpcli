@@ -14,6 +14,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+from collections import OrderedDict
 import os
 
 
@@ -22,7 +23,6 @@ from cdpcli.argparser import ArgTableArgParser
 from cdpcli.argprocess import unpack_argument, unpack_cli_arg
 from cdpcli.arguments import create_argument_model_from_schema, CustomArgument
 from cdpcli.clicommand import CLICommand
-from cdpcli.compat import OrderedDict
 from cdpcli.docs import generate_doc
 from cdpcli.docs import OperationDocumentGenerator
 from cdpcli.extensions.arguments import OverrideRequiredArgsArgument

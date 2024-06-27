@@ -14,14 +14,14 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+from collections import OrderedDict
 import glob
 import hashlib
+import json
 import os
 import pickle
 
 from cdpcli import CDPCLI_ROOT
-from cdpcli.compat import json
-from cdpcli.compat import OrderedDict
 from cdpcli.exceptions import DataNotFoundError
 from cdpcli.exceptions import ValidationError
 import yaml

@@ -14,6 +14,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+from collections import OrderedDict
 import contextlib
 import datetime
 import functools
@@ -26,7 +27,6 @@ from cdpcli import LIST_TYPE
 from cdpcli import MAP_TYPE
 from cdpcli import OBJECT_TYPE
 from cdpcli.compat import compat_tzlocal
-from cdpcli.compat import OrderedDict
 import dateutil.parser
 from dateutil.tz import tzutc
 

@@ -14,10 +14,10 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-from cdpcli.thirdparty.six.moves import html_parser
+from html.parser import HTMLParser
 
 
-class DocStringParser(html_parser.HTMLParser):
+class DocStringParser(HTMLParser):
     """
     A simple HTML parser.  Focused on converting the subset of HTML
     that appears in the documentation strings of the JSON models into
@@ -25,7 +25,7 @@ class DocStringParser(html_parser.HTMLParser):
     """
 
     def __init__(self, doc):
-        html_parser.HTMLParser.__init__(self)
+        HTMLParser.__init__(self)
         self.doc = doc
         self.unhandled_tags = []
 
