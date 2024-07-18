@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.117
+  version: 0.9.118
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -564,6 +564,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CancelBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/cancelRestore:
+    post:
+      summary: Cancels the restore that was performed.
+      description: Cancels a currently running restore operation. The operation must be in a STARTED or IN_PROGRESS state.
+      operationId: cancelRestore
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CancelRestoreRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelRestoreResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2316,6 +2337,28 @@ definitions:
       result:
         type: string
         description: Result of the cancel backup request. It can contain a description of the current process state or guidelines to a customer on the next steps.
+  CancelRestoreRequest:
+    type: object
+    description: Details of the restore that has to be cancelled.
+    required:
+      - restoreId
+    properties:
+      restoreId:
+        type: string
+        description: Restore-id that identifies the restore to be cancelled.
+      force:
+        type: boolean
+        default: false
+        description: Mark the operation as cancelled regardless of the progress.
+  CancelRestoreResponse:
+    type: object
+    description: Response to restore invalidation request.
+    required:
+      - result
+    properties:
+      result:
+        type: string
+        description: Result of the invalidation request.
   DatalakeBackup:
     type: object
     description: Backup object with details of backup performed.
@@ -3178,6 +3221,12 @@ definitions:
       customDatabaseComputeStorage:
         $ref: '#/definitions/CustomDatabaseComputeStorage'
         description: Any custom database properties to override defaults.
+      skipValidation:
+        type: boolean
+        description: Skips the validation steps that run prior to the resize. If this option is not provided, the validations are performed by default. If skip-validation and validation-only are used together an error is thrown.
+      validationOnly:
+        type: boolean
+        description: Runs only the validation steps and then returns. If this option is not provided, the resize is performed as normal by default. If skip-validation and validation-only are used together an error is thrown.
   ResizeDatalakeResponse:
     type: object
     description: Datalake resize response.

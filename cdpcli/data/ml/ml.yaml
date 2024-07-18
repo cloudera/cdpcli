@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.117
+  version: 0.9.118
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -2090,9 +2090,15 @@ definitions:
       serviceName:
         type: string
         description: The service name of model registry.
+      version:
+        type: string
+        description: The version of the model registry.
       domain:
         type: string
         description: The domain of the model registry
+      endpointPublicAccess:
+        type: boolean
+        description: To indicate if the model registry standalone API endpoint is publicly accessible or not.
   DeleteModelRegistryRequest:
     type: object
     description: Request for deleting model registry.

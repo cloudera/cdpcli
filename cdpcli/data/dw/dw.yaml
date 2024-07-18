@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.117
+  version: 0.9.118
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2303,10 +2303,11 @@ definitions:
         type: boolean
         description: Use this option to activate the environment with fewer than half of the standard required IAM permissions on your AWS cross-account IAM role.
       computeInstanceTypes:
+        x-deprecated: true
         type: array
         items:
           type: string
-        description: AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.
+        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
       additionalInstanceTypes:
         type: array
         items:
@@ -2330,10 +2331,11 @@ definitions:
         description: Whether to enable spot instances for Virtual warehouses. It cannot be updated later. If the AzureActivationOptions is not provided it defaults to false.
         default: false
       computeInstanceTypes:
+        x-deprecated: true
         type: array
         items:
           type: string
-        description: Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.
+        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
       logAnalyticsWorkspaceId:
         type: string
         description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
@@ -4295,10 +4297,11 @@ definitions:
         format: int32
         description: Number of additional reserved nodes for other services in the cluster.
       computeInstanceTypes:
+        x-deprecated: true
         type: array
         items:
           type: string
-        description: Compute instance types that the environment is restricted to use. This affects the creation of the virtual warehouses where this restriction will apply.
+        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. Compute instance types that the environment is restricted to use. This affects the creation of the virtual warehouses where this restriction will apply.'
       additionalInstanceTypes:
         type: array
         items:

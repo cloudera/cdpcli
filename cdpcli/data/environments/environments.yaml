@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.117
+  version: 0.9.118
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -5689,6 +5689,12 @@ definitions:
       environmentName:
         type: string
         description: The name or CRN of the environment.
+      imageId:
+        type: string
+        description: Target image ID for upgrade.
+      allowMajorOsUpgrade:
+        type: boolean
+        description: Allows the upgrade to a subsequent major OS version in the series.
   UpgradeFreeipaResponse:
     type: object
     description: The response object for FreeIPA upgrade.
