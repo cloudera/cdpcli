@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.118
+  version: 0.9.119
   title: Cloudera CloudPrivateLinks API Service
   license:
     name: Apache 2.0
@@ -87,30 +87,6 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
-  /api/v1/cloudprivatelinks/getPrivateLinkEndpointStatus:
-    post:
-      summary: Gets the statuses of PrivateLink endpoints.
-      description: Returns the statuses of the PrivateLink endpoints in creation/deletion. Please use ListPrivateLinkEndpointStatuses as replacement. Deprecated.
-      operationId: getPrivateLinkEndpointStatus
-      x-entitlement: CDP_PRIVATELINKS
-      x-right: cloudprivatelinks/getPrivateLinkEndpointStatus
-      parameters:
-        - name: input
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/GetPrivateLinkEndpointStatusRequest'
-      responses:
-        200:
-          description: Expected response to a valid request.
-          schema:
-            $ref: '#/definitions/GetPrivateLinkEndpointStatusResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
-      x-mutating: false
-      x-deprecated: true
   /api/v1/cloudprivatelinks/listPrivateLinkEndpointStatuses:
     post:
       summary: Lists the statuses of the PrivateLink endpoints that are in creation/deletion status.
@@ -208,16 +184,6 @@ definitions:
       trackingId:
         type: string
         description: Tracking ID of the create endpoint request.
-  GetPrivateLinkEndpointStatusRequest:
-    type: object
-    description: Request object for GetPrivateLinkEndpointStatus method. Please use ListPrivateLinkEndpointStatusesRequest as replacement. Deprecated.
-    required:
-      - trackingId
-    properties:
-      trackingId:
-        type: string
-        description: Tracking ID of the create endpoint request.
-    x-deprecated: true
   ListPrivateLinkEndpointStatusesRequest:
     type: object
     description: Request object for listPrivateLinkEndpointStatuses method.
@@ -227,16 +193,6 @@ definitions:
       trackingId:
         type: string
         description: Tracking ID of the create endpoint request.
-  GetPrivateLinkEndpointStatusResponse:
-    type: object
-    description: Response object for GetPrivateLinkEndpointStatus method. Please use ListPrivateLinkEndpointStatusesResponse as replacement. Deprecated.
-    properties:
-      privatelinkEndpoints:
-        type: array
-        items:
-          $ref: '#/definitions/PrivateLinkEndpointStatus'
-        description: List of statuses of PrivateLink endpoints.
-    x-deprecated: true
   ListPrivateLinkEndpointStatusesResponse:
     type: object
     description: Response object for listPrivateLinkEndpointStatuses method.

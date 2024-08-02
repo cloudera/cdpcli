@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.118
+  version: 0.9.119
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -1332,6 +1332,10 @@ definitions:
       backupVcContentOptions:
         $ref: '#/definitions/BackupContentOptions'
         description: Backup virtual cluster content options.
+      force:
+        type: boolean
+        default: false
+        description: Whether to ignore validation errors and proceed with the backup forcefully. By default, the backup operation is not forced.
   BackupContentOptions:
     type: object
     description: Backup virtual cluster content options.
@@ -1360,6 +1364,10 @@ definitions:
         type: boolean
         default: true
         description: Whether to backup credential secrets. Secrets are obfuscated while storing. By default, credential secrets are backed up.
+      includeJobRuns:
+        type: boolean
+        default: true
+        description: Whether to backup job runs. By default, job runs are backed up.
       jobFilter:
         type: array
         items:
