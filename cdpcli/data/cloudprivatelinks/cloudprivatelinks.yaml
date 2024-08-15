@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.119
+  version: 0.9.120
   title: Cloudera CloudPrivateLinks API Service
   license:
     name: Apache 2.0
@@ -133,6 +133,29 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/cloudprivatelinks/revokePrivateLinkServiceAccess:
+    post:
+      summary: Revoke private link services access for the cloud account id.
+      description: Returns the de authorization status.
+      operationId: revokePrivateLinkServiceAccess
+      x-entitlement: CDP_PRIVATELINKS
+      x-right: cloudprivatelinks/revokePrivateLinkServiceAccess
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RevokePrivateLinkServiceAccessRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RevokePrivateLinkServiceAccessResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
 definitions:
   Error:
     type: object
@@ -153,30 +176,24 @@ definitions:
   CreatePrivateLinkEndpointRequest:
     type: object
     description: Request object for the CreatePrivateLinkEndpoint method.
+    required:
+      - cloudServiceProvider
     properties:
-      serviceComponents:
-        type: array
-        items:
-          type: string
-        description: CDP service component name [API/DBUSAPI/IAMAPI/CCMV2/CONSOLEAUTH].
+      cloudServiceProvider:
+        description: Cloud Service Provider. Currently supporting AWS and AZURE.
+        $ref: '#/definitions/CloudServiceProvider'
       enablePrivateDns:
         type: boolean
         description: Enable Private DNS for PrivateLink endpoint.
       serviceGroup:
         type: string
         description: CDP service group.
-      environmentCrn:
-        type: string
-        description: CRN of the CDP environment in AWS cloud where the PrivateLink endpoint is created.
       awsAccountDetails:
         description: AWS account details where the PrivateLink endpoint is created.
         $ref: '#/definitions/AWSAccountDetails'
       azureAccountDetails:
         description: Azure account details where PrivateLink endpoint is created.
         $ref: '#/definitions/AzureAccountDetails'
-      cloudServiceProvider:
-        description: Cloud Service Provider. Currently supporting AWS and Azure.
-        $ref: '#/definitions/CloudServiceProvider'
   CreatePrivateLinkEndpointResponse:
     type: object
     description: Response object for the CreatePrivateLinkEndpoint method.
@@ -205,24 +222,18 @@ definitions:
   DeletePrivateLinkEndpointRequest:
     type: object
     description: Request object for the DeletePrivateLinkEndpoint method.
+    required:
+      - cloudServiceProvider
     properties:
-      serviceComponents:
-        type: array
-        items:
-          type: string
-        description: CDP service component name [API/DBUSAPI/IAMAPI/CCMV2/CONSOLEAUTH]
-      environmentCrn:
-        type: string
-        description: CRN of the CDP environment in AWS cloud that this PrivateLink endpoint gets deleted from.
+      cloudServiceProvider:
+        description: Cloud Service Provider. Currently supporting AWS and AZURE.
+        $ref: '#/definitions/CloudServiceProvider'
       awsAccountInfo:
         description: AWS account details to delete the PrivateLink endpoint from.
         $ref: '#/definitions/AWSAccountInfo'
       azureAccountInfo:
         description: Azure account details to delete the PrivateLink endpoint from.
         $ref: '#/definitions/AzureAccountInfo'
-      cloudServiceProvider:
-        description: Cloud Service Provider. Currently supporting AWS and Azure.
-        $ref: '#/definitions/CloudServiceProvider'
   DeletePrivateLinkEndpointResponse:
     type: object
     description: Response object for the DeletePrivateLinkEndpoint method.
@@ -445,4 +456,42 @@ definitions:
       creationTimestamp:
         type: string
         description: Endpoint creation timestamp.
+  RevokePrivateLinkServiceAccessRequest:
+    type: object
+    description: Request object for the RevokePrivateLinkServiceAccess method.
+    properties:
+      cloudAccountId:
+        type: string
+        description: Account ID to revoke access for PrivateLink.
+      region:
+        type: string
+        description: Region where the private link service exists.
+      serviceGroup:
+        type: string
+        description: CDP service group. Currently supported "CDP-CONTROL-PLANE" for PaaS.
+  RevokePrivateLinkServiceAccessResponse:
+    type: object
+    description: Response object for the RevokePrivateLinkServiceAccess method.
+    properties:
+      status:
+        type: string
+        description: Status of private link service access revoke.
+      revokePrivateLinkServiceAccessResults:
+        type: array
+        items:
+          $ref: '#/definitions/RevokePrivateLinkServiceAccessResult'
+        description: List of RevokePrivateLinkServiceAccessResult objects.
+  RevokePrivateLinkServiceAccessResult:
+    type: object
+    description: Revoke response containing PrivateLink service name, service component and its revocation status.
+    properties:
+      privateLinkService:
+        type: string
+        description: Name of the Private link service.
+      serviceComponent:
+        type: string
+        description: CDP service component.
+      revocationStatus:
+        type: string
+        description: Revocation status for the private link service.
 x-audit: true

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.119
+  version: 0.9.120
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -2479,6 +2479,9 @@ definitions:
       rangerAuditCollectionValidation:
         $ref: '#/definitions/BackupRestoreOperationStatus'
         description: Run the ranger audit collection validation in the backup precheck.
+      dryRunValidation:
+        $ref: '#/definitions/BackupRestoreOperationStatus'
+        description: Run the dry run validation in the backup/restore precheck
   HbaseBackupRestoreState:
     type: object
     description: The state of each HBase backup/restore operation.
@@ -3160,6 +3163,9 @@ definitions:
       instanceProfile:
         description: AWS instance profile.
         type: string
+      rangerCloudAccessAuthorizerRole:
+        description: Ranger RAZ role.
+        type: string
   ValidateAwsCloudStorageResponse:
     type: object
     description: AWS cloud storage validation response.
@@ -3211,6 +3217,9 @@ definitions:
       secure:
         description: Azure secure flag.
         type: boolean
+      rangerCloudAccessAuthorizerRole:
+        description: Ranger RAZ role.
+        type: string
   ValidateAzureCloudStorageResponse:
     type: object
     description: Azure cloud storage validation response.

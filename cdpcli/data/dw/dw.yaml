@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.119
+  version: 0.9.120
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2924,7 +2924,8 @@ definitions:
         x-form-factors: public
       templateName:
         type: string
-        description: The template size for the Cloudera Data Visualization.
+        description: 'DEPRECATED: Use resourceTemplate parameter instead that will be made available in the upcoming release. The template size for the Cloudera Data Visualization.'
+        x-deprecated: true
   CreateDataVisualizationResponse:
     type: object
     description: Response object for the createDataVisualization method.
@@ -3977,7 +3978,8 @@ definitions:
         x-form-factors: public
       template:
         type: string
-        description: Name of configuration template to use.
+        description: 'DEPRECATED: It will be replaced by the tShirtSize parameter in an upcoming release. Name of configuration template to use.'
+        x-deprecated: true
         enum:
           - xsmall
           - small
@@ -5178,7 +5180,8 @@ definitions:
         description: ID of the Virtual Warehouse.
       template:
         type: string
-        description: Name of configuration template to use.
+        description: 'DEPRECATED: It will be replaced by the tShirtSize parameter in an upcoming release. Name of configuration template to use.'
+        x-deprecated: true
         enum:
           - xsmall
           - small
@@ -5373,17 +5376,6 @@ definitions:
       id:
         type: string
         description: ID of the ConfigBlock. Unique within an ApplicationConfig.
-      format:
-        type: string
-        description: Format of ConfigBlock.
-        enum:
-          - HADOOP_XML
-          - PROPERTIES
-          - TEXT
-          - JSON
-          - BINARY
-          - ENV
-          - FLAGFILE
       content:
         description: Contents of a ConfigBlock.
         $ref: '#/definitions/ConfigContentResp'
@@ -5392,23 +5384,11 @@ definitions:
     description: A piece of configuration stored in the same place (e.g. same file or environment variables).
     required:
       - id
-      - format
       - content
     properties:
       id:
         type: string
         description: ID of the ConfigBlock. Unique within an ApplicationConfig.
-      format:
-        type: string
-        description: Format of ConfigBlock.
-        enum:
-          - HADOOP_XML
-          - PROPERTIES
-          - TEXT
-          - JSON
-          - BINARY
-          - ENV
-          - FLAGFILE
       content:
         description: Contents of a ConfigBlock.
         $ref: '#/definitions/ConfigContentReq'
