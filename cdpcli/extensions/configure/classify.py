@@ -40,7 +40,7 @@ class ClassifyDeployment:
         #
         # for eg. Private Stack - https://console.cdp-priv.mow-dev.cloudera.com
         #         service URL - https://%sapi.thunderhead-int.cloudera.com
-        if re.match('(.+(altus|cdp|dev|int|stage).(cloudera|clouderagovt).com)'
+        if re.match('(.+(altus|cdp|dev|dev2|int|int2|stage).(cloudera|clouderagovt).com)'
                     '|(http://localhost:\\d+.*)', self._endpoint_url):
             return DeploymentType.PUBLIC_CLOUD
         else:

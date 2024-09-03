@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.120
+  version: 0.9.121
   title: Cloudera IAM Service
   license:
     name: Apache 2.0

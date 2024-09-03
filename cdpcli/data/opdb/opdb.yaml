@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.120
+  version: 0.9.121
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -244,6 +244,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/StopDatabaseResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/opdb/updateDatabase:
+    post:
+      summary: Updates the database
+      description: Update an operational database in an environment
+      operationId: updateDatabase
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateDatabaseRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateDatabaseResponse'
         default:
           description: The default response on an error.
           schema:
@@ -504,11 +525,34 @@ definitions:
       - HEAVY
   StorageType:
     type: string
-    description: "Storage type for clusters.\n `CLOUD_WITH_EPHEMERAL` - Cloud with ephemeral storage. `CLOUD` - Cloud storage without ephemeral storage. `HDFS` - HDFS storage."
+    description: "Storage type for clusters.\n `CLOUD_WITH_EPHEMERAL` - Cloud with ephemeral storage. `CLOUD` - Cloud storage without ephemeral storage. `HDFS` - HDFS storage. `CLOUD_WITH_EPHEMERAL_DATATIERING` - Cloud with Ephemeral Storage and Datatiering."
     enum:
       - CLOUD_WITH_EPHEMERAL
       - CLOUD
       - HDFS
+  UpdateDatabaseRequest:
+    type: object
+    description: A request to update the database
+    required:
+      - environmentName
+      - databaseName
+    properties:
+      environmentName:
+        type: string
+        description: environment name
+      databaseName:
+        type: string
+        description: database name
+      autoScalingParameters:
+        description: Parameters to configure the scaling policy
+        $ref: '#/definitions/AutoScalingParameters'
+      numDesiredStrongMetaServers:
+        type: integer
+        format: int32
+        description: The desired number of strong meta servers for this database. A positive, non-zero number is required. Use removeStrongMetaServers to remove strong meta servers entirely. Requires the COD_STRONG_META_SERVERS entitlement.
+      removeStrongMetaServers:
+        type: boolean
+        description: Removes any strong meta servers provisioned for this database. Requires the COD_STRONG_META_SERVERS entitlement.
   AutoScalingParameters:
     type: object
     description: A Parameters to configure AutoScaling
@@ -546,6 +590,13 @@ definitions:
       databaseDetails:
         description: Details of the Database created
         $ref: '#/definitions/DatabaseDetails'
+  UpdateDatabaseResponse:
+    type: object
+    description: A response to database update request
+    properties:
+      status:
+        type: string
+        description: Status of whether the update was successful or not.
   DropDatabaseRequest:
     type: object
     description: A request to drop the database

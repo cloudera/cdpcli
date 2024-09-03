@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.120
+  version: 0.9.121
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -433,27 +433,6 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateClusterResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
-  /api/v1/dw/upgradeCluster:
-    post:
-      x-mutating: true
-      summary: Upgrade the Cloudera Data Warehouse cluster.
-      description: Upgrade the Cloudera Data Warehouse cluster to the latest supported version. Expect downtime during the upgrade and refrain issuing queries. You can check the current status of the cluster with the describe-cluster command.
-      operationId: upgradeCluster
-      parameters:
-        - name: input
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpgradeClusterRequest'
-      responses:
-        200:
-          description: Expected response to a valid request.
-          schema:
-            $ref: '#/definitions/UpgradeClusterResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2278,11 +2257,10 @@ definitions:
         type: boolean
         description: Use this option to activate the environment with fewer than half of the standard required IAM permissions on your AWS cross-account IAM role.
       computeInstanceTypes:
-        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
+        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
       additionalInstanceTypes:
         x-deprecated: true
         type: array
@@ -2351,11 +2329,10 @@ definitions:
         description: Whether to enable spot instances for Virtual warehouses. It cannot be updated later. Defaults to false.
         default: false
       computeInstanceTypes:
-        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
+        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
       logAnalyticsWorkspaceId:
         type: string
         description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
@@ -2546,22 +2523,12 @@ definitions:
         enum:
           - ACR
           - ECR
-          - Docker
         type: string
         description: Custom registry type.
       repositoryUrl:
         type: string
         description: URL of the custom image repository.
         x-no-paramfile: true
-      userName:
-        type: string
-        description: Username for custom registry access (required only for Docker type).
-      password:
-        type: string
-        description: Password for custom registry access (required only for Docker type).
-      disableImageVerification:
-        type: boolean
-        description: Disable image verification.
   AwsActivationOptions:
     type: object
     description: Options for activating an AWS environment.
@@ -2594,11 +2561,10 @@ definitions:
         type: boolean
         description: Use this option to activate the environment with fewer than half of the standard required IAM permissions on your AWS cross-account IAM role.
       computeInstanceTypes:
-        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
+        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
       additionalInstanceTypes:
         x-deprecated: true
         type: array
@@ -2623,11 +2589,10 @@ definitions:
         description: Whether to enable spot instances for Virtual warehouses. It cannot be updated later. If the AzureActivationOptions is not provided it defaults to false.
         default: false
       computeInstanceTypes:
-        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
+        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
       logAnalyticsWorkspaceId:
         type: string
         description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
@@ -2735,31 +2700,6 @@ definitions:
   DeleteClusterResponse:
     type: object
     description: Response object for the deleteCluster method.
-  UpgradeClusterRequest:
-    type: object
-    description: Request object for the upgradeCluster method.
-    required:
-      - clusterId
-    properties:
-      clusterId:
-        type: string
-        description: The ID of the cluster to upgrade.
-  UpgradeClusterResponse:
-    type: object
-    description: Response object for the upgradeCluster method.
-    properties:
-      status:
-        type: string
-        description: 'The upgrade status. Possible values are: Upgrading, Error, Failed.'
-      message:
-        type: string
-        description: Detailed explanation of the status.
-      timedOut:
-        type: boolean
-        description: True if the upgrade timed out, false or omitted otherwise.
-      serviceUnhealthy:
-        type: boolean
-        description: True, if the service is in unhealthy state, false or omitted otherwise.
   UpdateClusterRequest:
     type: object
     description: Request object for the updateCluster method.
@@ -4658,11 +4598,10 @@ definitions:
         format: int32
         description: Number of additional reserved nodes for other services in the cluster.
       computeInstanceTypes:
-        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. Compute instance types that the environment is restricted to use. This affects the creation of the virtual warehouses where this restriction will apply.'
+        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. Compute instance types that the environment is restricted to use. This affects the creation of the virtual warehouses where this restriction will apply.'
       additionalInstanceTypes:
         x-deprecated: true
         type: array

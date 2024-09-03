@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.120
+  version: 0.9.121
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -357,6 +357,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/de/upgradeService:
+    post:
+      summary: Trigger a particular step (prepare, backup, upgrade, resume) of the upgrade framework.
+      description: Trigger a particular step (prepare, backup, upgrade, resume) of the multi-step upgrade process. Use get-upgrade-status to know what is the next step to take.
+      operationId: upgradeService
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeServiceRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeServiceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/getUpgradeStatus:
+    post:
+      summary: Get CDE Service Upgrade Status.
+      description: The current status of the CDE Service upgrade. If all the steps are completed allStepsCompleted would be true. After a particular step triggered by upgrade-service is completed nextStep would point to the next step to take.
+      operationId: getUpgradeStatus
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetUpgradeStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetUpgradeStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/de/getKubeconfig:
     post:
       summary: Get Kubeconfig for the CDE service
@@ -676,6 +718,12 @@ definitions:
       sessionTimeout:
         type: string
         description: Default timeout for Sessions.
+      sparkConfigs:
+        type: object
+        description: Spark configs that will be applied to all the spark jobs inside a virtual cluster.
+        additionalProperties:
+          type: string
+          description: Spark configs that will be applied to all the spark jobs inside a virtual cluster.
   VcResources:
     type: object
     properties:
@@ -934,6 +982,12 @@ definitions:
         items:
           type: string
         description: List of Subnet IDs of CDP subnets to use for the kubernetes worker node.
+      azureFilesharePrivateDNSZoneId:
+        type: string
+        description: Resource ID of custom private DNS zone for Azure storage account.
+      azureDatabasePrivateDNSZoneId:
+        type: string
+        description: Resource ID of the custom private DNS zone associated with the Azure database.
       customAzureFilesConfigs:
         $ref: '#/definitions/CustomAzureFilesConfigs'
         description: CDE uses a default public File Shares storage provisioned by AKS. Enable this option to use your own public/private File Shares.
@@ -1047,6 +1101,60 @@ definitions:
         type: integer
         format: int32
         description: Maximum number of spot instances for the CDE service for the All Purpose Instance Group.
+  UpgradeServiceRequest:
+    type: object
+    description: Request object for upgrading a service.
+    required:
+      - clusterId
+      - step
+    properties:
+      clusterId:
+        type: string
+        description: Cluster ID of the service to upgrade.
+      step:
+        type: string
+        description: The maintenance step to be performed. Currently supported steps are prepare, backup, upgrade, cancel and resume.
+        enum:
+          - prepare
+          - backup
+          - upgrade
+          - cancel
+          - resume
+  UpgradeServiceResponse:
+    type: object
+    description: Response object for UpgradeService request.
+    properties:
+      message:
+        type: string
+        description: The status message of upgrade operation.
+        default: upgrade step triggered successfully
+  GetUpgradeStatusRequest:
+    type: object
+    description: Request object for GetUpgradeStatus method.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: Cluster ID of the service.
+  GetUpgradeStatusResponse:
+    type: object
+    description: Response object for GetUpgradeStatus request.
+    properties:
+      upgradeStatusMessage:
+        type: string
+        description: The status of the upgrade.
+      nextStep:
+        type: string
+        description: The next step to take in multi-step upgrade process. Currently supported steps are prepare, backup, upgrade and resume.
+        enum:
+          - prepare
+          - backup
+          - upgrade
+          - resume
+      allStepsCompleted:
+        type: boolean
+        description: Whether all the steps of the multi-step upgrade process completed.
   UpdateServiceResponse:
     type: object
     description: Response object for UpdateService request.
@@ -1236,6 +1344,12 @@ definitions:
         type: array
         items:
           type: string
+      sparkConfigs:
+        type: object
+        description: Spark configs that will be applied to all the spark jobs inside a virtual cluster.
+        additionalProperties:
+          type: string
+          description: Spark configs that will be applied to all the spark jobs inside a virtual cluster.
   CreateVcResponse:
     type: object
     description: Response object for CreateVc method.
@@ -1299,6 +1413,16 @@ definitions:
         type: array
         items:
           type: string
+      sparkConfigs:
+        type: object
+        description: Spark configs that will be applied to all the spark jobs inside a virtual cluster.
+        additionalProperties:
+          type: string
+          description: Spark configs that will be applied to all the spark jobs inside a virtual cluster.
+      discardSparkConfigs:
+        description: Discard the Spark configs inside a VC.
+        type: boolean
+        default: false
   UpdateVcResponse:
     type: object
     description: Response object for updateVc method.

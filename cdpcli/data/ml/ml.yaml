@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.120
+  version: 0.9.121
   title: Cloudera Machine Learning
   license:
     name: Apache 2.0
@@ -18,6 +18,27 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/v1/ml/addInstanceGroupsMlServingApp:
+    post:
+      summary: Add instance group to an existing Cloudera AI Inference Service instance.
+      description: Add instance group to an existing Cloudera AI Inference Service instance.
+      operationId: addInstanceGroupsMlServingApp
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AddInstanceGroupsMlServingAppRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AddInstanceGroupsMlServingAppResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/backupWorkspace:
     post:
       summary: Backup a workspace.
@@ -34,6 +55,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/BackupWorkspaceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/createMlServingApp:
+    post:
+      summary: Deploys Cloudera AI Inference Service into an existing Kubernetes cluster.
+      description: Deploys Cloudera AI Inference Service into an existing Kubernetes cluster.
+      operationId: createMlServingApp
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateMlServingAppRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateMlServingAppResponse'
         default:
           description: The default response on an error.
           schema:
@@ -123,6 +165,48 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/deleteInstanceGroupMlServingApp:
+    post:
+      summary: Deletes an instance group from a Cloudera AI Inference Service instance.
+      description: Deletes an instance group from a Cloudera AI Inference Service instance.
+      operationId: deleteInstanceGroupMlServingApp
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteInstanceGroupMlServingAppRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteInstanceGroupMlServingAppResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/deleteMlServingApp:
+    post:
+      summary: Deletes Cloudera AI Inference Service instance.
+      description: Gracefully deletes the Cloudera AI Inference Service instance without deleting the cluster.
+      operationId: deleteMlServingApp
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteMlServingAppRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteMlServingAppResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/deleteModelRegistry:
     post:
       summary: Deletes a model registry.
@@ -165,6 +249,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/describeMlServingApp:
+    post:
+      summary: Describe Cloudera AI Inference Service instance.
+      description: Describe Cloudera AI Inference Service instance.
+      operationId: describeMlServingApp
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeMlServingAppRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeMlServingAppResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/ml/describeModelRegistry:
     post:
       summary: Describe Cloudera Machine Learning Model Registry.
@@ -291,6 +396,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/ml/getMlServingAppKubeconfig:
+    post:
+      summary: Return kubeconfig for a Cloudera AI Inference Service Kubernetes cluster.
+      description: Gets the Kubeconfig of the Cloudera AI Inference Service kubernetes cluster.
+      operationId: getMlServingAppKubeconfig
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetMlServingAppKubeconfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetMlServingAppKubeconfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/ml/getModelRegistryKubeconfig:
     post:
       summary: GetModelRegistryKubeconfig returns kube config for model registry.
@@ -312,6 +438,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/ml/grantMlServingAppAccess:
+    post:
+      summary: Grants admin access to a Cloudera AI Inference Service cluster.
+      description: Grants an AWS user permissions to perform Kubernetes operations on a Cloudera AI Inference Service cluster.
+      operationId: grantMlServingAppAccess
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GrantMlServingAppAccessRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GrantMlServingAppAccessResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/grantModelRegistryAccess:
     post:
       summary: GrantModelRegistryAccess Cloudera Machine Learning Model Registry.
@@ -354,6 +501,69 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/listInstanceTypeConfiguration:
+    post:
+      summary: List the instance configuration for a given instance type.
+      description: List of instances.
+      operationId: listInstanceTypeConfiguration
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListInstanceTypeConfigurationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListInstanceTypeConfigurationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/ml/listMlServingAppAccess:
+    post:
+      summary: List members that have Kubernetes access to a Cloudera AI Inference Service cluster.
+      description: Lists users that can perform Kubernetes operations on a Cloudera AI Inference Service cluster.
+      operationId: listMlServingAppAccess
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListMlServingAppAccessRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListMlServingAppAccessResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/ml/listMlServingApps:
+    post:
+      summary: List all Cloudera AI Inference Service instances.
+      description: List all Cloudera AI Inference Service instances.
+      operationId: listMlServingApps
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListMlServingAppsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListMlServingAppsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-skip-auditing: true
   /api/v1/ml/listModelRegistries:
     post:
       summary: Lists all model registries.
@@ -391,6 +601,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListModelRegistryAccessResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/ml/listRelevantInstances:
+    post:
+      summary: List the instance types for CML workspace creation that have the requested resource.
+      description: List of relevant instance type for CML workspace creation.
+      operationId: listRelevantInstances
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListRelevantInstancesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListRelevantInstancesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -501,6 +732,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/modifyMlServingApp:
+    post:
+      summary: Modify instance groups for a Cloudera AI Inference Service cluster.
+      description: Modify instance groups for a Cloudera AI Inference Service cluster.
+      operationId: modifyMlServingApp
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModifyMlServingAppRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ModifyMlServingAppResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/modifyWorkspaceLoadBalancer:
     post:
       summary: Modify Cloudera Machine Learning workspace loadbalancer.
@@ -606,6 +858,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/revokeMlServingAppAccess:
+    post:
+      summary: Revokes access to a Cloudera AI Inference Service cluster.
+      description: Revokes an AWS user permissions on a Cloudera AI Inference Service cluster.
+      operationId: revokeMlServingAppAccess
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RevokeMlServingAppAccessRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RevokeMlServingAppAccessResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/revokeModelRegistryAccess:
     post:
       summary: RevokeModelRegistryAccess Cloudera Machine Learning Model Registry.
@@ -685,6 +958,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/SuspendWorkspaceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/upgradeMlServingApp:
+    post:
+      summary: Upgrade a Cloudera AI Inference Service instance.
+      description: Upgrade a Cloudera AI Inference Service instance to the latest available version.
+      operationId: upgradeMlServingApp
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeMlServingAppRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeMlServingAppResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1082,6 +1376,40 @@ definitions:
         type: string
         description: Optionally provide a Postgresql database password to use when exporting model metrics.
         x-sensitive: true
+  DeleteInstanceGroupMlServingAppRequest:
+    type: object
+    description: Request object for the DeleteInstanceGroupMlServingApp method.
+    required:
+      - appCrn
+      - instanceGroupName
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service from which instance group is to be deleted.
+      instanceGroupName:
+        type: string
+        description: The instance group to be deleted from the Cloudera AI Inference Service instance.
+  DeleteInstanceGroupMlServingAppResponse:
+    type: object
+    description: Response object for the DeleteInstanceGroupMlServingApp method.
+  AddInstanceGroupsMlServingAppRequest:
+    type: object
+    description: Request object for AddInstanceGroupsMlServingApp method.
+    required:
+      - appCrn
+      - instanceGroups
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service instance to which the instance groups will be added.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroup'
+        description: The instance groups to be added to the Cloudera AI Inference Service instance.
+  AddInstanceGroupsMlServingAppResponse:
+    type: object
+    description: Response object for AddInstanceGroupsMlServingApp method.
   CreateWorkspaceRequest:
     type: object
     description: Request object for the CreateWorkspace method.
@@ -1715,6 +2043,13 @@ definitions:
       workspaceCrn:
         type: string
         description: The CRN of the workspace to list access.
+  GetMlServingAppKubeconfigRequest:
+    type: object
+    description: Request object for the GetMlServingAppKubeconfig method.
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service instance for retrieving the kubeconfig.
   GetModelRegistryKubeconfigRequest:
     type: object
     description: Request object for GetModelRegistryKubeconfig.
@@ -1738,6 +2073,16 @@ definitions:
       kubeconfig:
         type: string
         description: The list of users that have access.
+        x-sensitive: true
+  GetMlServingAppKubeconfigResponse:
+    type: object
+    description: Response object for the GetMlServingAppKubeconfig method.
+    required:
+      - kubeconfig
+    properties:
+      kubeconfig:
+        type: string
+        description: The kubeconfig of the Cloudera AI Inference Kubernetes cluster.
         x-sensitive: true
   GetLatestWorkspaceVersionRequest:
     type: object
@@ -2207,4 +2552,444 @@ definitions:
           x-sensitive: true
         description: The list of users that have access.
         x-sensitive: true
+  CreateMlServingAppRequest:
+    type: object
+    description: Request object for the CreateMlServingApp method.
+    required:
+      - appName
+      - environmentCrn
+      - clusterCrn
+    properties:
+      appName:
+        type: string
+        description: The name of the Cloudera AI Inference Service to be created.
+      environmentCrn:
+        type: string
+        description: The environment CRN.
+      clusterCrn:
+        type: string
+        description: The cluster CRN of an existing cluster where Cloudera AI Inference Service instance will be deployed.
+      provisionK8sRequest:
+        description: The request for Kubernetes cluster provisioning. Required in public cloud.
+        $ref: '#/definitions/MlServingProvisionK8sRequest'
+      usePublicLoadBalancer:
+        type: boolean
+        description: The boolean flag to request a public load balancer. By default, a private load balancer is used.
+      skipValidation:
+        type: boolean
+        description: Skip pre-flight validations if requested.
+      loadBalancerIPWhitelists:
+        type: array
+        items:
+          type: string
+        description: The whitelist of IPs for load balancer.
+      subnetsForLoadBalancers:
+        type: array
+        items:
+          type: string
+        description: The list of subnets to be used for the load balancer.
+      staticSubdomain:
+        type: string
+        description: The static subdomain to be used for the Cloudera AI Inference Service instance.
+  CreateMlServingAppResponse:
+    type: object
+    description: Response object for the CreateMlServingApp method.
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service created.
+  UpgradeMlServingAppRequest:
+    type: object
+    description: Request object for the UpgradeMlServingApp method.
+    required:
+      - appCrn
+    properties:
+      appCrn:
+        type: string
+        description: The Cloudera AI Inference Service CRN.
+  UpgradeMlServingAppResponse:
+    type: object
+    description: Response object for the UpgradeMlServingApp method.
+  DeleteMlServingAppRequest:
+    type: object
+    description: Request object for the DeleteMlServingApp method.
+    required:
+      - appCrn
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service to be deleted.
+  DeleteMlServingAppResponse:
+    type: object
+    description: Response object for the DeleteMlServingApp method.
+  MlServingProvisionK8sRequest:
+    type: object
+    description: Request object for provisioning Cloudera AI Inference Service instance groups.
+    required:
+      - instanceGroups
+      - environmentCrn
+    properties:
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceGroup'
+        description: The instance groups.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment for the cluster to create.
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/ProvisionTag'
+        description: Tags to add to the cloud provider resources created. This is in addition to any tags added by Cloudera.
+      network:
+        description: The overlay network for an AWS Kubernetes cluster's CNI.
+        $ref: '#/definitions/OverlayNetwork'
+  ListMlServingAppsRequest:
+    type: object
+    description: Request object for the ListMlServingApps method.
+    properties:
+      queryOptions:
+        type: array
+        items:
+          type: string
+        description: Additional query options.
+  ListMlServingAppsResponse:
+    type: object
+    description: Response object for the ListMlServingApps method.
+    properties:
+      apps:
+        type: array
+        items:
+          $ref: '#/definitions/MlServingApp'
+        description: The list of Apps.
+  DescribeMlServingAppRequest:
+    type: object
+    description: Request object for the DescribeMlServingApp method.
+    required:
+      - appCrn
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service.
+  DescribeMlServingAppResponse:
+    type: object
+    description: Response object for the DescribeMlServingApp method.
+    properties:
+      app:
+        description: The Cloudera AI Inference Service instance.
+        $ref: '#/definitions/MlServingApp'
+  MlServingApp:
+    type: object
+    description: The Cloudera AI Inference Service instance.
+    required:
+      - cloudPlatform
+    properties:
+      cloudPlatform:
+        type: string
+        description: The cloud platform of the environment that was used to create this instance.
+      appName:
+        type: string
+        description: The name of the Cloudera AI Inference Service instance.
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service instance.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      environmentName:
+        type: string
+        description: The name of the environment.
+      namespace:
+        type: string
+        description: The namespace used for this service.
+      ownerEmail:
+        type: string
+        description: The email of the user who created this service.
+      mlServingVersion:
+        type: string
+        description: The Cloudera AI Inference Service version running on this instance.
+      isPrivateCluster:
+        type: boolean
+        description: Is this service installed on a private cluster.
+      creationDate:
+        type: string
+        format: date-time
+        description: Creation date of Cloudera AI Inference Service instance.
+      cluster:
+        description: The Kubernetes cluster information.
+        $ref: '#/definitions/KubernetesCluster'
+      status:
+        type: string
+        description: The status of the Cloudera AI Inference Service instance.
+      usePublicLoadBalancer:
+        type: boolean
+        description: Indicates if this Cloudera AI Inference Service instance uses a public load balancer.
+      httpsEnabled:
+        type: boolean
+        description: Indicates if HTTPs communication was enabled on this application when it was provisioned.
+      subnetsForLoadBalancers:
+        type: array
+        items:
+          type: string
+        description: The list of subnets used for the load balancer.
+  KubernetesCluster:
+    type: object
+    description: The Kubernetes cluster information
+    properties:
+      clusterName:
+        type: string
+        description: The name of the Kubernetes cluster.
+      domainName:
+        type: string
+        description: The domain name for the cluster.
+      liftieID:
+        type: string
+        description: The identifier in Cloudera Data Platform Compute Service corresponding to this Kubernetes cluster.
+      isPublic:
+        type: boolean
+        description: Indicates if this cluster is accepting incoming connection from public internet.
+      ipAllowlist:
+        type: string
+        description: The allow list of IPs for incoming connections.
+      baseDomain:
+        type: string
+        description: The base domain for this cluster.
+      subnets:
+        type: string
+        description: The subnets associated with this cluster.
+      authorizedIpRanges:
+        type: string
+        description: The allow list of CIDR blocks which can access the API server.
+      authorizedIpRangesAllowList:
+        type: boolean
+        description: Whether to allow only 'authorizedIPRanges' given or all public IPs.
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/Tag'
+        description: Tags provided by the user at the time of app creation.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/WorkspaceInstanceGroup'
+        description: The instance groups.
+      clusterCrn:
+        type: string
+        description: The cluster CRN of the kubernetes cluster.
+  ListRelevantInstancesRequest:
+    type: object
+    description: Request object for the ListRelevantInstances method.
+    required:
+      - region
+      - instanceCategory
+      - cloudProvider
+      - requestInfo
+    properties:
+      region:
+        type: string
+        description: Specifies the name of the region for which instance support details are requested.
+      instanceCategory:
+        type: string
+        description: Defines the category of the instance (e.g., CPU, GPU) relevant for the query in the specified region.
+      cloudProvider:
+        type: string
+        description: Identifies the cloud provider (e.g., AWS, Azure) for which to list supported instances.
+      requestInfo:
+        description: Specifies the requested resource inputs eg (CPU/GPU, model, memory etc).
+        $ref: '#/definitions/RequestResourceInfo'
+  ListRelevantInstancesResponse:
+    type: object
+    description: Response object for the ListRelevantInstances method.
+    required:
+      - instanceDetails
+    properties:
+      instanceDetails:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceDetails'
+        description: Contains a list of instance details, including CPU, GPU, memory, and name, for supported instances in the queried region.
+  ListInstanceTypeConfigurationRequest:
+    type: object
+    description: Request object for the ListInstanceTypeConfiguration method.
+    required:
+      - region
+      - instanceCategory
+      - cloudProvider
+      - instanceType
+    properties:
+      region:
+        type: string
+        description: Specifies the name of the region for which instance support details are requested.
+      instanceCategory:
+        type: string
+        description: Defines the category of the instance (e.g., CPU, GPU) relevant for the query in the specified region.
+      cloudProvider:
+        type: string
+        description: Identifies the cloud provider (e.g., AWS, Azure) for which to list supported instances.
+      instanceType:
+        type: string
+        description: Identifies the instance type.
+  ListInstanceTypeConfigurationResponse:
+    type: object
+    description: Response object for the ListInstanceTypeConfiguration method.
+    required:
+      - instanceDetails
+    properties:
+      instanceDetails:
+        type: array
+        items:
+          $ref: '#/definitions/InstanceDetails'
+        description: Contains a list of instance details, including CPU, GPU, memory, and name, for queried supported instance type in the queried region.
+  RequestResourceInfo:
+    type: object
+    description: Instance Details
+    properties:
+      gpuModel:
+        type: string
+        description: The model of the GPU, entails the complete name by the provider.
+      gpuType:
+        type: string
+        description: The gpu type, eg A100
+      cpu:
+        type: string
+        description: The number of CPU cores.
+      gpu:
+        type: string
+        description: The number of GPUs.
+      memory:
+        type: string
+        description: The memory size of the resource.
+      gpuMemory:
+        type: string
+        description: The GPU memory size of the resource.
+      computeCapability:
+        type: string
+        description: The compute capability of the GPU.
+      interconnectType:
+        type: string
+        description: The interconnect type between 2 resources.
+  InstanceDetails:
+    type: object
+    description: Instance Details
+    required:
+      - cpu
+      - gpu
+      - memory
+      - name
+      - category
+    properties:
+      cpu:
+        type: string
+        description: The number of CPU cores available for the instance in the region.
+      gpu:
+        type: string
+        description: The number of GPUs available for the instance in the region.
+      memory:
+        type: string
+        description: The amount of memory (RAM) available for the instance in the region, typically measured in GB.
+      name:
+        type: string
+        description: A unique name or identifier for the instance type in the region.
+      category:
+        type: string
+        description: Name of the CPU/GPU category to which it belongs.
+      gpuModel:
+        type: string
+        description: GPU model.
+      gpuType:
+        type: string
+        description: GPU model type.
+      gpuMemory:
+        type: string
+        description: Memory capacity of the GPU.
+      computeCapability:
+        type: string
+        description: Compute capability of the GPU.
+      interconnectType:
+        type: string
+        description: Type of interconnect between GPUs.
+  GrantMlServingAppAccessRequest:
+    type: object
+    description: Request object for the GrantMlServingAppAccess method.
+    properties:
+      resourceCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service instance to which access is to be granted.
+      identifier:
+        type: string
+        description: The cloud provider user id, such as ARN, which will be granted access to the Cloudera AI Inference Service Kubernetes cluster.
+  GrantMlServingAppAccessResponse:
+    type: object
+    description: Response object for the GrantMlServingAppAccess method.
+    required:
+      - kubeconfig
+    properties:
+      kubeconfig:
+        type: string
+        description: The Kubernetes config file
+        x-sensitive: true
+  RevokeMlServingAppAccessRequest:
+    type: object
+    description: Request object for the RevokeMlServingAppAccess method.
+    properties:
+      resourceCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service instance to revoke access.
+      identifier:
+        type: string
+        description: The cloud provider user ID, such as ARN, from which access to the Cloudera AI Inference Service Kubernetes cluster needs to be revoked.
+  RevokeMlServingAppAccessResponse:
+    type: object
+    description: Response object for the RevokeMlServingAppAccess method.
+  ListMlServingAppAccessRequest:
+    type: object
+    description: Request object for the ListMlServingAppAccess method.
+    properties:
+      resourceCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service to list access.
+  ListMlServingAppAccessResponse:
+    type: object
+    description: Response object for the ListMlServingAppAccess method.
+    required:
+      - users
+    properties:
+      users:
+        type: array
+        items:
+          type: string
+          x-sensitive: true
+        description: The list of users that have access.
+        x-sensitive: true
+  ModifyMlServingAppRequest:
+    type: object
+    description: Request object for the ModifyMlServingApp method.
+    required:
+      - appCrn
+      - instanceGroupName
+      - min
+      - max
+      - instanceType
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service to be modified.
+      instanceGroupName:
+        type: string
+        description: The name of the instance group to be modified.
+      min:
+        type: integer
+        format: int32
+        description: The desired minimum number of instances in the instance group.
+      max:
+        type: integer
+        format: int32
+        description: The desired maximum number of instances in the instance group.
+      instanceType:
+        type: string
+        description: The desired instance type of the instance group.
+  ModifyMlServingAppResponse:
+    type: object
+    description: Response object for ModifyMlServingApp method.
 x-audit: true
