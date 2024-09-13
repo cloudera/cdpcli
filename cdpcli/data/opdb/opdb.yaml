@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.121
+  version: 0.9.122
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -387,7 +387,7 @@ definitions:
         description: Value
   InstanceGroupType:
     type: string
-    description: "InstanceGroup Type.\n `WORKER` - WORKER value of the InstanceGroup name. `LEADER` - LEADER value of the InstanceGroup name. `MASTER` - MASTER value of the InstanceGroup name. `GATEWAY` - GATEWAY value of the InstanceGroup name. `STRONGMETA` - STRONGMETA value of the InstanceGroup name. `EDGE` - EDGE value of the InstanceGroup name."
+    description: "InstanceGroup Type.\n `WORKER` - WORKER value of the InstanceGroup name. `LEADER` - LEADER value of the InstanceGroup name. `MASTER` - MASTER value of the InstanceGroup name. `GATEWAY` - GATEWAY value of the InstanceGroup name. `STRONGMETA` - STRONGMETA value of the InstanceGroup name. `EDGE` - EDGE value of the InstanceGroup name. `COMPUTE` - COMPUTE value of the InstanceGroup name. `RESTWORKER` - RESTWORKER value of the InstanceGroup name."
     enum:
       - WORKER
       - LEADER
@@ -492,6 +492,14 @@ definitions:
         items:
           $ref: '#/definitions/VolumeEncryption'
         description: Specifies encryption key to encrypt volume for instance group. It is currently supported for AWS cloud provider only.
+      gatewayNodesCount:
+        type: integer
+        format: int32
+        description: Number of gateway nodes to be created for the database. When multiple gateway nodes are present Knox works in HA mode. A positive, non-zero number is required. The default value is 1. Requires the COD_RESTWORKERS entitlement.
+      restworkerNodesCount:
+        type: integer
+        format: int32
+        description: Number of REST Worker nodes to be created for the database. A positive, non-zero number is required. The default value is 0. Requires the COD_RESTWORKERS entitlement.
   VolumeType:
     type: string
     description: "Volume Type.\n `HDD` - Hard disk drives (HDD) volume type. Default is HDD. `SSD` - Solid disk drives (SSD) volume type. `LOCAL_SSD` - Local SSD volume type."
@@ -553,6 +561,13 @@ definitions:
       removeStrongMetaServers:
         type: boolean
         description: Removes any strong meta servers provisioned for this database. Requires the COD_STRONG_META_SERVERS entitlement.
+      numDesiredRestworkerNodes:
+        type: integer
+        format: int32
+        description: Sets the desired number of REST Worker nodes for the database. A positive, non-zero number is required. Requires the COD_RESTWORKERS entitlement.
+      removeRestworkerNodes:
+        type: boolean
+        description: Removes any REST Worker nodes provisioned for this database. Requires the COD_RESTWORKERS entitlement.
   AutoScalingParameters:
     type: object
     description: A Parameters to configure AutoScaling
@@ -758,6 +773,14 @@ definitions:
       internalName:
         type: string
         description: Internal cluster name for this database
+      gatewayNodesCount:
+        type: integer
+        format: int32
+        description: Number of gateway nodes for the database.
+      restworkerNodesCount:
+        type: integer
+        format: int32
+        description: Number of REST Worker nodes for the database.
   DescribeDatabaseRequest:
     type: object
     description: request to get details of the database in a particular environment

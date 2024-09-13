@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.121
+  version: 0.9.122
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2159,7 +2159,7 @@ definitions:
         format: int32
         description: Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
       customRegistryOptions:
-        description: Options for custom ACR/ECR/Docker registries.
+        description: Options for custom ACR/ECR registries.
         $ref: '#/definitions/CustomRegistryOptions'
       awsOptions:
         description: Options for activating an AWS environment.
@@ -2228,7 +2228,7 @@ definitions:
         format: int32
         description: Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
       customRegistryOptions:
-        description: Options for custom ACR/ECR/Docker registries.
+        description: Options for custom ACR/ECR registries.
         $ref: '#/definitions/CustomRegistryOptions'
       customSubdomain:
         type: string
@@ -2316,7 +2316,7 @@ definitions:
         format: int32
         description: Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
       customRegistryOptions:
-        description: Options for custom ACR/ECR/Docker registries.
+        description: Options for custom ACR/ECR registries.
         $ref: '#/definitions/CustomRegistryOptions'
       customSubdomain:
         type: string
@@ -2517,7 +2517,7 @@ definitions:
         description: The description of the plan.
   CustomRegistryOptions:
     type: object
-    description: Options for custom ACR, ECR, or Docker registry.
+    description: Options for custom ACR, ECR registry.
     properties:
       registryType:
         enum:
@@ -3636,6 +3636,9 @@ definitions:
         x-deprecated: true
         type: boolean
         description: DEPRECATED in favor of the top level impalaHASettings object. Enables a backup instance for Impala catalog to ensure high availability.
+      impalaExecutorGroupSets:
+        $ref: '#/definitions/ImpalaExecutorGroupSetsCreateRequest'
+        description: Configures executor group sets for workload aware autoscaling.
   ImpalaOptionsCreateRequest:
     type: object
     description: Impala specific options. It cannot be provided for Virtual Warehouse types other than Impala.
@@ -3731,6 +3734,9 @@ definitions:
         type: integer
         format: int32
         description: DEPRECATED in favor of the top level impalaHASettings object. Number of the active coordinators.
+      impalaExecutorGroupSets:
+        $ref: '#/definitions/ImpalaExecutorGroupSetsUpdateRequest'
+        description: Re-configures executor group sets for workload aware autoscaling.
   ImpalaHASettingsUpdateRequest:
     type: object
     description: High Availability settings update options for the Impala Virtual Warehouse.
@@ -3808,6 +3814,9 @@ definitions:
         x-deprecated: true
         type: boolean
         description: DEPRECATED in favor of the top level impalaHASettings object. Denotes whether a backup instance for Impala catalog is enabled.
+      impalaExecutorGroupSets:
+        $ref: '#/definitions/ImpalaExecutorGroupSetsResponse'
+        description: Configurations of executor groups sets for workload aware autoscaling.
   ImpalaHASettingsOptionsResponse:
     type: object
     description: Impala High Availability settings for a Virtual Warehouse.
@@ -5540,6 +5549,175 @@ definitions:
         items:
           $ref: '#/definitions/CloudUserReference'
         description: The list of users allowed to access the given cluster.
+  ImpalaExecutorGroupSetsCreateRequest:
+    type: object
+    description: Configure executor group sets for workload aware autoscaling.
+    properties:
+      small:
+        $ref: '#/definitions/ImpalaExecutorGroupSetCreateRequest'
+        description: Configure small executor group set for workload aware autoscaling.
+        x-omitempty: false
+      custom1:
+        $ref: '#/definitions/ImpalaExecutorGroupSetCreateRequest'
+        description: Configure first optional custom executor group set for workload aware autoscaling.
+      custom2:
+        $ref: '#/definitions/ImpalaExecutorGroupSetCreateRequest'
+        description: Configure second optional custom executor group set for workload aware autoscaling.
+      custom3:
+        $ref: '#/definitions/ImpalaExecutorGroupSetCreateRequest'
+        description: Configure third optional custom executor group set for workload aware autoscaling.
+      large:
+        $ref: '#/definitions/ImpalaExecutorGroupSetCreateRequest'
+        description: Configure large executor group set for workload aware autoscaling.
+        x-omitempty: false
+  ImpalaExecutorGroupSetsUpdateRequest:
+    type: object
+    description: Re-configure executor group sets for workload aware autoscaling.
+    properties:
+      small:
+        $ref: '#/definitions/ImpalaExecutorGroupSetUpdateRequest'
+        description: Re-configure small executor group set for workload aware autoscaling.
+      custom1:
+        $ref: '#/definitions/ImpalaExecutorGroupSetUpdateRequest'
+        description: Re-configure first optional custom executor group set for workload aware autoscaling.
+      custom2:
+        $ref: '#/definitions/ImpalaExecutorGroupSetUpdateRequest'
+        description: Re-configure second optional custom executor group set for workload aware autoscaling.
+      custom3:
+        $ref: '#/definitions/ImpalaExecutorGroupSetUpdateRequest'
+        description: Re-configure third optional custom executor group set for workload aware autoscaling.
+      large:
+        $ref: '#/definitions/ImpalaExecutorGroupSetUpdateRequest'
+        description: Re-configure large executor group set for workload aware autoscaling.
+  ImpalaExecutorGroupSetsResponse:
+    type: object
+    description: Describes executor group sets for workload aware autoscaling.
+    properties:
+      small:
+        $ref: '#/definitions/ImpalaExecutorGroupSetResponse'
+        description: Describes small executor group set for workload aware autoscaling.
+      custom1:
+        $ref: '#/definitions/ImpalaExecutorGroupSetResponse'
+        description: Describes first custom executor group set for workload aware autoscaling.
+      custom2:
+        $ref: '#/definitions/ImpalaExecutorGroupSetResponse'
+        description: Describes second custom executor group set for workload aware autoscaling.
+      custom3:
+        $ref: '#/definitions/ImpalaExecutorGroupSetResponse'
+        description: Describes third custom executor group set for workload aware autoscaling.
+      large:
+        $ref: '#/definitions/ImpalaExecutorGroupSetResponse'
+        description: Describes large executor group set for workload aware autoscaling.
+  ImpalaExecutorGroupSetCreateRequest:
+    type: object
+    description: Configure independently scaling set of uniformly sized executor groups.
+    properties:
+      execGroupSize:
+        type: integer
+        format: int32
+        description: Set number of executors per executor group.
+        x-omitempty: false
+      minExecutorGroups:
+        type: integer
+        format: int32
+        description: Set minimum number of executor groups allowed.
+        x-omitempty: false
+      maxExecutorGroups:
+        type: integer
+        format: int32
+        description: Set maximum number of executor groups allowed.
+        x-omitempty: false
+      autoSuspendTimeoutSeconds:
+        type: integer
+        format: int32
+        description: Set auto suspend threshold. If not provided defaults will apply.
+      disableAutoSuspend:
+        type: boolean
+        description: Turn off auto suspend. If not provided defaults will apply.
+      triggerScaleUpDelay:
+        type: integer
+        format: int32
+        description: Set scale up threshold in seconds. If not provided defaults will apply.
+      triggerScaleDownDelay:
+        type: integer
+        format: int32
+        description: Set scale down threshold in seconds. If not provided defaults will apply.
+  ImpalaExecutorGroupSetUpdateRequest:
+    type: object
+    description: Re-configure independently scaling set of uniformly sized executor groups.
+    properties:
+      execGroupSize:
+        type: integer
+        format: int32
+        description: Set number of executors per executor group.
+      minExecutorGroups:
+        type: integer
+        format: int32
+        description: Set minimum number of executor groups allowed.
+      maxExecutorGroups:
+        type: integer
+        format: int32
+        description: Set maximum number of executor groups allowed.
+      autoSuspendTimeoutSeconds:
+        type: integer
+        format: int32
+        description: Set auto suspend threshold. If not provided defaults will apply.
+      disableAutoSuspend:
+        type: boolean
+        description: Turn off auto suspend. If not provided defaults will apply.
+      triggerScaleUpDelay:
+        type: integer
+        format: int32
+        description: Set scale up threshold in seconds. If not provided defaults will apply.
+      triggerScaleDownDelay:
+        type: integer
+        format: int32
+        description: Set scale down threshold in seconds. If not provided defaults will apply.
+      deleteGroupSet:
+        type: boolean
+        description: Delete the executor group set.
+  ImpalaExecutorGroupSetResponse:
+    type: object
+    description: Describes configurations for an executor group set.
+    properties:
+      groupSetPrefix:
+        type: string
+        description: Name of resource pool for this executor group set.
+        x-omitempty: false
+      execGroupSize:
+        type: integer
+        format: int32
+        description: Number of executors per executor group.
+        x-omitempty: false
+      minExecutorGroups:
+        type: integer
+        format: int32
+        description: Minimum number of executor groups allowed.
+        x-omitempty: false
+      maxExecutorGroups:
+        type: integer
+        format: int32
+        description: Maximum number of executor groups allowed.
+        x-omitempty: false
+      autoSuspendTimeoutSeconds:
+        type: integer
+        format: int32
+        description: Auto suspend threshold.
+        x-omitempty: false
+      disableAutoSuspend:
+        type: boolean
+        description: Denotes whether auto suspend is turned off.
+        x-omitempty: false
+      triggerScaleUpDelay:
+        type: integer
+        format: int32
+        description: Scale up threshold in seconds.
+        x-omitempty: false
+      triggerScaleDownDelay:
+        type: integer
+        format: int32
+        description: Scale down threshold in seconds.
+        x-omitempty: false
   CloudUserReference:
     type: object
     description: Cloud user definition object.
