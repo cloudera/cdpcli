@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.122
+  version: 0.9.123
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2150,14 +2150,16 @@ definitions:
         x-entitlement: CDW_STORAGE_ROLES
       reservedComputeNodes:
         x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        x-deprecated: true
         type: integer
         format: int32
-        description: Set additional number of nodes to reserve for executors and coordinators to use during autoscaling. Adding more reserved nodes increases your cloud costs.
+        description: DEPRECATED - will be removed in future releases. Set additional number of nodes to reserve for executors and coordinators to use during autoscaling. Adding more reserved nodes increases your cloud costs.
       reservedSharedServicesNodes:
         x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        x-deprecated: true
         type: integer
         format: int32
-        description: Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
+        description: DEPRECATED - will be removed in future releases. Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
       customRegistryOptions:
         description: Options for custom ACR/ECR registries.
         $ref: '#/definitions/CustomRegistryOptions'
@@ -2219,14 +2221,16 @@ definitions:
         default: false
       reservedComputeNodes:
         x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        x-deprecated: true
         type: integer
         format: int32
-        description: Set additional number of nodes to reserve for executors and coordinators to use during autoscaling. Adding more reserved nodes increases your cloud costs.
+        description: DEPRECATED - will be removed in future releases. Set additional number of nodes to reserve for executors and coordinators to use during autoscaling. Adding more reserved nodes increases your cloud costs.
       reservedSharedServicesNodes:
         x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        x-deprecated: true
         type: integer
         format: int32
-        description: Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
+        description: DEPRECATED - will be removed in future releases. Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
       customRegistryOptions:
         description: Options for custom ACR/ECR registries.
         $ref: '#/definitions/CustomRegistryOptions'
@@ -2307,14 +2311,16 @@ definitions:
         description: Set up load balancer with private IP address. An internal load balancer gets created. Make sure there is connectivity between your client network and the network VNet where CDW environment is deployed.
       reservedComputeNodes:
         x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        x-deprecated: true
         type: integer
         format: int32
-        description: Set additional number of nodes to reserve for executors and coordinators to use during autoscaling. Adding more reserved nodes increases your cloud costs.
+        description: DEPRECATED - will be removed in future releases. Set additional number of nodes to reserve for executors and coordinators to use during autoscaling. Adding more reserved nodes increases your cloud costs.
       reservedSharedServicesNodes:
         x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        x-deprecated: true
         type: integer
         format: int32
-        description: Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
+        description: DEPRECATED - will be removed in future releases. Set additional number of nodes to reserve for other services in the cluster. Adding more reserved nodes increases your cloud costs.
       customRegistryOptions:
         description: Options for custom ACR/ECR registries.
         $ref: '#/definitions/CustomRegistryOptions'
@@ -4598,14 +4604,16 @@ definitions:
         description: Denotes whether the spot instances have been enabled for the cluster. This value is only available for AWS and Azure clusters.
       reservedComputeNodes:
         x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        x-deprecated: true
         type: integer
         format: int32
-        description: Number of additional reserved nodes for executors and coordinators to use during autoscaling.
+        description: DEPRECATED - will be removed in future releases. Number of additional reserved nodes for executors and coordinators to use during autoscaling.
       reservedSharedServicesNodes:
         x-entitlement: CDW_CLUSTER_OVERPROVISIONER
+        x-deprecated: true
         type: integer
         format: int32
-        description: Number of additional reserved nodes for other services in the cluster.
+        description: DEPRECATED - will be removed in future releases. Number of additional reserved nodes for other services in the cluster.
       computeInstanceTypes:
         type: array
         items:

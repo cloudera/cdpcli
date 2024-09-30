@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.122
+  version: 0.9.123
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -1490,7 +1490,7 @@ paths:
       summary: Retrieves the CRN of the default identity provider.
       description: Retrieves the CRN of the default identity provider used for CDP initiated login requests.
       operationId: getDefaultIdentityProvider
-      x-form-factors: public
+      x-form-factors: public,private
       x-right: iam/getDefaultIdentityProvider
       x-mutating: false
       parameters:
@@ -1513,7 +1513,7 @@ paths:
       summary: Sets the default identity provider.
       description: Sets the default identity provider used for CDP initiated login requests.
       operationId: setDefaultIdentityProvider
-      x-form-factors: public
+      x-form-factors: public,private
       x-right: iam/setDefaultIdentityProvider
       x-mutating: true
       parameters:
