@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.123
+  version: 0.9.124
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -18,12 +18,81 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/v1/compute/createCluster:
+    post:
+      summary: Create compute cluster
+      description: Creates compute cluster.
+      operationId: createCluster
+      x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/compute/deleteCluster:
+    post:
+      summary: Delete compute cluster
+      description: Deletes compute cluster.
+      operationId: deleteCluster
+      x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/compute/describeCluster:
+    post:
+      summary: Describe compute cluster
+      description: Describe compute cluster details in a CDP Environment
+      operationId: describeCluster
+      x-entitlement: COMPUTE_API_LIFTIE
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/compute/describeDeployment:
     post:
       summary: Describes a deployment
       description: Gets a single deployment along with its extended history. This can also include all of the known templates.
       operationId: describeDeployment
       x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
       parameters:
         - name: input
           in: body
@@ -63,12 +132,36 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/compute/listDeployments:
+    post:
+      summary: List deployments in the cluster.
+      description: Lists the helm charts that are available for deployment or have already been deployed in this cluster.
+      operationId: listDeployments
+      x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDeploymentsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDeploymentsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/compute/upgradeDeployment:
     post:
       summary: Upgrades a deployment to a different chart.
       description: Upgrades a deployment to a different chart.
       operationId: upgradeDeployment
       x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
       parameters:
         - name: input
           in: body
@@ -85,6 +178,29 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/compute/validateCluster:
+    post:
+      summary: Validate compute cluster
+      description: Validates compute cluster.
+      operationId: validateCluster
+      x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ValidateClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ValidateClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
 definitions:
   Error:
     type: object
@@ -118,6 +234,15 @@ definitions:
       - DedicatedExternal
       - Shared
       - Dedicated
+  DescribeClusterRequest:
+    type: object
+    description: Request object for describing a cluster.
+    required:
+      - clusterCrn
+    properties:
+      clusterCrn:
+        type: string
+        description: Compute cluster CRN.
   ComputeClusterOwner:
     type: object
     description: Compute cluster owner structure.
@@ -141,6 +266,881 @@ definitions:
         type: string
         description: Owner's actor CRN.
     x-form-factors: public
+  CommonApiServerResp:
+    type: object
+    description: API server response structure.
+    properties:
+      authorizedIpRanges:
+        type: array
+        items:
+          type: string
+        description: An array of IPv4 CIDR blocks.
+      enabled:
+        type: boolean
+        description: Flag to indicate if whitelist of IP Ranges (CIDR block) for public access to the kubernetes API server is enabled.
+    x-form-factors: public
+  CommonSecretEncryptionResp:
+    type: object
+    description: Secret Encryption response structure.
+    properties:
+      customerKmsKeyArn:
+        type: string
+        description: The KMS key ARN used.
+      enabled:
+        type: boolean
+        description: Flag to indicate if secret encryption is enabled.
+    x-form-factors: public
+  CommonVolumeEncryptionResp:
+    type: object
+    description: Volume encryption response structure.
+    properties:
+      customerKmsKeyArn:
+        type: string
+        description: The KMS key ARN used.
+    x-form-factors: public
+  CommonSecurityResp:
+    type: object
+    description: Security response structure.
+    properties:
+      apiServer:
+        description: API server.
+        $ref: '#/definitions/CommonApiServerResp'
+      secretEncryption:
+        description: Secret encryption.
+        $ref: '#/definitions/CommonSecretEncryptionResp'
+      volumeEncryption:
+        description: Volume encryption.
+        $ref: '#/definitions/CommonVolumeEncryptionResp'
+      private:
+        type: boolean
+        description: Flag to indicate if this is a private cluster with API Server having internal IP addressees.
+    x-form-factors: public
+  CommonYuniKornResp:
+    type: object
+    description: YuniKorn response structure.
+    properties:
+      enabled:
+        type: boolean
+        description: Flag to indicate if yunikorn is enabled.
+      version:
+        type: string
+        description: Version. Deprecated.
+        x-deprecated: true
+      appSortingPolicy:
+        type: string
+        description: The app sorting policy. Deprecated.
+        x-deprecated: true
+      nodeSortingPolicy:
+        type: string
+        description: The node sorting policy. Deprecated.
+        x-deprecated: true
+    x-form-factors: public
+  CommonNvidiaResp:
+    type: object
+    description: Nvidia response structure.
+    properties:
+      gpuLabelKey:
+        type: string
+        description: GPU label key.
+      gpuLabelValue:
+        type: string
+        description: GPU label value.
+    x-form-factors: public
+  CommonAlertmanagerResp:
+    type: object
+    description: Alertmanager response structure.
+    properties:
+      enabled:
+        type: boolean
+        description: Flag to indicate if Alertmanager is enabled.
+    x-form-factors: public
+  CommonResourceLimitsResp:
+    type: object
+    description: Resource limits response structure.
+    properties:
+      cpu:
+        type: string
+        description: Prometheus server CPU limit (default 1000m).
+      memory:
+        type: string
+        description: Prometheus server memory limit (default 2048M).
+    x-form-factors: public
+  CommonMonitoringResp:
+    type: object
+    description: Monitoring response structure.
+    properties:
+      enabled:
+        type: boolean
+        description: Flag to indicate if Monitoring is enabled.
+      alertmanager:
+        description: Alertmanager.
+        $ref: '#/definitions/CommonAlertmanagerResp'
+      serverResourceLimits:
+        description: Server resource limits.
+        $ref: '#/definitions/CommonResourceLimitsResp'
+    x-form-factors: public
+  CommonMeteringServiceResp:
+    type: object
+    description: Metering service response structure.
+    properties:
+      serviceType:
+        type: string
+        description: Service type.
+      serviceVersion:
+        type: string
+        description: Service version.
+      workloadCrn:
+        type: string
+        description: Workload CRN.
+      clusterCrn:
+        type: string
+        description: Cluster CRN.
+      serviceConfiguration:
+        type: string
+        description: Service configuration.
+    x-form-factors: public
+  CommonMeteringResp:
+    type: object
+    description: Metering response structure.
+    properties:
+      enabled:
+        type: boolean
+        description: Flag to indicate if Monitoring is enabled.
+      services:
+        type: array
+        items:
+          $ref: '#/definitions/CommonMeteringServiceResp'
+        description: Array of services.
+    x-form-factors: public
+  CommonLoggingResp:
+    type: object
+    description: Logging response structure.
+    properties:
+      enabled:
+        type: boolean
+        description: True to enable logging installation (default false).
+    x-form-factors: public
+  CommonDeploymentProfileDetailsResp:
+    type: object
+    description: Deployment Profile details response structure.
+    properties:
+      enabled:
+        type: boolean
+        description: Deployment enable flag.
+      deploymentProfile:
+        type: string
+        description: Deployment profile used. Currently supported is common.
+    x-form-factors: public
+  CommonHorizontalPodAutoScalerResp:
+    type: object
+    description: Horizontal pod autoscaler response structure.
+    properties:
+      enabled:
+        type: boolean
+        description: Enable flag.
+    x-form-factors: public
+  CommonAutoscalerResp:
+    type: object
+    description: Autoscaler response structure.
+    properties:
+      scaleDownDelayAfterAdd:
+        type: string
+        description: How long after scale up that scale down evaluation resumes. (Azure/AWS Support).
+      scaleDownDelayAfterDelete:
+        type: string
+        description: How long after node deletion that scale down evaluation resumes, defaults to scanInterval. (Azure/AWS Support).
+      scaleDownDelayAfterFailure:
+        type: string
+        description: How long after scale down failure that scale down evaluation resumes. (Azure/AWS Support).
+      scaleDownEnabled:
+        type: boolean
+        description: Scale down flag. (AWS Support).
+      scaleDownNonEmptyCandidatesCount:
+        type: integer
+        format: int32
+        description: Maximum number of non empty nodes considered in one iteration as candidates for scale down with drain. Lower value means better CA responsiveness but possible slower scale down latency. Higher value can affect CA performance with big clusters (100s of nodes). Set to non positive value to turn this heuristic off - CA will not limit the number of nodes it considers. (AWS Support).
+      scaleDownUnneededTime:
+        type: string
+        description: How long a node should be unneeded before it is eligible for scale down. (Azure/AWS Support).
+      scaleDownUtilizationThreshold:
+        type: number
+        format: double
+        description: Node utilization level, defined as the sum of requested resources divided by capacity,. below which a node can be considered for scale down. (Azure/AWS Support).
+      scanInterval:
+        type: string
+        description: Scan interval. (Azure/AWS Support).
+      skipNodesWithLocalStorage:
+        type: boolean
+        description: Skip nodes with local storage flag. (AWS Support).
+      skipNodesWithSystemPods:
+        type: boolean
+        description: Skip nodes with system pods. (AWS Support).
+      maxGracefulTerminationSec:
+        type: integer
+        format: int64
+        description: Maximum number of seconds CA waits for pod termination when trying to scale down a node. (Azure Support).
+      scaleDownUnreadyTime:
+        type: string
+        description: How long an unready node should be unneeded before it is eligible for scale down. (Azure Support).
+    x-form-factors: public
+  CommonDeploymentsResp:
+    type: object
+    description: Deployments response structure.
+    properties:
+      autoscaler:
+        description: Autoscaler specs.
+        $ref: '#/definitions/CommonAutoscalerResp'
+      horizontalPodAutoscaler:
+        description: Horizontal pod autoscaler specs.
+        $ref: '#/definitions/CommonHorizontalPodAutoScalerResp'
+      istio:
+        description: Istio specs.
+        $ref: '#/definitions/CommonDeploymentProfileDetailsResp'
+      logging:
+        description: Logging specs.
+        $ref: '#/definitions/CommonLoggingResp'
+      metering:
+        description: Metering specs.
+        $ref: '#/definitions/CommonMeteringResp'
+      monitoring:
+        description: Monitoring specs.
+        $ref: '#/definitions/CommonMonitoringResp'
+      nvidia:
+        description: Nvidia specs.
+        $ref: '#/definitions/CommonNvidiaResp'
+      repository:
+        type: string
+        description: Repository for images.
+      yunikorn:
+        description: Yunikorn specs.
+        $ref: '#/definitions/CommonYuniKornResp'
+      telemetryKmsKeyArn:
+        type: string
+        description: Telemetry KMS key ARN.
+      knox:
+        description: Knox specs.
+        $ref: '#/definitions/CommonDeploymentProfileDetailsResp'
+    x-form-factors: public
+  CommonInstanceStateCounts:
+    type: object
+    description: Instance state counts response structure.
+    properties:
+      running:
+        type: integer
+        format: int64
+        description: Number of instances in running state.
+      creating:
+        type: integer
+        format: int64
+        description: Number of instances in creating state.
+      terminating:
+        type: integer
+        format: int64
+        description: Number of instances in terminating state.
+      total:
+        type: integer
+        format: int64
+        description: Total number of instances.
+    x-form-factors: public
+  AksPoolInstance:
+    type: object
+    description: AKS pool instance response structure.
+    properties:
+      name:
+        type: string
+        description: Name.
+      instanceId:
+        type: string
+        description: Instance ID.
+      availabilityZone:
+        type: string
+        description: Availability zone.
+    x-form-factors: public
+  AksNodePool:
+    type: object
+    description: AKS node pool response structure.
+    properties:
+      name:
+        type: string
+        description: Name.
+      type:
+        type: string
+        description: Type.
+      provisioningState:
+        type: string
+        description: Provisioning state.
+      instances:
+        type: array
+        items:
+          $ref: '#/definitions/AksPoolInstance'
+        description: AKS pool instance.
+      availabilityZones:
+        type: array
+        items:
+          type: string
+        description: Availability zones.
+    x-form-factors: public
+  AksInstanceGroup:
+    type: object
+    description: AKS instance group response structure.
+    properties:
+      instanceGroupName:
+        type: string
+        description: Instance group name.
+      instanceGroupId:
+        type: string
+        description: Instance group ID.
+      instanceType:
+        type: string
+        description: Instance type.
+      instanceTier:
+        type: string
+        description: Instance tier.
+      instanceStates:
+        description: Instance states
+        $ref: '#/definitions/CommonInstanceStateCounts'
+      instanceCount:
+        type: integer
+        format: int64
+        description: Instance count.
+      nodeVolumeSize:
+        type: integer
+        format: int64
+        description: Node volume size.
+      enableAutoScaling:
+        type: boolean
+        description: Enable auto scaling.
+      minInstance:
+        type: integer
+        format: int64
+        description: Min instances.
+      maxInstance:
+        type: integer
+        format: int64
+        description: Max instances.
+      singleZone:
+        type: boolean
+        description: Single zone.
+      labels:
+        type: object
+        description: Labels.
+        additionalProperties:
+          type: string
+      taints:
+        type: object
+        description: Taints.
+        additionalProperties:
+          type: string
+      tags:
+        type: object
+        description: Tags.
+        additionalProperties:
+          type: string
+      kubeReservedCpu:
+        type: integer
+        format: int64
+        description: Kube reserved CPU.
+      kubeReservedMemory:
+        type: integer
+        format: int64
+        description: Kube reserved memory.
+      kubeReservedStorage:
+        type: integer
+        format: int64
+        description: Kube reserved storage.
+      systemReservedCpu:
+        type: integer
+        format: int64
+        description: System reserved CPU.
+      systemReservedMemory:
+        type: integer
+        format: int64
+        description: System reserved memory.
+      systemReservedStorage:
+        type: integer
+        format: int64
+        description: System reserved storage.
+      availabilityZones:
+        type: array
+        items:
+          type: integer
+          format: int32
+        description: Availability zones.
+      nodePool:
+        description: AKS node pool.
+        $ref: '#/definitions/AksNodePool'
+      instances:
+        type: array
+        items:
+          $ref: '#/definitions/AksPoolInstance'
+        description: AKS pool instance.
+      isSystem:
+        type: boolean
+        description: True for a system node.
+    x-form-factors: public
+  AksState:
+    type: object
+    description: AKS state response structure.
+    properties:
+      provider:
+        type: string
+        description: Cloud provider.
+      clusterDisplayName:
+        type: string
+        description: Cluster display name.
+      clusterResourceGroup:
+        type: string
+        description: The Cluster ResourceGroup. Filled based on Parent ResourceGroup or ClusterDisplayName.
+      clusterResourceGroupCreated:
+        type: boolean
+        description: Specifies whether ClusterResourceGroup was created or not.
+      enableHttpApplicationRouting:
+        type: boolean
+        description: Specifies whether httpApplicationRouting addon is enabled or not.
+      enableMonitoring:
+        type: boolean
+        description: Specifies whether monitoring addon is enabled or not.
+      logAnalyticsWorkspaceResourceGroup:
+        type: string
+        description: The resource group for the Azure Log Analytics Workspace.
+      logAnalyticsWorkspace:
+        type: string
+        description: An existing Azure Log Analytics Workspace for monitoring addon.
+      virtualNetworkResourceGroup:
+        type: string
+        description: The resource group for the Azure Virtual Network. Composite of agent virtual network subnet ID.
+      virtualNetwork:
+        type: string
+        description: An existing Azure Virtual Network. Composite of agent virtual network subnet ID.
+      subnets:
+        type: array
+        items:
+          type: string
+        description: An array specifying existing Azure Virtual Subnets. Composite of agent virtual network subnet IDs.
+      selectedSubnet:
+        type: string
+        description: Selected Subnet from the list that is provided
+      parentResourceGroup:
+        type: string
+        description: The ResourceGroup which may be used for almost all the Azure resources created (with VirtualNetwork and Node ResourceGroup being exceptions).
+      adminUsername:
+        type: string
+        description: The username to use for Linux VMs.
+      sshPublicKeyContents:
+        type: string
+        description: The content of the SSH configuration for Linux VMs, Opposite to sshPublicKey.
+      sshPublicKey:
+        type: string
+        description: The local path of the SSH configuration for Linux VMs, Opposite to sshPublicKeyContents.
+      dnsServiceIp:
+        type: string
+        description: An IP address assigned to the kubernetes DNS service, it must be within the kubernetes service address range specified in serviceCidr.
+      dockerBridgeCidr:
+        type: string
+        description: A CIDR notation IP range assigned to the Docker bridge network, it must not overlap with any Azure Subnet IP ranges or the kubernetes service address range.
+      networkPlugin:
+        type: string
+        description: The plugin used for kubernetes network.
+      networkPolicy:
+        type: string
+        description: The policy used for kubernetes network.
+      podCidr:
+        type: string
+        description: A CIDR notation IP range from which to assign pod IPs when networkPlugin is using kubenet.
+      serviceCidr:
+        type: string
+        description: A CIDR notation IP range from which to assign service cluster IPs, it must not overlap with any Azure Subnet IP ranges.
+      networkCidrs:
+        type: array
+        items:
+          type: string
+        description: The actual CIDR ranges of the virtual network.
+      workerIngressRules:
+        type: array
+        items:
+          type: string
+        description: Ingress rules for worker nodes.
+      workerEgressRules:
+        type: array
+        items:
+          type: string
+        description: Egress rules for worker nodes.
+      masterDnsPrefix:
+        type: string
+        description: DNS prefix used for hostnames in the cluster.
+      tags:
+        type: object
+        description: Tags.
+        additionalProperties:
+          type: string
+      instanceGroups:
+        type: object
+        description: Instance groups.
+        additionalProperties:
+          $ref: '#/definitions/AksInstanceGroup'
+      deployments:
+        description: Deployments.
+        $ref: '#/definitions/CommonDeploymentsResp'
+      userData:
+        type: string
+        description: User data.
+      security:
+        description: Security.
+        $ref: '#/definitions/CommonSecurityResp'
+    x-form-factors: public
+  CommonEvent:
+    type: object
+    description: Event response structure.
+    properties:
+      details:
+        type: string
+        description: Details.
+      name:
+        type: string
+        description: Event name.
+      progress:
+        type: string
+        description: Progress.
+      resourceType:
+        type: string
+        description: Resource type.
+      status:
+        type: string
+        description: Status.
+      statusReason:
+        type: string
+        description: Status reason.
+      timestamp:
+        type: string
+        description: Timestamp.
+    x-form-factors: public
+  EksInstance:
+    type: object
+    description: EKS instance response structure.
+    properties:
+      instanceId:
+        type: string
+        description: Instance ID.
+      availabilityZone:
+        type: string
+        description: Availability zone.
+    x-form-factors: public
+  AcceleratorConfigResp:
+    type: object
+    description: Accelerator Configurations structure
+    properties:
+      acceleratorManufacturers:
+        type: array
+        items:
+          type: string
+        description: Accelerator Manufacturer type. For eg. amazon-web-service, AMD, nvidia.
+      acceleratorTypes:
+        type: array
+        items:
+          type: string
+        description: Accelerator Types. For eg. gpu, inference.
+    x-form-factors: public
+  CommonInstanceRequirementsResp:
+    type: object
+    description: Instance requirements structure.
+    properties:
+      allowedInstanceTypes:
+        type: array
+        items:
+          type: string
+        description: Instance types to include.
+      cpuTypes:
+        type: array
+        items:
+          type: string
+        description: CPU types required. For eg. intel, amd, amazon-web-services etc.
+      excludedInstanceTypes:
+        type: array
+        items:
+          type: string
+        description: Instance types to exclude, ignored if AllowedInstanceTypes is set.
+      maxCpu:
+        type: integer
+        format: int64
+        description: Maximum vCpu count.
+      minCpu:
+        type: integer
+        format: int64
+        description: Minimum vCpu count.
+      maxMemory:
+        type: integer
+        format: int64
+        description: Maximum memory requirement in MiB.
+      minMemory:
+        type: integer
+        format: int64
+        description: Minimum memory requirement in MiB.
+      acceleratorConfig:
+        description: Accelerator Config for AWS.
+        $ref: '#/definitions/AcceleratorConfigResp'
+    x-form-factors: public
+  CommonInstanceRequirementsWithMetadataResp:
+    type: object
+    description: Instance requirements with metadata response structure.
+    properties:
+      architectureTypes:
+        type: array
+        items:
+          type: string
+        description: The architecture types. For eg, i386, x86_64, arm64, x86_64_mac, arm64_mac.
+      virtualizationTypes:
+        type: array
+        items:
+          type: string
+        description: The virtualization types. For eg. hvm, paravirtual.
+      instanceRequirements:
+        description: The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with those attributes.
+        $ref: '#/definitions/CommonInstanceRequirementsResp'
+    x-form-factors: public
+  EksInstanceGroup:
+    type: object
+    description: EKS instance group response structure.
+    properties:
+      ami:
+        type: string
+        description: AMI.
+      imageParam:
+        type: string
+        description: Image param.
+      instanceGroupName:
+        type: string
+        description: Instance group name.
+      instanceGroupId:
+        type: string
+        description: Instance group ID.
+      instanceTier:
+        type: string
+        description: Instance tier.
+      instanceTypes:
+        type: array
+        items:
+          type: string
+        description: Instance types.
+      instanceCount:
+        type: integer
+        format: int64
+        description: Instance count.
+      instanceStates:
+        description: Instance states
+        $ref: '#/definitions/CommonInstanceStateCounts'
+      singleZone:
+        type: boolean
+        description: Single zone.
+      minInstance:
+        type: integer
+        format: int64
+        description: Min instances.
+      maxInstance:
+        type: integer
+        format: int64
+        description: Max instances.
+      nodeInstanceRole:
+        type: string
+        description: Node instance role.
+      nodeVolumeSize:
+        type: integer
+        format: int64
+        description: Node volume size.
+      labels:
+        type: object
+        description: Labels.
+        additionalProperties:
+          type: string
+      taints:
+        type: object
+        description: Taints.
+        additionalProperties:
+          type: string
+      tags:
+        type: object
+        description: Tags.
+        additionalProperties:
+          type: string
+      autoscalingEnabled:
+        type: boolean
+        description: Autoscaling enabled.
+      kubeReservedCpu:
+        type: integer
+        format: int64
+        description: Kube reserved CPU.
+      kubeReservedMemory:
+        type: integer
+        format: int64
+        description: Kube reserved memory.
+      kubeReservedStorage:
+        type: integer
+        format: int64
+        description: Kube reserved storage.
+      systemReservedCpu:
+        type: integer
+        format: int64
+        description: System reserved CPU.
+      systemReservedMemory:
+        type: integer
+        format: int64
+        description: System reserved memory.
+      systemReservedStorage:
+        type: integer
+        format: int64
+        description: System reserved storage.
+      enableCfsQuota:
+        type: boolean
+        description: Enable cfs quota.
+      instances:
+        type: array
+        items:
+          $ref: '#/definitions/EksInstance'
+        description: EKS Instance.
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/CommonEvent'
+        description: Events.
+      instanceGroupStatus:
+        type: string
+        description: Instance group status.
+      lTNameSuffix:
+        type: string
+        description: Launch Template name suffix.
+      instanceRequirementswithMetadata:
+        description: Instance requirements.
+        $ref: '#/definitions/CommonInstanceRequirementsWithMetadataResp'
+      instanceProfile:
+        type: string
+        description: Instance profile name.
+      imdsVersions:
+        type: array
+        items:
+          type: string
+        description: IMDS versions.
+    x-form-factors: public
+  EksState:
+    type: object
+    description: EKS state response structure.
+    properties:
+      provider:
+        type: string
+        description: Provider.
+      clusterDisplayName:
+        type: string
+        description: Cluster display name.
+      userData:
+        type: string
+        description: User data for this cluster.
+      virtualNetwork:
+        type: string
+        description: Virtual network details.
+      existingVirtualNetwork:
+        type: boolean
+        description: Existing virtual network if used.
+      subnets:
+        type: array
+        items:
+          type: string
+        description: Subnets.
+      workerSubnets:
+        type: array
+        items:
+          type: string
+        description: Worker subnets.
+      securityGroups:
+        type: array
+        items:
+          type: string
+        description: Security groups.
+      serviceRole:
+        type: string
+        description: Service role.
+      workerInstanceProfile:
+        type: string
+        description: Worker instance profile.
+      associateWorkerNodePublicIp:
+        type: boolean
+        description: Associate worker node public IP.
+      vpcCidr:
+        type: string
+        description: VPC CIDR.
+      workerIngressRules:
+        type: array
+        items:
+          type: string
+        description: Ingress rules for worker nodes.
+      workerEgressRules:
+        type: array
+        items:
+          type: string
+        description: Egress rules for worker nodes.
+      workerSecurityGroup:
+        type: string
+        description: Worker security group.
+      telemetryEnabled:
+        type: boolean
+        description: Telemetry enabled.
+      telemetryLoggingEnabled:
+        type: boolean
+        description: Telemetry logging enabled.
+      telemetryLoggingStorageLocation:
+        type: string
+        description: Telemetry logging storage location.
+      telemetryLoggingBucket:
+        type: string
+        description: Telemetry logging bucket.
+      telemetryLoggingRootDir:
+        type: string
+        description: Telemetry logging root dir.
+      telemetryKmsKeyArn:
+        type: string
+        description: Telemetry logging root dir.
+      tags:
+        type: object
+        description: Tags.
+        additionalProperties:
+          type: string
+      sshKeyPairName:
+        type: string
+        description: SSH key pair name.
+      kmsKeyArn:
+        type: string
+        description: KMS key ARN.
+      instanceGroups:
+        type: object
+        description: Instance groups.
+        additionalProperties:
+          $ref: '#/definitions/EksInstanceGroup'
+      deployments:
+        description: Deployments.
+        $ref: '#/definitions/CommonDeploymentsResp'
+      sshPublicKey:
+        type: string
+        description: SSH public key.
+      networkPlugin:
+        type: string
+        description: Network plugin.
+      serviceCidr:
+        type: string
+        description: Service CIDR.
+      inboundProxyCidrs:
+        type: array
+        items:
+          type: string
+        description: Array of inbound proxy CIDRs.
+      security:
+        description: Security.
+        $ref: '#/definitions/CommonSecurityResp'
+      suspendedProcesses:
+        type: array
+        items:
+          type: string
+        description: Suspended processes.
+      csiEnabled:
+        type: boolean
+        description: Whether CSI is enabled.
+    x-form-factors: public
   CommonImageCatalogResp:
     type: object
     description: Image catalog response structure.
@@ -160,6 +1160,166 @@ definitions:
         type: boolean
         description: Flag to enable CSI (Container Storage Interface). It further sets specific inline cloud formation policies required for CSI.
     x-form-factors: public
+  CommonNodeImageAvailableUpgrade:
+    type: object
+    description: Structure to list the currently used images and the new upgrades available.
+    properties:
+      instanceGroup:
+        type: string
+        description: Instance group name.
+      current:
+        type: string
+        description: Currently used node image version.
+      upgrades:
+        type: array
+        items:
+          type: string
+        description: Available node image upgrade versions.
+    x-form-factors: public
+  DescribeClusterResponse:
+    type: object
+    description: Describe cluster response.
+    properties:
+      envName:
+        type: string
+        description: CDP environment name.
+      envCloudProvider:
+        description: CDP environment cloud provider.
+        $ref: '#/definitions/EnvCloudProvider'
+      clusterName:
+        type: string
+        description: Compute cluster name.
+      clusterCrn:
+        type: string
+        description: Compute cluster CRN.
+      description:
+        type: string
+        description: Description about the cluster.
+        x-form-factors: private
+      status:
+        type: string
+        description: Compute cluster status.
+      computePlatform:
+        description: Compute cluster platform provider.
+        $ref: '#/definitions/ComputePlatform'
+      computePlatformVersion:
+        type: string
+        description: Compute cluster platform version.
+        x-form-factors: private
+      kubernetesVersion:
+        type: string
+        description: Kubernetes version.
+      clusterSize:
+        type: integer
+        format: int32
+        description: Number of nodes in the cluster.
+        x-form-factors: private
+      dashboardUrl:
+        type: string
+        description: Compute cluster platform dashboard url.
+      isClouderaManaged:
+        type: boolean
+        description: Is compute cluster cloudera managed or not.
+        x-form-factors: private
+      clusterType:
+        description: Compute cluster type.
+        $ref: '#/definitions/ComputeClusterType'
+      creationTime:
+        type: string
+        description: Compute cluster creation time in ISO format.
+      clusterId:
+        type: string
+        description: Compute cluster ID.
+      envCrn:
+        type: string
+        description: CDP environment CRN.
+      apiEndPoint:
+        type: string
+        description: API endpoint.
+        x-form-factors: public
+      clusterStateVersion:
+        type: integer
+        format: int32
+        description: Cluster state version.
+        x-form-factors: public
+      deletionTime:
+        type: string
+        description: Compute cluster deletion time in ISO format.
+        x-form-factors: public
+      updateTime:
+        type: string
+        description: Compute cluster update time in ISO format.
+        x-form-factors: public
+      workloads:
+        type: array
+        items:
+          type: string
+        description: Workloads.
+        x-form-factors: public
+      clusterOwner:
+        description: Cluster owner.
+        $ref: '#/definitions/ComputeClusterOwner'
+        x-form-factors: public
+      region:
+        type: string
+        description: Region.
+        x-form-factors: public
+      message:
+        type: string
+        description: Message with additional details about the cluster status.
+        x-form-factors: public
+      account:
+        type: string
+        description: CDP account ID.
+        x-form-factors: public
+      availableUpgrades:
+        type: array
+        items:
+          type: string
+        description: List of available kubernetes upgrades.
+        x-form-factors: public
+      imageCatalog:
+        description: The image catalog details.
+        $ref: '#/definitions/CommonImageCatalogResp'
+        x-form-factors: public
+      storage:
+        description: The storage specifications.
+        $ref: '#/definitions/CommonStorageSpecResp'
+        x-form-factors: public
+      labels:
+        type: object
+        description: Map of labels associated with this cluster.
+        additionalProperties:
+          type: string
+      bootstrapScript:
+        type: string
+        description: Bootstrap script used to setup this cluster.
+      aks:
+        description: AKS state.
+        $ref: '#/definitions/AksState'
+        x-form-factors: public
+      eks:
+        description: EKS state.
+        $ref: '#/definitions/EksState'
+        x-form-factors: public
+      nodeImageUpgradeAvailable:
+        type: boolean
+        description: Is a node image upgrade available.
+        x-form-factors: public
+      nodeImageUpgrades:
+        type: array
+        items:
+          $ref: '#/definitions/CommonNodeImageAvailableUpgrade'
+        description: Lists the currently used images and the new upgrades available.
+        x-form-factors: public
+      isDefault:
+        type: boolean
+        description: The cluster which is automatically created for every containerized environment.
+        x-form-factors: public
+      clusterShape:
+        type: string
+        description: The clusterShape represents the shape of the cluster, which can be "Embedded" or "Externalized".
+        x-form-factors: public
   ListClustersRequest:
     type: object
     description: Request object to list clusters.
@@ -193,6 +1353,12 @@ definitions:
         type: boolean
         description: Include deleted clusters in the response.
         x-form-factors: public
+      default:
+        type: boolean
+        description: Only show default clusters.
+      clusterShape:
+        type: string
+        description: Filter between Externalized and Embedded cluster shapes.
   ListClusterItem:
     type: object
     description: List clusters item structure.
@@ -322,6 +1488,213 @@ definitions:
         format: int32
         description: Total number of pages.
         x-form-factors: public
+  CommonNetwork:
+    type: object
+    description: Network structure.
+    properties:
+      subnets:
+        type: array
+        items:
+          type: string
+        description: Subnets.
+      podCidr:
+        type: string
+        description: The pod CIDR to use if the backend provider supports setting this.
+      serviceCidr:
+        type: string
+        description: The CIDR for services declared inside of Kubernetes if the backend provider supports setting this.
+      outboundType:
+        type: string
+        description: Cluster outbound type. Currently supported is udr.
+    x-form-factors: public
+  CommonStatusMessage:
+    type: object
+    description: Cluster status structure.
+    properties:
+      message:
+        type: string
+        description: Message.
+      status:
+        type: string
+        description: Status.
+  CreateClusterRequest:
+    type: object
+    description: Request object for creating a cluster.
+    required:
+      - environment
+      - name
+    properties:
+      environment:
+        type: string
+        description: Environment CRN. Required.
+      name:
+        type: string
+        description: Cluster name. Required.
+      description:
+        type: string
+        description: Cluster description.
+      tags:
+        type: object
+        description: Cluster level tags.
+        additionalProperties:
+          type: string
+      network:
+        description: Network.
+        $ref: '#/definitions/CommonNetwork'
+      skipValidation:
+        type: boolean
+        description: Skip validation.
+    x-form-factors: public
+  ValidateClusterRequest:
+    type: object
+    description: Request object for validating a cluster.
+    required:
+      - environment
+      - name
+    properties:
+      environment:
+        type: string
+        description: Environment CRN. Required.
+      name:
+        type: string
+        description: Cluster name. Required.
+      description:
+        type: string
+        description: Cluster description.
+      tags:
+        type: object
+        description: Cluster level tags.
+        additionalProperties:
+          type: string
+      network:
+        description: Network.
+        $ref: '#/definitions/CommonNetwork'
+    x-form-factors: public
+  ValidationSummary:
+    type: object
+    description: Validation summary structure.
+    properties:
+      passed:
+        type: integer
+        format: int32
+        description: Total number of passed validations.
+      warning:
+        type: integer
+        format: int32
+        description: Total number of validations that passed but have warnings associated with them.
+      failed:
+        type: integer
+        format: int32
+        description: Total number of failed validations.
+      skipped:
+        type: integer
+        format: int32
+        description: Total number of skipped validations.
+      total:
+        type: integer
+        format: int32
+        description: Total number of validations.
+    x-form-factors: public
+  ValidationResult:
+    type: object
+    description: Validation result structure.
+    properties:
+      name:
+        type: string
+        description: Name.
+      description:
+        type: string
+        description: Description.
+      category:
+        type: string
+        description: Validation check categories such as COMMON, ENTITLEMENTS, CONTROL_PLANE, NETWORK, or DEPLOYMENT. New values may be added in the future.
+      status:
+        type: string
+        description: Validation check status such as PASSED, FAILED, or SKIPPED. New values may be added in the future.
+      message:
+        type: string
+        description: A short, human-readable message that describes the end result of the validation.
+      detailedMessage:
+        type: string
+        description: A supporting message which contains additional details, such as subnet names, instance types, etc.
+      duration:
+        type: string
+        description: Time taken to get the end result of the validation in a human-readable time format.
+    x-form-factors: public
+  ValidationResponse:
+    type: object
+    description: Pre-flight validation check response structure.
+    properties:
+      result:
+        type: string
+        description: Validation result.
+      summary:
+        description: Numerical summary of the validations.
+        $ref: '#/definitions/ValidationSummary'
+      message:
+        type: string
+        description: A message describing end result of the validations.
+      validations:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationResult'
+        description: The list of detailed validation result.
+    x-form-factors: public
+  CreateClusterResponse:
+    type: object
+    description: Create cluster response.
+    properties:
+      clusterId:
+        type: string
+        description: Compute cluster ID.
+      clusterStatus:
+        description: Cluster status.
+        $ref: '#/definitions/CommonStatusMessage'
+      uri:
+        type: string
+        description: Uniform Resource Identifier of cluster.
+      clusterCrn:
+        type: string
+        description: Compute cluster CRN.
+      validationResponse:
+        description: Pre-flight validation check response. Only given on a validation failure.
+        $ref: '#/definitions/ValidationResponse'
+    x-form-factors: public
+  ValidateClusterResponse:
+    type: object
+    description: Validate cluster response.
+    properties:
+      result:
+        type: string
+        description: Validation result.
+      summary:
+        description: Numerical summary of the validations.
+        $ref: '#/definitions/ValidationSummary'
+      message:
+        type: string
+        description: A message describing the end result of the validations.
+      validations:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationResult'
+        description: The list of detailed validation results.
+    x-form-factors: public
+  DeleteClusterRequest:
+    type: object
+    description: Request object for deleting a cluster.
+    required:
+      - clusterCrn
+    properties:
+      clusterCrn:
+        type: string
+        description: Compute cluster CRN.
+  DeleteClusterResponse:
+    type: object
+    description: Delete cluster response.
+    properties:
+      clusterStatus:
+        description: Cluster Status.
+        $ref: '#/definitions/CommonStatusMessage'
   DescribeDeploymentRequest:
     type: object
     description: Request structure for describing a deployment.
@@ -339,6 +1712,7 @@ definitions:
       name:
         type: string
         description: The name of the deployment.
+    x-form-factors: public
   Chart:
     type: object
     description: Chart structure.
@@ -358,6 +1732,7 @@ definitions:
       values:
         type: string
         description: Escaped JSON for values.yaml of that chart.
+    x-form-factors: public
   AvailableDeploymentUpgrade:
     type: object
     description: Available deployment upgrade structure.
@@ -368,6 +1743,7 @@ definitions:
       deploymentVersion:
         type: string
         description: The version of the deployment that is available to upgrade to.
+    x-form-factors: public
   Deployment:
     type: object
     description: Deployment structure.
@@ -399,6 +1775,7 @@ definitions:
       overrides:
         type: string
         description: Escaped JSON overrides for the deployment's properties.
+    x-form-factors: public
   History:
     type: object
     description: History structure.
@@ -416,6 +1793,7 @@ definitions:
       overrides:
         type: string
         description: Escaped JSON overrides for the deployment's properties for given revision.
+    x-form-factors: public
   DescribeDeploymentResponse:
     type: object
     description: Response structure for describing a deployment.
@@ -432,6 +1810,7 @@ definitions:
         type: string
         description: Escaped JSON overrides for the deployment's properties. Deprecated.
         x-deprecated: true
+    x-form-factors: public
   UpgradeDeploymentRequest:
     type: object
     description: Request structure for upgrading a deployment.
@@ -455,6 +1834,7 @@ definitions:
       overrides:
         type: string
         description: Escaped JSON overrides for the deployment's properties.
+    x-form-factors: public
   UpgradeDeploymentResponse:
     type: object
     description: Response structure for upgrading a deployment.
@@ -478,4 +1858,41 @@ definitions:
       chart:
         description: Chart that the deployment was created from.
         $ref: '#/definitions/Chart'
+    x-form-factors: public
+  ListDeploymentsRequest:
+    type: object
+    description: Request structure to list deployments in the cluster.
+    required:
+      - clusterCrn
+    properties:
+      clusterCrn:
+        type: string
+        description: Compute cluster CRN.
+      namespace:
+        type: string
+        description: The namespace of the deployment. Lists deployments in all namespaces if not specified.
+      verbose:
+        type: boolean
+        description: Set true to get detailed chart response. Default is false.
+    x-form-factors: public
+  ListDeploymentsResponse:
+    type: object
+    description: Response structure to list deployments in the cluster.
+    properties:
+      availableCharts:
+        type: array
+        items:
+          $ref: '#/definitions/Chart'
+        description: Array of available charts.
+      unavailableCharts:
+        type: array
+        items:
+          $ref: '#/definitions/Chart'
+        description: Array of unavailable charts.
+      installedDeployments:
+        type: array
+        items:
+          $ref: '#/definitions/Deployment'
+        description: Array of installed deployments.
+    x-form-factors: public
 x-audit: true
