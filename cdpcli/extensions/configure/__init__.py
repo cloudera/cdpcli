@@ -16,7 +16,8 @@
 
 NOT_SET = '<not set>'
 PREDEFINED_SECTION_NAMES = ('preview',)
-CREDENTIAL_FILE_COMMENT = """Note on private key format. We expect the private key to be in a modified PEM
+CREDENTIAL_FILE_COMMENT = """Note on private key format.
+We expect the private key to be in a modified PEM
 format in which newlines are replaced with \\n."""
 
 

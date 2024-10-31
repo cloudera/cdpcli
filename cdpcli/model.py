@@ -152,7 +152,7 @@ class MapShape(Shape):
     def value(self):
         additional_properties = self._shape_data.get(ADDITIONAL_PROPERTIES)
         # Map with Freeform object
-        if type(additional_properties) == bool or not additional_properties:
+        if isinstance(additional_properties, bool) or not additional_properties:
             raise InvalidShapeError("Freeform maps are not supported: %s"
                                     % self.name)
         else:

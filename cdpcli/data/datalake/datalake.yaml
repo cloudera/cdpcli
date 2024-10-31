@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.124
+  version: 0.9.125
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1131,6 +1131,9 @@ definitions:
       instanceTemplate:
         description: Instance template that specifies the core information for the vertical scale.
         $ref: '#/definitions/InstanceTemplate'
+      diskOptions:
+        description: Disk options for vertical scaling - modify disks.
+        $ref: '#/definitions/DiskOptions'
   StartDatalakeVerticalScalingResponse:
     type: object
     description: The response object for Data Lake vertical scaling.
@@ -1145,6 +1148,55 @@ definitions:
       instanceType:
         type: string
         description: The type of the instance.
+  DiskOptions:
+    type: object
+    description: Attached disk configuration(s).
+    properties:
+      modifyDisks:
+        description: Modifies all the disks attached to all instances in a group.
+        $ref: '#/definitions/ModifyDisks'
+      addDisks:
+        description: Adds the requested number of disks of the requested type, size, and usage type.
+        $ref: '#/definitions/AddDisks'
+  AddDisks:
+    type: object
+    description: Attached volume configuration.
+    required:
+      - numberOfDisks
+      - volumeType
+      - size
+      - cloudVolumeUsageType
+    properties:
+      numberOfDisks:
+        type: integer
+        format: int32
+        description: Number of disks to add on all the instances in a group.
+      volumeType:
+        type: string
+        description: Type of disks to add on all the instances in a group.
+      size:
+        type: integer
+        format: int32
+        description: Size of disks to add on all the instances in a group in GB.
+      cloudVolumeUsageType:
+        type: string
+        description: Usage for the requested disks.
+        enum:
+          - GENERAL
+          - DATABASE
+  ModifyDisks:
+    type: object
+    description: Attached volume configuration.
+    required:
+      - size
+    properties:
+      size:
+        type: integer
+        format: int32
+        description: Size of disks to modify to on all the instances in a group in GB.
+      volumeType:
+        type: string
+        description: Type of disks to modify to on all the instances in a group.
   DatalakeDetails:
     type: object
     description: Details about a datalake

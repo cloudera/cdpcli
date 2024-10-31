@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.124
+  version: 0.9.125
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1940,6 +1940,48 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/initializeAWSComputeCluster:
+    post:
+      summary: Initialize compute cluster for AWS environment.
+      description: Initialize compute cluster for AWS environment.
+      operationId: initializeAWSComputeCluster
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/InitializeAWSComputeClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/InitializeAWSComputeClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/initializeAzureComputeCluster:
+    post:
+      summary: Initialize compute cluster for Azure environment.
+      description: Initialize compute cluster for Azure environment.
+      operationId: initializeAzureComputeCluster
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/InitializeAzureComputeClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/InitializeAzureComputeClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -2424,6 +2466,30 @@ definitions:
       policyJson:
         type: string
         description: The policy JSON encoded in base64.
+  InitializeAWSComputeClusterRequest:
+    type: object
+    description: Request object for a initialize AWS default compute cluster.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      computeClusterConfiguration:
+        description: The Externalized k8s configuration create request for the environment
+        $ref: '#/definitions/AWSComputeClusterConfigurationRequest'
+  InitializeAzureComputeClusterRequest:
+    type: object
+    description: Request object for a initialize Azure default compute cluster.
+    required:
+      - environmentName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      computeClusterConfiguration:
+        description: The Externalized k8s configuration create request for the environment
+        $ref: '#/definitions/AzureComputeClusterConfigurationRequest'
   CreateAWSEnvironmentRequest:
     type: object
     description: Request object for a create AWS environment request.
@@ -2501,6 +2567,12 @@ definitions:
       freeIpa:
         $ref: '#/definitions/AWSFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
+      enableComputeCluster:
+        description: Enable compute clusters for environment
+        type: boolean
+      computeClusterConfiguration:
+        description: The Externalized k8s configuration create request for the environment
+        $ref: '#/definitions/AWSComputeClusterConfigurationRequest'
       image:
         $ref: '#/definitions/FreeIpaImageRequest'
         description: The FreeIPA image request for the environment
@@ -2914,6 +2986,12 @@ definitions:
       environment:
         $ref: '#/definitions/Environment'
         description: Created environment object.
+  InitializeAWSComputeClusterResponse:
+    type: object
+    description: Response object for an initialize AWS default compute cluster request.
+  InitializeAzureComputeClusterResponse:
+    type: object
+    description: Response object for an initialize Azure default compute cluster request.
   CreateAzureEnvironmentResponse:
     type: object
     description: Response object for a create Azure environment request.
@@ -3048,6 +3126,12 @@ definitions:
       freeIpa:
         $ref: '#/definitions/AzureFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
+      enableComputeCluster:
+        description: Enable compute clusters for environment
+        type: boolean
+      computeClusterConfiguration:
+        description: The Externalized k8s configuration create request for the environment.
+        $ref: '#/definitions/AzureComputeClusterConfigurationRequest'
       image:
         $ref: '#/definitions/FreeIpaImageRequest'
         description: The FreeIPA image request for the environment
@@ -3475,6 +3559,9 @@ definitions:
       proxyConfigName:
         type: string
         description: Name of the proxy config of the environment.
+      computeClusterEnabled:
+        description: Compute clusters enabled
+        type: boolean
   Environment:
     type: object
     description: The environment.
@@ -3541,6 +3628,16 @@ definitions:
           s3GuardTableName:
             type: string
             description: The name for the DynamoDB table backing S3Guard.
+      azureDetails:
+        type: object
+        description: Azure specific environment configuration information.
+        properties:
+          resourceGroupName:
+            type: string
+            description: Name of an existing Azure resource group to be used for the environment. If it is not specified then new resource groups will be generated.
+          resourceEncryptionParameters:
+            $ref: '#/definitions/AzureResourceEncryptionParameters'
+            description: Object containing details of encryption parameters for Azure cloud.
       gcpDetails:
         type: object
         description: GCP specific environment configuration information.
@@ -3569,6 +3666,15 @@ definitions:
       customDockerRegistry:
         description: The configured custom docker registry for data services on the environment.
         $ref: '#/definitions/CustomDockerRegistryResponse'
+      awsComputeClusterConfiguration:
+        description: The Externalized AWS k8s configuration for the environment.
+        $ref: '#/definitions/AWSComputeClusterConfiguration'
+      azureComputeClusterConfiguration:
+        description: The Externalized Azure k8s configuration for the environment.
+        $ref: '#/definitions/AzureComputeClusterConfiguration'
+      computeClusterEnabled:
+        description: Compute clusters enabled
+        type: boolean
   AuthenticationRequest:
     type: object
     description: Additional SSH key authentication configuration for accessing cluster node.
@@ -4858,6 +4964,82 @@ definitions:
         description: List of volumes attached to this instance.
         items:
           $ref: '#/definitions/AttachedVolumeDetail'
+  AWSComputeClusterConfigurationRequest:
+    description: Request object for creating Externalized compute cluster for the environment.
+    type: object
+    properties:
+      privateCluster:
+        type: boolean
+        description: If true, creates private cluster.
+      kubeApiAuthorizedIpRanges:
+        type: array
+        items:
+          type: string
+        description: Kubernetes API authorized IP ranges in CIDR notation. Mutually exclusive with privateCluster.
+      workerNodeSubnets:
+        type: array
+        items:
+          type: string
+        description: Specify subnets for Kubernetes Worker Nodes
+  AzureComputeClusterConfigurationRequest:
+    description: Request object for creating Externalized compute cluster for the environment.
+    type: object
+    properties:
+      privateCluster:
+        type: boolean
+        description: If true, creates private cluster
+      kubeApiAuthorizedIpRanges:
+        type: array
+        items:
+          type: string
+        description: Kubernetes API authorized IP ranges in CIDR notation. Mutually exclusive with privateCluster.
+      outboundType:
+        type: string
+        enum:
+          - udr
+        description: Customize cluster egress with defined outbound type in Azure Kubernetes Service.
+      workerNodeSubnets:
+        type: array
+        items:
+          type: string
+        description: Specify subnets for Kubernetes Worker Nodes
+  AWSComputeClusterConfiguration:
+    description: Externalized compute cluster configuration for the environment.
+    type: object
+    properties:
+      privateCluster:
+        type: boolean
+        description: If true, creates private cluster.
+      kubeApiAuthorizedIpRanges:
+        type: array
+        items:
+          type: string
+        description: Kubernetes API authorized IP ranges in CIDR notation.
+      workerNodeSubnets:
+        type: array
+        items:
+          type: string
+        description: Subnets for Kubernetes Worker Nodes
+  AzureComputeClusterConfiguration:
+    description: Externalized compute cluster configuration for the environment.
+    type: object
+    properties:
+      privateCluster:
+        type: boolean
+        description: If true, creates private cluster.
+      kubeApiAuthorizedIpRanges:
+        type: array
+        items:
+          type: string
+        description: Kubernetes API authorized IP ranges in CIDR notation.
+      outboundType:
+        type: string
+        description: Cluster egress with defined outbound type in Azure Kubernetes Service.
+      workerNodeSubnets:
+        type: array
+        items:
+          type: string
+        description: Subnets for Kubernetes Worker Nodes
   AttachedVolumeDetail:
     type: object
     description: The attached volume configuration.

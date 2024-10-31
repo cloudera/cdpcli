@@ -15,11 +15,11 @@
 # language governing permissions and limitations under the License.
 import sys
 
-from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME,\
-    CDP_ENDPOINT_URL_KEY_NAME,\
-    CDP_PRIVATE_KEY_KEY_NAME,\
-    CDP_REGION_KEY_NAME,\
-    ENDPOINT_URL_KEY_NAME,\
+from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, \
+    CDP_ENDPOINT_URL_KEY_NAME, \
+    CDP_PRIVATE_KEY_KEY_NAME, \
+    CDP_REGION_KEY_NAME, \
+    ENDPOINT_URL_KEY_NAME, \
     FORM_FACTOR_KEY_NAME
 from cdpcli.extensions.commands import BasicCommand
 

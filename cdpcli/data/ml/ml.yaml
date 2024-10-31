@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.124
+  version: 0.9.125
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -1615,9 +1615,6 @@ definitions:
       backupStatus:
         type: string
         description: The status of the backup.
-      isCrossNsBackup:
-        type: boolean
-        description: Status whether the backup is cross namespace enabled.
   ListWorkspaceBackupsResponse:
     type: object
     description: Response object for ListWorkspaceBackups method.

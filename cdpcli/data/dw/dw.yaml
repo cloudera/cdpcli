@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.124
+  version: 0.9.125
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -3215,7 +3215,8 @@ definitions:
         default: false
         description: Forced recreation of the diagnostic job.
       downloadOptions:
-        description: Database Catalog diagnostic options. If not provided, everything will be included in the Diagnostic Data.
+        x-deprecated: true
+        description: 'DEPRECATED: All logs are included by default'
         $ref: '#/definitions/DBCCreateDiagnosticDataDownloadOptions'
   CreateDbcDiagnosticDataJobResponse:
     type: object
@@ -4292,10 +4293,12 @@ definitions:
         default: false
         description: Forced recreation of the diagnostic job.
       hiveDownloadOptions:
-        description: Hive diagnostic options. If not provided, everything will be included into the Diagnostic Data.
+        x-deprecated: true
+        description: 'DEPRECATED: All logs are included by default'
         $ref: '#/definitions/HiveCreateDiagnosticDataDownloadOptions'
       impalaDownloadOptions:
-        description: Impala diagnostic options. If not provided, everything will be included into the Diagnostic Data.
+        x-deprecated: true
+        description: 'DEPRECATED: All logs are included by default'
         $ref: '#/definitions/ImpalaCreateDiagnosticDataDownloadOptions'
   CreateVwDiagnosticDataJobResponse:
     type: object
@@ -4465,97 +4468,118 @@ definitions:
         items:
           $ref: '#/definitions/EventResponse'
   HiveCreateDiagnosticDataDownloadOptions:
+    x-deprecated: true
     type: object
-    description: Flags that denote which diagnostics to include for a Hive Virtual Warehouse.
+    description: 'DEPRECATED: Included by default, no need to specify'
     x-form-factors: public
     properties:
       includeHms:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the HMS diagnostics.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeErrordump:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the error dump.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeGclogs:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the Garbage collector logs.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeHeapdump:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the heap-dump.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeLogs:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include logs.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeComputeResourceInfo:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include compute resource info.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeKubernetesResourceInfo:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include Kubernetes resource info.
+        description: 'DEPRECATED: Included by default, no need to specify'
   ImpalaCreateDiagnosticDataDownloadOptions:
+    x-deprecated: true
     type: object
-    description: Flags that denote which diagnostics to include for an Impala Virtual Warehouse.
+    description: 'DEPRECATED: Included by default, no need to specify'
     x-form-factors: public
     properties:
       includeHms:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the HMS diagnostics.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeMinidump:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the minidump.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeProfile:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the profile.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeSidecar:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the sidecar diagnostics.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeWorkload:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include the workload diagnostics.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeKubernetesResourceInfo:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include kubernetes resource info.
+        description: 'DEPRECATED: Included by default, no need to specify'
   DBCCreateDiagnosticDataDownloadOptions:
+    x-deprecated: true
     type: object
-    description: Flags that denote which diagnostics to include for a Database Catalog.
+    description: 'DEPRECATED: Included by default, no need to specify'
     x-form-factors: public
     properties:
       includeKubernetesResourceInfo:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include kubernetes resource info.
+        description: 'DEPRECATED: Included by default, no need to specify'
   ClusterCreateDiagnosticDataDownloadOptions:
     type: object
     description: Flags that denote which diagnostics to include for the cluster.
     x-form-factors: public
     properties:
       includeClusterInfo:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include cluster info.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeIstioSystem:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include Istio system.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeSharedServices:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include shared services.
+        description: 'DEPRECATED: Included by default, no need to specify'
       includeKubeSystem:
+        x-deprecated: true
         type: boolean
         default: false
-        description: Include Kube system.
+        description: 'DEPRECATED: Included by default, no need to specify'
   ExternalBucket:
     type: object
     description: External bucket details.

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.124
+  version: 0.9.125
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -500,6 +500,31 @@ definitions:
         type: integer
         format: int32
         description: Number of REST Worker nodes to be created for the database. A positive, non-zero number is required. The default value is 0. Requires the COD_RESTWORKERS entitlement.
+      customInstanceTypes:
+        description: Provide custom VM instance types for master, worker, gateway, leader, edge and compute groups.
+        $ref: '#/definitions/CustomInstanceTypes'
+  CustomInstanceTypes:
+    type: object
+    description: Custom VM Instance Types.
+    properties:
+      masterType:
+        type: string
+        description: Master VM Instance Type.
+      workerType:
+        type: string
+        description: Worker VM Instance Type.
+      gatewayType:
+        type: string
+        description: Gateway VM Instance Type.
+      leaderType:
+        type: string
+        description: Leader VM Instance Type.
+      edgeType:
+        type: string
+        description: Edge VM Instance Type.
+      computeType:
+        type: string
+        description: Compute VM Instance Type.
   VolumeType:
     type: string
     description: "Volume Type.\n `HDD` - Hard disk drives (HDD) volume type. Default is HDD. `SSD` - Solid disk drives (SSD) volume type. `LOCAL_SSD` - Local SSD volume type."
