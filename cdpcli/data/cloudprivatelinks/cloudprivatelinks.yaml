@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.125
+  version: 0.9.126
   title: Cloudera CloudPrivateLinks API Service
   license:
     name: Apache 2.0
@@ -247,13 +247,19 @@ definitions:
     properties:
       cloudAccountId:
         type: string
-        description: Account ID to authorize access for PrivateLink.
+        description: AWS account ID to authorize access for PrivateLink.
+      subscriptionId:
+        type: string
+        description: Azure subscription ID to authorize access for PrivateLink.
       region:
         type: string
         description: Region where the private link service exists.
       serviceGroup:
         type: string
         description: CDP service group. Currently supported "CDP-CONTROL-PLANE" for PaaS.
+      cloudServiceProvider:
+        description: Cloud Service Provider. Currently supporting AWS and AZURE.
+        $ref: '#/definitions/CloudServiceProvider'
   AuthorizePrivateLinkServiceAccessResponse:
     type: object
     description: Response object for the AuthorizePrivateLinkServicesAccess method.
@@ -462,13 +468,19 @@ definitions:
     properties:
       cloudAccountId:
         type: string
-        description: Account ID to revoke access for PrivateLink.
+        description: AWS account ID to authorize access for PrivateLink.
+      subscriptionId:
+        type: string
+        description: Azure subscription ID to authorize access for PrivateLink.
       region:
         type: string
         description: Region where the private link service exists.
       serviceGroup:
         type: string
         description: CDP service group. Currently supported "CDP-CONTROL-PLANE" for PaaS.
+      cloudServiceProvider:
+        description: Cloud Service Provider. Currently supporting AWS and AZURE.
+        $ref: '#/definitions/CloudServiceProvider'
   RevokePrivateLinkServiceAccessResponse:
     type: object
     description: Response object for the RevokePrivateLinkServiceAccess method.

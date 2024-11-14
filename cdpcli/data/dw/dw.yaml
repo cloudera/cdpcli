@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.125
+  version: 0.9.126
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2402,8 +2402,9 @@ definitions:
         type: string
         description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Password of delegation user.'
       securityContextConstraintName:
+        x-deprecated: true
         type: string
-        description: The name of the Hive Security Context Constraint.
+        description: 'DEPRECATED: This option will be removed in future releases. Instead of creating a custom Security Context Constraint, we rely on the cluster default. The name of the Hive Security Context Constraint.'
       storageClass:
         type: string
         description: The storage class for the Local Storage Operator.
@@ -2643,17 +2644,20 @@ definitions:
         type: string
         description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Password of delegation user.'
       securityContextConstraintName:
+        x-deprecated: true
         type: string
-        description: The name of the Hive Security Context Constraint.
+        description: 'DEPRECATED: This option will be removed in future releases. Instead of creating a custom Security Context Constraint, we rely on the cluster default. The name of the Hive Security Context Constraint.'
       storageClass:
         type: string
         description: The storage class for the Local Storage Operator.
       dbDas:
+        x-deprecated: true
         type: string
-        description: The name of the DAS database. Not required for embedded databases
+        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the DAS database. Not required for embedded databases.'
       dbHue:
+        x-deprecated: true
         type: string
-        description: The name of the HUE database. Not required for embedded databases.
+        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the HUE database. Not required for embedded databases.'
       dedicatedExecutorNodes:
         type: boolean
         description: Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.
@@ -2994,18 +2998,21 @@ definitions:
         description: 'NOTE: creating Default Database Catalogs is deprecated and explicitly disabled. Denotes if Default Database Catalog creation needed.'
         default: false
       dbMetastore:
+        x-deprecated: true
         type: string
-        description: The name of the Metastore database.
+        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the Metastore database.'
         default: ''
         x-form-factors: private
       dbDas:
+        x-deprecated: true
         type: string
-        description: The name of the DAS database. Not required for embedded databases.
+        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the DAS database. Not required for embedded databases.'
         default: ''
         x-form-factors: private
       dbHue:
+        x-deprecated: true
         type: string
-        description: The name of the HUE database. Not required for embedded databases.
+        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the HUE database. Not required for embedded databases.'
         default: ''
         x-form-factors: private
   CreateClusterDiagnosticDataJobRequest:

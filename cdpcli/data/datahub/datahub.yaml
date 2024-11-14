@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.125
+  version: 0.9.126
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1842,7 +1842,7 @@ definitions:
         description: The content of the recipe.
       type:
         type: string
-        description: 'The type of recipe. Supported values are : PRE_CLOUDERA_MANAGER_START, PRE_TERMINATION, POST_CLOUDERA_MANAGER_START, POST_CLUSTER_INSTALL.'
+        description: 'The type of recipe. Supported values are : PRE_SERVICE_DEPLOYMENT, PRE_TERMINATION, POST_SERVICE_DEPLOYMENT, POST_CLOUDERA_MANAGER_START.'
       creatorCrn:
         type: string
         description: The CRN of the creator of the recipe.
@@ -1864,7 +1864,7 @@ definitions:
         description: The CRN of the recipe.
       type:
         type: string
-        description: 'The type of recipe. Supported values are : PRE_CLOUDERA_MANAGER_START, PRE_TERMINATION, POST_CLOUDERA_MANAGER_START, POST_CLUSTER_INSTALL.'
+        description: 'The type of recipe. Supported values are : PRE_SERVICE_DEPLOYMENT, PRE_TERMINATION, POST_SERVICE_DEPLOYMENT, POST_CLOUDERA_MANAGER_START.'
       description:
         type: string
         description: The description of the recipe.
@@ -3174,7 +3174,7 @@ definitions:
         description: The content of the recipe.
       type:
         type: string
-        description: 'The type of recipe. Supported values are : PRE_CLOUDERA_MANAGER_START, PRE_TERMINATION, POST_CLOUDERA_MANAGER_START, POST_CLUSTER_INSTALL.'
+        description: 'The type of recipe. Supported values are : PRE_SERVICE_DEPLOYMENT, PRE_TERMINATION, POST_SERVICE_DEPLOYMENT, POST_CLOUDERA_MANAGER_START.'
       description:
         type: string
         description: The description of the recipe. The description can have a maximum of 1000 characters.

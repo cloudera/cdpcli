@@ -5,7 +5,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.125
+  version: 0.9.126
   title: Cloudera Replication Manager Service
   license:
     name: Apache 2.0
@@ -815,6 +815,19 @@ definitions:
   DeletePolicyResponse:
     type: object
     description: Response object for deletePolicy.
+    properties:
+      clusterCrn:
+        type: string
+        description: The CRN of the input cluster.
+      requestId:
+        type: string
+        description: The ID of the request. Populated only for Ambari backend.
+      message:
+        type: string
+        description: The detailed description of the action taken.
+      status:
+        type: string
+        description: The status of the request.
   CreatePolicyRequest:
     type: object
     description: Create a replication policy.
@@ -835,6 +848,19 @@ definitions:
   CreatePolicyResponse:
     type: object
     description: Response object for createPolicy.
+    properties:
+      clusterCrn:
+        type: string
+        description: The CRN of the input cluster.
+      requestId:
+        type: string
+        description: The ID of the request. Populated only for Ambari backend.
+      message:
+        type: string
+        description: The detailed description of the action taken.
+      status:
+        type: string
+        description: The status of the request.
   CreateHbasePolicyRequest:
     type: object
     description: Create an HBase replication policy.
@@ -1114,6 +1140,19 @@ definitions:
   SuspendPolicyResponse:
     type: object
     description: Response object for suspendPolicy.
+    properties:
+      clusterCrn:
+        type: string
+        description: The CRN of the input cluster.
+      requestId:
+        type: string
+        description: The ID of the request. Populated only for Ambari backend.
+      message:
+        type: string
+        description: The detailed description of the action taken.
+      status:
+        type: string
+        description: The status of the request.
   ActivatePolicyRequest:
     type: object
     description: Activate a replication policy.
@@ -1130,6 +1169,19 @@ definitions:
   ActivatePolicyResponse:
     type: object
     description: Response object for resumePolicy.
+    properties:
+      clusterCrn:
+        type: string
+        description: The CRN of the input cluster.
+      requestId:
+        type: string
+        description: The ID of the request. Populated only for Ambari backend.
+      message:
+        type: string
+        description: The detailed description of the action taken.
+      status:
+        type: string
+        description: The status of the request.
   DownloadDiagnosticBundleRequest:
     type: object
     description: Request to download the diagnostic bundle for the given cluster and command id.

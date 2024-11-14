@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.125
+  version: 0.9.126
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -562,6 +562,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/SyncStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/lastSyncStatus:
+    post:
+      summary: Returns status of the sync operation for the environment crn.
+      description: Returns status of the sync operation for the environment based on crn.
+      operationId: lastSyncStatus
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/LastSyncStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/LastSyncStatusResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2550,7 +2571,8 @@ definitions:
         description: The subnets to use for endpoint access gateway.
       s3GuardTableName:
         type: string
-        description: The name for the DynamoDB table backing S3Guard.
+        description: Deprecated. S3Guard was used to ensure consistent S3 updates when S3 was still eventually consistent. With the introduction of Consistent S3, the goal and usage of S3 Guard have become superfluous and defunct.
+        x-deprecated: true
       description:
         type: string
         description: An description of the environment.
@@ -2650,7 +2672,8 @@ definitions:
         description: The subnets to use for endpoint access gateway.
       s3GuardTableName:
         type: string
-        description: The name for the DynamoDB table backing S3Guard.
+        description: Deprecated. S3Guard was used to ensure consistent S3 updates when S3 was still eventually consistent. With the introduction of Consistent S3, the goal and usage of S3 Guard have become superfluous and defunct.
+        x-deprecated: true
       description:
         type: string
         description: An description of the environment.
@@ -3627,7 +3650,8 @@ definitions:
         properties:
           s3GuardTableName:
             type: string
-            description: The name for the DynamoDB table backing S3Guard.
+            description: Deprecated. S3Guard was used to ensure consistent S3 updates when S3 was still eventually consistent. With the introduction of Consistent S3, the goal and usage of S3 Guard have become superfluous and defunct.
+            x-deprecated: true
       azureDetails:
         type: object
         description: Azure specific environment configuration information.
@@ -4047,6 +4071,15 @@ definitions:
       endTime:
         type: string
         description: Sync operation end timestamp.
+  LastSyncStatusRequest:
+    type: object
+    description: Request object for Sync Status.
+    required:
+      - envNameOrCrn
+    properties:
+      envNameOrCrn:
+        type: string
+        description: Name or Crn of the environment.
   ListConnectedDataServicesRequest:
     type: object
     description: Request object for listing connected Data Service(s) for a given environment.
@@ -4082,6 +4115,42 @@ definitions:
         description: List of resource names for the given Data Service.
         items:
           type: string
+  LastSyncStatusResponse:
+    type: object
+    description: Response object for Sync Operation.
+    required:
+      - operationId
+    properties:
+      operationId:
+        type: string
+        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+      operationType:
+        description: Operation type, set password or user sync
+        $ref: '#/definitions/OperationType'
+      status:
+        description: Status of this operation. Status can be one of these values (REQUESTED, RUNNING, COMPLETED, FAILED, REJECTED, TIMEDOUT)
+        $ref: '#/definitions/SyncStatus'
+      success:
+        type: array
+        description: List of sync operation details for all succeeded environments.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      failure:
+        type: array
+        description: List of sync operation details for all failed environments.
+        items:
+          $ref: '#/definitions/SyncOperationDetails'
+      error:
+        type: string
+        description: If there is any error associated. The error will be populated on any error and it may be populated when the operation failure details are empty.
+      startDate:
+        type: string
+        format: date-time
+        description: Date when the sync operation started.
+      endDate:
+        type: string
+        format: date-time
+        description: Date when the sync operation ended. Omitted if operation has not ended.
   GetEnvironmentUserSyncStateRequest:
     type: object
     description: Request object for retrieving the user sync state of an environment.

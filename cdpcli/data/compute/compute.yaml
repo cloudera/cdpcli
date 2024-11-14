@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.125
+  version: 0.9.126
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -283,10 +283,7 @@ definitions:
     properties:
       customerKmsKeyArn:
         type: string
-        description: The KMS key ARN used.
-      enabled:
-        type: boolean
-        description: Flag to indicate if secret encryption is enabled.
+        description: AWS KMS key ARN.
     x-form-factors: public
   CommonVolumeEncryptionResp:
     type: object
@@ -294,7 +291,7 @@ definitions:
     properties:
       customerKmsKeyArn:
         type: string
-        description: The KMS key ARN used.
+        description: AWS KMS key ARN.
     x-form-factors: public
   CommonSecurityResp:
     type: object
