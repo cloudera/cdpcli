@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.126
+  version: 0.9.127
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -116,7 +116,7 @@ paths:
       summary: Deletes a user and all associated resources.
       description: Deletes a user. This includes deleting all associated access keys and unassigning all roles and resource roles assigned to the user. The user is also removed from all groups it belongs to. If the call succeeds the user will not be able to login interactively, or use any access keys to access the CDP control plane. This feature is under development and some resources may be left behind after a successful call. Note that user-sync is not triggered yet by this call and the caller must trigger that to ensure that the user loses access to all environments as soon as possible.
       operationId: deleteUser
-      x-form-factors: public
+      x-form-factors: public,private
       x-right: iam/deleteUser
       x-mutating: true
       parameters:

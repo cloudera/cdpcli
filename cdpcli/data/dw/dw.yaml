@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.126
+  version: 0.9.127
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -1946,6 +1946,31 @@ definitions:
         description: Allowed values for the instance type. This setting is Cluster-wide.
         items:
           type: string
+      hive:
+        x-form-factors: public
+        description: Allowed instance types for Hive Virtual Warehouses.
+        $ref: '#/definitions/AllowedInstanceTypesWithDefault'
+      impala:
+        x-form-factors: public
+        description: Allowed instance types for Impala Virtual Warehouses.
+        $ref: '#/definitions/AllowedInstanceTypesWithDefault'
+      trino:
+        x-form-factors: public
+        description: Allowed instance types for Trino Virtual Warehouses.
+        $ref: '#/definitions/AllowedInstanceTypesWithDefault'
+  AllowedInstanceTypesWithDefault:
+    x-form-factors: public
+    type: object
+    description: Allowed Virtual Warehouse compute instance types and their defaults.
+    properties:
+      default:
+        type: string
+        description: Default value for the compute instance type usage. This instance type will be used in the 'create-vw' command's 'instance-type' field in case it has to be customized. The default value also depends on the cloud platform of the Cluster (AWS/Azure).
+      allowed:
+        type: array
+        description: Allowed values for the compute instance type usage. One of these values can be used in the 'create-vw' command's 'instance-type' field .
+        items:
+          type: string
   DescribeServerSettingRequest:
     type: object
     description: Request object for the describeServerSetting method.
@@ -2265,12 +2290,6 @@ definitions:
         items:
           type: string
         description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
-      additionalInstanceTypes:
-        x-deprecated: true
-        type: array
-        items:
-          type: string
-        description: 'DEPRECATED: Additional compute instance types will be removed in subsequent releases. Additional (fallback) instance types listed in their priority order. They will be used instead of the primary compute instance type in case it is unavailable. You cannot include any instance type that was already indicated in computeInstanceTypes. Use describe-allowed-instance-types to see currently supported values and also the default value when nothing is provided for the computeInstanceTypes.'
   CreateAzureClusterRequest:
     type: object
     description: Request object for the createAzureCluster method.
@@ -2464,7 +2483,7 @@ definitions:
         description: The ID of the cluster.
       data:
         type: string
-        description: Dump of configuration received by calling "dump-cluster" command.
+        description: Backup data of configuration received by calling "backup-cluster" command.
   RestoreClusterResponse:
     type: object
     description: Response object for the restoreCluster method.
@@ -2572,12 +2591,6 @@ definitions:
         items:
           type: string
         description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
-      additionalInstanceTypes:
-        x-deprecated: true
-        type: array
-        items:
-          type: string
-        description: 'DEPRECATED: Additional compute instance types will be removed in subsequent releases. Additional (fallback) instance types listed in their priority order. They will be used instead of the primary compute instance type in case it is unavailable. You cannot include any instance type that was already indicated in computeInstanceTypes. Use describe-allowed-instance-types to see currently supported values and also the default value when nothing is provided for the computeInstanceTypes.'
   AzureActivationOptions:
     type: object
     description: Options for activating an Azure environment.
@@ -2872,10 +2885,9 @@ definitions:
         type: string
         description: Version of the Cloudera Data Visualization.
         x-form-factors: public
-      templateName:
+      resourceTemplate:
         type: string
-        description: 'DEPRECATED: Use resourceTemplate parameter instead that will be made available in the upcoming release. The template size for the Cloudera Data Visualization.'
-        x-deprecated: true
+        description: The name of the available resource template to use for the Cloudera Data Visualization.
   CreateDataVisualizationResponse:
     type: object
     description: Response object for the createDataVisualization method.
@@ -3053,7 +3065,8 @@ definitions:
         default: false
         description: Forced recreation of the diagnostic job.
       downloadOptions:
-        description: Cluster diagnostic options. If not provided, everything will be included in the Diagnostic Data.
+        x-deprecated: true
+        description: 'DEPRECATED: All logs are included by default. No need to specify options'
         $ref: '#/definitions/ClusterCreateDiagnosticDataDownloadOptions'
   CreateClusterDiagnosticDataJobResponse:
     type: object
@@ -3934,15 +3947,18 @@ definitions:
       name:
         type: string
         description: Name of the Virtual Warehouse.
+      instanceType:
+        x-form-factors: public
+        type: string
+        description: Instance type for this Virtual Warehouse. To learn what instance types are allowed to be used for a Hive or an Impala Virtual Warehouse, please use the 'describe-allowed-instance-types' command. The command output will list the usable instance types in its 'hive' and 'impala' fields accordingly.
       imageVersion:
         type: string
         description: version of the Virtual Warehouse.
         default: ''
         x-form-factors: public
-      template:
+      tShirtSize:
         type: string
-        description: 'DEPRECATED: It will be replaced by the tShirtSize parameter in an upcoming release. Name of configuration template to use.'
-        x-deprecated: true
+        description: Name of T-shirt size to use, which will determine the number of nodes.
         enum:
           - xsmall
           - small
@@ -4564,8 +4580,9 @@ definitions:
         description: 'DEPRECATED: Included by default, no need to specify'
   ClusterCreateDiagnosticDataDownloadOptions:
     type: object
-    description: Flags that denote which diagnostics to include for the cluster.
     x-form-factors: public
+    x-deprecated: true
+    description: 'DEPRECATED: Included by default, no need to specify'
     properties:
       includeClusterInfo:
         x-deprecated: true
@@ -4629,6 +4646,10 @@ definitions:
       version:
         type: string
         description: The version of the deployed CDW cluster.
+      productSupport:
+        x-form-factors: public,private
+        $ref: '#/definitions/ClusterSummaryProductSupportResponse'
+        description: 'Support lifecycle details of the given Cluster version (see version field). Learn more at Support lifecycle site: https://www.cloudera.com/services-and-support/support-lifecycle-policy.html.'
       enableSpotInstances:
         x-form-factors: public
         type: boolean
@@ -4650,12 +4671,6 @@ definitions:
         items:
           type: string
         description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. Compute instance types that the environment is restricted to use. This affects the creation of the virtual warehouses where this restriction will apply.'
-      additionalInstanceTypes:
-        x-deprecated: true
-        type: array
-        items:
-          type: string
-        description: 'DEPRECATED: Additional compute instance types will be removed in subsequent releases. Additional (fallback) instance types listed in their priority order. They are used instead of the primary compute instance type in case it is unavailable. Since additional instance types are not supported for Azure, this is always empty for it.'
       awsOptions:
         $ref: '#/definitions/AwsOptionsResponse'
         description: Response object of AWS related cluster options.
@@ -4690,6 +4705,21 @@ definitions:
         description: External buckets attached to the environment.
         items:
           $ref: '#/definitions/ExternalBucket'
+  ClusterSummaryProductSupportResponse:
+    x-form-factors: public,private
+    type: object
+    description: 'Support lifecycle details of the given Cluster version (see version field). Learn more at Support lifecycle site: https://www.cloudera.com/services-and-support/support-lifecycle-policy.html.'
+    properties:
+      status:
+        type: string
+        description: 'Status of the support lifecycle. *COVERED*: The Cluster version has active support. *EXPIRED*: The Cluster version is no-longer supported. *UNKNOWN*: The Cluster version is missing or incorrect.'
+      expiryDate:
+        type: string
+        format: date-time
+        description: Shows the expiration date of the support for this Cluster version.
+      message:
+        type: string
+        description: Message.
   DataVisualizationSummary:
     type: object
     description: A Cloudera Data Visualization.
@@ -4783,6 +4813,10 @@ definitions:
       vwType:
         description: The type of the Virtual Warehouse.
         $ref: '#/definitions/VwType'
+      instanceType:
+        x-form-factors: public
+        type: string
+        description: The underlying instance type for this Virtual Warehouse.
       dbcId:
         type: string
         description: ID of Database Catalog that the Virtual Warehouse is attached to.
@@ -4861,6 +4895,9 @@ definitions:
             type: string
             x-form-factors: private
             description: Command to use impala-shell for Impala Virtual Warehouses with Kerberos authentication.
+          trinoCli:
+            type: string
+            description: Command-line client that connects to Trino Virtual Warehouse to execute SQL queries.
           hue:
             type: string
             description: URL of Hue for both Hive and Impala Virtual Warehouses.
@@ -5165,10 +5202,9 @@ definitions:
       vwId:
         type: string
         description: ID of the Virtual Warehouse.
-      template:
+      tShirtSize:
         type: string
-        description: 'DEPRECATED: It will be replaced by the tShirtSize parameter in an upcoming release. Name of configuration template to use.'
-        x-deprecated: true
+        description: Name of T-shirt size to use, which will determine the number of nodes.
         enum:
           - xsmall
           - small
@@ -6576,7 +6612,7 @@ definitions:
     description: Storage related information.
     x-nullable: true
     x-mutating: false
-    x-form-factors: private
+    x-form-factors: private,public
     properties:
       scratch:
         type: string

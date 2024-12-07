@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.126
+  version: 0.9.127
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -55,6 +55,48 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CreateDatabaseResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/opdb/createSnapshot:
+    post:
+      summary: Creates a snapshot for a specific table.
+      description: Returns id state and creation time.
+      operationId: createSnapshot
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateSnapshotRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateSnapshotResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/opdb/deleteSnapshot:
+    post:
+      summary: Deletes a snapshot.
+      description: Returns the snapshot that is deleted.
+      operationId: deleteSnapshot
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteSnapshotRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteSnapshotResponse'
         default:
           description: The default response on an error.
           schema:
@@ -186,6 +228,48 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/opdb/listRestoreSnapshots:
+    post:
+      summary: Lists instances when a snapshot was restored to a database.
+      description: Returns a list of snapshots restored into a database.
+      operationId: listRestoreSnapshots
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListRestoreSnapshotsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListRestoreSnapshotsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/opdb/listSnapshots:
+    post:
+      summary: Shows snapshot for a table name in a specific location.
+      description: Returns list of snapshot names.
+      operationId: listSnapshots
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListSnapshotsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListSnapshotsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/opdb/listSupportedEnvironments:
     post:
       summary: List of environments available for the database creation
@@ -207,6 +291,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/opdb/restoreSnapshot:
+    post:
+      summary: Restores a snapshot.
+      description: Returns the snapshot that was restored.
+      operationId: restoreSnapshot
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestoreSnapshotRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestoreSnapshotResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/opdb/startDatabase:
     post:
       summary: Starts the database
@@ -826,6 +931,327 @@ definitions:
       databaseDetails:
         description: The details of the database.
         $ref: '#/definitions/DatabaseDetails'
+  SnapshotStatusType:
+    type: string
+    description: "Snapshot Status Type.\n `NEW` - Expected when a snapshot request was just requested. `IN_PROGRESS` - When a snapshot request is in progress. `FAILED` - If for any reason a snapshot request has failed. `SUCCESSFUL` - A snapshot request has completed successfully. `LOCKED` - A snapshot exists, but can't be restored or read. `DELETED` - A snapshot existed but was just deleted. `CORRUPT` - A snapshot got corrupted. `DELETING` - A snapshot is being deleted."
+    enum:
+      - NEW
+      - IN_PROGRESS
+      - FAILED
+      - SUCCESSFUL
+      - LOCKED
+      - DELETED
+      - CORRUPT
+      - DELETING
+      - UNKNOWN
+  CreateSnapshotRequest:
+    type: object
+    description: Create Snapshot Request.
+    required:
+      - environmentName
+      - databaseName
+      - tableName
+      - snapshotName
+      - snapshotLocation
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      tableName:
+        type: string
+        description: The fully qualified table name.
+      snapshotName:
+        type: string
+        description: Snapshot name unique per database.
+      snapshotLocation:
+        type: string
+        description: The snapshot location URL on object store.
+  CreateSnapshotResponse:
+    type: object
+    description: Create Snapshot Response.
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      status:
+        description: The status of the create snapshot.
+        $ref: '#/definitions/SnapshotStatusType'
+      creationTime:
+        type: integer
+        format: int64
+        description: When the snapshot was created.
+      commandID:
+        type: integer
+        format: int64
+        description: The submitted Command ID of the create snapshot.
+      statusReason:
+        type: string
+        description: Reason for the status.
+  RestoreSnapshotRequest:
+    type: object
+    description: Restore Snapshot Request.
+    required:
+      - environmentName
+      - databaseName
+      - snapshotName
+      - targetEnvironmentName
+      - targetDatabaseName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the original environment.
+      databaseName:
+        type: string
+        description: The name of the original database.
+      snapshotName:
+        type: string
+        description: The name of the snapshot.
+      targetEnvironmentName:
+        type: string
+        description: The name of the target environment where the snapshot should be restored.
+      targetDatabaseName:
+        type: string
+        description: The name of the target database where the snapshot should be restored.
+  RestoreSnapshotResponse:
+    type: object
+    description: Response object for the RestoreSnapshot method.
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      snapshotName:
+        type: string
+        description: The name of the snapshot.
+      targetEnvironmentName:
+        type: string
+        description: The name of the target environment.
+      targetDatabaseName:
+        type: string
+        description: The name of the target database.
+      status:
+        description: The status of the restore snapshot.
+        $ref: '#/definitions/SnapshotStatusType'
+      restoreTime:
+        type: integer
+        format: int64
+        description: The time when the snapshot restore was started.
+      commandID:
+        type: integer
+        format: int64
+        description: The submitted Command ID of the restore snapshot.
+      statusReason:
+        type: string
+        description: Reason for the status.
+  DeleteSnapshotRequest:
+    type: object
+    description: Request object for the DeleteSnapshot method.
+    required:
+      - environmentName
+      - databaseName
+      - snapshotName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      snapshotName:
+        type: string
+        description: The name of the snapshot.
+  DeleteSnapshotResponse:
+    type: object
+    description: Response object of the DeleteSnapshot method.
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      status:
+        description: The status of the delete snapshot.
+        $ref: '#/definitions/SnapshotStatusType'
+      commandID:
+        type: integer
+        format: int64
+        description: The submitted Command ID of the delete snapshot.
+      statusReason:
+        type: string
+        description: Reason for the status.
+      snapshotName:
+        type: string
+        description: The name of the snapshot.
+  Snapshot:
+    type: object
+    description: An instance of a table's snapshot.
+    required:
+      - tableName
+      - snapshotName
+    properties:
+      tableName:
+        type: string
+        description: The table name.
+      snapshotName:
+        type: string
+        description: The name of the snapshot.
+      creationTime:
+        type: integer
+        format: int64
+        description: The creation time of the snapshot.
+      status:
+        description: The status of the snapshot.
+        $ref: '#/definitions/SnapshotStatusType'
+      commandID:
+        type: integer
+        format: int64
+        description: The submitted Command ID of the snapshot.
+      snapshotLocation:
+        type: string
+        description: The location of the snapshot.
+      failureReason:
+        type: string
+        description: Reason for the failure in case of snapshot creation failed.
+  ListSnapshotsRequest:
+    type: object
+    description: Show Snapshots Request.
+    required:
+      - environmentName
+      - databaseName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      tableName:
+        type: string
+        description: The table name.
+      commandId:
+        type: integer
+        format: int64
+        description: The submitted Command ID of the snapshots.
+      fromCreationTime:
+        type: string
+        format: date-time
+        description: The creation time of the snapshots to search (inclusive).
+      toCreationTime:
+        type: string
+        format: date-time
+        description: The ending time of the snapshot creation to search (inclusive).
+  ListSnapshotsResponse:
+    type: object
+    description: Show Snapshots Response.
+    required:
+      - environmentName
+      - databaseName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      snapshots:
+        type: array
+        items:
+          $ref: '#/definitions/Snapshot'
+        description: List of snapshots.
+      status:
+        description: The status of the list snapshots.
+        $ref: '#/definitions/SnapshotStatusType'
+      statusReason:
+        type: string
+        description: Reason for the status.
+  ListRestoreSnapshotsRequest:
+    type: object
+    description: Show Restore Snapshots Request.
+    required:
+      - environmentName
+      - databaseName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      snapshotName:
+        type: string
+        description: The name of the snapshot.
+      targetEnvironmentName:
+        type: string
+        description: The name of the target environment.
+      targetDatabaseName:
+        type: string
+        description: The name of the target database.
+      commandId:
+        type: integer
+        format: int64
+        description: The submitted Command ID of the snapshot.
+      fromRestoreTime:
+        type: string
+        format: date-time
+        description: The starting snapshot restore time to search restore snapshots (inclusive).
+      toRestoreTime:
+        type: string
+        format: date-time
+        description: The ending snapshot restore time to search restore snapshots (inclusive).
+  RestoreSnapshot:
+    type: object
+    description: An instance of restoring a snapshot to a database.
+    properties:
+      snapshotName:
+        type: string
+        description: The name of the snapshot.
+      targetEnvironmentName:
+        type: string
+        description: The name of the target environment.
+      targetDatabaseName:
+        type: string
+        description: The name of the target database.
+      status:
+        description: The status of the restore snapshot.
+        $ref: '#/definitions/SnapshotStatusType'
+      restoreTime:
+        type: integer
+        format: int64
+        description: The time when the snapshot restore was started.
+      commandID:
+        type: integer
+        format: int64
+        description: The submitted Command ID of the restore snapshot.
+      failureReason:
+        type: string
+        description: Reason for the failure in case of restore snapshot failed.
+  ListRestoreSnapshotsResponse:
+    type: object
+    description: Show Restore Snapshots Response.
+    required:
+      - environmentName
+      - databaseName
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      databaseName:
+        type: string
+        description: The name of the database.
+      restoreSnapshots:
+        type: array
+        items:
+          $ref: '#/definitions/RestoreSnapshot'
+        description: List of snapshots which have been restored against the database.
   StartDatabaseRequest:
     type: object
     description: Start the database.

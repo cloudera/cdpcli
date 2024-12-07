@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.126
+  version: 0.9.127
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -3012,9 +3012,17 @@ definitions:
   InitializeAWSComputeClusterResponse:
     type: object
     description: Response object for an initialize AWS default compute cluster request.
+    properties:
+      operationId:
+        type: string
+        description: The id of the related operation.
   InitializeAzureComputeClusterResponse:
     type: object
     description: Response object for an initialize Azure default compute cluster request.
+    properties:
+      operationId:
+        type: string
+        description: The id of the related operation.
   CreateAzureEnvironmentResponse:
     type: object
     description: Response object for a create Azure environment request.

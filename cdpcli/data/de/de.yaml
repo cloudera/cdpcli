@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.126
+  version: 0.9.127
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -1768,7 +1768,7 @@ definitions:
         description: CRN of the CDP environment with which a restored CDE service will be associated. Currently, CDE service can be restored only to the same CDP environment, with which a backed-up service was associated.
       serviceId:
         type: string
-        description: Specify the restored service ID. If not specified, the service ID from the backup will be reused.
+        description: Specify the restored service ID. If not specified, a new service ID will be generated.
       serviceName:
         type: string
         description: Specify the restored service name. If not specified, the service name from the backup will be reused.
