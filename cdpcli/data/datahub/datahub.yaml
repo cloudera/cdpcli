@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.127
+  version: 0.9.128
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1309,10 +1309,10 @@ paths:
   /api/v1/datahub/rotateSaltPassword:
     post:
       summary: Rotate SaltStack user password on Data Hub instances.
-      description: Rotate SaltStack user password on Data Hub instances.
+      description: Deprecated, please use rotateSecrets with SALT_PASSWORD secretType instead.
       operationId: rotateSaltPassword
       x-mutating: true
-      x-entitlement: CDP_ROTATE_SALTUSER_PASSWORD
+      x-deprecated: true
       parameters:
         - name: input
           in: body
@@ -4581,7 +4581,8 @@ definitions:
     description: Response object to a stop instances of a host group on a Data Hub.
   RotateSaltPasswordRequest:
     type: object
-    description: Request object for rotating SaltStack user password on Data Hub instances.
+    description: Request object for rotating SaltStack user password on Data Hub instances (Deprecated).
+    x-deprecated: true
     required:
       - cluster
     properties:
@@ -4590,7 +4591,8 @@ definitions:
         description: The name or CRN of the cluster.
   RotateSaltPasswordResponse:
     type: object
-    description: Response object for rotating SaltStack user password on Data Hub instances.
+    description: Response object for rotating SaltStack user password on Data Hub instances (Deprecated).
+    x-deprecated: true
   UpdateOrchestratorStateRequest:
     type: object
     description: Request object for running orchestrator engine state update on the Data Hub cluster.

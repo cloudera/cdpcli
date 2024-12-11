@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.127
+  version: 0.9.128
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -1666,6 +1666,29 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UnlockMachineUserInControlPlaneResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/migrateUsersToIdentityProvider:
+    post:
+      summary: Migrates all users from an identity provider connector to a different identity provider connector.
+      description: Allow existing users to be associated with a different identity provider connector. It is required that the identity provider user ID for each user be the same in both identity providers. This is expected to be used for migration from LDAP authentication to SAML authentication for the same physical IdP. A new SAML connector would be created in CDP, integrated with the same IdP as the original LDAP connector. First the LDAP mapping would be set to use the planned SAML name id mapping. Then this method can switch users created via LDAP login to be associated with the SAML connector and enable SAML authentication instead of LDAP authentication.
+      operationId: migrateUsersToIdentityProvider
+      x-form-factors: private
+      x-right: iam/migrateUsersToIdentityProvider
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MigrateUsersToIdentityProviderRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/MigrateUsersToIdentityProviderResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3790,3 +3813,28 @@ definitions:
       machineUser:
         $ref: '#/definitions/MachineUser'
         description: The unlocked machine user.
+  MigrateUsersToIdentityProviderRequest:
+    type: object
+    description: Request object for migrating users from an Identity Provider Connector to a new one.
+    x-form-factor: private
+    required:
+      - originalProviderName
+      - newProviderName
+    properties:
+      originalProviderName:
+        type: string
+        description: The name or CRN of the original IdP provider to migrate from.
+      newProviderName:
+        type: string
+        description: The name or CRN of the new IdP provider to migrate to.
+  MigrateUsersToIdentityProviderResponse:
+    type: object
+    description: Response object for migrating users from old Identity Provider Connector to a new one.
+    x-form-factor: private
+    required:
+      - numberOfUpdatedUsers
+    properties:
+      numberOfUpdatedUsers:
+        type: integer
+        format: int32
+        description: The number of users that were migrated from the old IdP to the new one.

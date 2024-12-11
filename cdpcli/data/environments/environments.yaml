@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.127
+  version: 0.9.128
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1774,10 +1774,10 @@ paths:
   /api/v1/environments2/rotateSaltPassword:
     post:
       summary: Rotate SaltStack user password on FreeIPA instances.
-      description: Rotate SaltStack user password on FreeIPA instances.
+      description: Deprecated, please use rotateFreeipaSecrets with SALT_PASSWORD secretType instead.
       operationId: rotateSaltPassword
       x-mutating: true
-      x-entitlement: CDP_ROTATE_SALTUSER_PASSWORD
+      x-deprecated: true
       parameters:
         - name: input
           in: body
@@ -6185,7 +6185,8 @@ definitions:
     x-no-compatibility-guarantee: true
   RotateSaltPasswordRequest:
     type: object
-    description: Request object for rotating SaltStack user password on FreeIPA instances.
+    description: Request object for rotating SaltStack user password on FreeIPA instances (Deprecated).
+    x-deprecated: true
     required:
       - environment
     properties:
@@ -6194,7 +6195,8 @@ definitions:
         description: The name or CRN of the environment.
   RotateSaltPasswordResponse:
     type: object
-    description: Response object for rotating SaltStack user password on FreeIPA instances.
+    description: Response object for rotating SaltStack user password on FreeIPA instances (Deprecated).
+    x-deprecated: true
   UpdateProxyConfigRequest:
     type: object
     description: Request object for updating the proxy config of the given environment.

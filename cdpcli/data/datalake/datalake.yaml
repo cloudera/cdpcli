@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.127
+  version: 0.9.128
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -972,10 +972,10 @@ paths:
   /api/v1/datalake/rotateSaltPassword:
     post:
       summary: Rotate SaltStack user password on DataLake instances.
-      description: Rotate SaltStack user password on DataLake instances.
+      description: Deprecated, please use rotateSecrets with SALT_PASSWORD secretType instead.
       operationId: rotateSaltPassword
       x-mutating: true
-      x-entitlement: CDP_ROTATE_SALTUSER_PASSWORD
+      x-deprecated: true
       parameters:
         - name: input
           in: body
@@ -3517,7 +3517,8 @@ definitions:
     description: Response object for renew public certificate request.
   RotateSaltPasswordRequest:
     type: object
-    description: Request object for rotating SaltStack user password on DataLake instances.
+    description: Request object for rotating SaltStack user password on DataLake instances (Deprecated).
+    x-deprecated: true
     required:
       - datalake
     properties:
@@ -3526,7 +3527,8 @@ definitions:
         description: The name or CRN of the datalake.
   RotateSaltPasswordResponse:
     type: object
-    description: Response object for rotating SaltStack user password on DataLake instances.
+    description: Response object for rotating SaltStack user password on DataLake instances (Deprecated).
+    x-deprecated: true
   UpdateOrchestratorStateRequest:
     type: object
     description: Request object for running orchestrator engine state update on the Data Lake cluster.
