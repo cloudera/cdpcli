@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.128
+  version: 0.9.129
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1034,6 +1034,8 @@ paths:
             $ref: '#/definitions/InboundConnectionEndpointClientCertificateResponse'
         default:
           description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
       x-deprecated: true
   /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-certificates-encoded:
     post:
@@ -1059,6 +1061,8 @@ paths:
             $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyResponse'
         default:
           description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-private-key-encoded:
     post:
       summary: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
@@ -1083,6 +1087,8 @@ paths:
             $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyResponse'
         default:
           description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
       x-deprecated: true
   /dfx/api/rpc-v1/inbound-connection-endpoints/create-inbound-connection-endpoint:
     post:
@@ -1108,6 +1114,8 @@ paths:
             $ref: '#/definitions/CreateInboundConnectionEndpointResponse'
         default:
           description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/inbound-connection-endpoints/delete-inbound-connection-endpoint:
     post:
       summary: Delete Inbound Connection Endpoint
@@ -1132,6 +1140,8 @@ paths:
             $ref: '#/definitions/DeleteInboundConnectionEndpointResponse'
         default:
           description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/inbound-connection-endpoints/describe-inbound-connection-endpoint:
     post:
       summary: Describe Inbound Connection Endpoint
@@ -1156,6 +1166,8 @@ paths:
             $ref: '#/definitions/DescribeInboundConnectionEndpointResponse'
         default:
           description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/inbound-connection-endpoints/list-inbound-connection-endpoints:
     post:
       summary: List Inbound Connection Endpoints
@@ -1180,6 +1192,8 @@ paths:
             $ref: '#/definitions/ListInboundConnectionEndpointsResponse'
         default:
           description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/inbound-connection-endpoints/renew-certificates:
     post:
       summary: Renew Inbound Connection Endpoint certificates
@@ -1204,6 +1218,8 @@ paths:
             $ref: '#/definitions/RenewInboundConnectionEndpointCertificateResponse'
         default:
           description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/workload-resources/reassign-resources:
     post:
       summary: Modifies the project assignment of the given workload resources.
@@ -1797,7 +1813,7 @@ definitions:
           $ref: '#/definitions/ListenComponent'
       nodeStorageProfileName:
         type: string
-        description: Node storage profile name.
+        description: The node storage profile name.
         enum:
           - STANDARD_AWS
           - STANDARD_AZURE
@@ -2237,7 +2253,7 @@ definitions:
         description: Whether or not the parameter value is sensitive
       type:
         type: string
-        description: The type of parameter. Possibly TEXT, FILE, FILES, DIRECTORY
+        description: The type of parameter. Possibly TEXT, FILE, FILES
         enum:
           - TEXT
           - FILE

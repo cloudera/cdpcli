@@ -222,7 +222,14 @@ class DfExtension(CLIOperationCaller):
         operation_name = operation_model.name
         url = operation_model.http['requestUri']
         method = 'post'
+        headers = self._build_upload_flow_headers(parameters)
 
+        file_path = parameters.get('file', None)
+        response = upload_file(client, operation_name,
+                               method, url, headers, file_path)
+        self._display_response(operation_name, response, parsed_globals)
+
+    def _build_upload_flow_headers(self, parameters):
         # Encode the name, description, and comments, and flow version tags fields.
         # The df api expects them to be URI encoded.
         flowName = self._encode_value(parameters.get('name', None))
@@ -230,19 +237,16 @@ class DfExtension(CLIOperationCaller):
         flowComment = self._encode_value(parameters.get('comments', None))
         flowVersionTags = self._encode_value(self._get_tags_as_json(
             parameters.get('tags', None)))
+        flowCollectionCrn = self._encode_value(parameters.get('collectionCrn', None))
 
-        headers = {
+        return {
             'Content-Type': 'application/json',
             'Flow-Definition-Name': flowName,
             'Flow-Definition-Description': flowDescription,
             'Flow-Definition-Comments': flowComment,
-            'Flow-Definition-Tags': flowVersionTags
+            'Flow-Definition-Tags': flowVersionTags,
+            'Flow-Definition-Collection-Identifier': flowCollectionCrn,
         }
-
-        file_path = parameters.get('file', None)
-        response = upload_file(client, operation_name,
-                               method, url, headers, file_path)
-        self._display_response(operation_name, response, parsed_globals)
 
     def _df_upload_flow_version(self, client_creator, operation_model,
                                 parameters, parsed_globals):

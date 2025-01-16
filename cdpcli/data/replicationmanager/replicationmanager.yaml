@@ -5,7 +5,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.128
+  version: 0.9.129
   title: Cloudera Replication Manager Service
   license:
     name: Apache 2.0

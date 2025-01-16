@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.128
+  version: 0.9.129
   title: Cloudera AI
   license:
     name: Apache 2.0

@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.128
+  version: 0.9.129
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -233,6 +233,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateServerSettingResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/dw/resetServerSettings:
+    post:
+      x-form-factors: private
+      summary: Restores the DWX server settings to the default values.
+      description: Restores the DWX server settings to the default values. Some settings need further actions to be taken (e.g. recreating a Virtual Warehouse), this is indicated in the server settings list returned by the describeServerSetting functionality.
+      operationId: resetServerSettings
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ResetServerSettingsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ResetServerSettingsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2037,6 +2059,18 @@ definitions:
       status:
         type: string
         description: Update status.
+  ResetServerSettingsRequest:
+    type: object
+    description: Request object for the resetServerSettings method.
+    x-form-factors: private
+  ResetServerSettingsResponse:
+    type: object
+    description: Response object for the resetServerSettings method.
+    x-form-factors: private
+    properties:
+      status:
+        type: string
+        description: Reset status.
   UpdateServerSettingItem:
     type: object
     description: A DWX server setting update.
@@ -2286,10 +2320,11 @@ definitions:
         type: boolean
         description: Use this option to activate the environment with fewer than half of the standard required IAM permissions on your AWS cross-account IAM role.
       computeInstanceTypes:
+        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
+        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
   CreateAzureClusterRequest:
     type: object
     description: Request object for the createAzureCluster method.
@@ -2354,10 +2389,11 @@ definitions:
         description: Whether to enable spot instances for Virtual warehouses. It cannot be updated later. Defaults to false.
         default: false
       computeInstanceTypes:
+        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
+        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
       logAnalyticsWorkspaceId:
         type: string
         description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
@@ -2587,10 +2623,11 @@ definitions:
         type: boolean
         description: Use this option to activate the environment with fewer than half of the standard required IAM permissions on your AWS cross-account IAM role.
       computeInstanceTypes:
+        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
+        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. AWS compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values.'
   AzureActivationOptions:
     type: object
     description: Options for activating an Azure environment.
@@ -2609,10 +2646,11 @@ definitions:
         description: Whether to enable spot instances for Virtual warehouses. It cannot be updated later. If the AzureActivationOptions is not provided it defaults to false.
         default: false
       computeInstanceTypes:
+        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
+        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. Azure compute instance types that the environment is restricted to use. This affects the creation of virtual warehouses where this restriction will apply. Select an instance type that meets your computing, memory, networking, or storage needs. As of now, only a single instance type can be listed. Use describe-allowed-instance-types to see currently possible values and the default value used for the case it is not provided.'
       logAnalyticsWorkspaceId:
         type: string
         description: Enable monitoring of Azure Kubernetes Service (AKS) cluster. Workspace ID for Azure log analytics.
@@ -4667,10 +4705,11 @@ definitions:
         format: int32
         description: DEPRECATED - will be removed in future releases. Number of additional reserved nodes for other services in the cluster.
       computeInstanceTypes:
+        x-deprecated: true
         type: array
         items:
           type: string
-        description: 'NOTE: The cluster level instance type selection will be replaced by virtual warehouse level selection. Compute instance types that the environment is restricted to use. This affects the creation of the virtual warehouses where this restriction will apply.'
+        description: 'DEPRECATED: The cluster level instance type selection will be replaced by virtual warehouse level selection. Compute instance types that the environment is restricted to use. This affects the creation of the virtual warehouses where this restriction will apply.'
       awsOptions:
         $ref: '#/definitions/AwsOptionsResponse'
         description: Response object of AWS related cluster options.
@@ -6034,6 +6073,9 @@ definitions:
         items:
           type: string
         description: The job states we need to filter by. If not present, this filter is not used.
+      includeAutomaticBackups:
+        type: boolean
+        description: Decides whether automatic (system-generated) backups should be listed or not. Value is true by default.
   ListBackupsResponse:
     type: object
     x-form-factors: private
@@ -6384,11 +6426,6 @@ definitions:
       xmx:
         type: string
         description: Java VM configuration for -Xmx (maximum heap size).
-      headroom:
-        type: string
-        description: 'DEPRECATED: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.'
-        x-nullable: true
-        x-deprecated: true
       xss:
         type: string
         description: Java VM configuration for -Xss (thread stack size).
@@ -6397,12 +6434,6 @@ definitions:
         type: string
         description: Java VM configuration for -XX:MaxDirectMemorySize (limit for Direct Byte Buffers).
         x-nullable: true
-      waitQueueSize:
-        type: integer
-        format: int32
-        description: 'DEPRECATED: Set the hive.query.isolation.slots.per.node configuration value instead. Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.'
-        x-nullable: true
-        x-deprecated: true
   CreateApplicationResourcesLocalStorageSize:
     type: object
     description: Storage related information.
@@ -6490,11 +6521,6 @@ definitions:
       xmx:
         type: string
         description: Java VM configuration for -Xmx (maximum heap size).
-      headroom:
-        type: string
-        description: 'DEPRECATED: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.'
-        x-nullable: true
-        x-deprecated: true
       xss:
         type: string
         description: Java VM configuration for -Xss (thread stack size).
@@ -6503,12 +6529,6 @@ definitions:
         type: string
         description: Java VM configuration for -XX:MaxDirectMemorySize (limit for Direct Byte Buffers).
         x-nullable: true
-      waitQueueSize:
-        type: integer
-        format: int32
-        description: 'DEPRECATED: Set the hive.query.isolation.slots.per.node configuration value instead. Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.'
-        x-nullable: true
-        x-deprecated: true
   UpdateApplicationResourcesLocalStorageSize:
     type: object
     description: Storage related information.
@@ -6588,11 +6608,6 @@ definitions:
       xmx:
         type: string
         description: Java VM configuration for -Xmx (maximum heap size).
-      headroom:
-        type: string
-        description: 'DEPRECATED: Java VM configuration for -Xmx (maximum heap size).Java VM overhead for Garbage Collector structures, metaspace, etc., and a safety margin to avoid out-of-memory issues.'
-        x-nullable: true
-        x-deprecated: true
       xss:
         type: string
         description: Java VM configuration for -Xss (thread stack size).
@@ -6601,12 +6616,6 @@ definitions:
         type: string
         description: Java VM configuration for -XX:MaxDirectMemorySize (limit for Direct Byte Buffers).
         x-nullable: true
-      waitQueueSize:
-        type: integer
-        format: int32
-        description: 'DEPRECATED: Set the hive.query.isolation.slots.per.node configuration value instead. Overhead buffer for hive.query.isolation.slots.per.node. The total number of concurrent tasks the Hive query executor can process is the sum of the available CPU cores and the value you specify in this field.'
-        x-nullable: true
-        x-deprecated: true
   ApplicationResourcesLocalStorageSize:
     type: object
     description: Storage related information.

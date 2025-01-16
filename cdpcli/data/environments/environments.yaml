@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.128
+  version: 0.9.129
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2299,6 +2299,14 @@ definitions:
       description:
         type: string
         description: A description for the credential.
+      skipOrgPolicyDecisions:
+        type: boolean
+        default: false
+        description: Skips organization policy decisions during cloud storage validation.
+      verifyPermissions:
+        type: boolean
+        default: false
+        description: When true, verifies credential permissions.
       awsCredentialProperties:
         description: The credential properties that closely related to those that have been created on AWS.
         $ref: '#/definitions/AwsCredentialProperties'
@@ -2585,7 +2593,9 @@ definitions:
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
       reportDeploymentLogs:
         type: boolean
-        description: When true, this will report additional diagnostic information back to Cloudera.
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeIpa:
         $ref: '#/definitions/AWSFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -2686,7 +2696,9 @@ definitions:
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
       reportDeploymentLogs:
         type: boolean
-        description: When true, this will report additional diagnostic information back to Cloudera.
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeIpa:
         $ref: '#/definitions/AWSFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -3153,7 +3165,9 @@ definitions:
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
       reportDeploymentLogs:
         type: boolean
-        description: When true, this will report additional diagnostic information back to Cloudera.
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeIpa:
         $ref: '#/definitions/AzureFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -3274,7 +3288,9 @@ definitions:
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
       reportDeploymentLogs:
         type: boolean
-        description: When true, this will report additional diagnostic information back to Cloudera.
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeIpa:
         $ref: '#/definitions/GCPFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -3392,10 +3408,6 @@ definitions:
       encryptionKeyResourceGroupName:
         type: string
         description: Name of the existing Azure resource group hosting the Azure Key Vault containing customer managed key which will be used to encrypt the Azure Managed Disks. It is required only when the entitlement is granted and the resource group of the key vault is different from the resource group in which the environment is to be created. Omitting it implies that, the key vault containing the encryption key is present in the same resource group where the environment would be created.
-      userManagedIdentity:
-        type: string
-        description: User managed identity for encryption. (deprecated)
-        x-deprecated: true
       encryptionUserManagedIdentity:
         type: string
         description: User managed identity for encryption.
@@ -3513,10 +3525,6 @@ definitions:
       diskEncryptionSetId:
         type: string
         description: ID of the Disk Encryption Set created in Azure which is used to encrypt Managed Disks of FreeIPA, Data Lake, Data Hub and PostgreSQL.
-      userManagedIdentity:
-        type: string
-        description: User managed identity for encryption. (deprecated)
-        x-deprecated: true
       encryptionUserManagedIdentity:
         type: string
         description: User managed identity for encryption.
@@ -3682,7 +3690,9 @@ definitions:
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
       reportDeploymentLogs:
         type: boolean
-        description: When true, this will report additional diagnostic information back to Cloudera.
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeipa:
         description: Details of FreeIPA instance associated with this environment.
         $ref: '#/definitions/FreeipaDetails'
@@ -4476,9 +4486,9 @@ definitions:
       operationId:
         type: string
         description: Identifier of the operation.
-      operationType:
+      operationName:
         type: string
-        description: Type of the operation.
+        description: Name of the operation.
       operationStatus:
         type: string
         description: Status of the operation.
@@ -4488,10 +4498,14 @@ definitions:
           - FAILED
           - FINISHED
           - CANCELLED
-      progress:
-        type: integer
-        format: int32
-        description: Progress percentage of the operation.
+      started:
+        type: string
+        format: date-time
+        description: Start time of the operation.
+      ended:
+        type: string
+        format: date-time
+        description: End time of the operation.
   ExposedService:
     x-form-factors: private
     description: Exposed CDP DC service object.
@@ -5264,7 +5278,9 @@ definitions:
         description: Flag to enable environment level workload analytics.
       reportDeploymentLogs:
         type: boolean
-        description: Flag to enable environment level deployment log collection.
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] Flag to enable environment level deployment log collection.'
   SetTelemetryFeaturesResponse:
     type: object
     description: Response object to enable environment level telemetry features.
@@ -5347,7 +5363,9 @@ definitions:
         description: Flag to enable account level workload analytics. (that will be used as a default for environment)
       reportDeploymentLogs:
         type: boolean
-        description: Flag to enable account level deployment log collection. (that will be used as a default for environment)
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] Flag to enable environment level deployment log collection.'
       rules:
         type: array
         description: List of anonymization rules that are applied on logs that are shipped to Cloudera
@@ -5362,7 +5380,9 @@ definitions:
         description: Flag to enable account level workload analytics. (that will be used as a default for environment)
       reportDeploymentLogs:
         type: boolean
-        description: Flag to enable account level deployment log collection. (that will be used as a default for environment)
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] Flag to enable account level deployment log collection. (that will be used as a default for environment)'
       rules:
         type: array
         description: List of anonymization rules that are applied on logs that are shipped to Cloudera
@@ -5380,7 +5400,9 @@ definitions:
         description: Flag to enable account level workload analytics. (that will be used as a default for environment)
       reportDeploymentLogs:
         type: boolean
-        description: Flag to enable account level deployment log collection. (that will be used as a default for environment)
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] Flag to enable account level deployment log collection. (that will be used as a default for environment)'
       rules:
         type: array
         description: List of anonymization rules that are applied on logs that are shipped to Cloudera
@@ -5398,7 +5420,9 @@ definitions:
         description: Flag to enable account level workload analytics. (that will be used as a default for environment)
       reportDeploymentLogs:
         type: boolean
-        description: Flag to enable account level deployment log collection. (that will be used as a default for environment)
+        default: false
+        x-deprecated: true
+        description: '[Deprecated] Flag to enable account level deployment log collection. (that will be used as a default for environment)'
       rules:
         type: array
         description: List of anonymization rules that are applied on logs that are shipped to Cloudera
