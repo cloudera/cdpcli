@@ -13,6 +13,7 @@
 
 import http.server as httpserver
 import os
+import re
 import socket
 import socketserver
 import sys
@@ -358,7 +359,7 @@ class LoginCommand(BasicCommand):
 
 def save_access_token(context, config_writer, access_key_id, private_key):
     # V3/ECDSA private key has '\n' in the string.
-    private_key = private_key.replace('\n', '\\n')
+    private_key = re.sub(r'[\r\n]+', r'\\n', private_key)
     credential_file_values = {CDP_ACCESS_KEY_ID_KEY_NAME: access_key_id,
                               CDP_PRIVATE_KEY_KEY_NAME: private_key}
     profile_name = context.effective_profile

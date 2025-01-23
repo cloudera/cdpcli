@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.129
+  version: 0.9.130
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -3035,9 +3035,14 @@ definitions:
         description: Version of the Database Catalog.
         default: ''
         x-form-factors: public
+      resourceTemplateId:
+        type: string
+        description: The resource template of the Database Catalog.
       memorySize:
         type: string
-        description: Set Metastore container memory size. If not provided, small will apply.
+        x-no-compatibility-guarantee: true
+        x-deprecated: true
+        description: 'DEPRECATED: resourceTemplateId field is replacing this one. Set Metastore container memory size. The small size will apply as default if neither the resourceTemplateId field nor this field is provided.'
         enum:
           - small
           - medium
@@ -3102,10 +3107,6 @@ definitions:
         type: boolean
         default: false
         description: Forced recreation of the diagnostic job.
-      downloadOptions:
-        x-deprecated: true
-        description: 'DEPRECATED: All logs are included by default. No need to specify options'
-        $ref: '#/definitions/ClusterCreateDiagnosticDataDownloadOptions'
   CreateClusterDiagnosticDataJobResponse:
     type: object
     description: Response object for the createClusterDiagnosticDataJob method.
@@ -3272,10 +3273,6 @@ definitions:
         type: boolean
         default: false
         description: Forced recreation of the diagnostic job.
-      downloadOptions:
-        x-deprecated: true
-        description: 'DEPRECATED: All logs are included by default'
-        $ref: '#/definitions/DBCCreateDiagnosticDataDownloadOptions'
   CreateDbcDiagnosticDataJobResponse:
     type: object
     description: Response object for the createDbcDiagnosticDataJob method.
@@ -4353,14 +4350,6 @@ definitions:
         type: boolean
         default: false
         description: Forced recreation of the diagnostic job.
-      hiveDownloadOptions:
-        x-deprecated: true
-        description: 'DEPRECATED: All logs are included by default'
-        $ref: '#/definitions/HiveCreateDiagnosticDataDownloadOptions'
-      impalaDownloadOptions:
-        x-deprecated: true
-        description: 'DEPRECATED: All logs are included by default'
-        $ref: '#/definitions/ImpalaCreateDiagnosticDataDownloadOptions'
   CreateVwDiagnosticDataJobResponse:
     type: object
     description: Response object for the createVwDiagnosticDataJob method.
@@ -4528,120 +4517,6 @@ definitions:
         description: The list of the events belonging to the particular Virtual Warehouse
         items:
           $ref: '#/definitions/EventResponse'
-  HiveCreateDiagnosticDataDownloadOptions:
-    x-deprecated: true
-    type: object
-    description: 'DEPRECATED: Included by default, no need to specify'
-    x-form-factors: public
-    properties:
-      includeHms:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeErrordump:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeGclogs:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeHeapdump:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeLogs:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeComputeResourceInfo:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeKubernetesResourceInfo:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-  ImpalaCreateDiagnosticDataDownloadOptions:
-    x-deprecated: true
-    type: object
-    description: 'DEPRECATED: Included by default, no need to specify'
-    x-form-factors: public
-    properties:
-      includeHms:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeMinidump:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeProfile:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeSidecar:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeWorkload:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeKubernetesResourceInfo:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-  DBCCreateDiagnosticDataDownloadOptions:
-    x-deprecated: true
-    type: object
-    description: 'DEPRECATED: Included by default, no need to specify'
-    x-form-factors: public
-    properties:
-      includeKubernetesResourceInfo:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-  ClusterCreateDiagnosticDataDownloadOptions:
-    type: object
-    x-form-factors: public
-    x-deprecated: true
-    description: 'DEPRECATED: Included by default, no need to specify'
-    properties:
-      includeClusterInfo:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeIstioSystem:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeSharedServices:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
-      includeKubeSystem:
-        x-deprecated: true
-        type: boolean
-        default: false
-        description: 'DEPRECATED: Included by default, no need to specify'
   ExternalBucket:
     type: object
     description: External bucket details.
@@ -4808,9 +4683,14 @@ definitions:
       name:
         type: string
         description: The name of the Database Catalog.
+      resourceTemplateId:
+        type: string
+        description: The resource template of the Database Catalog.
       memorySize:
         type: string
-        description: Metastore container memory size.
+        x-no-compatibility-guarantee: true
+        x-deprecated: true
+        description: 'DEPRECATED: resourceTemplateId field is replacing this one. Metastore container memory size.'
       status:
         type: string
         description: 'Status of the Database Catalog. Possible values are: Creating, Created, Accepted, Starting, Running, Stopping, Stopped, Updating, PreUpdate, Upgrading, PreUpgrade, Restarting, Deleting, Waiting, Failed, Error.'
@@ -5306,9 +5186,14 @@ definitions:
       dbcId:
         type: string
         description: ID of the Database Catalog.
+      resourceTemplateId:
+        type: string
+        description: The resource template of the Database Catalog.
       memorySize:
         type: string
-        description: Set Metastore container memory size. If not provided, small will apply.
+        x-no-compatibility-guarantee: true
+        x-deprecated: true
+        description: 'DEPRECATED: resourceTemplateId field is replacing this one. Set Metastore container memory size. The small size will apply as default if neither the resourceTemplateId field nor this field is provided.'
         enum:
           - small
           - medium
