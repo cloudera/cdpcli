@@ -25,7 +25,8 @@ from cdpcli.extensions.df import (get_deployment_request_details,
                                   initiate_deployment,
                                   process_kpis,
                                   upload_workload_asset)
-from cdpcli.extensions.df.model import (DEPLOYMENT_ALERT,
+from cdpcli.extensions.df.model import (AWS_NODE_STORAGE_PROFILE,
+                                        DEPLOYMENT_ALERT,
                                         DEPLOYMENT_ALERT_THRESHOLD,
                                         DEPLOYMENT_FLOW_PARAMETER,
                                         DEPLOYMENT_FLOW_PARAMETER_GROUP,
@@ -266,6 +267,53 @@ OPERATION_SHAPES = {
                     'PERFORMANCE_AZURE'
                 ]
             },
+            'nodeStorage': {
+                'type': 'object',
+                'properties': {
+                    'azureContentRepoProfile': {
+                        'type': 'string',
+                        'description': 'The Azure content repository profile.',
+                        'enum': [
+                            'AZURE_P6',
+                            'AZURE_P10',
+                            'AZURE_P15',
+                            'AZURE_P30'
+                        ]
+                    },
+                    'azureProvenanceRepoProfile': {
+                        'type': 'string',
+                        'description': 'The Azure provenance repository profile.',
+                        'enum': [
+                            'AZURE_P6',
+                            'AZURE_P10',
+                            'AZURE_P15',
+                            'AZURE_P30'
+                        ]
+                    },
+                    'azureFlowFileRepoProfile': {
+                        'type': 'string',
+                        'description': 'The Azure flow file repository profile.',
+                        'enum': [
+                            'AZURE_P6',
+                            'AZURE_P10',
+                            'AZURE_P15',
+                            'AZURE_P30'
+                        ]
+                    },
+                    'awsContentRepoProfile': {
+                        'description': 'The AWS content repository profile.',
+                        '$ref': '#/definitions/AWSNodeStorageProfile'
+                    },
+                    'awsProvenanceRepoProfile': {
+                        'description': 'The AWS provenance repository profile.',
+                        '$ref': '#/definitions/AWSNodeStorageProfile'
+                    },
+                    'awsFlowFileRepoProfile': {
+                        'description': 'The AWS flow file repository profile.',
+                        '$ref': '#/definitions/AWSNodeStorageProfile'
+                    }
+                }
+            },
             'projectCrn': {
                 'type': 'string',
                 'description': 'CRN for the project to assign this deployment to. '
@@ -285,6 +333,7 @@ OPERATION_SHAPES = {
             }
         }
     },
+    'AWSNodeStorageProfile': AWS_NODE_STORAGE_PROFILE,
     'DeploymentFlowParameterGroup': DEPLOYMENT_FLOW_PARAMETER_GROUP,
     'DeploymentFlowParameter': DEPLOYMENT_FLOW_PARAMETER,
     'DeploymentKeyPerformanceIndicator': DEPLOYMENT_KEY_PERFORMANCE_INDICATOR,
@@ -556,6 +605,7 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             'customNarConfigurationCrn': 'customNarConfigurationCrn',
             'customPythonConfigurationCrn': 'customPythonConfigurationCrn',
             'nodeStorageProfile': 'nodeStorageProfileName',
+            'nodeStorage': 'nodeStorage',
             'projectCrn': 'projectCrn'
         }
 
@@ -625,6 +675,14 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         nodeStorageProfileName = parameters.get('nodeStorageProfileName', None)
         if nodeStorageProfileName is not None:
             deployment_configuration['nodeStorageProfileName'] = nodeStorageProfileName
+
+        # If nodeStorage is not set, then
+        # sending it as empty in the configuration will trigger
+        # dfx-local to assume and validate that the selected nodeStorageProfileName
+        # was not a custom profile for the given cloud platform
+        nodeStorage = parameters.get('nodeStorage', None)
+        if nodeStorage is not None:
+            deployment_configuration['nodeStorage'] = nodeStorage
 
         # If projectCrn is not set, then
         # sending it as empty in the configuration will trigger

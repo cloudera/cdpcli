@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.130
+  version: 0.9.131
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -3891,6 +3891,10 @@ definitions:
   StartEnvironmentResponse:
     type: object
     description: Response object for a start environment request.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   StopEnvironmentRequest:
     type: object
     description: Request object for a stop environment request.
@@ -3903,6 +3907,10 @@ definitions:
   StopEnvironmentResponse:
     type: object
     description: Response object for a stop environment request.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   DeleteCredentialRequest:
     type: object
     description: Request object for a delete credential request.
@@ -3932,7 +3940,7 @@ definitions:
     properties:
       operationId:
         type: string
-        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
       operationType:
         description: Operation type, set password or user sync
         $ref: '#/definitions/OperationType'
@@ -3969,7 +3977,7 @@ definitions:
     properties:
       operationId:
         type: string
-        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
       operationType:
         description: Operation type, set password or user sync
         $ref: '#/definitions/OperationType'
@@ -4020,7 +4028,7 @@ definitions:
     properties:
       operationId:
         type: string
-        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
       operationType:
         description: Operation type, set password or user sync
         $ref: '#/definitions/OperationType'
@@ -4063,7 +4071,7 @@ definitions:
     properties:
       operationId:
         type: string
-        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
       operationType:
         description: Operation type, set password or user sync
         $ref: '#/definitions/OperationType'
@@ -4141,7 +4149,7 @@ definitions:
     properties:
       operationId:
         type: string
-        description: UUID of the request for this operation. This Id can be used for geting status on the operation.
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
       operationType:
         description: Operation type, set password or user sync
         $ref: '#/definitions/OperationType'
@@ -4479,6 +4487,9 @@ definitions:
       environmentName:
         type: string
         description: Name of the environment resource.
+      operationId:
+        type: string
+        description: Filter by operation id.
   GetOperationResponse:
     type: object
     description: Response object for tracking the latest (current/last) operation on the environment resource.
@@ -5581,6 +5592,10 @@ definitions:
   CollectFreeipaDiagnosticsResponse:
     type: object
     description: Response object for collecting FreeIPA diagnostics.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   ListFreeipaDiagnosticsRequest:
     type: object
     description: Request object for listing recent FreeIPA diagnostics collections.
@@ -5888,6 +5903,10 @@ definitions:
   SetEndpointAccessGatewayResponse:
     type: object
     description: Response object for set endpoint access gateway request.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   ValidateAwsCloudStorageRequest:
     type: object
     description: Request object for AWS environment cloud storage validation.
@@ -5993,7 +6012,7 @@ definitions:
         description: Original, current image.
         $ref: '#/definitions/ImageInfoResponse'
       operationId:
-        description: UUID of the request for this operation. This ID can be used for geting status on the operation.
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
         type: string
   GetFreeipaUpgradeOptionsRequest:
     type: object
@@ -6114,6 +6133,9 @@ definitions:
       result:
         type: string
         description: The result of the operation.
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   InstanceTemplate:
     type: object
     description: Instance template that specifies the core information for the instances.
@@ -6194,6 +6216,10 @@ definitions:
   RetryFreeipaResponse:
     type: object
     description: Response object for retry FreeIPA operation on an environment.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   UpgradeCcmRequest:
     type: object
     description: Request object for upgrading Cluster Connectivity Manager on an environment.
@@ -6208,6 +6234,10 @@ definitions:
     type: object
     description: Response object for upgrading Cluster Connectivity Manager request on an environment.
     x-no-compatibility-guarantee: true
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   RotateSaltPasswordRequest:
     type: object
     description: Request object for rotating SaltStack user password on FreeIPA instances (Deprecated).
@@ -6222,6 +6252,10 @@ definitions:
     type: object
     description: Response object for rotating SaltStack user password on FreeIPA instances (Deprecated).
     x-deprecated: true
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   UpdateProxyConfigRequest:
     type: object
     description: Request object for updating the proxy config of the given environment.
@@ -6252,6 +6286,10 @@ definitions:
   UpdateOrchestratorStateResponse:
     type: object
     description: Response object for running orchestrator engine state update on the FreeIPA cluster.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   DataServicesRequest:
     type: object
     description: Data Services parameters request of the environment.
@@ -6358,6 +6396,10 @@ definitions:
   UpdateFreeipaToAwsImdsV2Response:
     type: object
     description: Response object for updating corresponding FreeIPA of the given environment to AWS IMDSv2.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   UpdateFreeipaToAwsImdsV1Request:
     description: The related environment where we update the corresponding FreeIPA to use AWS IMDSv1.
     type: object
@@ -6370,3 +6412,7 @@ definitions:
   UpdateFreeipaToAwsImdsV1Response:
     type: object
     description: Response object for updating corresponding FreeIPA of the given environment to AWS IMDSv1.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.

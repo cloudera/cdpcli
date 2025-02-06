@@ -190,3 +190,22 @@ LISTEN_COMPONENT = {
     },
     'description': 'Provides subset of metadata of a Listen* component.'
 }
+
+AWS_NODE_STORAGE_PROFILE = {
+    'type': 'object',
+    'properties': {
+      'repoSize': {
+        'type': 'integer',
+        'description': 'The size of the repository in GB.'
+      },
+      'iops': {
+        'type': 'string',
+        'description': 'The IOPS of the repository.'
+      },
+      'throughput': {
+        'type': 'string',
+        'description': 'The throughput of the repository.'
+      }
+    },
+    'description': 'Custom AWS node storage parameters.'
+}
