@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.131
+  version: 0.9.132
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.131
+  version: 0.9.132
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -272,10 +272,10 @@ definitions:
       - RKE
   ComputeClusterType:
     type: string
-    description: "Object representing compute cluster types.\n `DedicatedExternal` - Value representing an external dedicated compute cluster. `Shared` - Value representing a shared compute cluster. `Dedicated` - Value representing an embedded dedicated compute cluster."
+    description: "Object representing compute cluster types.\n `Shared` - Value representing a shared compute cluster. `DedicatedExternal` - Value representing an external dedicated compute cluster. `Dedicated` - Value representing an embedded dedicated compute cluster."
     enum:
-      - DedicatedExternal
       - Shared
+      - DedicatedExternal
       - Dedicated
   DescribeClusterRequest:
     type: object

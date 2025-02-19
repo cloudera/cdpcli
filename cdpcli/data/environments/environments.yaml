@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.131
+  version: 0.9.132
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1499,8 +1499,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/environments2/updateSshKey:
     post:
-      summary: Updates the designated SSH key for the given environment.
-      description: Updates the designated SSH key for the given environment.
+      summary: Updates the designated SSH key for the given environment. The newly added SSH key will only be used for the Cloudera Data Hub clusters created within the environment after the new SSH key were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain within the SSH key originally defined during environment creation.
+      description: Updates the designated SSH key for the given environment. The newly added SSH key will only be used for the Cloudera Data Hub clusters created within the environment after the new SSH key were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain within the SSH key originally defined during environment creation.
       operationId: updateSshKey
       x-mutating: true
       parameters:
@@ -1520,8 +1520,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/environments2/updateSubnet:
     post:
-      summary: Updates the subnet(s) of the given environment.
-      description: Updates the subnet(s) of the given environment.
+      summary: Updates the subnet(s) of the given environment. The newly added subnets will only be used for the Cloudera Data Hub clusters created within the environment after the new subnets were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain within the subnets originally defined during environment creation.
+      description: Updates the subnet(s) of the given environment. The newly added subnets will only be used for the Cloudera Data Hub clusters created within the environment after the new subnets were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain within the subnets originally defined during environment creation.
       operationId: updateSubnet
       x-mutating: true
       parameters:
@@ -1541,8 +1541,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/environments2/updateSecurityAccess:
     post:
-      summary: Updates the security access settings of the given environment.
-      description: Updates the security access settings of the given environment.
+      summary: Updates the security access settings of the given environment. The newly added security groups will only be used for the Cloudera Data Hub clusters created within the environment after the new security groups were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain within the security groups originally defined during environment creation.
+      description: Updates the security access settings of the given environment. The newly added security groups will only be used for the Cloudera Data Hub clusters created within the environment after the new security groups were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain within the security groups originally defined during environment creation.
       operationId: updateSecurityAccess
       x-mutating: true
       parameters:
@@ -1816,8 +1816,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/environments2/updateProxyConfig:
     post:
-      summary: Updates the proxy config of the given environment.
-      description: Updates the proxy config of the given environment.
+      summary: Updates the proxy config of the given environment. The newly added proxy configs will only be used for the Cloudera Data Hub clusters created within the environment after the new proxy configs were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain with the proxy configs originally defined during environment creation.
+      description: Updates the proxy config of the given environment. The newly added proxy configs will only be used for the Cloudera Data Hub clusters created within the environment after the new proxy configs were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain with the proxy configs originally defined during environment creation.
       operationId: updateProxyConfig
       x-mutating: true
       parameters:
@@ -2548,18 +2548,19 @@ definitions:
       logStorage:
         description: AWS storage configuration for cluster and audit logs.
         $ref: '#/definitions/AwsLogStorageRequest'
-      networkCidr:
-        type: string
-        description: The network CIDR. This will create a VPC along with subnets in multiple Availability Zones.
       vpcId:
         type: string
-        description: The Amazon VPC ID. Mutually exclusive with networkCidr.
+        description: The Amazon VPC ID.
       subnetIds:
         type: array
-        description: One or more subnet IDs within the VPC. Mutually exclusive with networkCidr.
+        description: One or more subnet IDs within the VPC.
         uniqueItems: true
         items:
           type: string
+      networkCidr:
+        type: string
+        x-deprecated: true
+        description: '[Deprecated] The network CIDR. This will create a VPC along with subnets in multiple Availability Zones.'
       createPrivateSubnets:
         type: boolean
         description: Whether to create private subnets or not.
@@ -2651,18 +2652,19 @@ definitions:
       logStorage:
         description: AWS storage configuration for cluster and audit logs.
         $ref: '#/definitions/AwsLogStorageRequest'
-      networkCidr:
-        type: string
-        description: The network CIDR. This will create a VPC along with subnets in multiple Availability Zones.
       vpcId:
         type: string
-        description: The Amazon VPC ID. Mutually exclusive with networkCidr.
+        description: The Amazon VPC ID.
       subnetIds:
         type: array
-        description: One or more subnet IDs within the VPC. Mutually exclusive with networkCidr.
+        description: One or more subnet IDs within the VPC.
         uniqueItems: true
         items:
           type: string
+      networkCidr:
+        type: string
+        x-deprecated: true
+        description: '[Deprecated] The network CIDR. This will create a VPC along with subnets in multiple Availability Zones.'
       createPrivateSubnets:
         type: boolean
         description: Whether to create private subnets or not.
@@ -3146,7 +3148,8 @@ definitions:
         $ref: '#/definitions/ExistingAzureNetworkRequest'
       newNetworkParams:
         type: object
-        description: Parameteres needed to automatically create VNet and Subnets.
+        x-deprecated: true
+        description: '[Deprecated] Parameteres needed to automatically create VNet and Subnets.'
         required:
           - networkCidr
         properties:
