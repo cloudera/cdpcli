@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.132
+  version: 0.9.133
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1560,6 +1560,27 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/updateTags:
+    post:
+      summary: Updates the user defined tags of the given environment. The newly added tags will only be used for the Cloudera Data Hub clusters created within the environment after the new tags were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain with the tags originally defined during environment creation.
+      description: Updates the user defined tags of the given environment. The newly added tags will only be used for the Cloudera Data Hub clusters created within the environment after the new tags were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain with the tags originally defined during environment creation.
+      operationId: updateTags
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateTagsRequest'
+      responses:
+        200:
+          description: Expected response to valid request.
+          schema:
+            $ref: '#/definitions/UpdateTagsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/environments2/validateAwsCloudStorage:
     post:
       summary: Validates AWS cloud storage settings of the given environment.
@@ -2086,6 +2107,31 @@ definitions:
   UpdateSecurityAccessResponse:
     type: object
     description: Response object for an update environment security access request.
+    required:
+      - environment
+    properties:
+      environment:
+        $ref: '#/definitions/Environment'
+        description: The environment.
+  UpdateTagsRequest:
+    type: object
+    description: The request object for updating the tags of the given environment.
+    required:
+      - environment
+      - tags
+    properties:
+      environment:
+        type: string
+        description: The name or the CRN of the environment.
+      tags:
+        type: object
+        description: Map of tag names to values for the environment.
+        additionalProperties:
+          type: string
+          description: An individual tag value.
+  UpdateTagsResponse:
+    type: object
+    description: Response object for an update environment tags request.
     required:
       - environment
     properties:
@@ -6316,6 +6362,9 @@ definitions:
       sharedManagedIdentity:
         type: string
         description: User-assigned managed identity used by the AKS control plane.
+      aksPrivateDnsZoneId:
+        type: string
+        description: The full Azure resource ID of an existing Private DNS zone used for the AKS.
   AzureDataServicesParameters:
     description: Azure-specific Data Service parameters response.
     type: object

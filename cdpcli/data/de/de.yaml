@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.132
+  version: 0.9.133
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -616,6 +616,18 @@ definitions:
       root_vol_size:
         type: string
         description: Root Volume Size.
+      cpuRequests:
+        type: string
+        description: CPU Requests for the entire CDE service quota.
+        x-form-factors: private
+      memoryRequests:
+        type: string
+        description: Memory requests for the entire CDE service quota, eg. 100Gi.
+        x-form-factors: private
+      resourcePool:
+        type: string
+        description: Resource Pool for the CDE service.
+        x-form-factors: private
       allPurposeInstanceGroupDetails:
         $ref: '#/definitions/AllPurposeInstanceGroupDetailsResponse'
         description: Resource details for the nodes used in All Purpose Virtual Clusters.

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.132
+  version: 0.9.133
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -257,14 +257,14 @@ definitions:
         description: The error message.
   EnvCloudProvider:
     type: string
-    description: "Object representing CDP Environment cloud provider type\n `AWS` - CDP Environment installed in AWS `AZURE` - CDP Environment installed in Azure `OPENSHIFT` - CDP Environment installed as on-premise instalation using CDP DC services in base cluster `GCP` - CDP Environment installed in GCP"
+    description: "Object representing cloud provider type for Cloudera environment.\n `AWS` - Cloudera environment installed in AWS. `AZURE` - Cloudera environment installed in Azure. `OPENSHIFT` - Cloudera environment installed as on-premises installation using OpenShift in the base cluster. `GCP` - Cloudera environment installed in GCP. `REDHAT` - Cloudera environment installed as an on-premises deployment using Red Hat infrastructure. `KCLOUD` - Cloudera environment installed as an on-premises deployment using KCLOUD infrastructure. `STANDARD` - Cloudera environment installed as a generic on-premises deployment using CDP Data services."
     enum:
       - AWS
       - AZURE
       - OPENSHIFT
   ComputePlatform:
     type: string
-    description: "Object representing CDP Compute Cluster Platform provider.\n `OPENSHIFT` - OpenShift Container Platform cluster as compute platform (private cloud only). `EKS` - EKS cluster as compute platform `AKS` - AKS cluster as compute platform `RKE` - Rancher RKE as compute platform (private cloud only). `GKE` - GKE cluster as compute platform"
+    description: "Object representing Cloudera Compute Cluster Platform provider.\n `OPENSHIFT` - OpenShift Container Platform cluster as compute platform (Cloudera on-premises only). `EKS` - EKS cluster as compute platform `AKS` - AKS cluster as compute platform `RKE` - Rancher RKE as compute platform (Cloudera on-premises only). `GKE` - GKE cluster as compute platform `OCP` - OCP Container Platform cluster as compute platform (Cloudera on-premises only). `KCLOUD` - KCLOUD cluster as compute platform (Cloudera on-premises only). `STANDARD` - STANDARD cluster as compute platform (Cloudera on-premises only)."
     enum:
       - OPENSHIFT
       - EKS

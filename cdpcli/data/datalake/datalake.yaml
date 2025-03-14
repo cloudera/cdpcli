@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.132
+  version: 0.9.133
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -289,6 +289,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RepairDatalakeResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/restartDatalakeInstances:
+    post:
+      summary: Restarts instances of a datalake on Cloud provider.
+      description: Restarts instances of a datalake on Cloud provider.
+      operationId: restartDatalakeInstances
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestartDatalakeInstancesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestartDatalakeInstancesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1239,7 +1260,7 @@ definitions:
         description: The status of the datalake.
       shape:
         $ref: '#/definitions/DatalakeScaleType'
-        description: The shape of the datalake (either LIGHT_DUTY or MEDIUM_DUTY_HA).
+        description: The shape of the datalake.
       environmentCrn:
         type: string
         description: The CRN of the environment.
@@ -1995,6 +2016,28 @@ definitions:
         items:
           type: string
         description: List of instance ids.
+  RestartDatalakeInstancesRequest:
+    type: object
+    description: Request object for restart datalake instances request.
+    required:
+      - datalakeName
+      - instances
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+      instances:
+        type: array
+        items:
+          type: string
+        description: List of instance ids.
+  RestartDatalakeInstancesResponse:
+    type: object
+    description: Response object for restart datalake instances request.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
   GetClusterServiceStatusRequest:
     type: object
     description: Request object to get service status.

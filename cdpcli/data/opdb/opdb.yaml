@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.132
+  version: 0.9.133
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -1095,9 +1095,14 @@ definitions:
     type: object
     description: An instance of a table's snapshot.
     required:
+      - snapshotId
       - tableName
       - snapshotName
     properties:
+      snapshotId:
+        type: integer
+        format: int64
+        description: The id of the snapshot.
       tableName:
         type: string
         description: The table name.
@@ -1210,7 +1215,18 @@ definitions:
   RestoreSnapshot:
     type: object
     description: An instance of restoring a snapshot to a database.
+    required:
+      - restoreId
+      - snapshotId
     properties:
+      restoreId:
+        type: integer
+        format: int64
+        description: The id of the restore snapshot.
+      snapshotId:
+        type: integer
+        format: int64
+        description: The id of the snapshot.
       snapshotName:
         type: string
         description: The name of the snapshot.

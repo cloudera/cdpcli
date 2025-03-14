@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.132
+  version: 0.9.133
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -3002,15 +3002,6 @@ definitions:
       resourceTemplateId:
         type: string
         description: The resource template of the Database Catalog.
-      memorySize:
-        type: string
-        x-no-compatibility-guarantee: true
-        x-deprecated: true
-        description: 'DEPRECATED: resourceTemplateId field is replacing this one. Set Metastore container memory size. The small size will apply as default if neither the resourceTemplateId field nor this field is provided.'
-        enum:
-          - small
-          - medium
-          - large
       isDefault:
         type: boolean
         x-deprecated: true
@@ -4638,11 +4629,6 @@ definitions:
       resourceTemplateId:
         type: string
         description: The resource template of the Database Catalog.
-      memorySize:
-        type: string
-        x-no-compatibility-guarantee: true
-        x-deprecated: true
-        description: 'DEPRECATED: resourceTemplateId field is replacing this one. Metastore container memory size.'
       status:
         type: string
         description: 'Status of the Database Catalog. Possible values are: Creating, Created, Accepted, Starting, Running, Stopping, Stopped, Updating, PreUpdate, Upgrading, PreUpgrade, Restarting, Deleting, Waiting, Failed, Error.'
@@ -5141,15 +5127,6 @@ definitions:
       resourceTemplateId:
         type: string
         description: The resource template of the Database Catalog.
-      memorySize:
-        type: string
-        x-no-compatibility-guarantee: true
-        x-deprecated: true
-        description: 'DEPRECATED: resourceTemplateId field is replacing this one. Set Metastore container memory size. The small size will apply as default if neither the resourceTemplateId field nor this field is provided.'
-        enum:
-          - small
-          - medium
-          - large
       config:
         description: The service configuration to update the DBC with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
         $ref: '#/definitions/ServiceConfigReq'

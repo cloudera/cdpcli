@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.132
+  version: 0.9.133
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -417,6 +417,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RepairClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/restartClusterInstances:
+    post:
+      summary: Restarts instances of a cluster on Cloud provider.
+      description: Restarts instances of a cluster on Cloud provider.
+      operationId: restartClusterInstances
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RestartClusterInstancesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestartClusterInstancesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3178,6 +3199,28 @@ definitions:
   RepairClusterResponse:
     type: object
     description: Response object for repair cluster request.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+  RestartClusterInstancesRequest:
+    type: object
+    description: Request object for restart cluster instances request.
+    required:
+      - cluster
+      - instances
+    properties:
+      cluster:
+        type: string
+        description: The name or CRN of the cluster.
+      instances:
+        type: array
+        items:
+          type: string
+        description: List of instance ids.
+  RestartClusterInstancesResponse:
+    type: object
+    description: Response object for restart cluster instances request.
     properties:
       operationId:
         type: string
