@@ -52,7 +52,7 @@ features for production use.
 
 API calls through the CDP CLI require a key pair issued from the CDP control
 plane. Use the CDP console to generate keys, following [documented
-instructions](https://docs.cloudera.com/cdp/latest/cli/topics/mc-cli-generating-an-api-access-key.html).
+instructions](https://docs.cloudera.com/cdp-public-cloud/cloud/cli/topics/mc-cli-generating-an-api-access-key.html).
 Then, run `cdp configure` to provide the credentials to the CLI.
 
 ```
