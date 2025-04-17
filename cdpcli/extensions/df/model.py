@@ -30,6 +30,15 @@ DEPLOYMENT_FLOW_PARAMETER_GROUP = {
                 '$ref': '#/definitions/DeploymentFlowParameter'
             }
         },
+        'inheritedParameterGroups': {
+            'type': 'array',
+            'description': 'The names and versions of the inherited parameter groups',
+            'x-hidden': 'true',
+            'x-hidden-reason': 'IN_DEVELOPMENT',
+            'items': {
+                '$ref': '#/definitions/VersionedParameterGroupReference'
+            }
+        }
     }
 }
 
@@ -53,6 +62,13 @@ DEPLOYMENT_FLOW_PARAMETER = {
             'items': {
                 'type': 'string'
             }
+        },
+        'sourceParameterGroupId': {
+            'type': 'string',
+            'description': 'Id of the shared parameter group where '
+                           'the value should come from.',
+            'x-hidden': 'true',
+            'x-hidden-reason': 'IN_DEVELOPMENT',
         }
     }
 }
@@ -208,4 +224,20 @@ AWS_NODE_STORAGE_PROFILE = {
       }
     },
     'description': 'Custom AWS node storage parameters.'
+}
+
+VERSIONED_PARAMETER_GROUP_REFERENCES = {
+    'type': 'object',
+    'description': 'A reference to a specific version of a shared parameter group',
+    'required': ['groupId'],
+    'properties': {
+        'groupId': {
+            'type': 'string',
+            'description': 'The id of the parameter group'
+        },
+        'version': {
+            'type': 'integer',
+            'description': 'The version of the parameter group. Empty/null means latest'
+        }
+    }
 }

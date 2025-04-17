@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.134
+  version: 0.9.135
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -3135,7 +3135,7 @@ definitions:
         type: string
         description: The name of the deployment.
       status:
-        description: The status of the deployment.
+        description: The workflow status of the deployment.
         $ref: '#/definitions/DeploymentStatus'
       service:
         description: Simple information about the DataFlow service of the deployment.

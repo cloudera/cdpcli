@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.134
+  version: 0.9.135
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -605,6 +605,9 @@ definitions:
         type: integer
         format: int32
         description: Number of REST Worker nodes to be created for the database. A positive, non-zero number is required. The default value is 0. Requires the COD_RESTWORKERS entitlement.
+      architecture:
+        description: Specifies the Architecture of the cluster nodes.
+        $ref: '#/definitions/ArchitectureType'
       customInstanceTypes:
         description: Provide custom VM instance types for master, worker, gateway, leader, edge and compute groups.
         $ref: '#/definitions/CustomInstanceTypes'
@@ -668,6 +671,12 @@ definitions:
       - CLOUD_WITH_EPHEMERAL
       - CLOUD
       - HDFS
+  ArchitectureType:
+    type: string
+    description: "Architecture type for cluster.\n `X86_64` - X64 CPU Architecture is used for the cluster. `ARM64` - ARM64 CPU Architecture is used for the cluster."
+    enum:
+      - X86_64
+      - ARM64
   UpdateDatabaseRequest:
     type: object
     description: A request to update the database
@@ -911,6 +920,9 @@ definitions:
         type: integer
         format: int32
         description: Number of REST Worker nodes for the database.
+      architecture:
+        description: Specifies the architecture of the cluster nodes.
+        $ref: '#/definitions/ArchitectureType'
   DescribeDatabaseRequest:
     type: object
     description: request to get details of the database in a particular environment

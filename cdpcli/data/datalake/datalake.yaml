@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.134
+  version: 0.9.135
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -3159,12 +3159,14 @@ definitions:
   GetOperationRequest:
     type: object
     description: Request object for tracking the latest (current/last) operation on the datalake resource.
-    required:
-      - crn
     properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datahub.
       crn:
         type: string
-        description: CRN of the datalake resource.
+        description: CRN of the datalake resource, deprecated.
+        x-deprecated: true
       operationId:
         type: string
         description: Filter by operation id.

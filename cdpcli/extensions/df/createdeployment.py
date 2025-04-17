@@ -32,7 +32,8 @@ from cdpcli.extensions.df.model import (AWS_NODE_STORAGE_PROFILE,
                                         DEPLOYMENT_FLOW_PARAMETER_GROUP,
                                         DEPLOYMENT_FREQUENCY_TOLERANCE,
                                         DEPLOYMENT_KEY_PERFORMANCE_INDICATOR,
-                                        LISTEN_COMPONENT)
+                                        LISTEN_COMPONENT,
+                                        VERSIONED_PARAMETER_GROUP_REFERENCES)
 from cdpcli.extensions.workload import set_workload_access_token
 from cdpcli.model import ObjectShape, OperationModel, ShapeResolver
 from cdpcli.utils import CachedProperty
@@ -340,7 +341,8 @@ OPERATION_SHAPES = {
     'DeploymentAlert': DEPLOYMENT_ALERT,
     'DeploymentAlertThreshold': DEPLOYMENT_ALERT_THRESHOLD,
     'DeploymentFrequencyTolerance': DEPLOYMENT_FREQUENCY_TOLERANCE,
-    'ListenComponent': LISTEN_COMPONENT
+    'ListenComponent': LISTEN_COMPONENT,
+    'VersionedParameterGroupReference': VERSIONED_PARAMETER_GROUP_REFERENCES
 }
 
 

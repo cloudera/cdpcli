@@ -15,7 +15,14 @@
 # language governing permissions and limitations under the License.
 
 from codecs import open
+import distutils.dist
 from os import path
+
+
+# PEP 625 has been added to setuptools 69.3.0. which replaced "-" with "_".
+# Disabling it because it is not something we wanted now.
+def _no_pep625_get_fullname(self):
+    return "%s-%s" % (self.get_name(), self.get_version())
 
 
 def read_long_description():
@@ -87,3 +94,6 @@ def get_entry_points():
             'cdp_completer=cdpcli.completer:main'
         ],
     }
+
+
+distutils.dist.DistributionMetadata.get_fullname = _no_pep625_get_fullname

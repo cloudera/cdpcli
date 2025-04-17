@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.134
+  version: 0.9.135
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -23,7 +23,6 @@ paths:
       summary: Create compute cluster
       description: Creates compute cluster.
       operationId: createCluster
-      x-entitlement: COMPUTE_API_LIFTIE
       x-form-factors: public
       parameters:
         - name: input
@@ -46,7 +45,6 @@ paths:
       summary: Delete compute cluster
       description: Deletes compute cluster.
       operationId: deleteCluster
-      x-entitlement: COMPUTE_API_LIFTIE
       x-form-factors: public
       parameters:
         - name: input
@@ -69,7 +67,6 @@ paths:
       summary: Describe compute cluster
       description: Describe compute cluster details in a CDP Environment
       operationId: describeCluster
-      x-entitlement: COMPUTE_API_LIFTIE
       parameters:
         - name: input
           in: body
@@ -91,7 +88,6 @@ paths:
       summary: Describes a deployment
       description: Gets a single deployment along with its extended history. This can also include all of the known templates.
       operationId: describeDeployment
-      x-entitlement: COMPUTE_API_LIFTIE
       parameters:
         - name: input
           in: body
@@ -113,7 +109,6 @@ paths:
       summary: List compute clusters
       description: List all compute clusters in a CDP Environment
       operationId: listClusters
-      x-entitlement: COMPUTE_API_LIFTIE
       x-paging-default-max-items: 100
       parameters:
         - name: input
@@ -136,7 +131,6 @@ paths:
       summary: List deployments in the cluster.
       description: Lists the helm charts that are available for deployment or have already been deployed in this cluster.
       operationId: listDeployments
-      x-entitlement: COMPUTE_API_LIFTIE
       parameters:
         - name: input
           in: body
@@ -158,7 +152,6 @@ paths:
       summary: Resume Cluster
       description: Resumes the compute cluster
       operationId: resumeCluster
-      x-entitlement: COMPUTE_API_LIFTIE
       x-form-factors: public
       parameters:
         - name: input
@@ -181,7 +174,6 @@ paths:
       summary: Suspend Cluster
       description: Suspends the compute cluster
       operationId: suspendCluster
-      x-entitlement: COMPUTE_API_LIFTIE
       x-form-factors: public
       parameters:
         - name: input
@@ -204,7 +196,6 @@ paths:
       summary: Upgrades a deployment to a different chart.
       description: Upgrades a deployment to a different chart.
       operationId: upgradeDeployment
-      x-entitlement: COMPUTE_API_LIFTIE
       parameters:
         - name: input
           in: body
@@ -226,7 +217,6 @@ paths:
       summary: Validate compute cluster
       description: Validates compute cluster.
       operationId: validateCluster
-      x-entitlement: COMPUTE_API_LIFTIE
       x-form-factors: public
       parameters:
         - name: input

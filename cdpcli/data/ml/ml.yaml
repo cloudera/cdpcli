@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.134
+  version: 0.9.135
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -1232,7 +1232,7 @@ definitions:
         description: The initial number of instance node.
       name:
         type: string
-        description: The unique name of the instance group.
+        description: The unique name for the instance or resource group of the workbench.
       ingressRules:
         type: array
         items:
@@ -1265,7 +1265,7 @@ definitions:
         description: The initial number of instance node.
       instanceGroupName:
         type: string
-        description: The unique name of the instance group.
+        description: The system-assigned name of the instance group.
       minInstances:
         type: integer
         format: int32
@@ -1297,6 +1297,9 @@ definitions:
         type: integer
         format: int64
         description: Root volume size in GiB attached to this instance type.
+      name:
+        type: string
+        description: The unique name for the instance or resource group of the workbench.
   Instance:
     type: object
     description: Represents each instance in an instance group.
@@ -1422,7 +1425,7 @@ definitions:
         description: The CRN of the Cloudera AI Inference Service from which instance group is to be deleted.
       instanceGroupName:
         type: string
-        description: The instance group to be deleted from the Cloudera AI Inference Service instance.
+        description: The system-assigned name of the instance group to be deleted from the Cloudera AI Inference Service instance.
   DeleteInstanceGroupMlServingAppResponse:
     type: object
     description: Response object for the DeleteInstanceGroupMlServingApp method.
@@ -1522,6 +1525,9 @@ definitions:
       resourcePoolConfig:
         description: The resource pool configuration for quota management.
         $ref: '#/definitions/ResourcePoolConfig'
+      enableEnhancedPerformance:
+        type: boolean
+        description: Enable Enhanced Performance Mode to maximize throughput and IOPS for root volumes attached to worker nodes.
   OutboundTypes:
     type: string
     description: List of possible Outbound types.
@@ -1969,7 +1975,7 @@ definitions:
         description: The CRN of the workbench from which instance group is to be deleted.
       instanceGroupName:
         type: string
-        description: The instance group that we want to delete from the workbench.
+        description: The system-assigned name of the instance group to be deleted from the workbench.
   DeleteInstanceGroupResponse:
     type: object
     description: Response object for the DeleteInstanceGroup method.
@@ -2185,7 +2191,7 @@ definitions:
         description: The CRN of the workbench cluster to modify.
       instanceGroupName:
         type: string
-        description: The name of the instance group of the workbench cluster to modify.
+        description: The system-assigned name of the instance group in the workbench cluster to be modified.
       min:
         type: integer
         format: int32
@@ -2664,7 +2670,6 @@ definitions:
     required:
       - appName
       - environmentCrn
-      - clusterCrn
     properties:
       appName:
         type: string
@@ -2697,6 +2702,26 @@ definitions:
       staticSubdomain:
         type: string
         description: The static subdomain to be used for the Cloudera AI Inference Service instance.
+      ozoneS3Creds:
+        description: Ozone credentials for the Cloudera On-Premise cluster.
+        $ref: '#/definitions/MlServingOzoneCreds'
+  MlServingOzoneCreds:
+    type: object
+    description: Request object for the MlServingOzoneCreds method.
+    properties:
+      s3AccessID:
+        type: string
+        description: The Ozone S3 access key ID name.
+      s3SecretAccessKey:
+        type: string
+        description: The Ozone S3 secret access key name.
+        x-sensitive: true
+      s3EndPointUrl:
+        type: string
+        description: The Ozone S3 end point.
+      s3CaCertBundle:
+        type: string
+        description: The Ozone S3 CA bundle.
   CreateMlServingAppResponse:
     type: object
     description: Response object for the CreateMlServingApp method.
@@ -2735,17 +2760,16 @@ definitions:
     type: object
     description: Request object for provisioning Cloudera AI Inference Service instance groups.
     required:
-      - instanceGroups
       - environmentCrn
     properties:
+      environmentCrn:
+        type: string
+        description: The CRN of the environment for the cluster to create.
       instanceGroups:
         type: array
         items:
           $ref: '#/definitions/InstanceGroup'
         description: The instance groups.
-      environmentCrn:
-        type: string
-        description: The CRN of the environment for the cluster to create.
       tags:
         type: array
         items:
@@ -2842,6 +2866,9 @@ definitions:
         items:
           type: string
         description: The list of subnets used for the load balancer.
+      loadBalancerIPWhitelists:
+        type: string
+        description: The allowed list of IPs for the load balancer.
   KubernetesCluster:
     type: object
     description: The Kubernetes cluster information
@@ -2857,10 +2884,12 @@ definitions:
         description: The identifier in Cloudera Data Platform Compute Service corresponding to this Kubernetes cluster.
       isPublic:
         type: boolean
-        description: Indicates if this cluster is accepting incoming connection from public internet.
+        description: 'Deprecated: Please use isPrivateCluster instead, as this will soon be unsupported.'
+        x-deprecated: true
       ipAllowlist:
         type: string
-        description: The allow list of IPs for incoming connections.
+        description: 'Deprecated: Please use loadBalancerIPWhitelists instead, as this will soon be unsupported.'
+        x-deprecated: true
       baseDomain:
         type: string
         description: The base domain for this cluster.
@@ -3086,7 +3115,7 @@ definitions:
         description: The CRN of the Cloudera AI Inference Service to be modified.
       instanceGroupName:
         type: string
-        description: The name of the instance group to be modified.
+        description: The system-assigned name of the instance group to be modified.
       min:
         type: integer
         format: int32
