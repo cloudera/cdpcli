@@ -33,8 +33,6 @@ DEPLOYMENT_FLOW_PARAMETER_GROUP = {
         'inheritedParameterGroups': {
             'type': 'array',
             'description': 'The names and versions of the inherited parameter groups',
-            'x-hidden': 'true',
-            'x-hidden-reason': 'IN_DEVELOPMENT',
             'items': {
                 '$ref': '#/definitions/VersionedParameterGroupReference'
             }
@@ -58,7 +56,7 @@ DEPLOYMENT_FLOW_PARAMETER = {
         },
         'assetReferences': {
             'type': 'array',
-            'description': 'Asset references for the named parameter.',
+            'description': 'Local paths of the assets for the named parameter.',
             'items': {
                 'type': 'string'
             }
@@ -66,9 +64,7 @@ DEPLOYMENT_FLOW_PARAMETER = {
         'sourceParameterGroupId': {
             'type': 'string',
             'description': 'Id of the shared parameter group where '
-                           'the value should come from.',
-            'x-hidden': 'true',
-            'x-hidden-reason': 'IN_DEVELOPMENT',
+                           'the value should come from.'
         }
     }
 }
@@ -93,6 +89,11 @@ DEPLOYMENT_FLOW_PARAMETER_FOR_UPDATE = {
             'items': {
                 '$ref': '#/definitions/AssetReference'
             }
+        },
+        'sourceParameterGroupId': {
+            'type': 'string',
+            'description': 'Id of the shared parameter group where '
+                           'the value should come from.'
         }
     }
 }

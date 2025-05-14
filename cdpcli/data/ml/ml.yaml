@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.136
+  version: 0.9.137
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -293,8 +293,8 @@ paths:
       x-mutating: false
   /api/v1/ml/describeModelRegistry:
     post:
-      summary: Describe Cloudera AI Model Registry.
-      description: Describes a Cloudera AI Model Registry.
+      summary: 'Deprecated: Cloudera AI Model Registry is now deprecated.'
+      description: Please use ListModelRegistries.
       operationId: describeModelRegistry
       parameters:
         - name: input
@@ -370,6 +370,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/GetKubeconfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/ml/getLatestModelRegistryVersion:
+    post:
+      summary: GetLatestModelRegistryVersion Cloudera AI Registry.
+      description: Retrieves the latest version that Cloudera AI deploys to ModelRegistries.
+      operationId: getLatestModelRegistryVersion
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetLatestModelRegistryVersionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetLatestModelRegistryVersionResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3130,4 +3151,16 @@ definitions:
   ModifyMlServingAppResponse:
     type: object
     description: Response object for ModifyMlServingApp method.
+  GetLatestModelRegistryVersionRequest:
+    type: object
+    description: Request object for GetLatestModelRegistryVersion.
+  GetLatestModelRegistryVersionResponse:
+    type: object
+    description: Response object for GetLatestModelRegistryVersion.
+    required:
+      - version
+    properties:
+      version:
+        type: string
+        description: The latest version of a modelregistry that is used when deploying Cloudera AI ModelRegistries.
 x-audit: true

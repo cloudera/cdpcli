@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.136
+  version: 0.9.137
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -40,6 +40,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/df/assignToCollection:
+    post:
+      summary: Assign a flow definition to collection.
+      description: Assign a flow definition to a catalog collection.
+      operationId: assignToCollection
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AssignToCollectionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AssignToCollectionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/df/cancelDeleteProject:
     post:
       summary: Cancels deletion of a Project.
@@ -57,6 +79,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/CancelDeleteProjectResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/df/createCollection:
+    post:
+      summary: Create catalog collection.
+      description: Create a collection in the catalog
+      operationId: createCollection
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCollectionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateCollectionResponse'
         default:
           description: The default response on an error.
           schema:
@@ -123,6 +167,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteAddedReadyflowResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/df/deleteCollection:
+    post:
+      summary: Delete catalog collection.
+      description: Delete an empty collection in the catalog
+      operationId: deleteCollection
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteCollectionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteCollectionResponse'
         default:
           description: The default response on an error.
           schema:
@@ -211,6 +277,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DescribeAddedReadyflowResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/df/describeCollection:
+    post:
+      summary: Describe catalog collection.
+      description: Describe a collection in the catalog
+      operationId: describeCollection
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeCollectionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeCollectionResponse'
         default:
           description: The default response on an error.
           schema:
@@ -549,6 +637,29 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/df/listCollections:
+    post:
+      summary: List catalog collections.
+      description: Lists the collections in the catalog
+      operationId: listCollections
+      x-entitlement: DFX
+      x-paging-default-max-items: 20
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListCollectionsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListCollectionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/df/listDeployableServicesForNewDeployments:
     post:
       summary: List services that a DataFlow Admin can deploy to.
@@ -1061,6 +1172,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/df/rotatePassword:
+    post:
+      summary: Rotate password.
+      description: Rotate database server root password.
+      operationId: rotatePassword
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RotatePasswordRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RotatePasswordResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/df/startGetDiagnosticsCollection:
     post:
       summary: Start diagnostics collection.
@@ -1083,6 +1216,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/df/updateCollection:
+    post:
+      summary: Update a collection's details.
+      description: Updates a collection's metadata.
+      operationId: updateCollection
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateCollectionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateCollectionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/df/updateProject:
     post:
       summary: Updates a Project.
@@ -1549,6 +1704,9 @@ definitions:
         items:
           $ref: '#/definitions/FlowDefinitionTagData'
         description: The list of tags for the initial flow definition version
+      collectionCrn:
+        type: string
+        description: The CRN of the collection into which the flow definition will be imported. If unspecified, the flow will not be assigned to a collection.
   ImportFlowDefinitionResponse:
     type: object
     description: Response object for ImportFlowDefinition
@@ -1586,6 +1744,12 @@ definitions:
         items:
           $ref: '#/definitions/FlowVersion'
         description: The list of artifactDetail versions
+      collectionName:
+        type: string
+        description: The collection name.
+      collectionCrn:
+        type: string
+        description: The collection CRN.
   ImportFlowDefinitionVersionRequest:
     type: object
     description: Request object for ImportFlowDefinitionVersion
@@ -1668,6 +1832,12 @@ definitions:
         type: integer
         format: int64
         description: The modified timestamp.
+      collectionName:
+        type: string
+        description: The collection name.
+      collectionCrn:
+        type: string
+        description: The collection CRN.
   Flow:
     type: object
     description: A representation of a versioned data flow.
@@ -1705,6 +1875,12 @@ definitions:
         items:
           $ref: '#/definitions/FlowVersion'
         description: The list of artifactDetail versions
+      collectionName:
+        type: string
+        description: The collection name.
+      collectionCrn:
+        type: string
+        description: The collection CRN.
   ArtifactVersion:
     type: object
     description: A representation of a artifact detail version
@@ -1805,6 +1981,9 @@ definitions:
       searchTerm:
         type: string
         description: Search term to filter by name
+      collectionCrn:
+        type: string
+        description: Filter by collection CRN.
   ListFlowDefinitionsResponse:
     type: object
     description: Response object for the ListFlowDefinitions method.
@@ -2184,6 +2363,157 @@ definitions:
         items:
           $ref: '#/definitions/FlowVersion'
         description: The list of matching flow versions
+  CatalogCollection:
+    type: object
+    description: A catalog collection.
+    properties:
+      crn:
+        type: string
+        description: The catalog collection CRN.
+      name:
+        type: string
+        description: The name of the catalog collection.
+      description:
+        type: string
+        description: The description of the catalog collection.
+      flowSummaries:
+        type: array
+        items:
+          $ref: '#/definitions/FlowSummary'
+        description: The summaries of flows in the catalog collection.
+      flowCount:
+        type: integer
+        format: int32
+        description: The number of flow summaries in the catalog collection.
+  DeleteCollectionRequest:
+    type: object
+    description: Request object when deleting a catalog collection.
+    required:
+      - catalogCollectionCrn
+    properties:
+      catalogCollectionCrn:
+        type: string
+        description: The catalog collection CRN.
+  DeleteCollectionResponse:
+    type: object
+    description: Response object when deleting a catalog collection.
+    properties:
+      catalogCollection:
+        description: Details of the deleted catalog collection.
+        $ref: '#/definitions/CatalogCollection'
+  DescribeCollectionRequest:
+    type: object
+    description: Request object when describing a catalog collection.
+    required:
+      - catalogCollectionCrn
+    properties:
+      catalogCollectionCrn:
+        type: string
+        description: The catalog collection CRN.
+  DescribeCollectionResponse:
+    type: object
+    description: Response object when describing a catalog collection.
+    properties:
+      catalogCollection:
+        description: Details of the catalog collection.
+        $ref: '#/definitions/CatalogCollection'
+  CreateCollectionRequest:
+    type: object
+    description: Request object when creating a catalog collection.
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: The name of the catalog collection.
+      description:
+        type: string
+        description: The description of the catalog collection.
+  CreateCollectionResponse:
+    type: object
+    description: Response object when creating a catalog collection.
+    properties:
+      catalogCollection:
+        description: Details of the catalog collection.
+        $ref: '#/definitions/CatalogCollection'
+  ListCollectionsRequest:
+    type: object
+    description: Request object when listing collections.
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The page size.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: The token pointing to the next element to be retrieved.
+      sorts:
+        type: array
+        items:
+          type: string
+        description: The sort criteria
+      searchTerm:
+        type: string
+        description: Search term to filter by name
+  ListCollectionsResponse:
+    type: object
+    description: Response object when listing collections.
+    properties:
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The page token for requesting the next page of results.
+      collections:
+        type: array
+        x-paging-result: true
+        items:
+          $ref: '#/definitions/CatalogCollection'
+        description: The listing of Catalog Collections.
+  UpdateCollectionRequest:
+    type: object
+    description: Request object when updating a catalog collection.
+    required:
+      - catalogCollectionCrn
+    properties:
+      catalogCollectionCrn:
+        type: string
+        description: The catalog collection CRN.
+      name:
+        type: string
+        description: The new name of the collection.
+      description:
+        type: string
+        description: The new description of the collection.
+  UpdateCollectionResponse:
+    type: object
+    description: Response object when updating a catalog collection.
+    properties:
+      catalogCollection:
+        description: The updated catalog collection
+        $ref: '#/definitions/CatalogCollection'
+  AssignToCollectionRequest:
+    type: object
+    description: Request object when assigning a flow to a catalog collection.
+    required:
+      - flowCrn
+    properties:
+      flowCrn:
+        type: string
+        description: The flow CRN.
+      catalogCollectionCrn:
+        type: string
+        description: The catalog collection CRN. If omitted, the flow will be assigned to the UNASSIGNED catalog collection.
+  AssignToCollectionResponse:
+    type: object
+    description: Response object when assigning a flow to a catalog collection.
+    properties:
+      flowSummary:
+        description: The updated flow summary with the new collection.
+        $ref: '#/definitions/FlowSummary'
   InitiateDeploymentRequest:
     type: object
     description: A request to initiate a deployment
@@ -2644,6 +2974,7 @@ definitions:
       - NFS_PROVISIONER
       - REDIS
       - VAULT
+      - VALKEY
   EncryptionParameters:
     type: object
     description: The encryption parameters used by the DataFlow service for K8s secret encryption and EBS volume encryption.
@@ -2676,6 +3007,7 @@ definitions:
       - UNKNOWN
       - UPGRADING
       - COLLECTING_DIAGNOSTICS
+      - ROTATING_PASSWORD
   ServiceStatus:
     type: object
     description: The status of a DataFlow enabled service.
@@ -2734,6 +3066,9 @@ definitions:
       workloadVersion:
         type: string
         description: The workload version of the service.
+      upgradeDeploymentsNiFiVersion:
+        type: boolean
+        description: The upgrade deployments NiFi version flag value of the service.
       runningK8sNodeCount:
         type: integer
         format: int32
@@ -2816,6 +3151,9 @@ definitions:
       workloadVersion:
         type: string
         description: The workload version of the service.
+      upgradeDeploymentsNiFiVersion:
+        type: boolean
+        description: The upgrade deployments NiFi version flag value of the service.
       runningK8sNodeCount:
         type: integer
         format: int32
@@ -3143,6 +3481,18 @@ definitions:
   RenewCertificatesResponse:
     type: object
     description: Response object for RenewCertificates
+  RotatePasswordRequest:
+    type: object
+    description: Request object for RotatePassword
+    required:
+      - serviceCrn
+    properties:
+      serviceCrn:
+        type: string
+        description: The service CRN.
+  RotatePasswordResponse:
+    type: object
+    description: Response object for RotatePassword
   ListServiceActiveAlertsRequest:
     type: object
     description: Request object for ListServiceActiveAlerts

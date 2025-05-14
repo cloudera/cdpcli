@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.136
+  version: 0.9.137
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1058,7 +1058,7 @@ paths:
         200:
           description: Expected response to a valid request.
           schema:
-            $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyResponse'
+            $ref: '#/definitions/InboundConnectionEndpointClientCertificatesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1247,6 +1247,46 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 definitions:
+  AWSNodeStorageProfile:
+    type: object
+    description: Custom AWS node storage parameters.
+    x-workload: true
+    x-client-only: true
+    properties:
+      repoSize:
+        type: integer
+        format: int32
+        description: The size of the repository in GB.
+      iops:
+        type: string
+        description: The IOPS of the repository.
+      throughput:
+        type: string
+        description: The throughput of the repository.
+  AWSNodeStorageProfileMetaData:
+    type: object
+    description: Custom AWS node storage limits.
+    x-workload: true
+    x-client-only: true
+    properties:
+      minRepoSize:
+        type: integer
+        format: int32
+        description: The minimum size of the volume in GB.
+      maxRepoSize:
+        type: integer
+        format: int32
+        description: The maximum size of the volume in GB.
+      iops:
+        type: array
+        description: The IOPS values of the volume.
+        items:
+          type: string
+      throughput:
+        type: array
+        description: The throughput values of the volume.
+        items:
+          type: string
   AbortAssetUpdateRequestRequest:
     type: object
     description: Request object for aborting an asset update request
@@ -1336,6 +1376,9 @@ definitions:
     x-workload: true
     x-client-only: true
     properties:
+      id:
+        type: string
+        description: The ID of the asset
       name:
         type: string
         description: The name of the asset
@@ -1348,6 +1391,25 @@ definitions:
       environmentProvided:
         type: boolean
         description: Whether or not the asset is provided automatically by the environment. If true, the asset cannot removed or replaced.
+  AzureNodeStorageProfileMetaData:
+    type: object
+    description: Azure node storage profile metadata.
+    x-workload: true
+    x-client-only: true
+    properties:
+      profileName:
+        type: string
+        description: Azure node storage profile name.
+      repoSize:
+        type: integer
+        format: int32
+        description: Azure node storage profile repo size.
+      iops:
+        type: string
+        description: Azure node storage profile iops.
+      throughput:
+        type: string
+        description: Azure node storage profile throughput.
   BasicClusterSize:
     type: object
     description: Cluster scaling parameters.
@@ -1811,15 +1873,28 @@ definitions:
         description: Listen components port and protocol data.
         items:
           $ref: '#/definitions/ListenComponent'
+      inboundConnectionAuthorizedIpRanges:
+        type: array
+        description: Set of authorized CIDR ranges for the inbound connections.
+        uniqueItems: true
+        items:
+          type: string
       nodeStorageProfileName:
         type: string
         description: The node storage profile name.
         enum:
           - STANDARD_AWS
           - STANDARD_AZURE
+          - TEST_SESSION_AWS
+          - TEST_SESSION_AZURE
           - PERFORMANCE_AWS
           - PERFORMANCE_AZURE
           - LOCAL_K8S
+          - CUSTOM_AWS
+          - CUSTOM_AZURE
+      nodeStorage:
+        description: The node storage data.
+        $ref: '#/definitions/NodeStorage'
       customNarConfigurationCrn:
         type: string
         description: The CRN of the custom NAR configuration.
@@ -2267,6 +2342,9 @@ definitions:
         type: boolean
         description: Indicates if the value of this parameter is set (i.e. not null)
         readOnly: true
+      sourceParameterGroupId:
+        type: string
+        description: The ID of the shared parameter group where the value should come from.
   FlowParameterGroup:
     type: object
     description: A flow parameter group
@@ -2281,6 +2359,12 @@ definitions:
         description: The parameters in the group
         items:
           $ref: '#/definitions/FlowParameter'
+      inheritedParameterGroups:
+        type: array
+        description: The names and versions of the inherited parameter groups
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/VersionedParameterGroupReference'
   GetCustomNarConfigurationRequest:
     type: object
     description: Request object for retrieving a custom NAR configuration by CRN.
@@ -2583,6 +2667,20 @@ definitions:
       crn:
         type: string
         description: The CRN of the Inbound Connection Endpoint
+  InboundConnectionEndpointClientCertificatesResponse:
+    type: object
+    description: Response object that contains the client's certificates.
+    x-workload: true
+    x-client-only: true
+    properties:
+      clientCertificate:
+        type: string
+        description: The client's certificate.
+        readOnly: true
+      clientPrivateKey:
+        type: string
+        description: The client's private key.
+        readOnly: true
   InboundConnectionEndpointClientPrivateKeyRequest:
     type: object
     description: Request object to retrieve Inbound Connection Endpoint client's private key.
@@ -2647,6 +2745,13 @@ definitions:
       projectCrn:
         type: string
         description: The CRN of the project.
+      authorizedIpRanges:
+        type: array
+        description: Set of authorized IP ranges for the inbound connection.
+        readOnly: true
+        uniqueItems: true
+        items:
+          type: string
   KpiContextGroup:
     type: object
     description: Captures the use of a KPI in the context of a process group
@@ -2925,6 +3030,45 @@ definitions:
       port:
         type: string
         description: Inbound port
+  NodeStorage:
+    type: object
+    description: Node storage parameters.
+    x-workload: true
+    x-client-only: true
+    properties:
+      azureContentRepoProfile:
+        type: string
+        description: The Azure content repository profile.
+        enum:
+          - AZURE_P6
+          - AZURE_P10
+          - AZURE_P15
+          - AZURE_P30
+      azureProvenanceRepoProfile:
+        type: string
+        description: The Azure provenance repository profile.
+        enum:
+          - AZURE_P6
+          - AZURE_P10
+          - AZURE_P15
+          - AZURE_P30
+      azureFlowFileRepoProfile:
+        type: string
+        description: The Azure flow file repository profile.
+        enum:
+          - AZURE_P6
+          - AZURE_P10
+          - AZURE_P15
+          - AZURE_P30
+      awsContentRepoProfile:
+        description: The AWS content repository profile.
+        $ref: '#/definitions/AWSNodeStorageProfile'
+      awsProvenanceRepoProfile:
+        description: The AWS provenance repository profile.
+        $ref: '#/definitions/AWSNodeStorageProfile'
+      awsFlowFileRepoProfile:
+        description: The AWS flow file repository profile.
+        $ref: '#/definitions/AWSNodeStorageProfile'
   NodeStorageProfileMetadata:
     type: object
     description: Provides details about the node storage options.
@@ -2971,14 +3115,28 @@ definitions:
         enum:
           - LEGACY_STANDARD
           - LEGACY_PERFORMANCE
+          - TEST_SESSION_AWS
+          - TEST_SESSION_AZURE
           - STANDARD_AWS
-          - STANDARD_AZURE
           - PERFORMANCE_AWS
+          - CUSTOM_AWS
+          - STANDARD_AZURE
           - PERFORMANCE_AZURE
+          - CUSTOM_AZURE
           - LOCAL_K8S
       text:
         type: string
         description: The text (i.e., the human readable name) for this Storage Profile
+      azureNodeStorageProfileMetaData:
+        type: array
+        description: Provides details about the node storage custom disk sizes and performance options.
+        readOnly: true
+        items:
+          $ref: '#/definitions/AzureNodeStorageProfileMetaData'
+      awsNodeStorageProfileMetaData:
+        description: AWS custom storage size, iops and throughput limits
+        readOnly: true
+        $ref: '#/definitions/AWSNodeStorageProfileMetaData'
   ProjectMeta:
     type: object
     description: The meta information about a project.
@@ -3143,6 +3301,9 @@ definitions:
       crn:
         type: string
         description: The CRN of the deployment.
+      runtimeStatus:
+        description: The runtime status of the deployment.
+        $ref: '#/definitions/DeploymentStatus'
       activeInfoAlertCount:
         type: integer
         format: int64
@@ -3303,6 +3464,18 @@ definitions:
       nodeStorageProfile:
         type: string
         description: The node storage profile.
+      nodeStorage:
+        description: The node storage data.
+        $ref: '#/definitions/NodeStorage'
+      targetProcessGroupId:
+        type: string
+        description: The target process group ID of the deployment.
+      inboundConnectionAuthorizedIpRanges:
+        type: array
+        description: Set of authorized IP ranges for the inbound connections.
+        uniqueItems: true
+        items:
+          type: string
       projectCrn:
         type: string
         description: The crn of the project this deployment belongs to, or null if does not belong to a project.
@@ -3421,10 +3594,14 @@ definitions:
           - LEGACY_STANDARD
           - LEGACY_PERFORMANCE
           - STANDARD_AWS
+          - TEST_SESSION_AWS
+          - TEST_SESSION_AZURE
           - STANDARD_AZURE
           - PERFORMANCE_AWS
           - PERFORMANCE_AZURE
           - LOCAL_K8S
+          - CUSTOM_AWS
+          - CUSTOM_AZURE
       parametersDirty:
         type: boolean
         description: Indicates whether or not all current parameter values have successfully been applied to NiFi.
@@ -3455,6 +3632,9 @@ definitions:
       assetConfigurationAvailable:
         type: boolean
         description: Indicates whether the cluster is configured to accept FILE/FILES type parameters.
+      nodeStorage:
+        description: The node storage data.
+        $ref: '#/definitions/NodeStorage'
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.
@@ -3580,10 +3760,21 @@ definitions:
         uniqueItems: true
         items:
           $ref: '#/definitions/ListenComponent'
+      inboundConnectionAuthorizedIpRanges:
+        type: array
+        description: Set of authorized CIDR ranges for the inbound connections.
+        readOnly: true
+        uniqueItems: true
+        items:
+          type: string
       nodeStorageProfile:
         type: string
         description: The node storage profile imported from archive.
         readOnly: true
+      nodeStorage:
+        description: The node storage data imported from archive.
+        readOnly: true
+        $ref: '#/definitions/NodeStorage'
       projectCrn:
         type: string
         description: The project CRN retrieved from backup.
@@ -4117,3 +4308,18 @@ definitions:
     description: Response object for validating custom Python configuration.
     x-workload: true
     x-client-only: true
+  VersionedParameterGroupReference:
+    type: object
+    description: A reference to a specific version of a shared parameter group
+    x-workload: true
+    x-client-only: true
+    required:
+      - groupId
+    properties:
+      groupId:
+        type: string
+        description: The ID of the parameter group
+      version:
+        type: integer
+        format: int64
+        description: The version of the parameter group. Empty or null means the latest version.

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.136
+  version: 0.9.137
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1090,6 +1090,48 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/GetCmRolesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/rotateSecrets:
+    post:
+      summary: Rotates secrets for a specific datahub
+      description: Rotates secrets for a specific datahub based on what secret types are specified.
+      operationId: rotateSecrets
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RotateSecretsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RotateSecretsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/listDatahubSecretTypes:
+    post:
+      summary: Lists all Datahub related secret types.
+      description: Lists Datahub related secret types for Datahub instances.
+      operationId: listDatahubSecretTypes
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDatahubSecretTypesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListDatahubSecretTypesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -4485,6 +4527,58 @@ definitions:
         type: string
         format: date-time
         description: End time of the operation.
+  RotateSecretsRequest:
+    type: object
+    description: Request object for starting secret rotation for datahub.
+    required:
+      - datahub
+      - secretTypes
+    properties:
+      datahub:
+        type: string
+        description: The datahub CRN where we wish to rotate secrets.
+      secretTypes:
+        type: array
+        items:
+          type: string
+        description: The list of secrets that need replacement.
+  RotateSecretsResponse:
+    type: object
+    description: Response object for rotating secrets.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+  ListDatahubSecretTypesRequest:
+    type: object
+    description: Request for listing possible secret values for Datahub.
+    required:
+      - datahub
+    properties:
+      datahub:
+        type: string
+        description: The Datahub CRN where we wish to get the rotatable secrets.
+  ListDatahubSecretTypesResponse:
+    type: object
+    description: Response object for showing the secret types and descriptions.
+    required:
+      - datahubSecretTypes
+    properties:
+      datahubSecretTypes:
+        type: array
+        items:
+          $ref: '#/definitions/SecretTypeResponse'
+        description: The list of secret types supported by Datahub.
+  SecretTypeResponse:
+    type: object
+    description: Response object for showing the secret types and descriptions
+    properties:
+      secretType:
+        type: string
+        description: The type of secret that can be used with the rotate-secrets command.
+      description:
+        type: string
+        description: The description of the secret type.
   RotateAutoTlsCertificatesRequest:
     type: object
     description: Request object to rotate autotls certificates on datahub's hosts, deprecated.
