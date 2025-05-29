@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.137
+  version: 0.9.138
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -878,34 +878,6 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
-  /dfx/api/rpc-v1/deployments/transition-flow:
-    post:
-      summary: Transitions a flow.
-      description: Transitions the NiFi flow of a deployment to the specified state. Deprecated. Use `start-flow` and `stop-flow` instead.
-      operationId: transitionFlow
-      x-workload: true
-      x-client-only: true
-      x-extensions: workload
-      tags:
-        - CDFLocalRPCAPIVersion1
-      parameters:
-        - in: body
-          name: input
-          description: Transition Flow
-          required: true
-          schema:
-            $ref: '#/definitions/TransitionFlowRequest'
-      responses:
-        200:
-          description: Expected response to a valid request.
-          schema:
-            $ref: '#/definitions/TransitionFlowResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
-      deprecated: true
-      x-deprecated: true
   /dfx/api/rpc-v1/deployments/update-deployment:
     post:
       summary: Updates a deployment.
@@ -1010,33 +982,6 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
-  /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-certificate-encoded:
-    post:
-      summary: Get Inbound Connection Endpoint Client Certificate (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
-      description: Get Inbound Connection Endpoint Client Certificate (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
-      operationId: getClientCertificateEncoded
-      x-workload: true
-      x-client-only: true
-      x-extensions: workload
-      tags:
-        - CDFLocalRPCAPIVersion1
-      parameters:
-        - in: body
-          name: input
-          description: Get Inbound Connection Endpoint client's certificate request
-          required: true
-          schema:
-            $ref: '#/definitions/InboundConnectionEndpointClientCertificateRequest'
-      responses:
-        200:
-          description: Expected response to a valid inboundConnectionEndpointClientCertificateRequest.
-          schema:
-            $ref: '#/definitions/InboundConnectionEndpointClientCertificateResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
-      x-deprecated: true
   /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-certificates-encoded:
     post:
       summary: Get Inbound Connection Endpoint Client Certificates (in PEM encoding)
@@ -1063,33 +1008,6 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
-  /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-private-key-encoded:
-    post:
-      summary: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
-      description: Get Inbound Connection Endpoint Client's Private Key (in PEM encoding). Deprecated. Use `download-client-certificates-encoded` instead.
-      operationId: getClientPrivateKeyEncoded
-      x-workload: true
-      x-client-only: true
-      x-extensions: workload
-      tags:
-        - CDFLocalRPCAPIVersion1
-      parameters:
-        - in: body
-          name: input
-          description: Get Inbound Connection Endpoint client's private key request
-          required: true
-          schema:
-            $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyRequest'
-      responses:
-        200:
-          description: Expected response to a valid request.
-          schema:
-            $ref: '#/definitions/InboundConnectionEndpointClientPrivateKeyResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
-      x-deprecated: true
   /dfx/api/rpc-v1/inbound-connection-endpoints/create-inbound-connection-endpoint:
     post:
       summary: Create Inbound Connection Endpoint
@@ -1852,16 +1770,6 @@ definitions:
       autoStartFlow:
         type: boolean
         description: Indicates whether or not the flow should be started during deployment creation.
-      clusterSizeName:
-        type: string
-        description: The size of the cluster to deploy. Deprecated. Use 'clusterSize.name' instead.
-        enum:
-          - EXTRA_SMALL
-          - SMALL
-          - MEDIUM
-          - LARGE
-          - CUSTOM
-        x-deprecated: true
       clusterSize:
         description: The size of the cluster to deploy.
         $ref: '#/definitions/BasicClusterSize'
@@ -2201,9 +2109,6 @@ definitions:
           - NOT_HEALTHY
           - EXCESSIVE_OFFLOAD_TIME
           - NIFI_BULLETIN_WARNING
-          - FAILED_TO_START
-          - SUSPENDING_FLOW
-        x-deprecated-enum-values: FAILED_TO_START,SUSPENDING_FLOW
       state:
         type: string
         description: The state that the deployment is currently in.
@@ -2227,8 +2132,6 @@ definitions:
           - ROLLING_BACK
           - STOPPED
           - UNKNOWN
-          - SUSPENDING_FLOW
-        x-deprecated-enum-values: SUSPENDING_FLOW
       message:
         type: string
         description: Detail message relating to the current status of the deployment.
@@ -2627,31 +2530,6 @@ definitions:
         type: string
         description: The status message of the Inbound Connection Endpoint Certificate
         readOnly: true
-  InboundConnectionEndpointClientCertificateRequest:
-    type: object
-    description: Request object to retrieve Inbound Connection Endpoint client's certificate.
-    x-workload: true
-    x-client-only: true
-    required:
-      - environmentCrn
-      - crn
-    properties:
-      environmentCrn:
-        type: string
-        description: The CRN of an environment to execute the command.
-      crn:
-        type: string
-        description: The CRN of the Inbound Connection Endpoint
-  InboundConnectionEndpointClientCertificateResponse:
-    type: object
-    description: Response object that contains the client's certificate.
-    x-workload: true
-    x-client-only: true
-    properties:
-      certificate:
-        type: string
-        description: The client's encoded certificate.
-        readOnly: true
   InboundConnectionEndpointClientCertificatesRequest:
     type: object
     description: Request object to retrieve Inbound Connection Endpoint client's certificates.
@@ -2680,31 +2558,6 @@ definitions:
       clientPrivateKey:
         type: string
         description: The client's private key.
-        readOnly: true
-  InboundConnectionEndpointClientPrivateKeyRequest:
-    type: object
-    description: Request object to retrieve Inbound Connection Endpoint client's private key.
-    x-workload: true
-    x-client-only: true
-    required:
-      - environmentCrn
-      - crn
-    properties:
-      environmentCrn:
-        type: string
-        description: The CRN of an environment to execute the command.
-      crn:
-        type: string
-        description: The CRN of the Inbound Connection Endpoint
-  InboundConnectionEndpointClientPrivateKeyResponse:
-    type: object
-    description: Response object that contains the client's private key.
-    x-workload: true
-    x-client-only: true
-    properties:
-      privateKey:
-        type: string
-        description: The client's encoded private key.
         readOnly: true
   InboundConnectionEndpointSummary:
     type: object
@@ -3349,8 +3202,6 @@ definitions:
             - CHANGE_FLOW_VERSION
             - RETRY_CHANGE_FLOW_VERSION
             - CANCEL_CHANGE_FLOW_VERSION
-            - SUSPEND_FLOW
-          x-deprecated-enum-values: SUSPEND_FLOW
       project:
         description: Simple information about the project this deployment belongs to, or null if does not belong to a project.
         readOnly: true
@@ -3358,31 +3209,6 @@ definitions:
       nifiUrl:
         type: string
         description: The url to open the deployed flow in NiFi.
-      clusterSize:
-        type: string
-        description: The initial size of the deployment. Deprecated. Use 'clusterSizeParams.name' instead.
-        enum:
-          - EXTRA_SMALL
-          - SMALL
-          - MEDIUM
-          - LARGE
-          - CUSTOM
-        x-deprecated: true
-      coresPerNode:
-        type: integer
-        format: int32
-        description: The number of cores per node for the deployment. Deprecated. Use 'clusterSizeParams.coresPerNode' instead.
-        x-deprecated: true
-      heapSize:
-        type: number
-        format: double
-        description: The heap size for the deployment. Deprecated. Use 'clusterSizeParams.heapSize' instead.
-        x-deprecated: true
-      memoryLimit:
-        type: number
-        format: double
-        description: The memory limit of the deployment. Deprecated. Use 'clusterSizeParams.memoryLimit' instead.
-        x-deprecated: true
       clusterSizeParams:
         description: The initial size of the deployment.
         $ref: '#/definitions/ClusterSize'
@@ -3574,16 +3400,6 @@ definitions:
       autoStartFlow:
         type: boolean
         description: Indicates whether or not the flow should be started during deployment creation.
-      clusterSizeName:
-        type: string
-        description: The size of the cluster to deploy. Deprecated, use clusterSize.name instead.
-        enum:
-          - EXTRA_SMALL
-          - SMALL
-          - MEDIUM
-          - LARGE
-          - CUSTOM
-        x-deprecated: true
       clusterSize:
         description: The size of the cluster to deploy.
         $ref: '#/definitions/BasicClusterSize'
@@ -3719,17 +3535,6 @@ definitions:
         format: int32
         description: The cluster's static node count retrieved from archive.
         readOnly: true
-      clusterSizeName:
-        type: string
-        description: The cluster size name retrieved from archive. Deprecated, use clusterSize.name instead.
-        readOnly: true
-        enum:
-          - EXTRA_SMALL
-          - SMALL
-          - MEDIUM
-          - LARGE
-          - CUSTOM
-        x-deprecated: true
       clusterSize:
         description: The deployment t-shirt size.
         $ref: '#/definitions/BasicClusterSize'
@@ -3937,38 +3742,6 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
-  TransitionFlowRequest:
-    type: object
-    description: Request object for transitioning the state of the NiFi flow.
-    x-workload: true
-    x-client-only: true
-    required:
-      - environmentCrn
-      - deploymentCrn
-      - flowState
-    properties:
-      environmentCrn:
-        type: string
-        description: The CRN of an environment to execute the command.
-      deploymentCrn:
-        type: string
-        description: The deployment crn.
-      flowState:
-        type: string
-        description: The desired state of the NiFi flow
-        enum:
-          - STARTED
-          - SUSPENDED
-          - STOPPED
-  TransitionFlowResponse:
-    type: object
-    description: Response object for transitioning the state of the NiFi flow.
-    x-workload: true
-    x-client-only: true
-    properties:
-      deployment:
-        description: The deployment.
-        $ref: '#/definitions/RpcDeployment'
   UpdateCustomNarConfigurationRequest:
     type: object
     description: Request object to update a custom NAR configuration.
@@ -4146,16 +3919,6 @@ definitions:
         description: The list of configured KPIs.
         items:
           $ref: '#/definitions/ConfiguredKpi'
-      clusterSizeName:
-        type: string
-        description: The deployment t-shirt size. Deprecated. Use 'clusterSize.name' instead.
-        enum:
-          - EXTRA_SMALL
-          - SMALL
-          - MEDIUM
-          - LARGE
-          - CUSTOM
-        x-deprecated: true
       clusterSize:
         description: The deployment t-shirt size.
         $ref: '#/definitions/BasicClusterSize'

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.137
+  version: 0.9.138
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -5097,6 +5097,9 @@ definitions:
       multiAz:
         type: boolean
         description: Whether the given FreeIPA is deployed in a multi-availability zone way or not.
+      imageDetails:
+        $ref: '#/definitions/ImageInfo'
+        description: The image details.
   FreeIpaInstance:
     type: object
     description: Object for a FreeIPA instance providing specific information about the instance.
@@ -6284,6 +6287,19 @@ definitions:
       catalogName:
         type: string
         description: Image catalog name.
+  ImageInfo:
+    type: object
+    description: Basic information about an image.
+    properties:
+      imageId:
+        type: string
+        description: The ID of the image.
+      imageCatalogName:
+        type: string
+        description: The name of the image catalog of the image.
+      imageOs:
+        type: string
+        description: The OS of the image.
   RetryFreeipaRequest:
     type: object
     description: Request object for retry FreeIPA request.

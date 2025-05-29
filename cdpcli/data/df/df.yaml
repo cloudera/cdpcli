@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.137
+  version: 0.9.138
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -2546,14 +2546,12 @@ definitions:
   DeploymentState:
     type: string
     description: The state that the deployment is currently in.
-    x-deprecated-enum-values: SUSPENDING_FLOW
     enum:
       - DEPLOYING
       - GOOD_HEALTH
       - CONCERNING_HEALTH
       - BAD_HEALTH
       - STARTING_FLOW
-      - SUSPENDING_FLOW
       - SUSPENDED
       - UPDATING
       - TERMINATING
@@ -3091,10 +3089,6 @@ definitions:
       instanceType:
         type: string
         description: The instance type of the kubernetes nodes currently in use by DataFlow for this service.
-      clusterUsable:
-        type: boolean
-        description: Whether or not a successfully created and usable cluster exists. Deprecated. Use 'validActions' instead.
-        x-deprecated: true
       validActions:
         type: array
         items:
@@ -3184,10 +3178,6 @@ definitions:
       clusterId:
         type: string
         description: Cluster id of the service, if enabled
-      clusterUsable:
-        type: boolean
-        description: Whether or not a successfully created and usable cluster exists. Deprecated. Use 'validActions' instead.
-        x-deprecated: true
       validActions:
         type: array
         items:

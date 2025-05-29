@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.137
+  version: 0.9.138
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -3297,6 +3297,11 @@ definitions:
         type: integer
         format: int32
         description: The desired number of instances in the instance group.
+      preferredSubnetIds:
+        type: array
+        items:
+          type: string
+        description: The preferred subnet IDs for the scaling cluster (only for AWS).
   ScaleClusterResponse:
     type: object
     description: Response object for scale cluster request.

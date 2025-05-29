@@ -86,17 +86,6 @@ OPERATION_SHAPES = {
                                'import parameter groups values from. This argument '
                                'cannot be used when using the --from-archive argument.'
             },
-            'clusterSizeName': {
-                'type': 'string',
-                'description': 'Size for the cluster. The default is EXTRA_SMALL. This '
-                               'argument will be ignored if --from-archive is used.',
-                'enum': [
-                    'EXTRA_SMALL',
-                    'SMALL',
-                    'MEDIUM',
-                    'LARGE'
-                ],
-            },
             'clusterSize': {
                 'type': 'object',
                 'description': 'Size for the cluster. The default cluster size '
@@ -595,12 +584,7 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         # to the one expected in the create_deployment_configuration.
         # These items also do not require special handling.
 
-        # Note: clusterSize will not be present in older deployment archives.
-        # In newer deployment archives, the value of clusterSize.name and
-        # clusterSizeName will be the same. But clusterSizeName is deprecated
-        # and will be removed from the backend soon.
         standard_config_items = {
-            'clusterSizeName': 'clusterSizeName',
             'clusterSize': 'clusterSize',
             'staticNodeCount': 'staticNodeCount',
             'cfmNifiVersion': 'cfmNifiVersion',
@@ -720,27 +704,12 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
 
     def _process_cluster_sizing_parameters(self, deployment_configuration, parameters):
         """
-        Checks parameters for clusterSize and clusterSizeName and process them, and
-        set appropriate defaults if they are not provided to ensure backwards
-        compatibility.
+        Checks parameters for clusterSize and default to EXTRA_SMALL
+        if it's not provided.
         """
         cluster_size = parameters.get('clusterSize', None)
-        cluster_size_name = parameters.get('clusterSizeName', None)
 
-        # 1. If both are provided, include both of them. But validate whether
-        #    both represent the same cluster size.
-        # 2. Else if clusterSizeName IS provided and clusterSize IS NOT, then
-        #    include clusterSizeName only. The backend can handle
-        #    this value, even when sent in from an older version of the CLI.
-        # 3. Else if clusterSizeName IS NOT provided and clusterSize IS, then
-        #    translate clusterSize.name to clusterSizeName. This is done
-        #    to support older workloads with the new CLI. Once support for
-        #    clusterSizeName has been dropped, this handling should be removed.
-        # 4. Else if both clusterSizeName and clusterSize ARE NOT provided, then
-        #    defaults for both must be set, ensuring that they represent the same
-        #    cluster size. This is to ensure compatibility with both older and
-        #    newer DFX workloads.
-        if cluster_size_name is not None and cluster_size is not None:
+        if cluster_size is not None:
             name = cluster_size.get('name', None)
             if name is None:
                 err_msg = ('Cluster size name is not provided in '
@@ -748,31 +717,9 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                 raise DfExtensionError(err_msg=err_msg,
                                        service_name='df',
                                        operation_name='createDeployment')
-            if name != cluster_size_name:
-                err_msg = ('Cluster size name mismatch between '
-                           '--cluster-size and --cluster-size-name.')
-                raise DfExtensionError(err_msg=err_msg,
-                                       service_name='df',
-                                       operation_name='createDeployment')
-            deployment_configuration['clusterSizeName'] = cluster_size_name
-            deployment_configuration['clusterSize'] = cluster_size
-        elif cluster_size_name is not None and cluster_size is None:
-            deployment_configuration['clusterSizeName'] = cluster_size_name
-        elif cluster_size_name is None and cluster_size is not None:
-            name = cluster_size.get('name', None)
-            if name is None:
-                err_msg = ('Cluster size name is not provided in '
-                           'the --cluster-size argument.')
-                raise DfExtensionError(err_msg=err_msg,
-                                       service_name='df',
-                                       operation_name='createDeployment')
-            deployment_configuration['clusterSizeName'] = name
             deployment_configuration['clusterSize'] = cluster_size
         else:
-            default_cluster_size_name = 'EXTRA_SMALL'
             default_cluster_size = {'name': 'EXTRA_SMALL'}
-
-            deployment_configuration['clusterSizeName'] = default_cluster_size_name
             deployment_configuration['clusterSize'] = default_cluster_size
 
     def _process_scaling_parameters(self, deployment_configuration, parameters):
