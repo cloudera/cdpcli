@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.138
+  version: 0.9.139
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -2702,6 +2702,11 @@ definitions:
       recoveryMode:
         type: string
         description: Recovery mode for the instance group.
+      availabilityZones:
+        type: array
+        items:
+          type: string
+        description: List of availability zones that this instance group is associated with.
   DatahubDatabaseType:
     type: string
     description: 'Database type for datahub. Currently supported values: NONE, NON_HA, HA'
@@ -2790,6 +2795,9 @@ definitions:
         type: integer
         format: int32
         description: Configure the major version of Java on the cluster.
+      architecture:
+        type: string
+        description: Specifies the CPU architecture of the cluster. Values are ARM64, X86_64.
   CreateAWSClusterResponse:
     type: object
     description: Response object for create AWS cluster request.
@@ -3006,6 +3014,10 @@ definitions:
         type: integer
         format: int32
         description: Configure the major version of Java on the cluster.
+      multiAz:
+        default: false
+        type: boolean
+        description: Creates CDP Data Hub distributed across multiple availability zones in GCP region
   CreateGCPClusterResponse:
     type: object
     description: Response object for create GCP cluster request.

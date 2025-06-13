@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.138
+  version: 0.9.139
   title: Cloudera CloudPrivateLinks API Service
   license:
     name: Apache 2.0
@@ -173,6 +173,19 @@ definitions:
     enum:
       - AWS
       - AZURE
+  ResourceTag:
+    type: object
+    description: Tag object which can be passed to add custom tags for the cloud resources.
+    required:
+      - key
+      - value
+    properties:
+      key:
+        type: string
+        description: Key value for the tag.
+      value:
+        type: string
+        description: Value for the tag.
   CreatePrivateLinkEndpointRequest:
     type: object
     description: Request object for the CreatePrivateLinkEndpoint method.
@@ -194,6 +207,11 @@ definitions:
       azureAccountDetails:
         description: Azure account details where PrivateLink endpoint is created.
         $ref: '#/definitions/AzureAccountDetails'
+      resourceTags:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceTag'
+        description: Custom tags for the different cloud resources created during Private Links creation.
   CreatePrivateLinkEndpointResponse:
     type: object
     description: Response object for the CreatePrivateLinkEndpoint method.

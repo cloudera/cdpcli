@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.138
+  version: 0.9.139
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -764,6 +764,9 @@ definitions:
       databaseName:
         type: string
         description: database name
+      force:
+        type: boolean
+        description: Whether to forcefully drop the database
   DropDatabaseResponse:
     type: object
     description: A response which gives status of the database deletion

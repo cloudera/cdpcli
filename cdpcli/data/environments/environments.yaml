@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.138
+  version: 0.9.139
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -5020,6 +5020,10 @@ definitions:
       instanceType:
         type: string
         description: Custom instance type of FreeIPA instances.
+      multiAz:
+        type: boolean
+        default: false
+        description: Flag that enables deployment of the FreeIPA in a multi-availability zone.
   FreeIpaImageRequest:
     description: Request object for FreeIPA image.
     type: object

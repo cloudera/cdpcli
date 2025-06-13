@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.138
+  version: 0.9.139
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2248,10 +2248,6 @@ definitions:
       customSubdomain:
         type: string
         description: Custom environment subdomain. Overrides the environment subdomain using a customized domain either in the old subdomain format like ENV_ID.dw or the new format like dw-ENV_NAME.
-      resourcePool:
-        type: string
-        description: The Resource Pool of the cluster.
-        x-form-factors: private
   CreateAwsClusterRequest:
     type: object
     description: Request object for the createAwsCluster method.
@@ -2449,19 +2445,9 @@ definitions:
         x-deprecated: true
         type: string
         description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Password of delegation user.'
-      securityContextConstraintName:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: This option will be removed in future releases. Instead of creating a custom Security Context Constraint, we rely on the cluster default. The name of the Hive Security Context Constraint.'
       storageClass:
         type: string
         description: The storage class for the Local Storage Operator.
-      dbHue:
-        type: string
-        description: The name of the HUE database. Not required for embedded databases.
-      resourcePool:
-        type: string
-        description: The Resource Pool of the cluster.
       dedicatedExecutorNodes:
         type: boolean
         description: Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.
@@ -2698,21 +2684,9 @@ definitions:
         x-deprecated: true
         type: string
         description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Password of delegation user.'
-      securityContextConstraintName:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: This option will be removed in future releases. Instead of creating a custom Security Context Constraint, we rely on the cluster default. The name of the Hive Security Context Constraint.'
       storageClass:
         type: string
         description: The storage class for the Local Storage Operator.
-      dbDas:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the DAS database. Not required for embedded databases.'
-      dbHue:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the HUE database. Not required for embedded databases.'
       dedicatedExecutorNodes:
         type: boolean
         description: Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.
@@ -2814,10 +2788,6 @@ definitions:
       observabilityConfig:
         description: Cluster observability configurations to update. You can forward logs from environments activated in Cloudera Data Warehouse (CDW) to observability and monitoring systems such as Datadog, New Relic, or Splunk. Please refer to the following Cloudera documentation for more info. https://docs.cloudera.com/data-warehouse/cloud/monitoring/topics/dw-observability-log-forwarding.html
         $ref: '#/definitions/UpdateClusterObservabilityConfig'
-      resourcePool:
-        type: string
-        description: Used to set the resource pool of the Private Cloud Data Services clusters that are not enrolled for quota management.
-        x-form-factors: private
   ExternalBucketAccessInfo:
     type: object
     description: External bucket definition.
@@ -3047,24 +3017,6 @@ definitions:
         x-deprecated: true
         description: 'NOTE: creating Default Database Catalogs is deprecated and explicitly disabled. Denotes if Default Database Catalog creation needed.'
         default: false
-      dbMetastore:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the Metastore database.'
-        default: ''
-        x-form-factors: private
-      dbDas:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the DAS database. Not required for embedded databases.'
-        default: ''
-        x-form-factors: private
-      dbHue:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: Current Private Cloud releases only support embedded database, the value of this field is ignored. The name of the HUE database. Not required for embedded databases.'
-        default: ''
-        x-form-factors: private
   CreateClusterDiagnosticDataJobRequest:
     type: object
     description: Request object for the createClusterDiagnosticDataJob method.
@@ -4062,6 +4014,11 @@ definitions:
         type: boolean
         x-form-factors: public
         description: Denotes whether the Virtual Warehouse has the Impala Query Log enabled or not.
+      logHiveQueries:
+        x-form-factors: private
+        x-nullable: true
+        type: boolean
+        description: Denotes whether the Hive Virtual Warehouse stores Hive query information for all completed queries in the sys.query_history system table. You can query this table using SQL to monitor and optimize the Hive engine.
       ebsLLAPSpillGB:
         type: integer
         format: int32
@@ -4872,6 +4829,10 @@ definitions:
         type: boolean
         x-form-factors: public
         description: Denotes whether the Virtual Warehouse has the Impala Query Log enabled or not.
+      logHiveQueries:
+        x-form-factors: private
+        type: boolean
+        description: Denotes whether the Hive Virtual Warehouse stores Hive query information for all completed queries in the sys.query_history system table. You can query this table using SQL to monitor and optimize the Hive engine.
       tags:
         type: array
         description: Tags associated with the resources.
@@ -5169,6 +5130,11 @@ definitions:
         type: boolean
         x-form-factors: public
         description: Denotes whether the Virtual Warehouse has the Impala Query Log enabled or not.
+      logHiveQueries:
+        x-form-factors: private
+        x-nullable: true
+        type: boolean
+        description: Denotes whether the Hive Virtual Warehouse stores Hive query information for all completed queries in the sys.query_history system table. You can query this table using SQL to monitor and optimize the Hive engine.
       resourcePool:
         type: string
         description: Used to set the resource pool of the Virtual Warehouses that are not enrolled for quota management.
@@ -5197,6 +5163,10 @@ definitions:
       resourceTemplateId:
         type: string
         description: The resource template of the Database Catalog.
+      resourcePool:
+        type: string
+        description: Sets the resource pool of the Database Catalog. Updating an already set resource pool for a Database Catalog is not supported.
+        x-form-factors: private
       config:
         description: The service configuration to update the DBC with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
         $ref: '#/definitions/ServiceConfigReq'

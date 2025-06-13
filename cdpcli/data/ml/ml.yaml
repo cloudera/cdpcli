@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.138
+  version: 0.9.139
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -2740,6 +2740,7 @@ definitions:
       s3EndPointUrl:
         type: string
         description: The Ozone S3 end point.
+        x-no-paramfile: true
       s3CaCertBundle:
         type: string
         description: The Ozone S3 CA bundle.
