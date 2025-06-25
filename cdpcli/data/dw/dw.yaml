@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.139
+  version: 0.9.140
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2112,14 +2112,14 @@ definitions:
     properties:
       operationId:
         type: string
-        description: Filter events based on the operation ID. Either operation ID or service ID is required.
+        description: Filters events based on the operation ID. Either operation ID or service ID is required.
       serviceId:
         type: string
-        description: Filter events based on the service ID. It can be Cluster ID, Database Catalog ID, Virtual Warehouse ID or Data Visualization App ID.
+        description: Filters events based on the service ID. It can be Cluster ID, Database Catalog ID, Virtual Warehouse ID or Data Visualization App ID.
       limit:
         type: integer
         format: int32
-        description: Limit the number of returned rows. If not specified then the recent 20 events will be returned. The maximum is 100.
+        description: Limit the number of returned rows. If not specified then the recent 20 events will be returned. The maximum is 500.
       ascending:
         type: boolean
         default: false

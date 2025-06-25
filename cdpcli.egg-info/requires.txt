@@ -1,6 +1,6 @@
 asn1crypto>=0.21.1
 colorama!=0.3.8,!=0.3.9,!=0.4.2,>=0.2.5
-docutils==0.14
+docutils>=0.14
 ecdsa>=0.17.0
 pure25519>=0.0.1
 python-dateutil<3.0.0,>=2.1

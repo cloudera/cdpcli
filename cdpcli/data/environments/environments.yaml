@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.139
+  version: 0.9.140
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2420,7 +2420,7 @@ definitions:
         description: The AWS role arn for the given credential.
       govCloud:
         type: boolean
-        description: Flag that indicates that the given AWS credential is GovCloud specfic.
+        description: Flag that indicates that the given AWS credential is GovCloud specific.
   AzureCredentialProperties:
     type: object
     description: The credential properties that closely related to those that have been created on Azure.

@@ -41,7 +41,7 @@ def get_requirements():
     Gets the prerequisite requirements for the package.
     """
     return ["python-dateutil>=2.1,<3.0.0",
-            "docutils==0.14",
+            "docutils>=0.14",
             "pyyaml>=3.11",
             "colorama>=0.2.5,!=0.3.8,!=0.3.9,!=0.4.2",
             "asn1crypto>=0.21.1",

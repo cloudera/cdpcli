@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.139
+  version: 0.9.140
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -328,6 +328,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DescribeWorkspaceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/ml/describeWorkspaceBackup:
+    post:
+      summary: Describe backup snaphot of a workbench.
+      description: Describe backup snaphot of a workbench.
+      operationId: describeWorkspaceBackup
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeWorkspaceBackupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeWorkspaceBackupResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1623,6 +1644,44 @@ definitions:
       queryOptions:
         description: Additional query options to enhance/mutate the API response.
         $ref: '#/definitions/ListWorkspaceBackupsQueryOptions'
+  DescribeWorkspaceBackupRequest:
+    type: object
+    description: Request object for DescribeWorkspaceBackup method.
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup snaphot.
+  DescribeWorkspaceBackupResponse:
+    type: object
+    description: Response object for DescribeWorkspaceBackup method.
+    properties:
+      backupCrn:
+        type: string
+        description: The CRN of the backup snaphot.
+      backupName:
+        type: string
+        description: The name of the backup snapshot.
+      createdAt:
+        type: string
+        format: date-time
+        description: The creation time of the backup snapshot.
+      creatorCrn:
+        type: string
+        description: The CRN of the creator.
+      workspaceVersionAtBackup:
+        type: string
+        description: The version of the backed-up workbench at the time of backup.
+      backupStatus:
+        type: string
+        description: The status of the backup.
+      isCrossNsBackup:
+        type: boolean
+        description: Indicates whether the backup has cross namespace enabled.
+      instanceGroups:
+        type: array
+        items:
+          $ref: '#/definitions/WorkspaceInstanceGroup'
+        description: The list of instance groups.
   BackupDetail:
     type: object
     description: Backup Detail response object for listing backups.
@@ -2224,6 +2283,9 @@ definitions:
       instanceType:
         type: string
         description: The desired instance type of the workbench cluster instance group.
+      name:
+        type: string
+        description: The unique name for the instance or resource group of the workbench.
   AddInstanceGroupsRequest:
     type: object
     description: Request object for AddInstanceGroups.
