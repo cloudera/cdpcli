@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.140
+  version: 0.9.141
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -4250,7 +4250,7 @@ definitions:
         description: ID of Azure subnet where the cluster is deployed.
       enableAZ:
         type: boolean
-        description: Denotes whther the Azure Availability Zones for the cluster is enabled or not.
+        description: Denotes whether the Azure Availability Zones for the cluster is enabled or not.
         default: false
       outboundType:
         type: string

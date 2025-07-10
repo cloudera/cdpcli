@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.140
+  version: 0.9.141
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -1520,6 +1520,9 @@ definitions:
       existingNFS:
         type: string
         description: Optionally use an existing NFS by providing the hostname and desired path (Azure and Private Cloud only).
+      enableYunikorn:
+        type: boolean
+        description: The boolean flag is used to enable yunikorn scheduling. By default, yunikorn scheduling is disabled.
       loadBalancerIPWhitelists:
         type: array
         items:
@@ -2523,6 +2526,9 @@ definitions:
         items:
           type: string
         description: The whitelist of CIDR blocks which can access the API server.
+      disableObjectStoreCsiDriver:
+        type: boolean
+        description: "If true, opt out of enabling the object store CSI driver integration. CSI driver integration offers increased scalability but requires the \u201CStorage Account Contributor\u201D role on Azure."
   CreateModelRegistryResponse:
     type: object
     description: Response for creating model registry request.
@@ -2625,6 +2631,9 @@ definitions:
       crn:
         type: string
         description: The CRN of the model registry to be upgraded.
+      disableObjectStoreCsiDriver:
+        type: boolean
+        description: "If true, opt out of enabling the object store CSI driver integration. CSI driver integration offers increased scalability but requires the \u201CStorage Account Contributor\u201D role on Azure."
   UpgradeModelRegistryResponse:
     type: object
     description: Response for upgrading model registry.
@@ -3003,23 +3012,31 @@ definitions:
     type: object
     description: Request object for the ListRelevantInstances method.
     required:
-      - region
       - instanceCategory
-      - cloudProvider
       - requestInfo
+      - environmentName
+      - productType
     properties:
-      region:
-        type: string
-        description: Specifies the name of the region for which instance support details are requested.
       instanceCategory:
         type: string
         description: Defines the category of the instance (e.g., CPU, GPU) relevant for the query in the specified region.
-      cloudProvider:
-        type: string
-        description: Identifies the cloud provider (e.g., AWS, Azure) for which to list supported instances.
       requestInfo:
         description: Specifies the requested resource inputs eg (CPU/GPU, model, memory etc).
         $ref: '#/definitions/RequestResourceInfo'
+      environmentName:
+        type: string
+        description: Specifies the environment name of respective cloud provider for which instance support details are requested.
+      productType:
+        type: string
+        description: Specifies the product type for which instance support details are requested.
+      region:
+        type: string
+        description: Deprecated. Please use environmentName instead, from which the region will be determined.
+        x-deprecated: true
+      cloudProvider:
+        type: string
+        description: Deprecated. Please use environmentName instead, from which the cloud provider will be determined.
+        x-deprecated: true
   ListRelevantInstancesResponse:
     type: object
     description: Response object for the ListRelevantInstances method.
@@ -3035,23 +3052,31 @@ definitions:
     type: object
     description: Request object for the ListInstanceTypeConfiguration method.
     required:
-      - region
       - instanceCategory
-      - cloudProvider
       - instanceType
+      - environmentName
+      - productType
     properties:
-      region:
-        type: string
-        description: Specifies the name of the region for which instance support details are requested.
       instanceCategory:
         type: string
         description: Defines the category of the instance (e.g., CPU, GPU) relevant for the query in the specified region.
-      cloudProvider:
-        type: string
-        description: Identifies the cloud provider (e.g., AWS, Azure) for which to list supported instances.
       instanceType:
         type: string
         description: Identifies the instance type.
+      environmentName:
+        type: string
+        description: Specifies the environment name of respective cloud provider for which instance support details are requested.
+      productType:
+        type: string
+        description: Specifies the product type for which instance support details are requested.
+      region:
+        type: string
+        description: Deprecated. Please use environmentName instead, from which the region will be determined.
+        x-deprecated: true
+      cloudProvider:
+        type: string
+        description: Deprecated. Please use environmentName instead, from which the cloud provider will be determined.
+        x-deprecated: true
   ListInstanceTypeConfigurationResponse:
     type: object
     description: Response object for the ListInstanceTypeConfiguration method.

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.140
+  version: 0.9.141
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1134,6 +1134,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateToAwsImdsV1Response'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/migrateSkus:
+    post:
+      summary: Migrate the Data Lake to a new SKU.
+      description: Migrate the Data Lake to a new SKU.
+      operationId: migrateSkus
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MigrateSkusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/MigrateSkusResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3930,3 +3951,22 @@ definitions:
         type: integer
         format: int32
         description: The modified storage size for the database.
+  MigrateSkusRequest:
+    type: object
+    description: Request object for migrating SKUs.
+    required:
+      - datalakeName
+    properties:
+      datalakeName:
+        type: string
+        description: The name or CRN of the datalake.
+      force:
+        type: boolean
+        description: Skips checking cloud resource SKUs before the migration.
+  MigrateSkusResponse:
+    type: object
+    description: Response object for migrating SKUs.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.

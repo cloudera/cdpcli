@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.140
+  version: 0.9.141
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -6182,6 +6182,10 @@ definitions:
         items:
           type: string
         description: The instance Ids to downscale.
+      force:
+        type: boolean
+        description: Force the downscale regardless of the status of the FreeIPA nodes and skip some validations.
+        default: false
   DownscaleFreeipaResponse:
     type: object
     description: The response object for FreeIPA downscale.
