@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.141
+  version: 0.9.142
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -845,6 +845,18 @@ definitions:
       security:
         description: Security.
         $ref: '#/definitions/CommonSecurityResp'
+      egressType:
+        type: string
+        description: EgressType specifies the outbound type used by the cluster.
+      aksManagedIdentity:
+        type: string
+        description: AksManagedIdentity is the user-assigned managed identity to be used by the AKS control plane.
+      privateDnsZone:
+        type: string
+        description: PrivateDNSZone for the AKS cluster.
+      oidcIssuerURL:
+        type: string
+        description: URL of the OIDCIssuer attached to the cluster.
     x-form-factors: public
   CommonEvent:
     type: object

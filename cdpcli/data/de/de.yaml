@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.141
+  version: 0.9.142
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -713,6 +713,9 @@ definitions:
       sparkVersion:
         type: string
         description: Spark version for the virtual cluster.
+      sparkOSName:
+        type: string
+        description: Spark os name for the virtual cluster.
       chartValueOverrides:
         type: array
         items:
@@ -1324,6 +1327,12 @@ definitions:
           - SPARK3_2
           - SPARK3_3
           - SPARK3_5
+      sparkOSName:
+        type: string
+        description: Spark os name for the virtual cluster. Currently supported types are SECURITYHARDENED(chainguard) and REDHAT(will be deprecated, and we will use INSECURE). The default value is SECURITYHARDENED.
+        enum:
+          - SECURITYHARDENED
+          - REDHAT
       vcTier:
         type: string
         description: Tier of the virtual cluster. Currently supported tiers are CORE and ALLP. CORE tiered virtual cluster enables operational deployment via batch jobs. ALLP virtual clusters are all-purpose virtual clusters supporting both operational batch jobs and interactive sessions. This feature is only supported in CDE-1.19.0 and beyond.

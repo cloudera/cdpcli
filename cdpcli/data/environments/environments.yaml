@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.141
+  version: 0.9.142
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -5101,6 +5101,9 @@ definitions:
       multiAz:
         type: boolean
         description: Whether the given FreeIPA is deployed in a multi-availability zone way or not.
+      loadBalancer:
+        $ref: '#/definitions/FreeIpaLoadBalancer'
+        description: Details of a FreeIPA load balancer.
       imageDetails:
         $ref: '#/definitions/ImageInfo'
         description: The image details.
@@ -5153,6 +5156,21 @@ definitions:
         description: List of volumes attached to this instance.
         items:
           $ref: '#/definitions/AttachedVolumeDetail'
+  FreeIpaLoadBalancer:
+    description: Details of a FreeIPA load balancer.
+    type: object
+    properties:
+      resourceId:
+        type: string
+        description: The cloud resource ID of the provisioned load balancer.
+      fqdn:
+        type: string
+        description: The fully qualified domain name of the load balancer.
+      privateIps:
+        type: array
+        items:
+          type: string
+        description: The private IP addresses of the load balancer.
   AWSComputeClusterConfigurationRequest:
     description: Request object for creating Externalized compute cluster for the environment.
     type: object

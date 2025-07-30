@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.141
+  version: 0.9.142
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -76,6 +76,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/BackupWorkspaceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/createFileReplica:
+    post:
+      summary: Create file system replica.
+      description: Creates a file system replication.
+      operationId: createFileReplica
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateFileReplicaRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateFileReplicaResponse'
         default:
           description: The default response on an error.
           schema:
@@ -160,6 +181,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteBackupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/deleteFileReplica:
+    post:
+      summary: Delete existing replication for project files.
+      description: Delete existing replication configuration for project files.
+      operationId: deleteFileReplica
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteFileReplicaRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteFileReplicaResponse'
         default:
           description: The default response on an error.
           schema:
@@ -354,6 +396,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/ml/failOverFileSystem:
+    post:
+      summary: Failover to replica file system
+      description: Failover to replica in case of a source file system disaster.
+      operationId: failOverFileSystem
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/FailOverFileSystemRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/FailOverFileSystemResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/getAuditEvents:
     post:
       summary: Gets all the events belong to a workbench crn.
@@ -1100,6 +1163,18 @@ definitions:
       message:
         type: string
         description: The error message.
+  FailOverFileSystemRequest:
+    type: object
+    description: FailOverFileSystemRequest request to fallback to the replica.
+    required:
+      - workspaceCrn
+    properties:
+      workspaceCrn:
+        type: string
+        description: The CRN of the workbench to create file system ID replica.
+  FailOverFileSystemResponse:
+    type: object
+    description: FailOverFileSystemResponse response to fallback to the replica.
   RootVolume:
     type: object
     description: Configuration for instance root device volume.
@@ -2028,6 +2103,18 @@ definitions:
       workspace:
         description: The workbench.
         $ref: '#/definitions/Workspace'
+  DeleteFileReplicaRequest:
+    type: object
+    description: Request object for DeleteFileReplica method.
+    required:
+      - workspaceCrn
+    properties:
+      workspaceCrn:
+        type: string
+        description: The CRN of the workbench of which replica is to be deleted.
+  DeleteFileReplicaResponse:
+    type: object
+    description: Response object for DeleteFileReplica method.
   DescribeModelRegistryRequest:
     type: object
     description: Request object for the DescribeModelRegistry method.
@@ -2086,6 +2173,18 @@ definitions:
   DeleteWorkspaceResponse:
     type: object
     description: Response object for the DeleteWorkspace method.
+  CreateFileReplicaRequest:
+    type: object
+    description: Request object for create file replica method.
+    required:
+      - workspaceCrn
+    properties:
+      workspaceCrn:
+        type: string
+        description: The workbench CRN to create replica of file system id.
+  CreateFileReplicaResponse:
+    type: object
+    description: Response object for the CreateFileReplica method.
   GrantWorkspaceAccessRequest:
     type: object
     description: Request object for the GrantWorkspaceAccess method.
@@ -2528,7 +2627,7 @@ definitions:
         description: The whitelist of CIDR blocks which can access the API server.
       disableObjectStoreCsiDriver:
         type: boolean
-        description: "If true, opt out of enabling the object store CSI driver integration. CSI driver integration offers increased scalability but requires the \u201CStorage Account Contributor\u201D role on Azure."
+        description: If true, opt out of enabling the object store CSI driver integration. CSI driver integration offers increased scalability but requires the "Storage Account Contributor" role on Azure.
   CreateModelRegistryResponse:
     type: object
     description: Response for creating model registry request.
@@ -2633,7 +2732,7 @@ definitions:
         description: The CRN of the model registry to be upgraded.
       disableObjectStoreCsiDriver:
         type: boolean
-        description: "If true, opt out of enabling the object store CSI driver integration. CSI driver integration offers increased scalability but requires the \u201CStorage Account Contributor\u201D role on Azure."
+        description: If true, opt out of enabling the object store CSI driver integration. CSI driver integration offers increased scalability but requires the "Storage Account Contributor" role on Azure.
   UpgradeModelRegistryResponse:
     type: object
     description: Response for upgrading model registry.
@@ -2797,6 +2896,9 @@ definitions:
       ozoneS3Creds:
         description: Ozone credentials for the Cloudera On-Premise cluster.
         $ref: '#/definitions/MlServingOzoneCreds'
+      enableFineGrainedAccessControl:
+        type: boolean
+        description: The boolean flag to enable fine-grained access control. By default, this flag is disabled.
   MlServingOzoneCreds:
     type: object
     description: Request object for the MlServingOzoneCreds method.

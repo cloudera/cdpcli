@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.141
+  version: 0.9.142
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -1689,6 +1689,54 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/MigrateUsersToIdentityProviderResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/enableUserWorkloadPasswordChangedNotifications:
+    post:
+      summary: Enables sending user workload password changed email notifications for the account.
+      description: Enables sending user workload password change email notifications for the account.
+      operationId: enableUserWorkloadPasswordChangedNotifications
+      x-form-factors: public
+      x-entitlement: IAM_PASSWORD_CHANGED_NOTIFICATION_TOGGLE
+      x-right: iam/enableUserWorkloadPasswordChangedNotifications
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnableUserWorkloadPasswordChangedNotificationsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/EnableUserWorkloadPasswordChangedNotificationsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/disableUserWorkloadPasswordChangedNotifications:
+    post:
+      summary: Disables sending user workload password changed email notifications for the account.
+      description: Disables sending user workload password changed email notifications for the account.
+      operationId: disableUserWorkloadPasswordChangedNotifications
+      x-form-factors: public
+      x-entitlement: IAM_PASSWORD_CHANGED_NOTIFICATION_TOGGLE
+      x-right: iam/disableUserWorkloadPasswordChangedNotifications
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DisableUserWorkloadPasswordChangedNotificationsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DisableUserWorkloadPasswordChangedNotificationsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3838,3 +3886,27 @@ definitions:
         type: integer
         format: int32
         description: The number of users that were migrated from the old IdP to the new one.
+  EnableUserWorkloadPasswordChangedNotificationsRequest:
+    type: object
+    description: Request object to enable user workload password changed notifications.
+  EnableUserWorkloadPasswordChangedNotificationsResponse:
+    type: object
+    description: Response object to enable user workload password changed notifications.
+    required:
+      - account
+    properties:
+      account:
+        $ref: '#/definitions/Account'
+        description: The account object.
+  DisableUserWorkloadPasswordChangedNotificationsRequest:
+    type: object
+    description: Request object to disable user workload password changed notifications.
+  DisableUserWorkloadPasswordChangedNotificationsResponse:
+    type: object
+    description: Response object to disable user workload password changed notifications.
+    required:
+      - account
+    properties:
+      account:
+        $ref: '#/definitions/Account'
+        description: The account object.
