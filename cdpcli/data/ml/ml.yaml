@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.142
+  version: 0.9.143
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -1681,6 +1681,11 @@ definitions:
       workspaceCrn:
         type: string
         description: The CRN of the Cloudera AI workbench being provisioned.
+      warnings:
+        type: array
+        items:
+          type: string
+        description: Warning messages about restore behavior.
   ListWorkspacesRequest:
     type: object
     description: Request object for the ListWorkspaces method.
@@ -2503,6 +2508,11 @@ definitions:
       vaultName:
         type: string
         description: Name of the vault where backup related volumes are stored.
+      warnings:
+        type: array
+        items:
+          type: string
+        description: Warning messages about backup behavior.
   DeleteBackupRequest:
     type: object
     description: The request object for DeleteBackup operation.
@@ -2625,9 +2635,6 @@ definitions:
         items:
           type: string
         description: The whitelist of CIDR blocks which can access the API server.
-      disableObjectStoreCsiDriver:
-        type: boolean
-        description: If true, opt out of enabling the object store CSI driver integration. CSI driver integration offers increased scalability but requires the "Storage Account Contributor" role on Azure.
   CreateModelRegistryResponse:
     type: object
     description: Response for creating model registry request.
@@ -2730,9 +2737,6 @@ definitions:
       crn:
         type: string
         description: The CRN of the model registry to be upgraded.
-      disableObjectStoreCsiDriver:
-        type: boolean
-        description: If true, opt out of enabling the object store CSI driver integration. CSI driver integration offers increased scalability but requires the "Storage Account Contributor" role on Azure.
   UpgradeModelRegistryResponse:
     type: object
     description: Response for upgrading model registry.

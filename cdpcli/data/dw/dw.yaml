@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.142
+  version: 0.9.143
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -2449,8 +2449,9 @@ definitions:
         type: string
         description: The storage class for the Local Storage Operator.
       dedicatedExecutorNodes:
+        x-deprecated: true
         type: boolean
-        description: Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.
+        description: 'DEPRECATED: As of 1.5.5, this feature flag can be set as an advanced configuration. Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.'
         default: false
       dbClientCredentials:
         $ref: '#/definitions/KeyPairCredentials'
@@ -2688,8 +2689,9 @@ definitions:
         type: string
         description: The storage class for the Local Storage Operator.
       dedicatedExecutorNodes:
+        x-deprecated: true
         type: boolean
-        description: Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.
+        description: 'DEPRECATED: As of 1.5.5, this feature flag can be set as an advanced configuration. Enable to use dedicated nodes exclusively for executors and coordinators, and improve performance. You can enable this only if you reserved nodes while adding a CDP Private Cloud containerized ECS cluster. When disabled, non-compute pods such as MetaStore and Data Visualization can also use the reserved nodes.'
         default: false
       dbClientCredentials:
         $ref: '#/definitions/KeyPairCredentials'
@@ -5137,8 +5139,9 @@ definitions:
         description: Denotes whether the Hive Virtual Warehouse stores Hive query information for all completed queries in the sys.query_history system table. You can query this table using SQL to monitor and optimize the Hive engine.
       resourcePool:
         type: string
-        description: Used to set the resource pool of the Virtual Warehouses that are not enrolled for quota management.
+        description: 'DEPRECATED: This functionality will be removed in the next release. Used to set the resource pool of the Virtual Warehouses that are not enrolled for quota management.'
         x-form-factors: private
+        x-deprecated: true
       hiveServerHaMode:
         type: string
         x-nullable: true
@@ -5165,8 +5168,9 @@ definitions:
         description: The resource template of the Database Catalog.
       resourcePool:
         type: string
-        description: Sets the resource pool of the Database Catalog. Updating an already set resource pool for a Database Catalog is not supported.
+        description: 'DEPRECATED: This functionality will be removed in the next release. Sets the resource pool of the Database Catalog. Updating an already set resource pool for a Database Catalog is not supported.'
         x-form-factors: private
+        x-deprecated: true
       config:
         description: The service configuration to update the DBC with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
         $ref: '#/definitions/ServiceConfigReq'
@@ -5276,8 +5280,9 @@ definitions:
         description: Admin groups to allow configuration access to Data Visualization for selected users
       resourcePool:
         type: string
-        description: The Resource Pool of the Cloudera Data Visualization.
+        description: 'DEPRECATED: This functionality for update will be removed in the next release. For create, please use the new resourcePool field. The Resource Pool of the Cloudera Data Visualization.'
         x-form-factors: private
+        x-deprecated: true
   ConfigContentDiff:
     type: object
     description: Difference between two ConfigContents.
@@ -6215,8 +6220,9 @@ definitions:
     properties:
       id:
         type: string
-        description: ID of the template.
+        description: 'DEPRECATED: ID of the template. This field is unused and always empty. Subject of removal.'
         x-nullable: false
+        x-deprecated: true
       name:
         type: string
         description: Name of the template.
