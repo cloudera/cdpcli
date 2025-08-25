@@ -160,7 +160,7 @@ $ cdp --profile my-other-user iam get-user
 ### Base Endpoint URL and Form Factor
 
 By default, the CLI works with
-[CDP Public Cloud](https://docs.cloudera.com/cdp/latest/overview/topics/cdp-overview.html)
+[CDP Public Cloud](https://docs.cloudera.com/cdp-public-cloud/cloud/overview/topics/cdp-public-cloud.html)
 and calculates API endpoints accordingly. If you are using CDP Private Cloud, be
 sure to provide the base endpoint URL for your private cloud control plane. You
 can do so by setting it in *$HOME/.cdp/config* for the desired profile, or
