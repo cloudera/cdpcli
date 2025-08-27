@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.143
+  version: 0.9.144
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -3623,7 +3623,7 @@ definitions:
       enableUnifiedAnalytics:
         x-deprecated: true
         type: boolean
-        description: DEPRECATED in favor of the top level enableUnifiedAnalytics flag. Enable Unified Analytics. In case of Hive Virtual Warehouses this cannot be provided, because this value is inferred. In case of Impala this can be set. Passing --query-isolation-options will be considered if this flag is set to true. If Unified Analytics enabled then the "impalaEnableShutdownOfCoordinator" explicitly disabled and should not be provided, furthermore the "impalaHighAvailabilityMode" cannot be set to ACTIVE_ACTIVE.
+        description: 'DEPRECATED: in favor of the top level enableUnifiedAnalytics flag. Enable Unified Analytics. In case of Hive Virtual Warehouses this cannot be provided, because this value is inferred. In case of Impala this can be set. Passing --query-isolation-options will be considered if this flag is set to true. If Unified Analytics enabled then the "impalaEnableShutdownOfCoordinator" explicitly disabled and should not be provided, furthermore the "impalaHighAvailabilityMode" cannot be set to ACTIVE_ACTIVE. FENG support will be removed in subsequent releases.'
       hiveScaleWaitTimeSeconds:
         type: integer
         format: int32
@@ -3651,7 +3651,7 @@ definitions:
       impalaEnableShutdownOfCoordinator:
         x-deprecated: true
         type: boolean
-        description: DEPRECATED in favor of the top level impalaHASettings object. Enables a shutdown of the coordinator. If Unified Analytics enabled then this setting explicitly disabled and should not be provided.
+        description: 'DEPRECATED: in favor of the top level impalaHASettings object. Enables a shutdown of the coordinator. If Unified Analytics enabled then this setting explicitly disabled and should not be provided. FENG support will be removed in subsequent .'
       impalaShutdownOfCoordinatorDelaySeconds:
         x-deprecated: true
         type: integer
@@ -3801,7 +3801,7 @@ definitions:
       enableUnifiedAnalytics:
         x-deprecated: true
         type: boolean
-        description: DEPRECATED in favor of the top level enableUnifiedAnalytics flag. Whether the Unified Analytics is enabled.
+        description: 'DEPRECATED: in favor of the top level enableUnifiedAnalytics flag. Whether the Unified Analytics is enabled. FENG support will be removed in subsequent releases.'
       hiveScaleWaitTimeSeconds:
         type: integer
         format: int32
@@ -3976,8 +3976,9 @@ definitions:
         type: string
         description: This feature works only for AWS cluster type. An availability zone to host compute instances. If not specified, defaults to a randomly selected availability zone inferred from available subnets. In order to query possible options, see "availabilityZones" field of describe-cluster or list-clusters command response.
       enableUnifiedAnalytics:
+        x-deprecated: true
         type: boolean
-        description: Enable Unified Analytics. In the case of Hive Virtual Warehouses, this cannot be provided, because this value is inferred. In the case of Impala, this can be set. Passing --query-isolation-options will be considered only if this flag is set to true. If Unified Analytics is enabled then the "enableShutdownOfCoordinator" in --impala-ha-settings is explicitly disabled (ignored) and should not be provided, furthermore the "highAvailabilityMode" in --impala-ha-settings cannot be set to ACTIVE_ACTIVE.
+        description: 'DEPRECATED: Enable Unified Analytics. In the case of Hive Virtual Warehouses, this cannot be provided, because this value is inferred. In the case of Impala, this can be set. Passing --query-isolation-options will be considered only if this flag is set to true. If Unified Analytics is enabled then the "enableShutdownOfCoordinator" in --impala-ha-settings is explicitly disabled (ignored) and should not be provided, furthermore the "highAvailabilityMode" in --impala-ha-settings cannot be set to ACTIVE_ACTIVE. FENG support will be removed in subsequent releases.'
       impalaOptions:
         description: Impala specific options. It cannot be provided for Virtual Warehouse types other than Impala.
         $ref: '#/definitions/ImpalaOptionsCreateRequest'
@@ -4760,23 +4761,27 @@ definitions:
             x-form-factors: private
             description: JDBC URL for Impala Virtual Warehouses with Kerberos authentication.
           impalaFENGJdbc:
+            x-deprecated: true
             type: string
-            description: FENG JDBC URL for Impala Virtual Warehouses.
+            description: 'DEPRECATED: FENG JDBC URL for Impala Virtual Warehouses. FENG support will be removed in subsequent releases.'
           impalaFengKerberosJdbc:
+            x-deprecated: true
             type: string
             x-form-factors: private
-            description: Unified Analytics JDBC URL with Kerberos authentication for Impala Virtual Warehouses in Private Cloud.
+            description: 'DEPRECATED: Unified Analytics JDBC URL with Kerberos authentication for Impala Virtual Warehouses in Private Cloud. FENG support will be removed in subsequent releases.'
           impalaShell:
             type: string
             description: Command to use impala-shell for Impala Virtual Warehouses.
           fengImpalaShell:
+            x-deprecated: true
             type: string
             x-form-factors: private
-            description: Command to use impala-shell for Unified Analytics
+            description: 'DEPRECATED: Command to use impala-shell for Unified Analytics. FENG support will be removed in subsequent releases.'
           fengKerberosImpalaShell:
+            x-deprecated: true
             type: string
             x-form-factors: private
-            description: Command to use impala-shell for Unified Analytics with Kerberos authentication in Private Cloud.
+            description: 'DEPRECATED: Command to use impala-shell for Unified Analytics with Kerberos authentication in Private Cloud. FENG support will be removed in subsequent releases.'
           kerberosImpalaShell:
             type: string
             x-form-factors: private
@@ -4847,8 +4852,9 @@ definitions:
         type: boolean
         description: Denotes whether the Virtual Warehouse has Data Visualisation or not.
       enableUnifiedAnalytics:
+        x-deprecated: true
         type: boolean
-        description: Denotes whether the Unified Analytics is enabled.
+        description: 'DEPRECATED: Denotes whether the Unified Analytics is enabled. FENG support will be removed in subsequent releases.'
       autoscalingOptions:
         description: The current settings stored for autoscaling.
         $ref: '#/definitions/AutoscalingOptionsResponse'

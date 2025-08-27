@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.143
+  version: 0.9.144
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -407,30 +407,42 @@ definitions:
       message:
         type: string
         description: The error message.
+  DiagnosticDestination:
+    type: string
+    description: Destination of the created diagnostics bundle.
+    enum:
+      - UPLOAD_TO_CLOUDERA
+      - DOWNLOAD
   DiagnosticsBundle:
     type: object
-    description: Describe a diagnostics bundle
+    description: Describe a diagnostics bundle.
     properties:
       id:
         type: string
-        description: Identifier for each bundle collection
+        description: Identifier for each bundle collection.
       crn:
         type: string
-        description: The object on which diagnostics was collected
+        description: The object on which diagnostics was collected.
       startTime:
         type: string
         format: date-time
-        description: Start time
+        description: Start time.
       endTime:
         type: string
         format: date-time
         description: The end time, if the command is finished.
+      destination:
+        description: Requested destination of the bundle.
+        $ref: '#/definitions/DiagnosticDestination'
+      caseNumber:
+        type: string
+        description: CSH case number.
       status:
         type: string
-        description: A status of the diagnostics collection process
+        description: A status of the diagnostics collection process.
       result:
         type: string
-        description: If this is a download, a link to the download location of the bundle
+        description: If this is a download, a link to the download location of the bundle.
   CollectDiagnosticsRequest:
     type: object
     description: Enables starting collection of the diagnostics. This is an asynchronous API and not expected to block.
@@ -441,22 +453,32 @@ definitions:
     properties:
       environmentName:
         type: string
-        description: The name of the environment
+        description: The name of the environment.
       databaseName:
         type: string
-        description: The name of the database
+        description: The name of the database.
       endTime:
         type: string
         description: The end time (in ISO 8601 format) of the period to collection statistics for.
       startTime:
         type: string
         description: The start time (in ISO 8601 format) of the period to collection statistics for.
+      destination:
+        description: This defines where to put the resulting bundle.
+        $ref: '#/definitions/DiagnosticDestination'
+      caseNumber:
+        type: string
+        description: The CSH case number to associate the bundle.
+      bundleSizeBytes:
+        type: integer
+        format: int64
+        description: Bundle size limit.
   CollectDiagnosticsResponse:
     type: object
-    description: Information about diagnostic bundle generation
+    description: Information about diagnostic bundle generation.
     properties:
       diagnosticsBundle:
-        description: Details of requested diagnostic bundle collection
+        description: Details of requested diagnostic bundle collection.
         $ref: '#/definitions/DiagnosticsBundle'
   ListDiagnosticsRequest:
     type: object
@@ -467,19 +489,19 @@ definitions:
     properties:
       environmentName:
         type: string
-        description: The name of the environment
+        description: The name of the environment.
       databaseName:
         type: string
-        description: The name of the database
+        description: The name of the database.
   ListDiagnosticsResponse:
     type: object
-    description: The list of in-progress diagnostic bundle operations
+    description: The list of in-progress diagnostic bundle operations.
     properties:
       diagnosticsBundles:
         type: array
         items:
           $ref: '#/definitions/DiagnosticsBundle'
-        description: List of diagnostics operations
+        description: List of diagnostics operations.
   KeyValuePair:
     type: object
     description: Generic key-value type, because map<> is not supported
@@ -1083,6 +1105,9 @@ definitions:
       snapshotName:
         type: string
         description: The name of the snapshot.
+      force:
+        type: boolean
+        description: Forcefully delete the snapshot.
   DeleteSnapshotResponse:
     type: object
     description: Response object of the DeleteSnapshot method.

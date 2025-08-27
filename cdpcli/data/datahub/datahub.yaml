@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.143
+  version: 0.9.144
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -4782,6 +4782,7 @@ definitions:
         enum:
           - VERSION_11
           - VERSION_14
+          - VERSION_17
       force:
         type: boolean
         description: Start the database upgrade flow even if the source and target versions are the same. Can be used to reinitiate an upgrade after a failure.
