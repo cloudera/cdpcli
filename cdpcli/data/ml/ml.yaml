@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.144
+  version: 0.9.145
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -1361,6 +1361,31 @@ definitions:
       autoscaling:
         description: The auto scaling configuration.
         $ref: '#/definitions/Autoscaling'
+      accelerator:
+        description: The accelerator, which refers to the GPU type configuration.
+        $ref: '#/definitions/Accelerator'
+  Accelerator:
+    type: object
+    description: Accelerator, i.e. GPU configurations.
+    properties:
+      type:
+        type: string
+        description: The GPU type.
+      count:
+        type: integer
+        format: int64
+        description: The GPU count.
+  AcceleratorResponse:
+    type: object
+    description: Accelerator, i.e. GPU configurations.
+    properties:
+      type:
+        type: string
+        description: The GPU type.
+      count:
+        type: integer
+        format: int64
+        description: The GPU count.
   WorkspaceInstanceGroup:
     type: object
     description: Instance group information to show in workbench details.
@@ -1417,6 +1442,9 @@ definitions:
       name:
         type: string
         description: The unique name for the instance or resource group of the workbench.
+      accelerator:
+        description: The accelerator, which refers to the GPU type configuration.
+        $ref: '#/definitions/AcceleratorResponse'
   Instance:
     type: object
     description: Represents each instance in an instance group.
@@ -1501,6 +1529,9 @@ definitions:
       topology:
         description: The options for overlay topology.
         $ref: '#/definitions/Topology'
+      gcp:
+        description: The networking options for GCP platform.
+        $ref: '#/definitions/Gcp'
   Topology:
     type: object
     description: Contains the information about topology.
@@ -1510,6 +1541,13 @@ definitions:
         items:
           type: string
         description: The options for subnets.
+  Gcp:
+    type: object
+    description: Contains the information about gcp.
+    properties:
+      secondaryPodRangeName:
+        type: string
+        description: The secondary pod range name for GCP.
   ExistingDatabaseConfig:
     type: object
     description: Configurations for bringing an existing database for model metrics
@@ -1648,6 +1686,9 @@ definitions:
       enableEnhancedPerformance:
         type: boolean
         description: Enable Enhanced Performance Mode to maximize throughput and IOPS for root volumes attached to worker nodes.
+      enableGlobalAccessLoadBalancer:
+        type: boolean
+        description: Enable global access to the load balancer so the workbench is accessible from other regions.
   OutboundTypes:
     type: string
     description: List of possible Outbound types.
@@ -2067,6 +2108,14 @@ definitions:
       isRestored:
         type: boolean
         description: The value to indicate if the workbench is restored one or not
+      secondaryPodRangeNames:
+        type: array
+        items:
+          type: string
+        description: Secondary range names for kubernetes pod CIDR in GCP.
+      enableGlobalAccessLoadBalancer:
+        type: boolean
+        description: Enable global access to the load balancer so the workbench is accessible from other regions.
   UpgradeWorkspaceRequest:
     type: object
     description: Request object for the UpgradeWorkspace method.
@@ -2393,6 +2442,9 @@ definitions:
       name:
         type: string
         description: The unique name for the instance or resource group of the workbench.
+      accelerator:
+        description: The accelerator, which refers to the GPU type configuration.
+        $ref: '#/definitions/Accelerator'
   AddInstanceGroupsRequest:
     type: object
     description: Request object for AddInstanceGroups.

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.144
+  version: 0.9.145
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1803,6 +1803,10 @@ definitions:
       nodeStorage:
         description: The node storage data.
         $ref: '#/definitions/NodeStorage'
+      pythonWorkDirectorySize:
+        type: integer
+        format: int32
+        description: The size of the extra volume mounted for flows containing python.
       customNarConfigurationCrn:
         type: string
         description: The CRN of the custom NAR configuration.
@@ -3451,6 +3455,11 @@ definitions:
       nodeStorage:
         description: The node storage data.
         $ref: '#/definitions/NodeStorage'
+      pythonWorkDirectorySize:
+        type: integer
+        format: int32
+        description: The size of the extra volume mounted for flows containing python.
+        readOnly: true
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.

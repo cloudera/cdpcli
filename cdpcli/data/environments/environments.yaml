@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.144
+  version: 0.9.145
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -3208,6 +3208,7 @@ definitions:
       - securityAccess
       - usePublicIp
       - logStorage
+      - existingNetworkParams
     properties:
       environmentName:
         type: string
