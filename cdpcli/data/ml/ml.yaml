@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.145
+  version: 0.9.146
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -2789,6 +2789,16 @@ definitions:
       crn:
         type: string
         description: The CRN of the model registry to be upgraded.
+      azureOptions:
+        description: AzureUpgradeOptions options for model registry upgrade when using User Defined Routing (UDR).
+        $ref: '#/definitions/AzureUpgradeOptions'
+  AzureUpgradeOptions:
+    type: object
+    description: AzureUpgradeOptions upgrade options for model registry. This message contains configuration options specific to Azure deployments when using User Defined Routing (UDR).
+    properties:
+      udrNetwork:
+        description: OverlayNetwork configuration for UDR-based deployments. This defines the network settings required for Azure environments that use custom routing tables.
+        $ref: '#/definitions/OverlayNetwork'
   UpgradeModelRegistryResponse:
     type: object
     description: Response for upgrading model registry.
