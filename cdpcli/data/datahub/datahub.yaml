@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.146
+  version: 0.9.147
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -1561,7 +1561,8 @@ definitions:
         description: The status of the stack.
       clusterStatus:
         type: string
-        description: The status of the cluster.
+        description: The status of the cluster. It always returns the same value as the status field. Deprecated.
+        x-deprecated: true
       nodeCount:
         type: integer
         format: int32
@@ -2269,7 +2270,8 @@ definitions:
         type: string
         description: Name of the instance group.
       clusterStatus:
-        description: Status of the cluster.
+        description: Status of the cluster. It always returns the same value as the stackStatus field. Deprecated.
+        x-deprecated: true
         $ref: '#/definitions/StackStatus'
       workspaceId:
         type: integer

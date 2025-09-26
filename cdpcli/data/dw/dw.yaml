@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.146
+  version: 0.9.147
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -803,28 +803,6 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/dw/restartDbc:
-    post:
-      x-mutating: true
-      x-deprecated: true
-      summary: Restart a Database Catalog.
-      description: 'DEPRECATED: Use the stop-dbc / start-dbc commands instead. Restart a Database Catalog.'
-      operationId: restartDbc
-      parameters:
-        - name: input
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/RestartDbcRequest'
-      responses:
-        200:
-          description: Expected response to a valid request.
-          schema:
-            $ref: '#/definitions/RestartDbcResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
   /api/v1/dw/describeDbcConfig:
     post:
       x-mutating: false
@@ -1082,28 +1060,6 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteVwResponse'
-        default:
-          description: The default response on an error.
-          schema:
-            $ref: '#/definitions/Error'
-  /api/v1/dw/restartVw:
-    post:
-      x-mutating: true
-      x-deprecated: true
-      summary: Restart a Virtual Warehouse.
-      description: 'DEPRECATED: Use the suspend-vw / start-vw commands instead. Restart a Virtual Warehouse.'
-      operationId: restartVw
-      parameters:
-        - name: input
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/RestartVwRequest'
-      responses:
-        200:
-          description: Expected response to a valid request.
-          schema:
-            $ref: '#/definitions/RestartVwResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3577,22 +3533,6 @@ definitions:
   StartDbcResponse:
     type: object
     description: Response object for the restartDbc method.
-  RestartDbcRequest:
-    type: object
-    description: Request object for the restartDbc method.
-    required:
-      - clusterId
-      - dbcId
-    properties:
-      clusterId:
-        type: string
-        description: ID of the Database Catalog's cluster.
-      dbcId:
-        type: string
-        description: The id of the Database Catalog to restart.
-  RestartDbcResponse:
-    type: object
-    description: Response object for the restartDbc method.
   VwType:
     type: string
     enum:
@@ -4284,22 +4224,6 @@ definitions:
       userAssignedManagedIdentity:
         type: string
         description: The resource ID of the managed identity used by the AKS cluster.
-  RestartVwRequest:
-    type: object
-    description: Request object for the restartVw method.
-    required:
-      - clusterId
-      - vwId
-    properties:
-      clusterId:
-        type: string
-        description: ID of the Virtual Warehouse's cluster.
-      vwId:
-        type: string
-        description: The id of the Virtual Warehouse to restart.
-  RestartVwResponse:
-    type: object
-    description: Response object for the restartVw method.
   CreateVwDiagnosticDataJobRequest:
     type: object
     description: Request object for the createVwDiagnosticDataJob method.

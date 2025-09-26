@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.146
+  version: 0.9.147
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -1334,7 +1334,6 @@ paths:
       operationId: unsetWorkloadPasswordMinLifetime
       x-form-factors: public
       x-right: iam/unsetWorkloadPasswordMinLifetime
-      x-entitlement: WORKLOAD_PASSWORD_POLICY
       x-mutating: true
       parameters:
         - name: input
@@ -1357,7 +1356,6 @@ paths:
       description: Set the workload password for the account. Changes to the workload password policy only affect passwords that are set after the policy has been updated. By default, passwords never expire.
       operationId: setWorkloadPasswordPolicy
       x-right: iam/setWorkloadPasswordPolicy
-      x-entitlement: WORKLOAD_PASSWORD_POLICY
       x-mutating: true
       parameters:
         - name: input
@@ -1380,7 +1378,6 @@ paths:
       description: Unset the workload password for the account. Changes to the workload password policy only affect passwords that are set after the policy has been updated.
       operationId: unsetWorkloadPasswordPolicy
       x-right: iam/unsetWorkloadPasswordPolicy
-      x-entitlement: WORKLOAD_PASSWORD_POLICY
       x-mutating: true
       parameters:
         - name: input
