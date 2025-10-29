@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.148
+  version: 0.9.149
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1305,6 +1305,12 @@ definitions:
       volumeType:
         type: string
         description: Type of disks to modify to on all the instances in a group.
+      diskType:
+        type: string
+        description: Whether to modify the root disk or additional disks.
+        enum:
+          - ROOT_DISK
+          - ADDITIONAL_DISK
   DatalakeDetails:
     type: object
     description: Details about a datalake

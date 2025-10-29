@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.148
+  version: 0.9.149
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -1272,7 +1272,7 @@ definitions:
         description: Cluster id of the CDE service where vc was created.
       vcId:
         type: string
-        description: Virtual cluster id.
+        description: Virtual Cluster ID.
   DescribeVcResponse:
     type: object
     description: DescribeVc response object.
