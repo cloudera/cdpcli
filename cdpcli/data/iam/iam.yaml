@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.149
+  version: 0.9.150
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -1715,6 +1715,30 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /iam/setSamlAuthnRequestSigningKey:
+    post:
+      summary: Sets the SAML AuthnRequest signing key and verification certificate.
+      description: Sets the SAML AuthnRequest signing key and verification certificate. The signing key will be used by CDP to sign the AuthnRequest and the verification certificate(s) will be used by the customer's Identity Provider to verify the AuthnRequest. These keys are generated and managed by the customer. The API always replaces the previously stored signing key and verification certificates with the given key and certificates. The parameters that are omitted from the request will be cleared.
+      operationId: setSamlAuthnRequestSigningKey
+      x-form-factors: private
+      x-entitlement: IAM_SIGN_SAML_AUTHN_REQUEST_BY_EXTERNAL_KEY
+      x-right: iam/setSamlAuthnRequestSigningKey
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetSamlAuthnRequestSigningKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetSamlAuthnRequestSigningKeyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /iam/migrateUsersToIdentityProvider:
     post:
       summary: Migrates all users from an identity provider connector to a different identity provider connector.
@@ -1734,6 +1758,30 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/MigrateUsersToIdentityProviderResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /iam/setSamlResponseDecryptionKey:
+    post:
+      summary: Sets encryption certificate and decryption key for SAML response sent from customer's Identity Provider to CDP.
+      description: Sets encryption certificate and decryption key for SAML response sent from customer's Identity Provider to CDP. These keys are generated and managed by the customer. The API always replaces the previously stored encryption and decryption keys with the given keys. The keys that are omitted from the request will be cleared. The encryption key will be used by the Identity Provider to encrypt the SAML response, and the decryption key will be used by CDP to decrypt the SAML response.
+      operationId: setSamlResponseDecryptionKey
+      x-form-factors: private
+      x-entitlement: IAM_DECRYPT_SAML_RESPONSE_BY_EXTERNAL_KEY
+      x-right: iam/setSamlResponseDecryptionKey
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetSamlResponseDecryptionKeyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetSamlResponseDecryptionKeyResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2172,6 +2220,40 @@ definitions:
       cdpSpMetadata:
         type: string
         description: The Service Provider SAML metadata specific to this CDP SAML provider. This field will only be set for createSamlProvider and describeSamlProvider API calls.
+      authnRequestConfigurationLastUpdated:
+        type: string
+        format: date-time
+        description: The date when SAML AuthnRequest signing key and verification certificates were set or cleared.
+        x-form-factor: private
+      authnRequestSigningKeyDefined:
+        type: boolean
+        description: Whether the AuthnRequest signing key is set or cleared.
+        x-form-factor: private
+      currentAuthnRequestVerificationCertificateDefined:
+        type: boolean
+        description: Whether the current AuthnRequest verification certificate is set or cleared.
+        x-form-factor: private
+      nextAuthnRequestVerificationCertificateDefined:
+        type: boolean
+        description: Whether the next AuthnRequest verification certificate is set or cleared.
+        x-form-factor: private
+      samlResponseEncryptionDecryptionConfigurationLastUpdated:
+        type: string
+        format: date-time
+        description: The date when SAML response encryption certificate and decryption keys were set or cleared.
+        x-form-factor: private
+      samlResponseEncryptionCertificateDefined:
+        type: boolean
+        description: Whether the SAML response encryption certificate is set or cleared.
+        x-form-factor: private
+      currentSamlResponseDecryptionKeyDefined:
+        type: boolean
+        description: Whether the current decryption key for SAML response is set or cleared.
+        x-form-factor: private
+      nextSamlResponseDecryptionKeyDefined:
+        type: boolean
+        description: Whether the next decryption key for SAML response is set or cleared.
+        x-form-factor: private
   SshPublicKey:
     type: object
     description: Information about an SSH public key.
@@ -4161,6 +4243,52 @@ definitions:
       machineUser:
         $ref: '#/definitions/MachineUser'
         description: The unlocked machine user.
+  SetSamlAuthnRequestSigningKeyRequest:
+    type: object
+    description: Request object for setting the SAML AuthnRequest signing key and verification certificate.
+    x-form-factor: private
+    required:
+      - samlProvider
+    properties:
+      samlProvider:
+        type: string
+        description: The name or CRN of the SAML Provider associated with the signing key.
+      authnRequestSigningKey:
+        type: string
+        description: The private key used for signing AuthnRequests sent from CDP to the customer's SAML provider. It must be in PEM format. It must be non-empty and valid when 'currentAuthnRequestVerificationCertificate' is set. Omitting it from request will remove this key.
+        x-sensitive: true
+      currentAuthnRequestVerificationCertificate:
+        type: string
+        description: The certificate used by SAML provider to verify AuthnRequests sent from CDP. It must be in PEM format. It must be non-empty and valid when 'authnRequestSigningKey' is set. Omitting it from request will remove this certificate.
+        x-skip-logging: true
+      nextAuthnRequestVerificationCertificate:
+        type: string
+        description: The next verification certificate used by the SAML provider to verify AuthnRequests sent from CDP. It must be in PEM format. It is used for rotating verification certificate, and is expected to be empty after certification rotation completes. When both the current and next AuthnRequest certificates are set, both will appear in the CDP SP SAML metadata, indicating the Identity Provider should validate if either of the certificates validates the signature of the AuthnRequest. Both must be valid certificates, not expired. Once the Identity Provider has been updated with the new CDP SP SAML metadata to use both certificates, the signing key can be updated to correspond to the next certificate, the current certificate set to what had been next, and the next certificate cleared. The CDP SP SAML metadata can then be updated in the Identity Provider to use only a single certificate before the previous certificate expires. This allows rotating the signing key without downtime.
+          Omitting it from request will remove this certificate.
+        x-skip-logging: true
+  SetSamlAuthnRequestSigningKeyResponse:
+    type: object
+    description: Response object for setting the SAML AuthnRequest signing key and verification certificate.
+    x-form-factor: private
+    required:
+      - authnRequestConfigurationLastUpdated
+      - authnRequestSigningKeyDefined
+      - currentAuthnRequestVerificationCertificateDefined
+      - nextAuthnRequestVerificationCertificateDefined
+    properties:
+      authnRequestConfigurationLastUpdated:
+        type: string
+        format: date-time
+        description: The date when SAML AuthnRequest signing key and verification certificates were set or cleared.
+      authnRequestSigningKeyDefined:
+        type: boolean
+        description: Whether the AuthnRequest signing key is set or cleared.
+      currentAuthnRequestVerificationCertificateDefined:
+        type: boolean
+        description: Whether the current AuthnRequest verification certificate is set or cleared.
+      nextAuthnRequestVerificationCertificateDefined:
+        type: boolean
+        description: Whether the next AuthnRequest verification certificate is set or cleared.
   MigrateUsersToIdentityProviderRequest:
     type: object
     description: Request object for migrating users from an Identity Provider Connector to a new one.
@@ -4186,6 +4314,51 @@ definitions:
         type: integer
         format: int32
         description: The number of users that were migrated from the old IdP to the new one.
+  SetSamlResponseDecryptionKeyRequest:
+    type: object
+    description: Request object for setting the encryption certificate and decryption key for SAML response.
+    x-form-factor: private
+    required:
+      - samlProvider
+    properties:
+      samlProvider:
+        type: string
+        description: The name or CRN of the SAML Provider associated with the decryption key.
+      samlResponseEncryptionCertificate:
+        type: string
+        description: The certificate used by Identity Provider for encrypting SAML responses. It must be in PEM format. It must be non-empty and valid when 'currentSamlResponseDecryptionKey' is also set. Setting it to an empty string will remove this certificate.
+        x-skip-logging: true
+      currentSamlResponseDecryptionKey:
+        type: string
+        description: The current private key used for decrypting incoming encrypted SAML responses from the customer's Identity Provider to CDP. It must be in PEM format. It must be non-empty and valid when 'samlResponseEncryptionCertificate' is set. Setting it to an empty string will remove this key.
+        x-sensitive: true
+      nextSamlResponseDecryptionKey:
+        type: string
+        description: The next private key used for decrypting incoming encrypted SAML responses from the customer's IdP to CDP, during key rotation. It must be in PEM format. It is used for rotating keys without downtime, and is expected to be empty after key rotation completes. When both the current and next decryption keys are set, CDP will try to decrypt with both the keys. Both must be valid keys. Omitting this parameter from the request will remove it.
+        x-sensitive: true
+  SetSamlResponseDecryptionKeyResponse:
+    type: object
+    description: Response object for setting the encryption certificate and decryption key for SAML response.
+    x-form-factor: private
+    required:
+      - samlResponseEncryptionDecryptionConfigurationLastUpdated
+      - samlResponseEncryptionCertificateDefined
+      - currentSamlResponseDecryptionKeyDefined
+      - nextSamlResponseDecryptionKeyDefined
+    properties:
+      samlResponseEncryptionDecryptionConfigurationLastUpdated:
+        type: string
+        format: date-time
+        description: The date when SAML response encryption certificate and decryption keys were set or cleared.
+      samlResponseEncryptionCertificateDefined:
+        type: boolean
+        description: Whether the SAML response encryption certificate is set or cleared.
+      currentSamlResponseDecryptionKeyDefined:
+        type: boolean
+        description: Whether the current decryption key for SAML response is set or cleared.
+      nextSamlResponseDecryptionKeyDefined:
+        type: boolean
+        description: Whether the next decryption key for SAML response is set or cleared.
   EnableUserWorkloadPasswordChangedNotificationsRequest:
     type: object
     description: Request object to enable user workload password changed notifications.

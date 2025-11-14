@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.149
+  version: 0.9.150
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -307,7 +307,7 @@ paths:
   /api/v1/df/describeDeployment:
     post:
       summary: Describe deployment.
-      description: Describes a deployment
+      description: Describes a deployment.
       operationId: describeDeployment
       x-entitlement: DFX
       parameters:
@@ -329,7 +329,7 @@ paths:
   /api/v1/df/describeDeploymentEventDetail:
     post:
       summary: Describe event detail for deployment.
-      description: Describe event detail for deployment.
+      description: Describes event detail for deployment.
       operationId: describeDeploymentEventDetail
       x-entitlement: DFX
       parameters:
@@ -618,7 +618,7 @@ paths:
   /api/v1/df/initiateDeployment:
     post:
       summary: Initiate a deployment creation.
-      description: Initiate a deployment creation.
+      description: Initiates a deployment creation.
       operationId: initiateDeployment
       x-entitlement: DFX
       parameters:
@@ -707,7 +707,7 @@ paths:
   /api/v1/df/listDeploymentEvents:
     post:
       summary: List event history for deployment.
-      description: List event history for deployment.
+      description: Lists event history for deployment.
       operationId: listDeploymentEvents
       x-entitlement: DFX
       parameters:
@@ -2516,7 +2516,7 @@ definitions:
         $ref: '#/definitions/FlowSummary'
   InitiateDeploymentRequest:
     type: object
-    description: A request to initiate a deployment
+    description: A request to initiate a deployment.
     required:
       - serviceCrn
       - flowVersionCrn
@@ -2532,7 +2532,7 @@ definitions:
         description: The deployment CRN for a deployment where change flow version is being performed.
   InitiateDeploymentResponse:
     type: object
-    description: A response from initiating a deployment
+    description: A response from initiating a deployment.
     required:
       - deploymentRequestCrn
       - dfxLocalUrl
@@ -2542,7 +2542,7 @@ definitions:
         description: The newly created deployment request CRN.
       dfxLocalUrl:
         type: string
-        description: Base URL to the dfx-local instance running an eventually created deployment
+        description: The base URL of the dfx-local instance where the deployment will eventually be created.
   DeploymentState:
     type: string
     description: The state that the deployment is currently in.
@@ -2568,7 +2568,7 @@ definitions:
       - CHANGING_FLOW_VERSION
   DeploymentStatus:
     type: object
-    description: The status of a deployment
+    description: The status of a deployment.
     required:
       - detailedState
       - message
@@ -2576,16 +2576,16 @@ definitions:
     properties:
       detailedState:
         type: string
-        description: The detailed state that the deployment is currently in
+        description: The detailed state that the deployment is currently in.
       message:
         type: string
-        description: Detail message relating to the current status of the deployment
+        description: Detail message relating to the current status of the deployment.
       state:
-        description: The state that the deployment is currently in
+        description: The state that the deployment is currently in.
         $ref: '#/definitions/DeploymentState'
   DeploymentSummary:
     type: object
-    description: A deployment summary
+    description: A deployment summary.
     required:
       - crn
       - name
@@ -2595,38 +2595,38 @@ definitions:
     properties:
       crn:
         type: string
-        description: The deployment CRN
+        description: The deployment CRN.
       name:
         type: string
-        description: The deployment name
+        description: The deployment name.
       status:
-        description: The deployment status
+        description: The deployment status.
         $ref: '#/definitions/DeploymentStatus'
       service:
-        description: The DataFlow service information of the deployment
+        description: The DataFlow service information of the deployment.
         $ref: '#/definitions/ServiceMeta'
       updated:
         type: integer
         format: int64
-        description: Timestamp of the last time the deployment was modified
+        description: Timestamp of the last time the deployment was modified.
       activeInfoAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as an info
+        description: Current count of active alerts classified as informational.
       activeWarningAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as a warning
+        description: Current count of active alerts classified as warnings.
       activeErrorAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as an error
+        description: Current count of active alerts classified as errors.
       project:
         description: The project information of the deployment.
         $ref: '#/definitions/ProjectMeta'
   Deployment:
     type: object
-    description: A deployment
+    description: A deployment.
     required:
       - crn
       - name
@@ -2639,53 +2639,53 @@ definitions:
     properties:
       crn:
         type: string
-        description: The deployment CRN
+        description: The deployment CRN.
       name:
         type: string
-        description: The deployment name
+        description: The deployment name.
       status:
-        description: The deployment status
+        description: The deployment status.
         $ref: '#/definitions/DeploymentStatus'
       service:
-        description: The DataFlow service information of the deployment
+        description: The DataFlow service information of the deployment.
         $ref: '#/definitions/ServiceMeta'
       updated:
         type: integer
         format: int64
-        description: Timestamp of the last time the deployment was modified
+        description: Timestamp of the last time the deployment was modified.
       clusterSize:
         type: string
-        description: The initial size of the deployment
+        description: The initial size of the deployment.
       flowVersionCrn:
         type: string
-        description: The deployment's current flow version CRN
+        description: The deployment's current flow version CRN.
       flowCrn:
         type: string
-        description: The deployment's current flow CRN
+        description: The CRN of the flow definition.
       nifiUrl:
         type: string
-        description: The url to open the deployed flow in NiFi
+        description: The url to open the deployed flow in NiFi.
       autoscaleMaxNodes:
         type: integer
         format: int32
-        description: The maximum number of nodes that the deployment can scale up to, or null if autoscaling is not enabled for this deployment
+        description: The maximum number of nodes that the deployment can scale up to, or null if autoscaling is not enabled for this deployment.
       flowName:
         type: string
-        description: The name of the flow
+        description: The name of the flow.
       flowVersion:
         type: integer
         format: int32
-        description: The version of the flow
+        description: The version of the flow.
       currentNodeCount:
         type: integer
         format: int32
-        description: The current node count
+        description: The current node count.
       deployedByCrn:
         type: string
-        description: The actor CRN of the person who deployed the flow
+        description: The actor CRN of the person who deployed the flow.
       deployedByName:
         type: string
-        description: The name of the person who deployed the flow
+        description: The name of the person who deployed the flow.
       autoscalingEnabled:
         type: boolean
         description: Whether or not to autoscale the deployment.
@@ -2696,29 +2696,29 @@ definitions:
       activeInfoAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as an info
+        description: Current count of active alerts classified as informational.
       activeWarningAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as a warning
+        description: Current count of active alerts classified as warnings.
       activeErrorAlertCount:
         type: integer
         format: int64
-        description: Current count of active alerts classified as an error
+        description: Current count of active alerts classified as errors.
       staticNodeCount:
         type: integer
         format: int32
         description: The static number of nodes that the deployment will allocate. May only be specified when autoscalingEnabled is false.
       dfxLocalUrl:
         type: string
-        description: Base URL to the dfx-local instance running this deployment
+        description: Base URL to the dfx-local instance running this deployment.
       lastUpdatedByName:
         type: string
-        description: The name of the person who last updated the deployment
+        description: The name of the person who last updated the deployment.
       configurationVersion:
         type: integer
         format: int64
-        description: The version of the configuration for this deployment
+        description: The version of the configuration for this deployment.
       cfmNifiVersion:
         type: string
         description: The version of NiFi being used by this deployment.
@@ -2726,45 +2726,45 @@ definitions:
         type: boolean
         description: Whether or not to use Flow metrics to scale the deployment. May only be specified when autscalingEnabled is true.
       project:
-        description: The project information of the deployment
+        description: The project information of the deployment.
         $ref: '#/definitions/ProjectMeta'
   FilterOption:
     type: object
-    description: A filter option
+    description: A filter option.
     required:
       - identifier
       - label
     properties:
       identifier:
         type: string
-        description: The filter identifier
+        description: The filter identifier.
       label:
         type: string
-        description: The filter label
+        description: The filter label.
       iconClass:
         type: string
-        description: The icon class
+        description: The icon class.
   ListFilterOptionsRequest:
     type: object
-    description: A request to list filter options
+    description: A request to list filter options.
     required:
       - filterType
     properties:
       filterType:
         type: string
-        description: The type of filter
+        description: The type of filter.
   ListFilterOptionsResponse:
     type: object
-    description: A response to list filter options
+    description: A response to list filter options.
     properties:
       filterOptions:
         type: array
         items:
           $ref: '#/definitions/FilterOption'
-        description: The filter options
+        description: The filter options.
   ListDeploymentsRequest:
     type: object
-    description: A request to list deployments
+    description: A request to list deployments.
     properties:
       pageSize:
         type: integer
@@ -2781,15 +2781,15 @@ definitions:
         type: array
         items:
           type: string
-        description: The sort criteria
+        description: The sort criteria (updated|name|state|dataSent|dataReceived):(asc|desc) e.g., name:asc.
       filters:
         type: array
         items:
           type: string
-        description: The filter criteria
+        description: The filter criteria (see list-filter-options).
   ListDeploymentsResponse:
     type: object
-    description: A response from listing deployments
+    description: A response from listing deployments.
     properties:
       nextToken:
         type: string
@@ -2800,148 +2800,148 @@ definitions:
         x-paging-result: true
         items:
           $ref: '#/definitions/DeploymentSummary'
-        description: The listing of deployments in this page
+        description: The listing of deployments in this page.
   DescribeDeploymentRequest:
     type: object
-    description: A request to describe a deployment
+    description: A request to describe a deployment.
     required:
       - deploymentCrn
     properties:
       deploymentCrn:
         type: string
-        description: The deployment CRN
+        description: The deployment CRN.
   DescribeDeploymentResponse:
     type: object
-    description: A response to describe a deployment
+    description: A response to describe a deployment.
     properties:
       deployment:
-        description: The deployment
+        description: The deployment.
         $ref: '#/definitions/Deployment'
   ListDeploymentKPIsRequest:
     type: object
-    description: A request to list deployment KPIs
+    description: A request to list deployment KPIs.
     required:
       - deploymentCrn
       - metricsTimePeriod
     properties:
       deploymentCrn:
         type: string
-        description: The deployment CRN
+        description: The deployment CRN.
       metricsTimePeriod:
         type: string
-        description: The metrics time period
+        description: The metrics time period.
   ListDeploymentKPIsResponse:
     type: object
-    description: A response to list deployment KPIs
+    description: A response to list deployment KPIs.
     properties:
       metricCharts:
         type: array
         items:
           $ref: '#/definitions/MetricChart'
-        description: The metrics for the configured KPIs
+        description: The metrics for the configured KPIs.
   ListDeploymentSystemMetricsRequest:
     type: object
-    description: A request to list deployment system metrics
+    description: A request to list deployment system metrics.
     required:
       - deploymentCrn
       - metricsTimePeriod
     properties:
       deploymentCrn:
         type: string
-        description: The deployment CRN
+        description: The deployment CRN.
       metricsTimePeriod:
         type: string
-        description: The metrics time period
+        description: The metrics time period.
   ListDeploymentSystemMetricsResponse:
     type: object
-    description: A response to list deployment system metrics
+    description: A response to list deployment system metrics.
     properties:
       metricCharts:
         type: array
         items:
           $ref: '#/definitions/MetricChart'
-        description: The metrics for the configured KPIs
+        description: The metrics for the configured KPIs.
   ListDeploymentActiveAlertsRequest:
     type: object
-    description: A request to list active alerts for deployment
+    description: A request to list active alerts for deployment.
     required:
       - deploymentCrn
     properties:
       deploymentCrn:
         type: string
-        description: The deployment CRN
+        description: The deployment CRN.
       sort:
         type: string
-        description: Sort criteria
+        description: Sort criteria.
   ListDeploymentActiveAlertsResponse:
     type: object
-    description: A response to list active alerts for deployment
+    description: A response to list active alerts for deployment.
     properties:
       eventSummaries:
         type: array
         items:
           $ref: '#/definitions/EventSummary'
-        description: The events for the specified deployment
+        description: The events for the specified deployment.
   ListDeploymentEventsRequest:
     type: object
-    description: A request to list event history for deployment
+    description: A request to list event history for deployment.
     required:
       - deploymentCrn
     properties:
       deploymentCrn:
         type: string
-        description: The deployment CRN
+        description: The deployment CRN.
       rows:
         type: integer
         format: int32
-        description: Max number of rows to return
+        description: Max number of rows to return.
       timestampFrom:
         type: integer
         format: int64
-        description: Timestamp from when to list events prior
+        description: Timestamp from when to list events prior.
       filters:
         type: array
         items:
           type: string
-        description: Filter criteria
+        description: Filter criteria (see list-filter-options).
   ListDeploymentEventsResponse:
     type: object
-    description: A response to list event history for deployment
+    description: A response to list event history for deployment.
     properties:
       eventSummaries:
         type: array
         items:
           $ref: '#/definitions/EventSummary'
-        description: The events
+        description: The list of events.
   DescribeDeploymentEventDetailRequest:
     type: object
-    description: A request to describe event details for development
+    description: A request to describe event details for deployment.
     required:
       - deploymentCrn
       - eventCrn
     properties:
       deploymentCrn:
         type: string
-        description: The CRN of the deployment
+        description: The CRN of the deployment.
       eventCrn:
         type: string
-        description: The CRN of the event
+        description: The CRN of the event.
   DescribeDeploymentEventDetailResponse:
     type: object
-    description: A response to describe event details for development
+    description: A response to describe event details for deployment.
     properties:
       eventDetail:
-        description: The event details
+        description: The event details.
         $ref: '#/definitions/EventDetail'
   EventDetail:
     type: object
-    description: Event details
+    description: Event details.
     properties:
       event:
-        description: The event
+        description: The event.
         $ref: '#/definitions/Event'
       metricSummary:
-        description: the metric summary
+        description: the metric summary.
         $ref: '#/definitions/MetricSummary'
   DiagnosticsDestination:
     type: string

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.149
+  version: 0.9.150
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -620,8 +620,8 @@ paths:
             $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/get-deployment-request-details:
     post:
-      summary: Retrieves deployment request details.
-      description: Retrieves deployment request details.
+      summary: Retrieves deployment request details and registers the deployment request.
+      description: Retrieves deployment request details and registers the deployment request.
       operationId: getDeploymentRequestDetails
       x-workload: true
       x-client-only: true
@@ -3249,7 +3249,7 @@ definitions:
         description: The deployment's current flow CRN.
       creatorCrn:
         type: string
-        description: The CRN of the user who deployed the flow.
+        description: The CRN of the user who deployed the first flow.
       artifactTypeName:
         type: string
         description: The type of artifact of the flow.
@@ -3259,10 +3259,10 @@ definitions:
         description: The current node count.
       deployedByUsername:
         type: string
-        description: The username of the person who deployed the flow.
+        description: The username of the person who deployed the first flow.
       deployedByName:
         type: string
-        description: The name of the person who deployed the flow.
+        description: The name of the person who deployed the first flow.
       dfxLocalUrl:
         type: string
         description: Base URL to the CDF Local instance running this deployment.
@@ -3363,7 +3363,7 @@ definitions:
         description: The version of this configuration.
       parameterGroups:
         type: array
-        description: The list of flow parameter groups.
+        description: The list of flow parameter groups, for the first deployed flow.
         items:
           $ref: '#/definitions/FlowParameterGroup'
       autoScalingEnabled:
@@ -3428,7 +3428,7 @@ definitions:
         readOnly: true
       kpisDirty:
         type: boolean
-        description: Indicates whether or not the current KPIs have successfully been deployed as alert rules.
+        description: Indicates whether or not the current KPIs have successfully been deployed as alert rules, at the deployment level. Use kpisDirty inside deployedFlowConfigurations for any flow-level KPIs.
         readOnly: true
       sizingAndScalingDirty:
         type: boolean
@@ -3882,7 +3882,7 @@ definitions:
         description: The CRN of the custom resource configuration to update.
   UpdateDeploymentRequest:
     type: object
-    description: Provides all of the configuration that dictates how a flow should be deployed.
+    description: Provides all of the configuration that dictates how a deployment should be updated.
     x-workload: true
     x-client-only: true
     required:
@@ -3893,13 +3893,19 @@ definitions:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The CRN of the existing deployment to be updated.
       configurationVersion:
         type: integer
         format: int32
         description: The version of this configuration.
-      deploymentCrn:
+      assetUpdateRequestCrn:
         type: string
-        description: The CRN of the existing deployment to be updated.
+        description: The CRN of the asset update request. Required when updating assets of an existing deployment.
+      clusterSize:
+        description: The deployment t-shirt size.
+        $ref: '#/definitions/BasicClusterSize'
       parameterGroups:
         type: array
         description: The list of flow parameter groups.
@@ -3925,15 +3931,9 @@ definitions:
         description: The static number of nodes that the cluster should allocate. May only be specified when autoScalingEnabled is false.
       kpis:
         type: array
-        description: The list of configured KPIs.
+        description: The list of Key Performance Indicators (KPIs) with which to replace the current list of configured KPIs. Only deployment-level KPIs are allowed. To configure flow-level KPIs, use update-flow-in-deployment. If the list is empty, all KPIs are deleted; however, if it is not specified, the current KPI settings are not updated.
         items:
           $ref: '#/definitions/ConfiguredKpi'
-      clusterSize:
-        description: The deployment t-shirt size.
-        $ref: '#/definitions/BasicClusterSize'
-      assetUpdateRequestCrn:
-        type: string
-        description: The CRN of the asset update request. Required when updating assets of an existing deployment.
   UpdateDeploymentResponse:
     type: object
     description: Response object from updating a deployment.

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.149
+  version: 0.9.150
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -4238,7 +4238,11 @@ definitions:
     properties:
       envNameOrCrn:
         type: string
-        description: Name or Crn of the environment.
+        description: Deprecated. Please use 'environment' field instead.
+        x-deprecated: true
+      environment:
+        type: string
+        description: The name or CRN of the environment.
   ListConnectedDataServicesRequest:
     type: object
     description: Request object for listing connected Data Service(s) for a given environment.

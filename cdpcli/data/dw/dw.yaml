@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.149
+  version: 0.9.150
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -650,6 +650,72 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/dw/registerSecret:
+    post:
+      x-form-factors: public
+      x-mutating: true
+      summary: Registers a reference to a secret stored in the vault of the cloud provider.
+      description: Registers a reference to a secret stored in the vault of the cloud provider and stores its metadata in the database. The secret is used to connect to an external data source.
+      operationId: registerSecret
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RegisterSecretRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RegisterSecretResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/listSecrets:
+    post:
+      x-form-factors: public,private
+      x-mutating: false
+      summary: Lists all secrets.
+      description: Lists all the cloud provider secrets in a particular environment.
+      operationId: listSecrets
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListSecretsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListSecretsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/deleteSecret:
+    post:
+      x-form-factors: public,private
+      x-mutating: true
+      summary: Deletes a secret.
+      description: Deletes a secret from the database.
+      operationId: deleteSecret
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteSecretRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteSecretResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/dw/createDbc:
     post:
       x-no-compatibility-guarantee: true
@@ -2072,6 +2138,9 @@ definitions:
       serviceId:
         type: string
         description: Filters events based on the service ID. It can be Cluster ID, Database Catalog ID, Virtual Warehouse ID or Data Visualization App ID.
+      event:
+        type: string
+        description: 'Filters events based on the event. Case-insensitive filter, it matches sub-strings as well. Filtering for "comp" will return all the events containing the "comp" sub-string e.g.: "Completed".'
       limit:
         type: integer
         format: int32
@@ -2393,14 +2462,6 @@ definitions:
       environmentCrn:
         type: string
         description: The CRN of the environment for the cluster to create.
-      delegationUsername:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Name of delegation user. This user is used between Hue - Impala to create a session, as Hue should not pass the user credentials, instead Hue authenticates with the delegation user, then this user will impersonate the logged in user. This means that the Delegation User and Password should be able to authenticate through LDAP.'
-      delegationPassword:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Password of delegation user.'
       storageClass:
         type: string
         description: The storage class for the Local Storage Operator.
@@ -2502,6 +2563,11 @@ definitions:
         description: The plan for the restoration of the Hue Query Editors.
         items:
           $ref: '#/definitions/RestoreClusterEntityPlan'
+      dwxSecretsRestorePlans:
+        type: array
+        description: The plan for the restoration of the DWX Secrets.
+        items:
+          type: string
   RestoreClusterEntityPlan:
     type: object
     description: Entity status after the restore operation.
@@ -2633,14 +2699,6 @@ definitions:
     description: Options for activating a Private Cloud environment.
     x-form-factors: private
     properties:
-      delegationUsername:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Name of delegation user. This user is used between Hue - Impala to create a session, as Hue should not pass the user credentials, instead Hue authenticates with the delegation user, then this user will impersonate the logged in user. This means that the Delegation User and Password should be able to authenticate through LDAP.'
-      delegationPassword:
-        x-deprecated: true
-        type: string
-        description: 'DEPRECATED: As of PVC 1.5.4 we no longer use delegation user. Password of delegation user.'
       storageClass:
         type: string
         description: The storage class for the Local Storage Operator.
@@ -2859,6 +2917,10 @@ definitions:
       resourceTemplate:
         type: string
         description: The name of the available resource template to use for the Cloudera Data Visualization.
+      resourcePool:
+        type: string
+        description: The Resource Pool of the Cloudera Data Visualization.
+        x-form-factors: private
   CreateDataVisualizationResponse:
     type: object
     description: Response object for the createDataVisualization method.
@@ -2947,6 +3009,97 @@ definitions:
       status:
         type: string
         description: The status of asynchronous update configuration request for Cloudera Data Visualization. To find the latest status please use describe-data-visualization.
+  RegisterSecretRequest:
+    type: object
+    description: Request object for creating secret.
+    properties:
+      secretName:
+        type: string
+        description: Name of the secret.
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+      secretProviderKey:
+        type: string
+        description: Key of the Secret Provider.
+      azureVaultName:
+        type: string
+        description: Name of the Azure vault.
+  RegisterSecretResponse:
+    type: object
+    description: Response object for registering secret.
+    properties:
+      result:
+        description: Result of the operation.
+        $ref: '#/definitions/Secret'
+  ListSecretsRequest:
+    type: object
+    description: Request object for listing secrets.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+  ListSecretsResponse:
+    type: object
+    description: Response object for listing secrets.
+    properties:
+      result:
+        type: array
+        items:
+          $ref: '#/definitions/Secret'
+        description: The list of secrets.
+  DeleteSecretRequest:
+    type: object
+    description: Request object for deleting secret.
+    required:
+      - clusterId
+      - secretName
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+      secretName:
+        type: string
+        description: Name of the secret.
+  DeleteSecretResponse:
+    type: object
+    description: Response object for deleting secret.
+    properties:
+      result:
+        type: object
+        description: Result of the operation.
+        properties:
+          secretName:
+            type: string
+            description: Name of the secret.
+  Secret:
+    type: object
+    description: Details of a single DWX secret.
+    properties:
+      secretName:
+        type: string
+        description: The user-facing name of the secret.
+      secretProviderKey:
+        type: string
+        description: The provider key name associated with the secret.
+      createdBy:
+        type: string
+        description: The CRN of the user who created the secret.
+      properties:
+        type: object
+        description: The properties of the secret.
+        properties:
+          cloudProvider:
+            type: string
+            description: The cloud provider associated with the secret.
+          version:
+            type: string
+            description: The version of the secret.
+          azureVaultName:
+            type: string
+            description: The name of the Azure Key Vault.
   CreateDbcRequest:
     type: object
     description: Request object for the createDbc method.
@@ -3415,6 +3568,10 @@ definitions:
       imageVersion:
         type: string
         description: Image version of the Cloudera Data Visualization to upgrade to.
+      resourcePool:
+        type: string
+        description: The name of the Resource Pool the Cloudera Data Visualization will be assigned to.
+        x-form-factors: private
   UpgradeDataVisualizationResponse:
     type: object
     description: Response object for the upgradeDataVisualization method.
@@ -3720,6 +3877,9 @@ definitions:
         type: integer
         format: int32
         description: The number of active coordinators.
+      impalaEnableGlobalAdmissionController:
+        type: boolean
+        description: Set whether the Impala Global Admission Controller is enabled. Once disabled, it cannot be re-enabled.
   AutoscalingOptionsResponse:
     type: object
     description: Auto-scaling configuration for a Virtual Warehouse.
@@ -3812,6 +3972,9 @@ definitions:
       enableStatestoreHighAvailability:
         type: boolean
         description: Denotes whether a backup instance for Impala Statestore is enabled.
+      impalaEnableGlobalAdmissionController:
+        type: boolean
+        description: Denotes whether the Impala Global Admission Controller is enabled.
   ImpalaHighAvailabilityMode:
     type: string
     enum:
@@ -4106,6 +4269,10 @@ definitions:
   RebuildVwResponse:
     type: object
     description: Response object for the rebuildVw method.
+    properties:
+      warning:
+        type: string
+        description: Warning message during Virtual Warehouse rebuild
   DeleteVwRequest:
     type: object
     description: Request object for the deleteVw method.
@@ -4122,6 +4289,10 @@ definitions:
   DeleteVwResponse:
     type: object
     description: Response object for the deleteVw method.
+    properties:
+      warning:
+        type: string
+        description: Warning message during Virtual Warehouse deletion
   ActorResponse:
     type: object
     description: A CDP actor (user or machine user).
@@ -4171,6 +4342,9 @@ definitions:
       nonTransparentProxy:
         description: Non-transparent proxy settings.
         $ref: '#/definitions/AwsOptionsNonTransparentProxyResponse'
+      kmsKey:
+        type: string
+        description: KMS key used in encryption of EBS, EFS, RDS and EKS Secrets.
   AwsOptionsNonTransparentProxyResponse:
     type: object
     description: 'Non-transparent proxy settings. Read more: https://docs.cloudera.com/data-warehouse/cloud/aws-environments/topics/dw-aws-use-non-transparent-proxy.html'
@@ -5068,11 +5242,6 @@ definitions:
         x-nullable: true
         type: boolean
         description: Denotes whether the Hive Virtual Warehouse stores Hive query information for all completed queries in the sys.query_history system table. You can query this table using SQL to monitor and optimize the Hive engine.
-      resourcePool:
-        type: string
-        description: 'DEPRECATED: This functionality will be removed in the next release. Used to set the resource pool of the Virtual Warehouses that are not enrolled for quota management.'
-        x-form-factors: private
-        x-deprecated: true
       hiveServerHaMode:
         type: string
         x-nullable: true
@@ -5081,6 +5250,13 @@ definitions:
   UpdateVwResponse:
     type: object
     description: Response object for the updateVw method.
+    properties:
+      message:
+        type: string
+        description: Success message
+      warning:
+        type: string
+        description: Warning message during Virtual Warehouse update
   UpdateDbcRequest:
     type: object
     description: Request object for the updateDbc method.
@@ -5097,11 +5273,6 @@ definitions:
       resourceTemplateId:
         type: string
         description: The resource template of the Database Catalog.
-      resourcePool:
-        type: string
-        description: 'DEPRECATED: This functionality will be removed in the next release. Sets the resource pool of the Database Catalog. Updating an already set resource pool for a Database Catalog is not supported.'
-        x-form-factors: private
-        x-deprecated: true
       config:
         description: The service configuration to update the DBC with. This will be applied on top of the existing configuration so there's no need to list configurations that stay the same.
         $ref: '#/definitions/ServiceConfigReq'
@@ -5148,6 +5319,7 @@ definitions:
         additionalProperties:
           description: Key-value type configurations.
           type: string
+          x-no-paramfile: true
       text:
         type: string
         description: Text type configuration.
@@ -5209,11 +5381,6 @@ definitions:
         items:
           type: string
         description: Admin groups to allow configuration access to Data Visualization for selected users
-      resourcePool:
-        type: string
-        description: 'DEPRECATED: This functionality for update will be removed in the next release. For create, please use the new resourcePool field. The Resource Pool of the Cloudera Data Visualization.'
-        x-form-factors: private
-        x-deprecated: true
   ConfigContentDiff:
     type: object
     description: Difference between two ConfigContents.
@@ -5406,6 +5573,13 @@ definitions:
   SuspendVwResponse:
     type: object
     description: The response object for the suspendVw method.
+    properties:
+      message:
+        type: string
+        description: Success message
+      warning:
+        type: string
+        description: Warning message during Virtual Warehouse suspend
   AddUserRequest:
     type: object
     description: Request object for the addUser method.
@@ -5706,6 +5880,10 @@ definitions:
       imageVersion:
         type: string
         description: The version to which the Virtual Warehouse should be upgraded.
+      resourcePool:
+        type: string
+        description: The name of the Resource Pool the Cloudera Data Visualization will be assigned to.
+        x-form-factors: private
   UpgradeVwResponse:
     type: object
     description: Response object for the upgradeVw method.
@@ -5722,6 +5900,9 @@ definitions:
       serviceUnhealthy:
         type: boolean
         description: True, if the service is in unhealthy state, false or omitted otherwise.
+      warning:
+        type: string
+        description: Warning message during Virtual Warehouse upgrade.
   GetUpgradeVwVersionsRequest:
     type: object
     description: Request object for the getUpgradeVwVersions method.
@@ -5965,6 +6146,9 @@ definitions:
         description: A list of namespaces of the potential candidates for restore. If not set, all of the Data Warehouse namespaces within the backup CRN will be restored.
         items:
           type: string
+      rebuild:
+        description: Rebuilds the Database Catalogs, Cloudera Data Visualizations, Hive Virtual Warehouses and Impala Virtual Warehouses restored from the backup. This option cannot be used for automatic backups.
+        type: boolean
   RestoreBackupResponse:
     type: object
     x-form-factors: private
@@ -5975,6 +6159,9 @@ definitions:
       restoreCrn:
         type: string
         description: The CRN of the restore.
+      message:
+        type: string
+        description: Additional message from the restore process.
   DescribeRestoreRequest:
     type: object
     x-form-factors: private
