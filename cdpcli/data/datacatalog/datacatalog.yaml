@@ -5,7 +5,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.150
+  version: 0.9.151
   title: Cloudera DataCatalog Service
   license:
     name: Apache 2.0
@@ -35,6 +35,50 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/LaunchProfilersResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datacatalog/getSuggestedTags:
+    post:
+      summary: Get Suggested tags by the Data Compliance profiler.
+      description: Get the tags suggested by the Data Compliance profiler.
+      operationId: getSuggestedTags
+      x-entitlement: DATA_CATALOG_ENABLE_API_SERVICE
+      x-mutating: false
+      parameters:
+        - in: body
+          name: input
+          required: true
+          schema:
+            $ref: '#/definitions/GetSuggestedTagsRequest'
+      responses:
+        200:
+          description: List of suggested tags.
+          schema:
+            $ref: '#/definitions/GetSuggestedTagsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datacatalog/reviewSuggestedTags:
+    post:
+      summary: Review tags suggested by Data Compliance Profiler
+      description: Review the tags suggested by the Data Compliance profiler.
+      operationId: reviewSuggestedTags
+      x-entitlement: DATA_CATALOG_ENABLE_API_SERVICE
+      x-mutating: true
+      parameters:
+        - in: body
+          name: input
+          required: true
+          schema:
+            $ref: '#/definitions/ReviewSuggestedTagsRequest'
+      responses:
+        200:
+          description: Accept or Reject tags suggested by Data Compliance Profiler.
+          schema:
+            $ref: '#/definitions/ReviewSuggestedTagsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -141,3 +185,107 @@ definitions:
       catalogName:
         type: string
         description: The image catalog name.
+  GetSuggestedTagsRequest:
+    type: object
+    description: Get the tags suggested by the Data Compliance Profiler.
+    required:
+      - datalakeCrn
+    properties:
+      datalakeCrn:
+        type: string
+        description: The CRN of the Datalake.
+      tableFQN:
+        type: string
+        description: The fully qualified name of the table.
+      columnFQN:
+        type: string
+        description: The fully qualified name of the column.
+      profiledSince:
+        type: string
+        format: date-time
+        description: Tags suggested by the profiler since this date.
+  GetSuggestedTagsResponse:
+    type: object
+    description: Tags suggested by the Data Compliance Profiler.
+    properties:
+      suggestedTags:
+        type: array
+        description: List of suggested tags.
+        items:
+          type: object
+          description: Details of the suggested tags.
+          properties:
+            qualifiedName:
+              type: string
+              description: The fully qualified name of the asset.
+            tags:
+              type: array
+              description: List of suggested tags.
+              items:
+                type: string
+                description: The name of the suggested tag.
+  ReviewSuggestedTagsRequest:
+    type: object
+    description: Request to review suggested tags.
+    required:
+      - datalakeCrn
+      - assets
+      - action
+    properties:
+      datalakeCrn:
+        type: string
+        description: The CRN of the Datalake.
+      assets:
+        type: array
+        description: List of assets for which tags are being reviewed.
+        items:
+          $ref: '#/definitions/AssetsToReviewRequest'
+      action:
+        type: string
+        description: Action to be taken on the suggested tags. (ACCEPT, REJECT)
+        enum:
+          - ACCEPT
+          - REJECT
+  AssetsToReviewRequest:
+    type: object
+    description: Asset details for which tags are being reviewed.
+    required:
+      - qualifiedName
+      - tags
+    properties:
+      qualifiedName:
+        type: string
+        description: The fully qualified name of the asset.
+      tags:
+        type: array
+        description: List of tags to be reviewed.
+        items:
+          type: string
+          description: The name of the tag to be reviewed.
+  ReviewSuggestedTagsResponse:
+    type: object
+    description: Review suggested tags response.
+    properties:
+      reviewedTags:
+        type: array
+        description: List of reviewed tags.
+        items:
+          type: object
+          description: Details of the reviewed tags.
+          properties:
+            qualifiedName:
+              type: string
+              description: The fully qualified name of the asset.
+            tagsUpdated:
+              type: array
+              description: List of tags on which have been reviewed.
+              items:
+                type: string
+                description: The name of the reviewed tag.
+            status:
+              type: string
+              description: The current status of the tags. (ACCEPTED, REJECTED, FAILED)
+              enum:
+                - ACCEPTED
+                - REJECTED
+                - FAILED

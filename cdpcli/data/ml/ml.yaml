@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.150
+  version: 0.9.151
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -900,6 +900,50 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/refreshAiInference:
+    post:
+      summary: Refresh AI Inference trust store.
+      description: Refreshes the trust store certificates for the AI Inference Service.
+      operationId: refreshAiInference
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RefreshAiInferenceRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RefreshAiInferenceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/refreshAiRegistry:
+    post:
+      summary: Refreshes the AI Registry with the latest trust store certificates for the selected instance.
+      description: This operation refreshes the SSL/TLS trust settings used by the AI Registry service.
+      operationId: refreshAiRegistry
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RefreshAiRegistryRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RefreshAiRegistryResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/ml/refreshModelRegistryConfigmap:
     post:
       summary: Refreshes the model registry configmap of the workbench.
@@ -1084,6 +1128,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/SuspendWorkspaceResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/updateMlServingAppS3Creds:
+    post:
+      summary: Update S3 credentials for a Cloudera AI Inference Service.
+      description: Update S3 credentials for a Cloudera AI Inference Service.
+      operationId: updateMlServingAppS3Creds
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateMlServingAppS3CredsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateMlServingAppS3CredsResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2832,6 +2898,20 @@ definitions:
   RefreshModelRegistryConfigmapResponse:
     type: object
     description: Response for refreshing workbench's model registry configmap.
+  RefreshAiRegistryRequest:
+    type: object
+    description: Request for refreshing AI registry configmap with enhanced trust store functionality.
+    required:
+      - workspaceCrn
+    properties:
+      workspaceCrn:
+        type: string
+        description: workbench CRN.
+    x-form-factors: private
+  RefreshAiRegistryResponse:
+    type: object
+    description: Response for refreshing AI registry configmap with enhanced trust store functionality.
+    x-form-factors: private
   ResourceQuota:
     type: object
     description: Resource quota configuration for quota management.
@@ -3023,6 +3103,20 @@ definitions:
   DeleteMlServingAppResponse:
     type: object
     description: Response object for the DeleteMlServingApp method.
+  RefreshAiInferenceRequest:
+    type: object
+    description: Request object for the RefreshAiInference method.
+    required:
+      - appCrn
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service to refresh trust store for.
+    x-form-factors: private
+  RefreshAiInferenceResponse:
+    type: object
+    description: Response object for the RefreshAiInference method.
+    x-form-factors: private
   MlServingProvisionK8sRequest:
     type: object
     description: Request object for provisioning Cloudera AI Inference Service instance groups.
@@ -3425,4 +3519,22 @@ definitions:
       version:
         type: string
         description: The latest version of a modelregistry that is used when deploying Cloudera AI ModelRegistries.
+  UpdateMlServingAppS3CredsRequest:
+    type: object
+    description: Request object for the UpdateMlServingAppS3Creds method.
+    required:
+      - appCrn
+      - s3Creds
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service to update.
+      s3Creds:
+        description: The S3 credentials to update.
+        $ref: '#/definitions/MlServingOzoneCreds'
+    x-form-factors: private
+  UpdateMlServingAppS3CredsResponse:
+    type: object
+    description: Response object for the UpdateMlServingAppS3Creds method.
+    x-form-factors: private
 x-audit: true

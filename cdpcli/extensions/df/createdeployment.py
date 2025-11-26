@@ -33,7 +33,7 @@ from cdpcli.extensions.df.model import (AWS_NODE_STORAGE_PROFILE,
                                         DEPLOYMENT_FREQUENCY_TOLERANCE,
                                         DEPLOYMENT_KEY_PERFORMANCE_INDICATOR,
                                         LISTEN_COMPONENT,
-                                        VERSIONED_PARAMETER_GROUP_REFERENCES)
+                                        PARAMETER_GROUP_REFERENCES)
 from cdpcli.extensions.workload import set_workload_access_token
 from cdpcli.model import ObjectShape, OperationModel, ShapeResolver
 from cdpcli.utils import CachedProperty
@@ -157,7 +157,11 @@ OPERATION_SHAPES = {
                                'If --from-archive or --import-parameters-from is used, '
                                'then parameters defined here will override what is '
                                'defined in the archive. Sensitive parameters must '
-                               'always be specified here.',
+                               'always be specified here. Shared parameter groups '
+                               'where values should come from need to be all listed '
+                               'under inheritedParameterGroups, and must also be '
+                               'explicity provided as the source for the desired '
+                               'parameters with sourceParameterGroupId.',
                 'items': {
                     '$ref': '#/definitions/DeploymentFlowParameterGroup'
                 }
@@ -331,7 +335,7 @@ OPERATION_SHAPES = {
     'DeploymentAlertThreshold': DEPLOYMENT_ALERT_THRESHOLD,
     'DeploymentFrequencyTolerance': DEPLOYMENT_FREQUENCY_TOLERANCE,
     'ListenComponent': LISTEN_COMPONENT,
-    'VersionedParameterGroupReference': VERSIONED_PARAMETER_GROUP_REFERENCES
+    'VersionedParameterGroupReference': PARAMETER_GROUP_REFERENCES
 }
 
 

@@ -33,7 +33,7 @@ from cdpcli.extensions.df.model import (DEPLOYMENT_ALERT,
                                         DEPLOYMENT_FLOW_PARAMETER_GROUP,
                                         DEPLOYMENT_FREQUENCY_TOLERANCE,
                                         DEPLOYMENT_KEY_PERFORMANCE_INDICATOR,
-                                        VERSIONED_PARAMETER_GROUP_REFERENCES)
+                                        PARAMETER_GROUP_REFERENCES)
 from cdpcli.extensions.workload import set_workload_access_token
 from cdpcli.model import ObjectShape, OperationModel, ShapeResolver
 from cdpcli.utils import CachedProperty
@@ -127,7 +127,7 @@ OPERATION_SHAPES = {
     'DeploymentAlert': DEPLOYMENT_ALERT,
     'DeploymentAlertThreshold': DEPLOYMENT_ALERT_THRESHOLD,
     'DeploymentFrequencyTolerance': DEPLOYMENT_FREQUENCY_TOLERANCE,
-    'VersionedParameterGroupReference': VERSIONED_PARAMETER_GROUP_REFERENCES
+    'VersionedParameterGroupReference': PARAMETER_GROUP_REFERENCES
 }
 
 

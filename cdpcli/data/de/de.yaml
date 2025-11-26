@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.150
+  version: 0.9.151
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -1317,7 +1317,7 @@ definitions:
           - NONE
       sparkVersion:
         type: string
-        description: Spark version for the virtual cluster. Currently supported Spark versions are SPARK2(deprecated), SPARK3, SPARK3_3 and SPARK3_5. This feature is only supported in CDE-1.7.0 and later. SPARK3_3 is supported in CDE-1.19 and later. SPARK3_5 is supported in CDE-1.21 and later.
+        description: Spark version for the virtual cluster. Currently supported Spark versions are SPARK2(deprecated), SPARK3, SPARK3_3 and SPARK3_5. This feature is only supported in CDE-1.7.0 and later. SPARK3_3 is supported in CDE-1.19 and later. SPARK3_5 is supported in CDE-1.21 and later. SPARK3_5_4 is supported in CDE-1.25 and later. With Datalake 7.3.1 and later, SPARK3_5_4 must be used instead of SPARK3_5.
         enum:
           - SPARK2
           - SPARK2_4
@@ -1327,6 +1327,7 @@ definitions:
           - SPARK3_2
           - SPARK3_3
           - SPARK3_5
+          - SPARK3_5_4
       sparkOSName:
         type: string
         description: Spark os name for the virtual cluster. Currently supported types are SECURITYHARDENED(chainguard) and REDHAT(will be deprecated, and we will use INSECURE). The default value is SECURITYHARDENED.

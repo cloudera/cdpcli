@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.150
+  version: 0.9.151
   title: Cloudera CloudPrivateLinks API Service
   license:
     name: Apache 2.0
@@ -156,6 +156,29 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/cloudprivatelinks/migratePrivateLinkEndpoints:
+    post:
+      summary: Migrates PrivateLink endpoints to fallback VPCE services.
+      description: Migrates PrivateLink endpoints from non-control plane endpoint service to Control Plane endpoint services.
+      operationId: migratePrivateLinkEndpoints
+      x-entitlement: CDP_PRIVATELINKS
+      x-right: cloudprivatelinks/migratePrivateLinkEndpoints
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MigratePrivateLinkEndpointsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/MigratePrivateLinkEndpointsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/cloudprivatelinks/revokePrivateLinkServiceAccess:
     post:
       summary: Revoke private link services access for the cloud account id.
@@ -557,14 +580,13 @@ definitions:
   GetPrivateLinkStatusRequest:
     type: object
     description: Request object for retrieving the status of a Private Link.
-    required:
-      - subnetIds
     properties:
       subnetIds:
         type: array
         items:
           type: string
-        description: List of subnets in the given cloud network to query PrivateLink status.
+        description: List of subnets in the given cloud network to query PrivateLink status. This field has been deprecated.
+        x-deprecated: true
       vNetId:
         type: string
         description: Virtual Network Id to query the status of PrivateLink in Azure.
@@ -581,4 +603,20 @@ definitions:
       status:
         description: Status of PrivateLink - enabled or disabled.
         $ref: '#/definitions/PrivateLinkStatus'
+  MigratePrivateLinkEndpointsRequest:
+    type: object
+    description: Request object for the MigratePrivateLinkEndpoints method.
+    required:
+      - awsAccountInfo
+    properties:
+      awsAccountInfo:
+        description: Migration is for AWS-only. AWS account info for the PrivateLink endpoint migration. Only VPC ID, region, and credentials are required. Subnets and other details are retrieved from DB.
+        $ref: '#/definitions/AWSAccountInfo'
+  MigratePrivateLinkEndpointsResponse:
+    type: object
+    description: Response object for the MigratePrivateLinkEndpoints method.
+    properties:
+      trackingId:
+        type: string
+        description: Tracking ID of the migration request.
 x-audit: true

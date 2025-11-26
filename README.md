@@ -52,7 +52,7 @@ features for production use.
 
 API calls through the CDP CLI require a key pair issued from the CDP control
 plane. Use the CDP console to generate keys, following [documented
-instructions](https://docs.cloudera.com/cdp/latest/cli/topics/mc-cli-generating-an-api-access-key.html).
+instructions](https://docs.cloudera.com/cdp-public-cloud/cloud/cli/topics/mc-cli-generating-an-api-access-key.html).
 Then, run `cdp configure` to provide the credentials to the CLI.
 
 ```
@@ -92,7 +92,7 @@ running the CLI (see below).
 ### Base Endpoint URL and Form Factor
 
 The CLI may be used to access
-[CDP Private Cloud](https://docs.cloudera.com/cdp-private-cloud/latest/overview/topics/cdppvc-overview.html)
+[CDP Private Cloud](https://docs.cloudera.com/cdp-private-cloud/latest/index.html)
 control planes. Contact your control plane administrator to obtain the required
 base endpoint URL value for your installation. Set the value in
 *$HOME/.cdp/config*, another configuration file that uses the ini file format.
@@ -160,7 +160,7 @@ $ cdp --profile my-other-user iam get-user
 ### Base Endpoint URL and Form Factor
 
 By default, the CLI works with
-[CDP Public Cloud](https://docs.cloudera.com/cdp/latest/overview/topics/cdp-overview.html)
+[CDP Public Cloud](https://docs.cloudera.com/cdp-public-cloud/cloud/overview/topics/cdp-public-cloud.html)
 and calculates API endpoints accordingly. If you are using CDP Private Cloud, be
 sure to provide the base endpoint URL for your private cloud control plane. You
 can do so by setting it in *$HOME/.cdp/config* for the desired profile, or
