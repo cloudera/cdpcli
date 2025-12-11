@@ -5,11 +5,11 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.151
-  title: Cloudera CloudPrivateLinks API Service
+  version: 0.9.152
+  title: Cloudera Private Links API Service
   license:
     name: Apache 2.0
-  description: Provisions PrivateLink Endpoints on the cloud environments.
+  description: Provisions Private Link Endpoints on the cloud environments.
   termsOfService: https://www.cloudera.com/legal/commercial-terms-and-conditions.html
 schemes:
   - https
@@ -20,8 +20,8 @@ produces:
 paths:
   /api/v1/cloudprivatelinks/authorizePrivateLinkServiceAccess:
     post:
-      summary: Authorize private link services access for the cloud account id.
-      description: Returns the list of private link service name and its respective authorization status.
+      summary: Authorize Private Link services access for the cloud account id.
+      description: Returns the list of Private Link service name and its respective authorization status.
       operationId: authorizePrivateLinkServiceAccess
       x-entitlement: CDP_PRIVATELINKS
       x-right: cloudprivatelinks/authorizePrivateLinkServiceAccess
@@ -43,8 +43,8 @@ paths:
       x-mutating: true
   /api/v1/cloudprivatelinks/createPrivateLinkEndpoint:
     post:
-      summary: Creates PrivateLink endpoints.
-      description: Creates the PrivateLink Endpoints for specified CDP service components.
+      summary: Creates Private Link endpoints.
+      description: Creates the Private Link Endpoints for specified CDP service group.
       operationId: createPrivateLinkEndpoint
       x-entitlement: CDP_PRIVATELINKS
       x-right: cloudprivatelinks/createPrivateLinkEndpoint
@@ -66,8 +66,8 @@ paths:
       x-mutating: true
   /api/v1/cloudprivatelinks/deletePrivateLinkEndpoint:
     post:
-      summary: Deletes PrivateLink endpoints.
-      description: Deletes the PrivateLink Endpoints for specified CDP service components.
+      summary: Deletes Private Link endpoints.
+      description: Deletes the Private Link Endpoints for specified CDP service group.
       operationId: deletePrivateLinkEndpoint
       x-entitlement: CDP_PRIVATELINKS
       x-right: cloudprivatelinks/deletePrivateLinkEndpoint
@@ -112,8 +112,8 @@ paths:
       x-mutating: false
   /api/v1/cloudprivatelinks/listPrivateLinkEndpointStatuses:
     post:
-      summary: Lists the statuses of the PrivateLink endpoints that are in creation/deletion status.
-      description: Returns the statuses of the PrivateLink endpoints in creation/deletion.
+      summary: Lists the statuses of the Private Link endpoints that are in creation/deletion status.
+      description: Returns the statuses of the Private Link endpoints in creation/deletion.
       operationId: listPrivateLinkEndpointStatuses
       x-entitlement: CDP_PRIVATELINKS
       x-right: cloudprivatelinks/listPrivateLinkEndpointStatuses
@@ -135,8 +135,8 @@ paths:
       x-mutating: false
   /api/v1/cloudprivatelinks/listPrivateLinkServicesForRegion:
     post:
-      summary: Lists the PrivateLink services that are supported for the region and service group.
-      description: Returns the list of private link service name and the mapped service component.
+      summary: Lists the Private Link services that are supported for the region and service group.
+      description: Returns the list of Private Link service names and the mapped service components.
       operationId: listPrivateLinkServicesForRegion
       x-entitlement: CDP_PRIVATELINKS
       x-right: cloudprivatelinks/listPrivateLinkServicesForRegion
@@ -158,8 +158,8 @@ paths:
       x-mutating: false
   /api/v1/cloudprivatelinks/migratePrivateLinkEndpoints:
     post:
-      summary: Migrates PrivateLink endpoints to fallback VPCE services.
-      description: Migrates PrivateLink endpoints from non-control plane endpoint service to Control Plane endpoint services.
+      summary: Migrates Private Link endpoints to fallback VPCE services.
+      description: Migrates Private Link endpoints from non-control plane endpoint service to Control Plane endpoint services.
       operationId: migratePrivateLinkEndpoints
       x-entitlement: CDP_PRIVATELINKS
       x-right: cloudprivatelinks/migratePrivateLinkEndpoints
@@ -181,8 +181,8 @@ paths:
       x-mutating: true
   /api/v1/cloudprivatelinks/revokePrivateLinkServiceAccess:
     post:
-      summary: Revoke private link services access for the cloud account id.
-      description: Returns the de authorization status.
+      summary: Revoke Private Link services access for the cloud account ID.
+      description: Returns the Private Link revocation status.
       operationId: revokePrivateLinkServiceAccess
       x-entitlement: CDP_PRIVATELINKS
       x-right: cloudprivatelinks/revokePrivateLinkServiceAccess
@@ -215,7 +215,7 @@ definitions:
         description: The error message.
   CloudServiceProvider:
     type: string
-    description: "Supported cloud providers\n `AWS` - A value indicating AWS as supported cloud provider for creating privatelinks. `AZURE` - A value indicating Azure as supported cloud provider for creating privatelinks."
+    description: "Supported cloud providers\n `AWS` - A value indicating AWS as supported cloud provider for creating Private Links. `AZURE` - A value indicating Azure as supported cloud provider for creating Private Links."
     enum:
       - AWS
       - AZURE
@@ -243,15 +243,15 @@ definitions:
         $ref: '#/definitions/CloudServiceProvider'
       enablePrivateDns:
         type: boolean
-        description: Enable Private DNS for PrivateLink endpoint.
+        description: Enable Private DNS for Private Link endpoint.
       serviceGroup:
         type: string
         description: CDP service group.
       awsAccountDetails:
-        description: AWS account details where the PrivateLink endpoint is created.
+        description: AWS account details where the Private Link endpoint is created.
         $ref: '#/definitions/AWSAccountDetails'
       azureAccountDetails:
-        description: Azure account details where PrivateLink endpoint is created.
+        description: Azure account details where Private Link endpoint is created.
         $ref: '#/definitions/AzureAccountDetails'
       resourceTags:
         type: array
@@ -273,7 +273,7 @@ definitions:
     properties:
       trackingId:
         type: string
-        description: Tracking ID of the create endpoint request.
+        description: Tracking ID of the create or delete endpoint request.
   ListPrivateLinkEndpointStatusesResponse:
     type: object
     description: Response object for listPrivateLinkEndpointStatuses method.
@@ -282,7 +282,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/PrivateLinkEndpointStatus'
-        description: List of statuses of PrivateLink endpoints.
+        description: List of statuses of Private Link endpoints.
   DeletePrivateLinkEndpointRequest:
     type: object
     description: Request object for the DeletePrivateLinkEndpoint method.
@@ -293,10 +293,10 @@ definitions:
         description: Cloud Service Provider. Currently supporting AWS and AZURE.
         $ref: '#/definitions/CloudServiceProvider'
       awsAccountInfo:
-        description: AWS account details to delete the PrivateLink endpoint from.
+        description: The AWS account details from which this Private Link endpoint is to be deleted.
         $ref: '#/definitions/AWSAccountInfo'
       azureAccountInfo:
-        description: Azure account details to delete the PrivateLink endpoint from.
+        description: The Azure account details from which this Private Link endpoint is to be deleted.
         $ref: '#/definitions/AzureAccountInfo'
   DeletePrivateLinkEndpointResponse:
     type: object
@@ -311,13 +311,13 @@ definitions:
     properties:
       cloudAccountId:
         type: string
-        description: AWS account ID to authorize access for PrivateLink.
+        description: AWS account ID to authorize access for Private Link.
       subscriptionId:
         type: string
-        description: Azure subscription ID to authorize access for PrivateLink.
+        description: Azure subscription ID to authorize access for Private Link.
       region:
         type: string
-        description: Region where the private link service exists.
+        description: Region where the Private Link service exists.
       serviceGroup:
         type: string
         description: CDP service group. Currently supported "CDP-CONTROL-PLANE" for PaaS.
@@ -335,20 +335,20 @@ definitions:
         description: List of AuthorizePrivateLinkServiceAccessResult objects.
       status:
         type: string
-        description: Status of private link service access authorization.
+        description: Status of Private Link service access authorization.
   AuthorizePrivateLinkServiceAccessResult:
     type: object
-    description: Authorization response containing PrivateLink service name, service component and its authorization status.
+    description: Authorization response containing Private Link service name, service component and its authorization status.
     properties:
       privateLinkService:
         type: string
-        description: Name of the Private link service.
+        description: Name of the Private Link service.
       serviceComponent:
         type: string
         description: CDP service component.
       authorizationStatus:
         type: string
-        description: Authorization status for the private link service.
+        description: Authorization status for the Private Link service.
       availabilityZoneList:
         type: string
         description: Availability zone list.
@@ -366,10 +366,10 @@ definitions:
     properties:
       region:
         type: string
-        description: Region for which the private link services to be queried.
+        description: Region for which the Private Link services are to be queried.
       serviceGroup:
         type: string
-        description: CDP service group. Currently supported "CDP-CONTROL-PLANE" for PaaS.
+        description: CDP service group. Currently supports "CDP-CONTROL-PLANE" for PaaS.
   ListPrivateLinkServicesForRegionResponse:
     type: object
     description: Response object for the ListPrivateLinkServicesForTheRegion method.
@@ -388,7 +388,7 @@ definitions:
         description: The CDP Service component.
       privateLinkService:
         type: string
-        description: Name of the Private link service.
+        description: Name of the Private Link service.
       availabilityZoneList:
         type: string
         description: Availability zone list.
@@ -423,11 +423,11 @@ definitions:
         description: The Azure Active Directory tenant (directory) Id of the service principal.
   AWSAccountDetails:
     type: object
-    description: Details of the cloud network and the cross-account role required to create the PrivateLink endpoint.
+    description: Details of the cloud network and the cross-account role required to create the Private Link endpoint.
     properties:
       cloudAccountId:
         type: string
-        description: Account ID to authorize access for PrivateLink.
+        description: Account ID to authorize access for Private Link.
       crossAccountRoleDetails:
         description: Cross account role details.
         $ref: '#/definitions/CrossAccountRoleDetails'
@@ -439,15 +439,15 @@ definitions:
         description: Region in which VPC exists.
       vpcId:
         type: string
-        description: VPC ID in which the private link should be created.
+        description: VPC ID in which the Private Link should be created.
       subnetIds:
         type: array
         items:
           type: string
-        description: IDs of the private subnets in which the private link should be created.
+        description: IDs of the private subnets in which the Private Link should be created.
   AWSAccountInfo:
     type: object
-    description: Details of the cloud network and the cross-account role required to delete the PrivateLink endpoint.
+    description: Details of the cloud network and the cross-account role required to delete the Private Link endpoint.
     properties:
       crossAccountRoleDetails:
         description: Cross account role details.
@@ -463,7 +463,7 @@ definitions:
         description: VPC ID in which the vpc endpoint should be deleted.
   AzureAccountInfo:
     type: object
-    description: Details of the cloud network and the cross-account role required to delete the PrivateLink endpoint.
+    description: Details of the cloud network and the cross-account role required to delete the Private Link endpoint.
     properties:
       azureClientSecretCredential:
         description: Azure client secret credential, either this or credential CRN should be passed.
@@ -476,10 +476,10 @@ definitions:
         description: Region in which VPC exists.
       vNetId:
         type: string
-        description: vNet ID in which the private link should be created.
+        description: vNet ID in which the Private Link should be created.
   AzureAccountDetails:
     type: object
-    description: Details of the cloud network and the cross-account role required to create the PrivateLink endpoint.
+    description: Details of the cloud network and the cross-account role required to create the Private Link endpoint.
     properties:
       azureClientSecretCredential:
         description: Azure client secret credential, either this or credential CRN should be passed.
@@ -489,40 +489,40 @@ definitions:
         description: CDP Credential CRN to fetch the Azure client secret credentials, either this or AzureClientSecretCredential should be passed.
       subscriptionId:
         type: string
-        description: The Subscription for which the Private link service to be allowed/accessible.
+        description: The Subscription for which the Private Link service to be allowed/accessible.
       resourceGroup:
         type: string
-        description: The Resource group under which the Private endpoint to be created.
+        description: The resource group under which the private endpoint is to be created.
       location:
         type: string
         description: Azure location where endpoint should be created.
       vNetId:
         type: string
-        description: vNet ID in which the private link should be created.
+        description: vNet ID in which the Private Link should be created.
       subnetId:
         type: string
-        description: ID of the private subnet in which the private link should be created.
+        description: ID of the private subnet in which the Private Link should be created.
   PrivateLinkEndpointStatus:
     type: object
-    description: Details of the PrivateLink endpoints.
+    description: Details of the Private Link endpoints.
     properties:
       serviceComponent:
         type: string
         description: CDP service component name [API/DBUSAPI/IAMAPI/CCMV2/CONSOLEAUTH].
       status:
         type: string
-        description: Status of the PrivateLink endpoints. The status is set to SUCCESS on successful creation of endpoint, IN_PROGRESS on endpoint creation is in progress and ERROR on failing to create the endpoint.
+        description: Status of the Private Link endpoints. The status is set to SUCCESS when endpoint is created successfully, IN_PROGRESS when the endpoint creation is underway and ERROR when endpoint creation fails.
       error:
         type: string
         description: Error message on failure.
       endpointId:
         type: string
-        description: PrivateLink endpoint ID on success.
+        description: Private Link endpoint ID on success.
       dnsNames:
         type: array
         items:
           type: string
-        description: List of PrivateLink endpoint DNS names on successful creation.
+        description: List of Private Link endpoint DNS names on successful creation.
       creationTimestamp:
         type: string
         description: Endpoint creation timestamp.
@@ -532,16 +532,16 @@ definitions:
     properties:
       cloudAccountId:
         type: string
-        description: AWS account ID to authorize access for PrivateLink.
+        description: AWS account ID to authorize access for Private Link.
       subscriptionId:
         type: string
-        description: Azure subscription ID to authorize access for PrivateLink.
+        description: Azure subscription ID to authorize access for Private Link.
       region:
         type: string
-        description: Region where the private link service exists.
+        description: Region where the Private Link service exists.
       serviceGroup:
         type: string
-        description: CDP service group. Currently supported "CDP-CONTROL-PLANE" for PaaS.
+        description: CDP service group. Currently supports "CDP-CONTROL-PLANE" for PaaS.
       cloudServiceProvider:
         description: Cloud Service Provider. Currently supporting AWS and AZURE.
         $ref: '#/definitions/CloudServiceProvider'
@@ -551,7 +551,7 @@ definitions:
     properties:
       status:
         type: string
-        description: Status of private link service access revoke.
+        description: Status of Private Link service access revoke.
       revokePrivateLinkServiceAccessResults:
         type: array
         items:
@@ -563,13 +563,13 @@ definitions:
     properties:
       privateLinkService:
         type: string
-        description: Name of the Private link service.
+        description: Name of the Private Link service.
       serviceComponent:
         type: string
         description: CDP service component.
       revocationStatus:
         type: string
-        description: Revocation status for the private link service.
+        description: Revocation status for the Private Link service.
   PrivateLinkStatus:
     type: string
     description: "Status of the Private Link.\n `ENABLED` - Private Link is enabled. `DISABLED` - Private Link is disabled. `ERROR` - Error while retrieving the Private Link status."
@@ -585,11 +585,11 @@ definitions:
         type: array
         items:
           type: string
-        description: List of subnets in the given cloud network to query PrivateLink status. This field has been deprecated.
+        description: List of subnets in the given cloud network to query Private Link status. This field has been deprecated.
         x-deprecated: true
       vNetId:
         type: string
-        description: Virtual Network Id to query the status of PrivateLink in Azure.
+        description: Virtual Network Id to query the status of Private Link in Azure.
       vpcId:
         type: string
         description: VPC ID to query the status of Private Link in AWS.
@@ -601,7 +601,7 @@ definitions:
     description: Response object for GetPrivateLinkStatus method.
     properties:
       status:
-        description: Status of PrivateLink - enabled or disabled.
+        description: Status of Private Link - enabled or disabled.
         $ref: '#/definitions/PrivateLinkStatus'
   MigratePrivateLinkEndpointsRequest:
     type: object
@@ -610,7 +610,7 @@ definitions:
       - awsAccountInfo
     properties:
       awsAccountInfo:
-        description: Migration is for AWS-only. AWS account info for the PrivateLink endpoint migration. Only VPC ID, region, and credentials are required. Subnets and other details are retrieved from DB.
+        description: Migration is AWS-only. AWS account information for the Private Link endpoint migration. Only the VPC ID, region, and credentials are required; subnet and other details are retrieved from the database.
         $ref: '#/definitions/AWSAccountInfo'
   MigratePrivateLinkEndpointsResponse:
     type: object

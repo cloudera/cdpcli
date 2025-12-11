@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.151
+  version: 0.9.152
   title: Cloudera Compute Service
   license:
     name: Apache 2.0
@@ -104,6 +104,52 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/compute/getOperationDetails:
+    post:
+      summary: GetOperationDetails
+      description: To get detailed information about the long running operation.
+      operationId: getOperationDetails
+      x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetOperationDetailsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetOperationDetailsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/compute/getOperationStatus:
+    post:
+      summary: GetOperationStatus
+      description: A lightweight API to get status of a long running operation.
+      operationId: getOperationStatus
+      x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetOperationStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetOperationStatusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/compute/listClusters:
     post:
       summary: List compute clusters
@@ -169,6 +215,29 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/compute/retryOperation:
+    post:
+      summary: ResetOperation
+      description: To reset a failed operation for retry.
+      operationId: retryOperation
+      x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RetryOperationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RetryOperationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/compute/suspendCluster:
     post:
       summary: Suspend Cluster
@@ -186,6 +255,29 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/SuspendClusterResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/compute/upgradeCluster:
+    post:
+      summary: Upgrade kubernetes version of the cluster
+      description: Upgrades the kubernetes version of the cluster to the specified version.
+      operationId: upgradeCluster
+      x-entitlement: COMPUTE_API_LIFTIE
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpgradeClusterRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpgradeClusterResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2023,4 +2115,337 @@ definitions:
         description: Pre-flight validation check response. Only given on a validation failure and `skipValidation` is false.
         $ref: '#/definitions/ValidationResponse'
     x-form-factors: public
+  WorkflowOperation:
+    type: string
+    description: "Defines the type of workflow operation.\n `UNKNOWN` - The operation is unknown. `UPGRADE` - Represents an upgrade operation. `SUSPEND` - Represents a suspend operation. `RESUME` - Represents a resume operation. `UPDATE` - Represents an update operation."
+    enum:
+      - UNKNOWN
+      - UPGRADE
+      - SUSPEND
+      - RESUME
+      - UPDATE
+  ExecutionStatus:
+    type: string
+    description: "Defines the execution status of an operation, workflow or activity.\n `UNKNOWN` - The execution status is unknown. `RUNNING` - The execution is currently running. `COMPLETED` - The execution has completed successfully. `FAILED` - The execution has failed. `CANCELLED` - The execution has been cancelled. `TIMED_OUT` - The execution has timed out."
+    enum:
+      - UNKNOWN
+      - RUNNING
+      - COMPLETED
+      - FAILED
+      - CANCELLED
+      - TIMED_OUT
+  WorkflowPhase:
+    type: string
+    description: "Defines the workflow phases of an operation.\n `UNKNOWN` - The workflow phase of operation is unknown. `VALIDATE` - The operation is in validation workflow phase. `PREPARE` - The operation is in preparation workflow phase. `EXECUTE` - The operation is in execution workflow phase. `FINALIZE` - The operation is in finalization workflow phase."
+    enum:
+      - UNKNOWN
+      - VALIDATE
+      - PREPARE
+      - EXECUTE
+      - FINALIZE
+  UpgradeClusterRequest:
+    type: object
+    description: Request structure to upgrade the cluster kubernetes version.
+    required:
+      - clusterCrn
+    properties:
+      clusterCrn:
+        type: string
+        description: Compute cluster CRN.
+      dryRun:
+        type: boolean
+        description: Flag to only run validations.
+  UpgradeClusterResponse:
+    type: object
+    description: Response structure for upgrading the cluster kubernetes version.
+    properties:
+      operationId:
+        type: string
+        description: The unique ID of the initiated long running upgrade operation.
+    x-form-factors: public
+  GetOperationStatusRequest:
+    type: object
+    description: Represents a request to get the status of an operation.
+    required:
+      - operationId
+    properties:
+      operationId:
+        type: string
+        description: The unique ID of the operation to query.
+  GetOperationStatusResponse:
+    type: object
+    description: Represents the response containing the status of an operation.
+    properties:
+      operationId:
+        type: string
+        description: The unique ID of the operation.
+      workflowOperation:
+        description: The type of workflow for this operation.
+        $ref: '#/definitions/WorkflowOperation'
+      operationStatus:
+        description: The current status of the operation.
+        $ref: '#/definitions/ExecutionStatus'
+      message:
+        type: string
+        description: Additional details regarding operation status.
+      clusterCrn:
+        type: string
+        description: The CRN of the cluster associated with the operation.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the operation.
+      lastUpdateTime:
+        type: string
+        format: date-time
+        description: The last time the operation status was updated.
+      workflowId:
+        type: string
+        description: Cadence workflow ID.
+      runId:
+        type: string
+        description: Cadence run ID.
+      phaseWorkflowStatuses:
+        type: array
+        items:
+          $ref: '#/definitions/PhaseWorkflowStatus'
+        description: Status of workflow phases.
+  AppWorkflowStatus:
+    type: object
+    description: Status of an application workflow.
+    properties:
+      workflowStatus:
+        description: Workflow status.
+        $ref: '#/definitions/ExecutionStatus'
+      message:
+        type: string
+        description: Additional details regarding workflow status.
+      appCrn:
+        type: string
+        description: Application CRN.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the workflow.
+      lastUpdateTime:
+        type: string
+        format: date-time
+        description: The last time the workflow status was updated.
+  PhaseWorkflowStatus:
+    type: object
+    description: Status of phase workflow.
+    properties:
+      workflowPhase:
+        description: Workflow phase.
+        $ref: '#/definitions/WorkflowPhase'
+      workflowStatus:
+        description: Workflow status.
+        $ref: '#/definitions/ExecutionStatus'
+      message:
+        type: string
+        description: Additional details regarding workflow status.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the workflow.
+      lastUpdateTime:
+        type: string
+        format: date-time
+        description: The last time the workflow status was updated.
+      appWorkflowStatuses:
+        type: array
+        items:
+          $ref: '#/definitions/AppWorkflowStatus'
+        description: Status of application workflow.
+  GetOperationDetailsRequest:
+    type: object
+    description: Represents a request to get the details of an operation.
+    properties:
+      operationId:
+        type: string
+        description: The unique ID of the operation to query.
+      runId:
+        type: string
+        description: Cadence run ID.
+  GetOperationDetailsResponse:
+    type: object
+    description: Represents the response containing the details of an operation.
+    properties:
+      operationId:
+        type: string
+        description: The unique ID of the operation.
+      workflowOperation:
+        description: The type of workflow for this operation.
+        $ref: '#/definitions/WorkflowOperation'
+      operationStatus:
+        description: The current status of the operation.
+        $ref: '#/definitions/ExecutionStatus'
+      message:
+        type: string
+        description: Additional details regarding operation status.
+      clusterCrn:
+        type: string
+        description: The CRN of the cluster associated with the operation.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the operation.
+      lastUpdateTime:
+        type: string
+        format: date-time
+        description: The last time the operation status was updated.
+      operationOwner:
+        description: Details of operation owner.
+        $ref: '#/definitions/OperationOwner'
+      retryCount:
+        type: integer
+        format: int32
+        description: Number of retires attempted. Its value is 0 for first operation.
+      workflowId:
+        type: string
+        description: Cadence workflow ID.
+      runId:
+        type: string
+        description: Cadence run ID.
+      phaseWorkflowDetails:
+        type: array
+        items:
+          $ref: '#/definitions/PhaseWorkflowDetail'
+        description: Details of workflow phases.
+      activities:
+        type: array
+        items:
+          $ref: '#/definitions/Activity'
+        description: Activities
+  OperationOwner:
+    type: object
+    description: Operation owner structure.
+    properties:
+      userId:
+        type: string
+        description: Owner's user ID.
+      accountId:
+        type: string
+        description: Owner's account ID.
+      crn:
+        type: string
+        description: Owner's actor CRN.
+  PhaseWorkflowDetail:
+    type: object
+    description: Details of phase workflow.
+    properties:
+      workflowPhase:
+        description: Workflow phase.
+        $ref: '#/definitions/WorkflowPhase'
+      workflowStatus:
+        description: Workflow status.
+        $ref: '#/definitions/ExecutionStatus'
+      message:
+        type: string
+        description: Additional details regarding workflow status.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the workflow.
+      lastUpdateTime:
+        type: string
+        format: date-time
+        description: The last time the workflow status was updated.
+      workflowId:
+        type: string
+        description: Cadence workflow ID.
+      runId:
+        type: string
+        description: Cadence run ID.
+      appWorkflowDetails:
+        type: array
+        items:
+          $ref: '#/definitions/AppWorkflowDetail'
+        description: Details of application workflow.
+      activities:
+        type: array
+        items:
+          $ref: '#/definitions/Activity'
+        description: Activities
+  AppWorkflowDetail:
+    type: object
+    description: Details of an application workflow.
+    properties:
+      workflowStatus:
+        description: Workflow status.
+        $ref: '#/definitions/ExecutionStatus'
+      message:
+        type: string
+        description: Additional details regarding workflow status.
+      appCrn:
+        type: string
+        description: Application CRN.
+      startTime:
+        type: string
+        format: date-time
+        description: The start time of the workflow.
+      lastUpdateTime:
+        type: string
+        format: date-time
+        description: The last time the workflow status was updated.
+      domain:
+        type: string
+        description: Domain of workflow.
+      taskList:
+        type: string
+        description: List of tasks for workflows.
+      workflowName:
+        type: string
+        description: Name of the workflow.
+      workflowId:
+        type: string
+        description: Cadence workflow ID.
+      runId:
+        type: string
+        description: Cadence run ID.
+      activities:
+        type: array
+        items:
+          $ref: '#/definitions/Activity'
+        description: Activities
+  Activity:
+    type: object
+    description: Represents an individual activity within a workflow execution.
+    properties:
+      activityId:
+        type: string
+        description: Unique identifier for this activity instance.
+      name:
+        type: string
+        description: Human-readable name of the activity.
+      status:
+        description: Current execution status of the activity.
+        $ref: '#/definitions/ExecutionStatus'
+      startedAt:
+        type: string
+        format: date-time
+        description: Time when the activity started execution.
+      completedAt:
+        type: string
+        format: date-time
+        description: Time when the activity completed execution.
+      logs:
+        type: array
+        items:
+          type: string
+        description: Collection of log messages generated during activity execution.
+  RetryOperationRequest:
+    type: object
+    description: Represents a request to structure of retry operation.
+    properties:
+      operationId:
+        type: string
+        description: The unique ID of the operation to retry.
+  RetryOperationResponse:
+    type: object
+    description: Represents a response to structure of retry operation.
+    properties:
+      operationId:
+        type: string
+        description: The unique ID of the retried operation.
 x-audit: true
