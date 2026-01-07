@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.152
+  version: 0.9.153
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1607,17 +1607,17 @@ definitions:
         description: The CRN of an environment to execute the command.
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -1634,17 +1634,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -1668,17 +1668,17 @@ definitions:
         description: The CRN of an environment to execute the command.
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -1695,17 +1695,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -1933,17 +1933,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -1983,17 +1983,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -2274,7 +2274,7 @@ definitions:
           $ref: '#/definitions/VersionedParameterGroupReference'
   GetCustomNarConfigurationRequest:
     type: object
-    description: Request object for retrieving a custom NAR configuration by CRN.
+    description: Request object for retrieving a custom NAR configuration by configuration CRN or deployment CRN.
     x-workload: true
     x-client-only: true
     properties:
@@ -2299,17 +2299,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -2318,12 +2318,9 @@ definitions:
         description: The CRN of the custom resource configuration to update.
   GetCustomPythonConfigurationRequest:
     type: object
-    description: Request object for retrieving a custom Python configuration by CRN.
+    description: Request object for retrieving a custom Python configuration by configuration CRN or deployment CRN.
     x-workload: true
     x-client-only: true
-    required:
-      - environmentCrn
-      - customPythonConfigurationCrn
     properties:
       environmentCrn:
         type: string
@@ -2331,6 +2328,8 @@ definitions:
       customPythonConfigurationCrn:
         type: string
         description: The CRN of the custom Python configuration to retrieve.
+    required:
+      - environmentCrn
   GetCustomPythonConfigurationResponse:
     type: object
     description: Response object for retrieving a custom Python configuration by CRN.
@@ -2344,17 +2343,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -2385,17 +2384,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -2861,7 +2860,7 @@ definitions:
     properties:
       protocol:
         type: string
-        description: Inbound protocol
+        description: Inbound protocol.
         enum:
           - TCP
           - UDP
@@ -2886,7 +2885,7 @@ definitions:
           - HandleHttpRequest
       port:
         type: string
-        description: Inbound port
+        description: Inbound port.
   NodeStorage:
     type: object
     description: Node storage parameters.
@@ -3768,17 +3767,17 @@ definitions:
         description: The CRN of an environment to execute the command.
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -3798,17 +3797,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -3833,17 +3832,17 @@ definitions:
         description: The CRN of an environment to execute the command.
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       crn:
         type: string
         description: The CRN of the custom Python configuration to update.
@@ -3863,17 +3862,17 @@ definitions:
     properties:
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -4025,17 +4024,17 @@ definitions:
         description: The CRN of an environment to execute the command.
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.
@@ -4061,17 +4060,17 @@ definitions:
         description: The CRN of an environment to execute the command.
       username:
         type: string
-        description: The username used to access the storage location
+        description: The username used to access the storage location.
       password:
         type: string
-        description: The password used to access the storage location
+        description: The password used to access the storage location.
       storageLocation:
         type: string
-        description: The storage location, such as an S3 bucket or ADLS container
+        description: The storage location, such as an S3 bucket or ADLS container.
       configurationVersion:
         type: integer
         format: int32
-        description: The version of the configuration
+        description: The version of the configuration.
       projectCrn:
         type: string
         description: The CRN of the project.

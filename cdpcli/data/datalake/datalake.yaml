@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.152
+  version: 0.9.153
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1757,6 +1757,12 @@ definitions:
         type: integer
         format: int32
         description: Configure the major version of Java on the cluster.
+      architecture:
+        type: string
+        description: Specifies the CPU architecture of the data lake cluster. Values are ARM64, X86_64.
+        enum:
+          - ARM64
+          - X86_64
   CreateAWSDatalakeResponse:
     type: object
     description: Response object for create AWS datalake request.
