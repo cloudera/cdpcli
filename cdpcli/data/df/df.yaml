@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.153
+  version: 0.9.154
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -618,7 +618,7 @@ paths:
   /api/v1/df/initiateDeployment:
     post:
       summary: Initiate a deployment creation.
-      description: Initiates a deployment creation.
+      description: Initiates a deployment creation. Intended for internal use, use create-deployment instead.
       operationId: initiateDeployment
       x-entitlement: DFX
       parameters:
@@ -2634,8 +2634,6 @@ definitions:
       - service
       - updated
       - clusterSize
-      - flowVersionCrn
-      - flowCrn
     properties:
       crn:
         type: string
@@ -2829,7 +2827,7 @@ definitions:
         description: The deployment CRN.
       metricsTimePeriod:
         type: string
-        description: The metrics time period.
+        description: The metrics time period (LAST_THIRTY_MINUTES|LAST_ONE_HOUR|LAST_TWELVE_HOURS|LAST_ONE_DAY).
   ListDeploymentKPIsResponse:
     type: object
     description: A response to list deployment KPIs.
@@ -2851,7 +2849,7 @@ definitions:
         description: The deployment CRN.
       metricsTimePeriod:
         type: string
-        description: The metrics time period.
+        description: The metrics time period (LAST_THIRTY_MINUTES|LAST_ONE_HOUR|LAST_TWELVE_HOURS|LAST_ONE_DAY).
   ListDeploymentSystemMetricsResponse:
     type: object
     description: A response to list deployment system metrics.
@@ -2872,7 +2870,7 @@ definitions:
         description: The deployment CRN.
       sort:
         type: string
-        description: Sort criteria.
+        description: Sort criteria (firstOccurrence|name|eventType):(asc|desc). Defaults to firstOccurrence:asc.
   ListDeploymentActiveAlertsResponse:
     type: object
     description: A response to list active alerts for deployment.

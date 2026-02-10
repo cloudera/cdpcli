@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.153
+  version: 0.9.154
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1155,6 +1155,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/MigrateSkusResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/updatePublicDnsEntries:
+    post:
+      summary: Update public DNS entries of a Data Lake cluster by name or CRN.
+      description: Update public DNS entries of a Data Lake cluster by name or CRN.
+      operationId: updatePublicDnsEntries
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdatePublicDnsEntriesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdatePublicDnsEntriesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3979,6 +4000,22 @@ definitions:
   MigrateSkusResponse:
     type: object
     description: Response object for migrating SKUs.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+  UpdatePublicDnsEntriesRequest:
+    type: object
+    description: Request object for updating public DNS entries.
+    required:
+      - datalake
+    properties:
+      datalake:
+        type: string
+        description: The name or CRN of the Data Lake.
+  UpdatePublicDnsEntriesResponse:
+    type: object
+    description: Response object for updating public DNS entries.
     properties:
       operationId:
         type: string

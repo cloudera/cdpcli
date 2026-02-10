@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.153
+  version: 0.9.154
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2088,7 +2088,339 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/environments2/setupActiveDirectoryTrust:
+    post:
+      summary: Setup cross-realm trust between FreeIPA and Active Directory.
+      description: Initiates cross-realm trust setup between FreeIPA and Active Directory. After this operation completes, configure the Active Directory side of the trust relationship by completing the steps returned by getTrustSetupCommands. Then call finishSetupTrust to validate and activate the trust for production use.
+      operationId: setupActiveDirectoryTrust
+      x-entitlement: CDP_HYBRID_CLOUD
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetupActiveDirectoryTrustRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetupActiveDirectoryTrustResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/finishSetupTrust:
+    post:
+      summary: Complete cross-realm trust setup for FreeIPA.
+      description: Completes and validates the cross-realm trust setup initiated by setupTrust. Call this after configuring the Active Directory side of the trust relationship. This operation tests the bidirectional trust and activates it for production use.
+      operationId: finishSetupTrust
+      x-entitlement: CDP_HYBRID_CLOUD
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/FinishSetupTrustRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/FinishSetupTrustResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/cancelTrust:
+    post:
+      summary: Cancel cross-realm trust for FreeIPA.
+      description: Cancel cross-realm trust setup between FreeIPA and Active Directory.
+      operationId: cancelTrust
+      x-entitlement: CDP_HYBRID_CLOUD
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CancelTrustRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelTrustResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/repairTrust:
+    post:
+      summary: Repair cross-realm trust of FreeIPA with an Active Directory Server.
+      description: Repairs cross-realm trust of FreeIPA with an Active Directory Server by resetting the trust secret on the FreeIPA side.
+      operationId: repairTrust
+      x-entitlement: CDP_HYBRID_CLOUD
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RepairTrustRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RepairTrustResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getTrustSetupCommands:
+    post:
+      summary: Lists the commands to be executed for cross-realm trust setup.
+      description: Lists the commands necessary for setting up cross-realm trust between FreeIPA and Active Directory.
+      operationId: getTrustSetupCommands
+      x-entitlement: CDP_HYBRID_CLOUD
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetTrustSetupCommandsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetTrustSetupCommandsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/getTrustCleanupCommands:
+    post:
+      summary: Gets the commands to be run for cross-realm trust clean up.
+      description: Retrieves the commands necessary for clean up cross-realm trust between FreeIPA and Active Directory.
+      operationId: getTrustCleanupCommands
+      x-entitlement: CDP_HYBRID_CLOUD
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetTrustCleanupCommandsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetTrustCleanupCommandsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
+  CancelTrustRequest:
+    type: object
+    description: Request object to cancel an existing trust.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The Environment name or CRN.
+  CancelTrustResponse:
+    type: object
+    description: Response object to cancel an existing trust.
+    required:
+      - flowId
+    properties:
+      flowId:
+        type: string
+        description: Flow ID of the trust cancel flow.
+      operationId:
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+        type: string
+  RepairTrustRequest:
+    type: object
+    description: Request object to repair an existing trust.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The Environment name or CRN.
+  RepairTrustResponse:
+    type: object
+    description: Response object to repair an existing trust.
+    required:
+      - flowId
+    properties:
+      flowId:
+        type: string
+        description: Flow ID of the trust repair flow.
+      operationId:
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+        type: string
+  GetTrustSetupCommandsRequest:
+    type: object
+    description: Request object to get trust setup commands.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The Environment name or CRN.
+  GetTrustSetupCommandsResponse:
+    type: object
+    description: Response object to get trust setup commands.
+    required:
+      - environment
+      - kdcType
+      - activeDirectoryCommands
+      - baseClusterCommands
+    properties:
+      environment:
+        type: string
+        description: The Environment name or CRN.
+      kdcType:
+        type: string
+        description: The KDC type of the environment.
+      activeDirectoryCommands:
+        $ref: '#/definitions/ActiveDirectoryCommands'
+        description: Commands to be run on the Active Directory server.
+      baseClusterCommands:
+        $ref: '#/definitions/BaseClusterCommands'
+        description: Commands to be run on the base cluster.
+  ActiveDirectoryCommands:
+    type: object
+    description: Commands to be run on the Active Directory server.
+    required:
+      - commands
+    properties:
+      commands:
+        type: string
+        description: List of commands to be run on the Active Directory server.
+  BaseClusterCommands:
+    type: object
+    description: The commands to be run on the base cluster for trust setup.
+    required:
+      - krb5Conf
+    properties:
+      krb5Conf:
+        type: string
+        description: Configuration entries to be added to the Kerberos KDC configuration file on the base cluster.
+  GetTrustCleanupCommandsRequest:
+    type: object
+    description: Request object to show trust clean up commands.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The Environment name or CRN.
+  GetTrustCleanupCommandsResponse:
+    type: object
+    description: Response object to get trust clean up commands.
+    required:
+      - environment
+      - kdcType
+      - activeDirectoryCommands
+      - baseClusterCommands
+    properties:
+      environment:
+        type: string
+        description: The Environment name or CRN.
+      kdcType:
+        type: string
+        description: The KDC type of the environment.
+      activeDirectoryCommands:
+        $ref: '#/definitions/ActiveDirectoryCommands'
+        description: The commands to be run on the Active Directory server to cancel trust.
+      baseClusterCommands:
+        $ref: '#/definitions/BaseClusterCommands'
+        description: The commands to be run on the base cluster to cancel trust.
+  FinishSetupTrustRequest:
+    type: object
+    description: Request object to create an Trust finish setup command.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The Environment CRN.
+  FinishSetupTrustResponse:
+    type: object
+    description: Response object for Finish Setting up Trust.
+    required:
+      - flowId
+    properties:
+      flowId:
+        type: string
+        description: Flow ID of the trust setup finish flow.
+      operationId:
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+        type: string
+  SetupActiveDirectoryTrustRequest:
+    type: object
+    description: Request object to Setting up Active Directory Trust.
+    required:
+      - environment
+      - kdcServers
+      - kdcRealm
+      - remoteEnvironmentCrn
+    properties:
+      environment:
+        type: string
+        description: Environment name or CRN that identifies the Hybrid Environment.
+      kdcServers:
+        type: array
+        minItems: 1
+        maxItems: 1
+        description: The list of the Key Distribution Center (KDC) servers (currently only one KDC server is supported; multi-server support is under development).
+        items:
+          $ref: '#/definitions/KdcServerRequest'
+      kdcRealm:
+        type: string
+        description: Cross-realm trust REALM name (uppercase by convention).
+      remoteEnvironmentCrn:
+        type: string
+        description: Environment CRN that identifies an on-premises cluster.
+      dnsServerIps:
+        type: array
+        maxItems: 1
+        items:
+          type: string
+        description: Domain Name System (DNS) server IPv4 addresses (currently only a single address is supported; multi-server support is under development).
+      trustSecret:
+        type: string
+        description: Existing trust secret. If not provided, CDP will generate a secure random secret.
+        x-sensitive: true
+  KdcServerRequest:
+    x-entitlement: CDP_HYBRID_CLOUD
+    type: object
+    description: Key Distribution Center (KDC) server properties.
+    required:
+      - fqdn
+      - ip
+    properties:
+      fqdn:
+        type: string
+        description: Key Distribution Center (KDC) server Fully Qualified Domain Name.
+      ip:
+        type: string
+        description: Key Distribution Center (KDC) server IPv4 address.
+  SetupActiveDirectoryTrustResponse:
+    x-entitlement: CDP_HYBRID_CLOUD
+    type: object
+    description: Response object for Setting up Active Directory Trust.
+    required:
+      - flowId
+    properties:
+      flowId:
+        type: string
+        description: Flow ID of the trust setup flow.
   Error:
     type: object
     description: An object returned on an error.
@@ -2729,6 +3061,13 @@ definitions:
       customDockerRegistry:
         description: Configures the desired custom docker registry for data services.
         $ref: '#/definitions/CustomDockerRegistryRequest'
+      environmentType:
+        description: Environment type which can be hybrid or public cloud.
+        type: string
+        x-entitlement: CDP_HYBRID_CLOUD
+        enum:
+          - PUBLIC_CLOUD
+          - HYBRID
   CreateAWSGovCloudEnvironmentRequest:
     type: object
     description: Request object for a create AWS GovCloud environment request.
@@ -3344,6 +3683,13 @@ definitions:
       customDockerRegistry:
         description: Configures the desired custom docker registry for data services.
         $ref: '#/definitions/CustomDockerRegistryRequest'
+      environmentType:
+        description: Environment type which can be hybrid or public cloud.
+        type: string
+        x-entitlement: CDP_HYBRID_CLOUD
+        enum:
+          - PUBLIC_CLOUD
+          - HYBRID
   CreateGCPEnvironmentRequest:
     type: object
     description: Request object for a create GCP environment request.
@@ -3427,6 +3773,13 @@ definitions:
       customDockerRegistry:
         description: Configures the desired custom docker registry for data services.
         $ref: '#/definitions/CustomDockerRegistryRequest'
+      environmentType:
+        description: Environment type which can be hybrid or public cloud.
+        type: string
+        x-entitlement: CDP_HYBRID_CLOUD
+        enum:
+          - PUBLIC_CLOUD
+          - HYBRID
   ExistingAzureNetworkRequest:
     type: object
     description: Request object for creating an Azure environment using existing VNet and subnets.
@@ -3820,6 +4173,13 @@ definitions:
       computeClusterEnabled:
         description: Compute clusters enabled
         type: boolean
+      environmentType:
+        description: Environment type which can be hybrid or public cloud.
+        type: string
+        x-entitlement: CDP_HYBRID_CLOUD
+        enum:
+          - PUBLIC_CLOUD
+          - HYBRID
   AuthenticationRequest:
     type: object
     description: Additional SSH key authentication configuration for accessing cluster node.
