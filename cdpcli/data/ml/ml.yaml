@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.154
+  version: 0.9.155
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -2027,6 +2027,9 @@ definitions:
       isRestored:
         type: boolean
         description: The value to indicate if the workbench is restored one or not
+      upgradeType:
+        type: string
+        description: 'The type of upgrade used for the workbench: "Inplace" or "RestoreBased". Only visible when set.'
   Workspace:
     type: object
     description: A ML workbench, which includes the cluster and storage.
@@ -2182,6 +2185,9 @@ definitions:
       enableGlobalAccessLoadBalancer:
         type: boolean
         description: Enable global access to the load balancer so the workbench is accessible from other regions.
+      upgradeType:
+        type: string
+        description: 'The type of upgrade used for the workbench: "Inplace" or "RestoreBased". Only visible when set.'
   UpgradeWorkspaceRequest:
     type: object
     description: Request object for the UpgradeWorkspace method.
@@ -3230,6 +3236,22 @@ definitions:
       loadBalancerIPWhitelists:
         type: string
         description: The allowed list of IPs for the load balancer.
+      versionCompatibility:
+        description: Version compatibility information between control plane and this instance.
+        $ref: '#/definitions/VersionCompatibilityInfo'
+  VersionCompatibilityInfo:
+    type: object
+    description: Version compatibility information for a Cloudera AI Inference Service instance.
+    properties:
+      expectedVersion:
+        type: string
+        description: The expected/recommended version from config store.
+      installedVersion:
+        type: string
+        description: The installed version on this instance.
+      isCompatible:
+        type: boolean
+        description: Whether the installed version is compatible (installed >= expected).
   KubernetesCluster:
     type: object
     description: The Kubernetes cluster information

@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.154
+  version: 0.9.155
   title: Cloudera Private Links API Service
   license:
     name: Apache 2.0
@@ -197,6 +197,29 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RevokePrivateLinkServiceAccessResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/cloudprivatelinks/updatePrivateLinkEndpoint:
+    post:
+      summary: Update existing Private Link endpoint.
+      description: Updates existing Private Link endpoints in AWS or AZURE. Returns a tracking ID.
+      operationId: updatePrivateLinkEndpoint
+      x-entitlement: CDP_PRIVATELINKS
+      x-right: cloudprivatelinks/updatePrivateLinkEndpoint
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdatePrivateLinkEndpointRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdatePrivateLinkEndpointResponse'
         default:
           description: The default response on an error.
           schema:
@@ -619,4 +642,46 @@ definitions:
       trackingId:
         type: string
         description: Tracking ID of the migration request.
+  UpdateOperation:
+    type: string
+    description: "Update Operation to be performed.\n `APPEND` - Append operation - provided subnet IDs are appended. This is taken as default. `REPLACE` - Replace operation - provided subnet IDs replaces the existing ones."
+    enum:
+      - APPEND
+      - REPLACE
+  UpdatePrivateLinkEndpointRequest:
+    type: object
+    description: Request object for the UpdatePrivateLinkEndpoints method.
+    properties:
+      cloudServiceProvider:
+        description: Cloud Service Provider. Currently supporting AWS and AZURE.
+        $ref: '#/definitions/CloudServiceProvider'
+      awsAccountInfo:
+        description: AWS account information in which the private endpoint is already created.
+        $ref: '#/definitions/AWSAccountInfo'
+      azureAccountInfo:
+        description: Azure account information in which the private endpoint is already created.
+        $ref: '#/definitions/AzureAccountInfo'
+      subnetIds:
+        type: array
+        items:
+          type: string
+        description: New subnet IDs to be applied during the private endpoint update.
+      resourceTags:
+        type: array
+        items:
+          $ref: '#/definitions/ResourceTag'
+        description: New tags that are to be applied during the private endpoint update.
+      updateOperation:
+        description: Update operation to perform - APPEND/REPLACE subnet IDs.
+        $ref: '#/definitions/UpdateOperation'
+      resourceGroup:
+        type: string
+        description: The resource group in which the private endpoint is already created.
+  UpdatePrivateLinkEndpointResponse:
+    type: object
+    description: Response object for the UpdatePrivateLinkEndpoint method.
+    properties:
+      trackingId:
+        type: string
+        description: Tracking ID for the update request.
 x-audit: true

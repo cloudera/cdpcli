@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.154
+  version: 0.9.155
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -306,8 +306,8 @@ paths:
       x-mutating: true
   /api/v1/dw/renewCertificates:
     post:
-      summary: Renew certificates for a Cloudera Data Warehouse Azure cluster.
-      description: Renew certificate for a Cloudera Data Warehouse Azure cluster.
+      summary: Renew certificates for a Cloudera Data Warehouse public cloud cluster.
+      description: Renew certificate for a Cloudera Data Warehouse public cloud cluster.
       operationId: renewCertificates
       parameters:
         - name: input
@@ -321,7 +321,7 @@ paths:
           schema:
             $ref: '#/definitions/RenewCertificatesResponse'
         405:
-          description: Operation not allowed on non-Azure clusters.
+          description: Operation not allowed on non-public cloud clusters.
           schema:
             $ref: '#/definitions/Error'
         default:
@@ -668,6 +668,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RegisterSecretResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/createSecret:
+    post:
+      x-form-factors: private
+      x-mutating: true
+      summary: Creates a secret in the user's kubernetes cluster.
+      description: Creates a secret in the user's kubernetes cluster and stores its metadata in the database. The secret is used to connect to an external data source.
+      operationId: createSecret
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateSecretRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateSecretResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2207,7 +2229,7 @@ definitions:
     properties:
       clusterId:
         type: string
-        description: The ID of the Azure cluster to renew certificates for.
+        description: The ID of the public cloud cluster to renew certificates for.
   RenewCertificatesResponse:
     type: object
     description: Response object for the renewCertificates method.
@@ -2473,6 +2495,9 @@ definitions:
       dbClientCredentials:
         $ref: '#/definitions/KeyPairCredentials'
         description: A certificate and private key pair belonging together for mutual SSL handshake when Database Catalog (aka DBC) connects to the metastore database.
+      customKerberosPrincipalHostname:
+        type: string
+        description: Optional hostname parameter. If not empty, this hostname will be used in the Kerberos service principal required by Cloudera Data Warehouse on Premises runtime components (Database Catalog, Virtual Warehouses).
   BackupClusterRequest:
     type: object
     description: Request object for the backupCluster method.
@@ -2710,6 +2735,9 @@ definitions:
       dbClientCredentials:
         $ref: '#/definitions/KeyPairCredentials'
         description: A certificate and private key pair belonging together for mutual SSL handshake when Database Catalog (aka DBC) connects to the metastore database.
+      customKerberosPrincipalHostname:
+        type: string
+        description: Optional hostname parameter. If not empty, this hostname will be used in the Kerberos service principal required by Cloudera Data Warehouse on Premises runtime components (Database Catalog, Virtual Warehouses).
   CreateClusterResponse:
     type: object
     description: Response object for the createCluster method.
@@ -3028,6 +3056,29 @@ definitions:
   RegisterSecretResponse:
     type: object
     description: Response object for registering secret.
+    properties:
+      result:
+        description: Result of the operation.
+        $ref: '#/definitions/Secret'
+  CreateSecretRequest:
+    x-form-factors: private
+    type: object
+    description: Request object for creating secret.
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+      secretName:
+        type: string
+        description: Name of the secret.
+      secretValue:
+        x-sensitive: true
+        type: string
+        description: Value of the secret.
+  CreateSecretResponse:
+    x-form-factors: private
+    type: object
+    description: Response object for creating secret.
     properties:
       result:
         description: Result of the operation.
@@ -4008,6 +4059,32 @@ definitions:
         type: integer
         format: int32
         description: Maximum Nodes Per Isolated Query
+  Quota:
+    x-form-factors: private
+    type: object
+    description: Quota for the Virtual Warehouse.
+    properties:
+      cpu:
+        type: number
+        format: float
+        description: CPU quota in cores.
+      memory:
+        type: integer
+        format: int32
+        description: Memory quota in MB.
+  QuotaRequest:
+    x-form-factors: private
+    type: object
+    description: Quota in requests for the Virtual Warehouse.
+    properties:
+      cpu:
+        type: number
+        format: float
+        description: CPU quota in cores.
+      memory:
+        type: integer
+        format: int32
+        description: Memory quota in MB.
   ReplicaStatus:
     x-form-factors: public,private
     type: object
@@ -4107,6 +4184,11 @@ definitions:
         type: string
         description: The Resource Pool of the Virtual Warehouse.
         x-form-factors: private
+      additionalQuota:
+        x-nullable: true
+        x-form-factors: private
+        $ref: '#/definitions/QuotaRequest'
+        description: Setting the quota for the 3rd party services injected into the Virtual Warehouse namespace.
       hiveAuthenticationMode:
         type: string
         x-nullable: true
@@ -4974,6 +5056,11 @@ definitions:
         type: string
         description: The name of the Resource Pool the Virtual Warehouse is in.
         x-form-factors: private
+      additionalQuota:
+        x-nullable: true
+        x-form-factors: private
+        $ref: '#/definitions/Quota'
+        description: Setting the quota for the 3rd party services injected into the Virtual Warehouse namespace.
       hiveAuthenticationMode:
         type: string
         x-nullable: true
@@ -5247,6 +5334,11 @@ definitions:
         x-nullable: true
         x-form-factors: private
         description: 'If specified, modifies Hive Server High Availability mode in Private Cloud: * `DISABLED` - Disables Hive Server high availability. * `ACTIVE_PASSIVE` - Runs two Hive Server instances, one active and one passive. Hive session failover is not supported in this setup.'
+      additionalQuota:
+        x-nullable: true
+        x-form-factors: private
+        $ref: '#/definitions/QuotaRequest'
+        description: Setting the quota for the 3rd party services injected into the Virtual Warehouse namespace.
   UpdateVwResponse:
     type: object
     description: Response object for the updateVw method.
@@ -6162,6 +6254,50 @@ definitions:
       message:
         type: string
         description: Additional message from the restore process.
+      restorePlan:
+        type: object
+        description: The plan for the restoration without cluster metadata in case of rebuild.
+        properties:
+          dbc:
+            type: array
+            description: The plan for the restoration of the DB Catalogs.
+            items:
+              $ref: '#/definitions/RestoreClusterEntityPlan'
+          hue:
+            type: array
+            description: The plan for the restoration of the Hue.
+            items:
+              $ref: '#/definitions/RestoreClusterEntityPlan'
+          hive:
+            type: array
+            description: The plan for the restoration of the Hive Virtual Warehouses.
+            items:
+              $ref: '#/definitions/RestoreClusterEntityPlan'
+          impala:
+            type: array
+            description: The plan for the restoration of the Impala Virtual Warehouses.
+            items:
+              $ref: '#/definitions/RestoreClusterEntityPlan'
+          trino:
+            type: array
+            description: The plan for the restoration of the Trino Virtual Warehouses.
+            items:
+              $ref: '#/definitions/RestoreClusterEntityPlan'
+          viz:
+            type: array
+            description: The plan for the restoration of the Data Visualization Apps.
+            items:
+              $ref: '#/definitions/RestoreClusterEntityPlan'
+          cdwHue:
+            type: array
+            description: The plan for the restoration of the Hue Query Editors.
+            items:
+              $ref: '#/definitions/RestoreClusterEntityPlan'
+          dwxSecrets:
+            type: array
+            description: The plan for the restoration of the DWX Secrets.
+            items:
+              type: string
   DescribeRestoreRequest:
     type: object
     x-form-factors: private

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.154
+  version: 0.9.155
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -3650,10 +3650,6 @@ definitions:
       encryptionAtHost:
         type: boolean
         description: When this is enabled, we will provision resources with host encrypted true flag.
-      userManagedIdentity:
-        type: string
-        description: User managed identity for encryption. (deprecated)
-        x-deprecated: true
       encryptionUserManagedIdentity:
         type: string
         description: User managed identity for encryption.
