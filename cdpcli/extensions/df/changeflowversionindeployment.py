@@ -23,7 +23,7 @@ from cdpcli.extensions.df import (get_asset_update_request_crn,
                                   get_deployment_request_details,
                                   get_environment_crn,
                                   get_expanded_file_path,
-                                  initiate_deployment,
+                                  initiate_deployed_flow,
                                   process_kpis,
                                   upload_workload_asset)
 from cdpcli.extensions.df.model import (DEPLOYMENT_ALERT,
@@ -38,17 +38,16 @@ from cdpcli.extensions.workload import set_workload_access_token
 from cdpcli.model import ObjectShape, OperationModel, ShapeResolver
 from cdpcli.utils import CachedProperty
 
-LOG = logging.getLogger('cdpcli.extensions.df.changeflowversion')
+LOG = logging.getLogger('cdpcli.extensions.df.changeflowversionindeployment')
 
 SERVICE_NAME = 'df'
-OPERATION_NAME = 'changeFlowVersion'
-OPERATION_CLI_NAME = 'change-flow-version'
-OPERATION_SUMMARY = 'Initiate and change the flow version of a running deployment'
+OPERATION_NAME = 'changeFlowVersionInDeployment'
+OPERATION_CLI_NAME = 'change-flow-version-in-deployment'
+OPERATION_SUMMARY = 'Initiate and change the flow version of a flow in a deployment'
 OPERATION_DESCRIPTION = """
-    Initiates a deployment change flow version on the control plane,
-    and change the flow version of a running deployment on the workload.
-    This operation is supported for the CLI only. Deprecated,
-    use change-flow-deployment-version instead.
+    Initiates a flow deployment change flow version on the control plane,
+    and change the flow version of a running flow on the workload.
+    This operation is supported for the CLI only.
     """
 OPERATION_DATA = {
     'summary': OPERATION_SUMMARY,
@@ -56,11 +55,11 @@ OPERATION_DATA = {
     'operationId': OPERATION_NAME,
 }
 OPERATION_SHAPES = {
-    'ChangeFlowVersionRequest': {
+    'ChangeFlowVersionInDeploymentRequest': {
         'type': 'object',
         'description': 'Request object for Change '
-                       'Flow Version of a running deployment.',
-        'required': ['serviceCrn', 'flowVersionCrn', 'deploymentCrn'],
+                       'Flow Version of a running flow in a deployment.',
+        'required': ['serviceCrn', 'flowVersionCrn', 'deploymentCrn', 'deployedFlowCrn'],
         'properties': {
             'serviceCrn': {
                 'type': 'string',
@@ -74,6 +73,10 @@ OPERATION_SHAPES = {
             'deploymentCrn': {
                 'type': 'string',
                 'description': 'CRN for the deployment.'
+            },
+            'deployedFlowCrn': {
+                'type': 'string',
+                'description': 'CRN for the deployed flow.'
             },
             'strategy': {
                 'type': 'string',
@@ -116,14 +119,14 @@ OPERATION_SHAPES = {
             },
         }
     },
-    'ChangeFlowVersionResponse': {
+    'ChangeFlowVersionInDeploymentResponse': {
         'type': 'object',
-        'description': 'Response for Change Flow Version command.',
+        'description': 'Response for Change Flow Version In Deployment command.',
         'properties': {
             'crn': {
                 'type': 'string',
                 'description': 'CRN for the deployment where '
-                               'change flow version was performed.'
+                               'change flow deployment version was performed.'
             }
         }
     },
@@ -155,12 +158,49 @@ def has_asset_references(parameters):
     return False
 
 
-def upload_asset_references(df_workload_client,
+def get_deployment_and_flow_names(df_client, df_workload_client, deployment_crn,
+                                  deployed_flow_crn, environment_crn):
+    """
+    Get deployment name and deployed flow name using describe operations
+    """
+    deployment_name = None
+    deployed_flow_name = None
+    # Get deployment name using describeDeployment from df service
+    try:
+        http, deployment_response = df_client.make_api_call(
+            'describeDeployment', {'deploymentCrn': deployment_crn})
+        deployment_name = deployment_response.get('deployment', {}).get('name')
+        LOG.debug('Retrieved deployment name: %s', deployment_name)
+    except Exception as e:
+        LOG.warning('Failed to get deployment name: %s', str(e))
+    # Get deployed flow name using describeFlowInDeployment from df service
+    try:
+        http, flow_deployment_response = df_client.make_api_call(
+            'describeFlowInDeployment', {
+                'deploymentCrn': deployment_crn,
+                'deployedFlowCrn': deployed_flow_crn
+            })
+        deployed_flow_name = flow_deployment_response.get('deployedFlow', {}).get('name')
+        LOG.debug('Retrieved deployed flow name: %s', deployed_flow_name)
+    except Exception as e:
+        LOG.warning('Failed to get deployed flow name: %s', str(e))
+    return deployment_name, deployed_flow_name
+
+
+def upload_asset_references(df_client,
+                            df_workload_client,
                             asset_update_request_crn,
                             parameters):
     """
     Process Parameter Groups and upload Asset References
     """
+    # Get deployment and flow names once for all asset uploads
+    deployment_crn = parameters.get('deploymentCrn')
+    deployed_flow_crn = parameters.get('deployedFlowCrn')
+    environment_crn = parameters.get('environmentCrn')
+
+    deployment_name, deployed_flow_name = get_deployment_and_flow_names(
+        df_client, df_workload_client, deployment_crn, deployed_flow_crn, environment_crn)
     parameter_groups = parameters.get('parameterGroups', None)
     if parameter_groups:
         for parameter_group in parameter_groups:
@@ -176,7 +216,9 @@ def upload_asset_references(df_workload_client,
                                 'assetUpdateRequestCrn': asset_update_request_crn,
                                 'parameterGroup': parameter_group_name,
                                 'parameterName': parameter.get('name', None),
-                                'filePath': asset_path
+                                'filePath': asset_path,
+                                'deploymentName': deployment_name,
+                                'deployedFlowName': deployed_flow_name
                             }
                             upload_workload_asset(df_workload_client, asset_params)
 
@@ -190,7 +232,7 @@ def abort_asset_update_request(df_workload_client,
                                deployment_crn,
                                environment_crn,
                                asset_update_request_crn,
-                               deployed_flow_crn=None):
+                               deployed_flow_crn):
     """
     Abort an asset update request.
 
@@ -205,11 +247,9 @@ def abort_asset_update_request(df_workload_client,
         request = {
             'deploymentCrn': deployment_crn,
             'environmentCrn': environment_crn,
-            'assetUpdateRequestCrn': asset_update_request_crn
+            'assetUpdateRequestCrn': asset_update_request_crn,
+            'deployedFlowCrn': deployed_flow_crn
         }
-
-        if deployed_flow_crn:
-            request['deployedFlowCrn'] = deployed_flow_crn
 
         df_workload_client.make_api_call(
             'abortAssetUpdateRequest',
@@ -229,22 +269,22 @@ def abort_asset_update_request(df_workload_client,
             )
 
 
-class ChangeFlowVersion(ServiceOperation):
+class ChangeFlowVersionInDeployment(ServiceOperation):
 
     def __init__(self, clidriver, service_model):
-        super(ChangeFlowVersion, self).__init__(
+        super(ChangeFlowVersionInDeployment, self).__init__(
             clidriver=clidriver,
             name=OPERATION_CLI_NAME,
             parent_name=SERVICE_NAME,
             service_model=service_model,
-            operation_model=ChangeFlowVersionOperationModel(service_model),
-            operation_caller=ChangeFlowVersionOperationCaller())
+            operation_model=ChangeFlowVersionInDeploymentOperationModel(service_model),
+            operation_caller=ChangeFlowVersionInDeploymentOperationCaller())
 
 
-class ChangeFlowVersionOperationModel(OperationModel):
+class ChangeFlowVersionInDeploymentOperationModel(OperationModel):
 
     def __init__(self, service_model):
-        super(ChangeFlowVersionOperationModel, self).__init__(
+        super(ChangeFlowVersionInDeploymentOperationModel, self).__init__(
             operation_data=OPERATION_DATA,
             service_model=service_model,
             name=OPERATION_NAME,
@@ -254,19 +294,21 @@ class ChangeFlowVersionOperationModel(OperationModel):
     @CachedProperty
     def input_shape(self):
         resolver = ShapeResolver(OPERATION_SHAPES)
+        shape_data = OPERATION_SHAPES['ChangeFlowVersionInDeploymentRequest']
         return ObjectShape(name='input',
-                           shape_data=OPERATION_SHAPES['ChangeFlowVersionRequest'],
+                           shape_data=shape_data,
                            shape_resolver=resolver)
 
     @CachedProperty
     def output_shape(self):
         resolver = ShapeResolver(OPERATION_SHAPES)
+        shape_data = OPERATION_SHAPES['ChangeFlowVersionInDeploymentResponse']
         return ObjectShape(name='output',
-                           shape_data=OPERATION_SHAPES['ChangeFlowVersionResponse'],
+                           shape_data=shape_data,
                            shape_resolver=resolver)
 
 
-class ChangeFlowVersionOperationCaller(CLIOperationCaller):
+class ChangeFlowVersionInDeploymentOperationCaller(CLIOperationCaller):
 
     def invoke(self,
                client_creator,
@@ -274,15 +316,17 @@ class ChangeFlowVersionOperationCaller(CLIOperationCaller):
                parameters,
                parsed_args,
                parsed_globals):
-        self._validate_cfv_parameters(parameters)
+        self._validate_cfdv_parameters(parameters)
 
         df_client = client_creator('df')
 
         service_crn = parameters.get('serviceCrn')
         flow_version_crn = parameters.get('flowVersionCrn')
         deployment_crn = parameters.get('deploymentCrn')
-        deployment_request_crn = initiate_deployment(
-                df_client, service_crn, flow_version_crn, deployment_crn)
+        deployed_flow_crn = parameters.get('deployedFlowCrn')
+        deployment_request_crn = initiate_deployed_flow(
+                df_client, service_crn, deployment_crn, flow_version_crn,
+                deployed_flow_crn)
 
         environment_crn = get_environment_crn(df_client, service_crn)
 
@@ -297,7 +341,8 @@ class ChangeFlowVersionOperationCaller(CLIOperationCaller):
             environment_crn
         )
 
-        response = self._change_flow_version(
+        response = self._change_flow_version_in_deployment(
+            df_client,
             df_workload_client,
             deployment_request_crn,
             environment_crn,
@@ -305,20 +350,23 @@ class ChangeFlowVersionOperationCaller(CLIOperationCaller):
         )
         self._display_response(operation_model.name, response, parsed_globals)
 
-    def _change_flow_version(self,
-                             df_workload_client,
-                             deployment_request_crn,
-                             environment_crn,
-                             parameters):
+    def _change_flow_version_in_deployment(self,
+                                           df_client,
+                                           df_workload_client,
+                                           deployment_request_crn,
+                                           environment_crn,
+                                           parameters):
         """
-        Changes the flow version of a running deployment using the
+        Changes the flow deployment version of a running deployment using the
         initiated Deployment Request CRN.
         """
         deployment_crn = parameters.get('deploymentCrn')
+        deployed_flow_crn = parameters.get('deployedFlowCrn')
         request = {
             'environmentCrn': environment_crn,
             'deploymentRequestCrn': deployment_request_crn,
             'deploymentCrn': deployment_crn,
+            'deployedFlowCrn': deployed_flow_crn,
         }
 
         strategy = parameters.get('strategy', None)
@@ -344,17 +392,25 @@ class ChangeFlowVersionOperationCaller(CLIOperationCaller):
         if parameterGroups:
             if has_asset_references(parameters):
                 asset_update_request_crn = get_asset_update_request_crn(
-                    df_workload_client, environment_crn, deployment_crn)
+                    df_workload_client, environment_crn, deployment_crn,
+                    deployed_flow_crn)
                 try:
-                    upload_asset_references(df_workload_client,
+                    # Add required parameters for asset upload
+                    upload_parameters = parameters.copy()
+                    upload_parameters['deploymentCrn'] = deployment_crn
+                    upload_parameters['deployedFlowCrn'] = deployed_flow_crn
+                    upload_parameters['environmentCrn'] = environment_crn
+                    upload_asset_references(df_client,
+                                            df_workload_client,
                                             asset_update_request_crn,
-                                            parameters)
+                                            upload_parameters)
                 except CdpCLIError:
                     abort_asset_update_request(
                         df_workload_client,
                         deployment_crn,
                         environment_crn,
-                        asset_update_request_crn
+                        asset_update_request_crn,
+                        deployed_flow_crn
                     )
                     raise
                 except Exception:
@@ -362,40 +418,51 @@ class ChangeFlowVersionOperationCaller(CLIOperationCaller):
                         df_workload_client,
                         deployment_crn,
                         environment_crn,
-                        asset_update_request_crn
+                        asset_update_request_crn,
+                        deployed_flow_crn
                     )
                     raise
                 request['assetUpdateRequestCrn'] = asset_update_request_crn
             request['parameterGroups'] = parameterGroups
 
-        LOG.debug('Change Flow Version Parameters %s', request)
+        LOG.debug('Change Flow Version In Deployment Parameters %s', request)
         try:
             http, response = df_workload_client.make_api_call(
-                'changeFlowVersion',
+                'changeFlowVersionInDeployment',
                 request
             )
-            # this should match the format of ChangeFlowVersionResponse
+
+            # Debug: Log the full response to understand its structure
+            LOG.debug('Full API response: %s', response)
+
+            # this should match the format of ChangeFlowVersionInDeploymentResponse
             # defined in OPERATION_SHAPES above
-            deployment_configuration = response.get('deploymentConfiguration', {})
-            change_flow_version_response = {
-                'crn': deployment_configuration.get('deploymentCrn', None)
+            deployed_flow_configuration = response.get('deployedFlowConfiguration', {})
+            LOG.debug('Deployed flow configuration from response: %s',
+                      deployed_flow_configuration)
+
+            change_flow_version_in_deployment_response = {
+                'crn': deployed_flow_configuration.get('deployedFlowCrn', None)
             }
-            return change_flow_version_response
+            LOG.debug('Final response CRN: %s',
+                      change_flow_version_in_deployment_response.get('crn'))
+            return change_flow_version_in_deployment_response
         except (ClientError, DfExtensionError):
             if 'assetUpdateRequestCrn' in request:
                 abort_asset_update_request(
                     df_workload_client,
                     deployment_crn,
                     environment_crn,
-                    asset_update_request_crn
+                    asset_update_request_crn,
+                    deployed_flow_crn
                 )
             raise
 
-    def _validate_cfv_parameters(self,
-                                 parameters):
+    def _validate_cfdv_parameters(self,
+                                  parameters):
         """
         Validates the parameters that were passed in to the
-        change flow version command.
+        change flow version in deployment command.
         """
         strategy = parameters.get('strategy', None)
         flow_bleed_out_time = parameters.get('waitForFlowToStopInMinutes', None)
@@ -403,9 +470,10 @@ class ChangeFlowVersionOperationCaller(CLIOperationCaller):
                 strategy == 'ONLY_RESTART_AFFECTED_COMPONENTS'):
             if flow_bleed_out_time is not None:
                 err_msg = (('--waitForFlowToStopInMinutes is not required when '
-                           'using the {strategy} change flow version strategy.')
+                            'using the {strategy} change flow deployment version '
+                            'strategy.')
                            .format(strategy=strategy))
                 raise DfExtensionError(err_msg=err_msg,
                                        service_name='df',
-                                       operation_name='changeFlowVersion')
+                                       operation_name='changeFlowVersionInDeployment')
         pass

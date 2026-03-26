@@ -16,15 +16,26 @@
 
 
 from cdpcli.extensions.df import DfExtension
+from cdpcli.extensions.df.addflowtodeployment import AddFlowToDeployment
+from cdpcli.extensions.df.addflowtodeployment import OPERATION_CLI_NAME \
+    as ADD_FLOW_TO_DEPLOYMENT_OPERATION_CLI_NAME
 from cdpcli.extensions.df.changeflowversion import ChangeFlowVersion
 from cdpcli.extensions.df.changeflowversion import OPERATION_CLI_NAME \
     as CHANGE_FLOW_VERSION_OPERATION_CLI_NAME
+from cdpcli.extensions.df.changeflowversionindeployment \
+    import ChangeFlowVersionInDeployment
+from cdpcli.extensions.df.changeflowversionindeployment import OPERATION_CLI_NAME \
+    as CHANGE_FLOW_VERSION_IN_DEPLOYMENT_OPERATION_CLI_NAME
 from cdpcli.extensions.df.createdeployment import CreateDeployment
 from cdpcli.extensions.df.createdeployment import OPERATION_CLI_NAME \
     as CREATE_DEPLOYMENT_OPERATION_CLI_NAME
 from cdpcli.extensions.df.retrychangeflowversion import OPERATION_CLI_NAME \
     as RETRY_CHANGE_FLOW_VERSION_OPERATION_CLI_NAME
 from cdpcli.extensions.df.retrychangeflowversion import RetryChangeFlowVersion
+from cdpcli.extensions.df.retrychangeflowversionindeployment import OPERATION_CLI_NAME \
+    as RETRY_CHANGE_FLOW_VERSION_IN_DEPLOYMENT_OPERATION_CLI_NAME
+from cdpcli.extensions.df.retrychangeflowversionindeployment import \
+    RetryChangeFlowVersionInDeployment
 
 
 def register_extension(operation_callers, operation_model, form_factor):
@@ -41,9 +52,15 @@ def register_command(clidriver, service_model, command_table):
     """
     Register an additional command to run.
     """
+    command_table[ADD_FLOW_TO_DEPLOYMENT_OPERATION_CLI_NAME] = \
+        AddFlowToDeployment(clidriver, service_model)
     command_table[CHANGE_FLOW_VERSION_OPERATION_CLI_NAME] = \
         ChangeFlowVersion(clidriver, service_model)
+    command_table[CHANGE_FLOW_VERSION_IN_DEPLOYMENT_OPERATION_CLI_NAME] = \
+        ChangeFlowVersionInDeployment(clidriver, service_model)
     command_table[CREATE_DEPLOYMENT_OPERATION_CLI_NAME] = \
         CreateDeployment(clidriver, service_model)
     command_table[RETRY_CHANGE_FLOW_VERSION_OPERATION_CLI_NAME] = \
         RetryChangeFlowVersion(clidriver, service_model)
+    command_table[RETRY_CHANGE_FLOW_VERSION_IN_DEPLOYMENT_OPERATION_CLI_NAME] = \
+        RetryChangeFlowVersionInDeployment(clidriver, service_model)

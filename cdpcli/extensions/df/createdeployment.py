@@ -74,11 +74,25 @@ OPERATION_SHAPES = {
                 'type': 'string',
                 'description': 'Unique name for the deployment.'
             },
+            'flowName': {
+                'type': 'string',
+                'description': 'The name of the flow within the deployment. If not '
+                               'provided, the flow name will be the same as the '
+                               'deployment name.'
+            },
             'fromArchive': {
                 'type': 'string',
                 'description': 'The name of the deployment configuration archive to '
                                'import deployment configurations from. This argument '
                                'cannot be used with --import-parameters-from.'
+            },
+            'importArchiveFlowName': {
+                'type': 'string',
+                'description': 'The name of the flow to select within the configuration '
+                               'archive when importing. If not provided, the flow name '
+                               'will be determined from the archive.  However, if more '
+                               'than one flow exists in the archive, an error will be '
+                               'returned.'
             },
             'importParametersFrom': {
                 'type': 'string',
@@ -250,6 +264,22 @@ OPERATION_SHAPES = {
                     '$ref': '#/definitions/ListenComponent'
                 }
             },
+            'inboundConnectionAuthorizedIpRanges': {
+                'type': 'array',
+                'description': 'Set of authorized CIDR ranges for the inbound '
+                               'connections. This argument will be ignored if '
+                               '--from-archive is used.',
+                'uniqueItems': 'true',
+                'items': {
+                    'type': 'string'
+                }
+            },
+            'ignoreDeploymentInboundConfigurationChecks': {
+                'type': 'boolean',
+                'description': 'When specified, ignore the check to validate if '
+                               'deployment has inbound connection configured for '
+                               'all listen components.'
+            },
             'nodeStorageProfileName': {
                 'type': 'string',
                 'description': 'Node storage profile name. '
@@ -416,10 +446,10 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                                        parameters):
         from_archive = parameters.get('fromArchive', None)
 
-        if from_archive is not None:
-            if parameters.get('importParametersFrom', None) is not None:
+        if parameters.get('importParametersFrom', None) is not None:
+            if from_archive is not None:
                 raise DfExtensionError(err_msg='Cannot use both --from-archive and '
-                                               '--import-parameters-from arguments.',
+                                       '--import-parameters-from arguments.',
                                        service_name='df',
                                        operation_name='createDeployment')
 
@@ -438,11 +468,13 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
 
         try:
             from_archive = parameters.get('fromArchive', None)
+            flow_name = parameters.get('importArchiveFlowName', None)
             if from_archive is not None:
                 import_deployment_configuration = self._import_deployment(
                     df_workload_client,
                     deployment_request_crn,
                     from_archive,
+                    flow_name,
                     environment_crn
                 )
                 LOG.debug('Imported Deployment Configuration %s',
@@ -459,6 +491,7 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                     self._import_deployment(df_workload_client,
                                             deployment_request_crn,
                                             import_parameters_from,
+                                            flow_name,
                                             environment_crn)
                 deployment_configuration = self._get_deployment_configuration(
                         deployment_request_crn, parameters)
@@ -584,6 +617,11 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             'configurationVersion': INITIAL_CONFIGURATION_VERSION
         }
 
+        # Only include deployedFlowName if flowName is provided
+        flowName = parameters.get('flowName', None)
+        if flowName is not None:
+            deployment_configuration['deployedFlowName'] = flowName
+
         # This maps the field name in the imported_deployment_configuration
         # to the one expected in the create_deployment_configuration.
         # These items also do not require special handling.
@@ -623,6 +661,17 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             deployment_configuration['inboundHostname'] = inboundHostname
             deployment_configuration['listenComponents'] = \
                 imported_deployment_configuration.get('listenComponents', None)
+            deployment_configuration['inboundConnectionAuthorizedIpRanges'] = \
+                imported_deployment_configuration.get(
+                    'inboundConnectionAuthorizedIpRanges', None)
+
+        # ignoreDeploymentInboundConfigurationChecks should always be passed in
+        # if provided
+        ignoreDeploymentInboundConfigurationChecks = parameters.get(
+            'ignoreDeploymentInboundConfigurationChecks', None)
+        if ignoreDeploymentInboundConfigurationChecks is not None:
+            deployment_configuration['ignoreDeploymentInboundConfigurationChecks'] = \
+                ignoreDeploymentInboundConfigurationChecks
 
         # special handling for KPIs in order to unset KPI IDs
         kpis = imported_deployment_configuration.get('kpis', None)
@@ -656,6 +705,11 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             'staticNodeCount': parameters.get('staticNodeCount', 1)
         }
 
+        # Only include deployedFlowName if flowName is provided
+        flowName = parameters.get('flowName', None)
+        if flowName is not None:
+            deployment_configuration['deployedFlowName'] = flowName
+
         self._process_cluster_sizing_parameters(deployment_configuration, parameters)
 
         # If nodeStorageProfileName is not set, then
@@ -686,6 +740,14 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             deployment_configuration['inboundHostname'] = inboundHostname
             deployment_configuration['listenComponents'] = \
                 parameters.get('listenComponents', None)
+            deployment_configuration['inboundConnectionAuthorizedIpRanges'] = \
+                parameters.get('inboundConnectionAuthorizedIpRanges', None)
+
+        ignoreDeploymentInboundConfigurationChecks = parameters.get(
+            'ignoreDeploymentInboundConfigurationChecks', None)
+        if ignoreDeploymentInboundConfigurationChecks is not None:
+            deployment_configuration['ignoreDeploymentInboundConfigurationChecks'] = \
+                ignoreDeploymentInboundConfigurationChecks
 
         self._process_scaling_parameters(deployment_configuration, parameters)
 
@@ -756,6 +818,9 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         if parameter_groups:
             deployment_name = parameters.get('deploymentName', None)
 
+            # Extract deployed flow name from flowName parameter (for create-deployment)
+            deployed_flow_name = parameters.get('flowName', None)
+
             for parameter_group in parameter_groups:
                 parameters = parameter_group['parameters']
                 for parameter in parameters:
@@ -787,6 +852,11 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                                 'parameterName': parameter.get('name', None),
                                 'filePath': asset_path
                             }
+
+                            # Add deployed flow name if available
+                            if deployed_flow_name:
+                                asset_params['deployedFlowName'] = deployed_flow_name
+
                             upload_workload_asset(df_workload_client, asset_params)
 
                             file_path = get_expanded_file_path(asset_path)
@@ -925,6 +995,7 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                            df_workload_client,
                            deployment_request_crn,
                            archive_name,
+                           flow_name,
                            environment_crn):
         """
         This function imports deployment configuration.
@@ -934,6 +1005,9 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
             'archiveName': archive_name,
             'environmentCrn': environment_crn
         }
+        if flow_name:
+            parameters['flowName'] = flow_name
+
         http, response = df_workload_client.make_api_call(
             'importDeployment', parameters)
         LOG.debug('Imported deployment configuration from archive with name: [%s]'

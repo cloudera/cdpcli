@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.155
+  version: 0.9.156
   title: Cloudera DataFlow Service
   license:
     name: Apache 2.0
@@ -370,6 +370,50 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/df/describeFlowEventDetailInDeployment:
+    post:
+      summary: Describe flow event detail in a deployment.
+      description: Describes flow event detail in a deployment.
+      operationId: describeFlowEventDetailInDeployment
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeFlowEventDetailInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeFlowEventDetailInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/df/describeFlowInDeployment:
+    post:
+      summary: Describe flow in a deployment.
+      description: Describes a flow in a deployment.
+      operationId: describeFlowInDeployment
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeFlowInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeFlowInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/df/describeProject:
     post:
       summary: Describes a Project.
@@ -637,6 +681,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/df/initiateFlowInDeployment:
+    post:
+      summary: Initiate the flow creation process in a deployment.
+      description: Initiates the flow creation process in a deployment. Intended for internal use, use add-flow-to-deployment instead.
+      operationId: initiateFlowInDeployment
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/InitiateFlowInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/InitiateFlowInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/df/listCollections:
     post:
       summary: List catalog collections.
@@ -710,6 +776,7 @@ paths:
       description: Lists event history for deployment.
       operationId: listDeploymentEvents
       x-entitlement: DFX
+      x-paging-default-max-items: 20
       parameters:
         - name: input
           in: body
@@ -838,6 +905,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/df/listFlowActiveAlertsInDeployment:
+    post:
+      summary: List active alerts for a flow in a deployment.
+      description: Lists active alerts for a flow in a deployment.
+      operationId: listFlowActiveAlertsInDeployment
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListFlowActiveAlertsInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListFlowActiveAlertsInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/df/listFlowDefinitionVersions:
     post:
       summary: List flow definition versions.
@@ -883,6 +972,51 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/df/listFlowEventsInDeployment:
+    post:
+      summary: List event history for a flow in a deployment.
+      description: Lists flow event history in a deployment.
+      operationId: listFlowEventsInDeployment
+      x-entitlement: DFX
+      x-paging-default-max-items: 20
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListFlowEventsInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListFlowEventsInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/df/listFlowKpisInDeployment:
+    post:
+      summary: List KPI metrics for a flow in a deployment.
+      description: Lists flow KPI charts in a deployment.
+      operationId: listFlowKpisInDeployment
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListFlowKpisInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListFlowKpisInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/df/listFlowVersionTags:
     post:
       summary: List flow version tags.
@@ -900,6 +1034,29 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListFlowVersionTagsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+  /api/v1/df/listFlowsInDeployment:
+    post:
+      summary: List flows in a deployment.
+      description: Lists flows in a deployment.
+      operationId: listFlowsInDeployment
+      x-entitlement: DFX
+      x-paging-default-max-items: 20
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListFlowsInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListFlowsInDeploymentResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1233,6 +1390,28 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateCollectionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/df/updateNodeImages:
+    post:
+      summary: Update cloud provider node images.
+      description: Updates the nodes images that the DataFlow service is running on to their latest version. The service will be unavailable for it's duration.
+      operationId: updateNodeImages
+      x-entitlement: DFX
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateNodeImagesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateNodeImagesResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2543,9 +2722,43 @@ definitions:
       dfxLocalUrl:
         type: string
         description: The base URL of the dfx-local instance where the deployment will eventually be created.
+  InitiateFlowInDeploymentRequest:
+    type: object
+    description: A request to initiate the flow creation process in a deployment.
+    required:
+      - serviceCrn
+      - flowVersionCrn
+      - deploymentCrn
+    properties:
+      serviceCrn:
+        type: string
+        description: The service CRN.
+      flowVersionCrn:
+        type: string
+        description: The flow version CRN.
+      deploymentCrn:
+        type: string
+        description: The CRN of the existing deployment where this flow will be initiated.
+      deployedFlowCrn:
+        type: string
+        description: The CRN of an existing deployed flow where a 'change flow version' operation is being performed.
+  InitiateFlowInDeploymentResponse:
+    type: object
+    description: A response from initiating the flow creation process in a deployment.
+    required:
+      - deployedFlowRequestCrn
+      - dfxLocalUrl
+    properties:
+      deployedFlowRequestCrn:
+        type: string
+        description: The CRN of the newly created flow deployment request.
+      dfxLocalUrl:
+        type: string
+        description: The base URL of the dfx-local instance where the flow deployment will eventually be created.
   DeploymentState:
     type: string
     description: The state that the deployment is currently in.
+    x-deprecated-enum-values: STARTING_FLOW,STOPPED,IMPORTING_FLOW,STOPPING_FLOW,FLOW_STOPPED,CHANGING_FLOW_VERSION
     enum:
       - DEPLOYING
       - GOOD_HEALTH
@@ -2566,6 +2779,7 @@ definitions:
       - SUSPENDING
       - RESUMING
       - CHANGING_FLOW_VERSION
+      - TERMINATED
   DeploymentStatus:
     type: object
     description: The status of a deployment.
@@ -2656,10 +2870,12 @@ definitions:
         description: The initial size of the deployment.
       flowVersionCrn:
         type: string
-        description: The deployment's current flow version CRN.
+        description: The deployment's current flow version CRN. Deprecated, use flowVersionCrn in DeployedFlow
+        x-deprecated: true
       flowCrn:
         type: string
-        description: The CRN of the flow definition.
+        description: The CRN of the flow definition. Deprecated, use flowCrn in DeployedFlow
+        x-deprecated: true
       nifiUrl:
         type: string
         description: The url to open the deployed flow in NiFi.
@@ -2669,11 +2885,13 @@ definitions:
         description: The maximum number of nodes that the deployment can scale up to, or null if autoscaling is not enabled for this deployment.
       flowName:
         type: string
-        description: The name of the flow.
+        description: The name of the flow. Deprecated, use artifactName in DeployedFlow
+        x-deprecated: true
       flowVersion:
         type: integer
         format: int32
-        description: The version of the flow.
+        description: The version of the flow. Deprecated, use flowVersion in DeployedFlow
+        x-deprecated: true
       currentNodeCount:
         type: integer
         format: int32
@@ -2785,6 +3003,9 @@ definitions:
         items:
           type: string
         description: The filter criteria (see list-filter-options).
+      searchTerm:
+        type: string
+        description: A search term by which to filter the name field.
   ListDeploymentsResponse:
     type: object
     description: A response from listing deployments.
@@ -2799,6 +3020,26 @@ definitions:
         items:
           $ref: '#/definitions/DeploymentSummary'
         description: The listing of deployments in this page.
+  DescribeFlowInDeploymentRequest:
+    type: object
+    description: A request to describe a flow in a deployment.
+    required:
+      - deploymentCrn
+      - deployedFlowCrn
+    properties:
+      deploymentCrn:
+        type: string
+        description: The deployment CRN.
+      deployedFlowCrn:
+        type: string
+        description: The deployed flow CRN.
+  DescribeFlowInDeploymentResponse:
+    type: object
+    description: A response to describe a flow in a deployment.
+    properties:
+      deployedFlow:
+        description: The deployed flow.
+        $ref: '#/definitions/DeployedFlow'
   DescribeDeploymentRequest:
     type: object
     description: A request to describe a deployment.
@@ -2892,7 +3133,8 @@ definitions:
       rows:
         type: integer
         format: int32
-        description: Max number of rows to return.
+        description: This field is deprecated and will be removed. Use max-items instead. Historically used to set the number of elements to return. Note that if max-items is also specified, and rows is less than max-items, an error will be returned.
+        x-deprecated: true
       timestampFrom:
         type: integer
         format: int64
@@ -2902,15 +3144,129 @@ definitions:
         items:
           type: string
         description: Filter criteria (see list-filter-options).
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The page size.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: The token pointing to the next element to be retrieved.
   ListDeploymentEventsResponse:
     type: object
     description: A response to list event history for deployment.
     properties:
       eventSummaries:
         type: array
+        x-paging-result: true
         items:
           $ref: '#/definitions/EventSummary'
         description: The list of events.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The page token for requesting the next page of results.
+  ListFlowEventsInDeploymentRequest:
+    type: object
+    description: A request to list flow event history in a deployment.
+    required:
+      - deploymentCrn
+      - deployedFlowCrn
+    properties:
+      deploymentCrn:
+        type: string
+        description: The deployment CRN.
+      deployedFlowCrn:
+        type: string
+        description: The deployment CRN.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The page size.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: The token pointing to the next element to be retrieved.
+      timestampFrom:
+        type: integer
+        format: int64
+        description: Timestamp from when to list events prior.
+      filters:
+        type: array
+        items:
+          type: string
+        description: Filter criteria (see list-filter-options).
+  ListFlowEventsInDeploymentResponse:
+    type: object
+    description: A response to list flow event history in a deployment.
+    properties:
+      eventSummaries:
+        type: array
+        x-paging-result: true
+        items:
+          $ref: '#/definitions/EventSummary'
+        description: The list of events.
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The page token for requesting the next page of results.
+  ListFlowKpisInDeploymentRequest:
+    type: object
+    description: A request to list KPI metrics for a flow in a deployment.
+    required:
+      - deploymentCrn
+      - deployedFlowCrn
+      - metricsTimePeriod
+    properties:
+      deploymentCrn:
+        type: string
+        description: The deployment CRN.
+      deployedFlowCrn:
+        type: string
+        description: The deployed flow CRN.
+      metricsTimePeriod:
+        type: string
+        description: The metrics time period (LAST_THIRTY_MINUTES|LAST_ONE_HOUR|LAST_TWELVE_HOURS|LAST_ONE_DAY).
+  ListFlowKpisInDeploymentResponse:
+    type: object
+    description: A response to list KPI metrics for a flow in a deployment.
+    properties:
+      metricCharts:
+        type: array
+        items:
+          $ref: '#/definitions/MetricChart'
+        description: The metrics for the configured KPIs.
+  ListFlowActiveAlertsInDeploymentRequest:
+    type: object
+    description: A request to list active alerts for a flow in a deployment.
+    required:
+      - deploymentCrn
+      - deployedFlowCrn
+    properties:
+      deploymentCrn:
+        type: string
+        description: The deployment CRN.
+      deployedFlowCrn:
+        type: string
+        description: The deployed flow CRN.
+      sort:
+        type: string
+        description: Sort criteria (firstOccurrence|name|eventType):(asc|desc). Defaults to firstOccurrence:asc.
+  ListFlowActiveAlertsInDeploymentResponse:
+    type: object
+    description: A response to list active alerts for a flow in a deployment.
+    properties:
+      eventSummaries:
+        type: array
+        items:
+          $ref: '#/definitions/EventSummary'
+        description: The events for the specified deployed flow.
   DescribeDeploymentEventDetailRequest:
     type: object
     description: A request to describe event details for deployment.
@@ -2931,6 +3287,30 @@ definitions:
       eventDetail:
         description: The event details.
         $ref: '#/definitions/EventDetail'
+  DescribeFlowEventDetailInDeploymentRequest:
+    type: object
+    description: A request to describe flow event details in a deployment.
+    required:
+      - deploymentCrn
+      - deployedFlowCrn
+      - eventCrn
+    properties:
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment.
+      deployedFlowCrn:
+        type: string
+        description: The CRN of the deployed flow.
+      eventCrn:
+        type: string
+        description: The CRN of the event to be described.
+  DescribeFlowEventDetailInDeploymentResponse:
+    type: object
+    description: A response to describe flow event details in a deployment.
+    properties:
+      eventDetail:
+        description: The event details.
+        $ref: '#/definitions/EventDetail'
   EventDetail:
     type: object
     description: Event details.
@@ -2941,6 +3321,182 @@ definitions:
       metricSummary:
         description: the metric summary.
         $ref: '#/definitions/MetricSummary'
+  DeployedFlowState:
+    type: string
+    description: The state that the deployed flow is currently in. "DEPLOYING" indicates that the flow is in the process of being deployed. "GOOD_HEALTH" indicates that the flow is in good health. "CONCERNING_HEALTH" indicates that there is a concern with the health of the flow (e.g., a KPI threshold breach) "BAD_HEALTH" indicates that the flow is in bad health. "IMPORTING_FLOW" indicates that the flow definition is in process of being imported. "STARTING_FLOW" indicates that the flow is in process of being started. "STOPPING_FLOW" indicates that the flow is in process of being stopped. "FLOW_STOPPED" indicates that the flow is currently stopped. "CHANGING_FLOW_VERSION" indicates that the flow version is in process of being changed. "UPDATING" indicates that the flow configuration is currently being updated. "TERMINATING" indicates that the flow is currently being terminated. "UNKNOWN" indicates that the state is not currently known.
+    enum:
+      - DEPLOYING
+      - GOOD_HEALTH
+      - CONCERNING_HEALTH
+      - BAD_HEALTH
+      - IMPORTING_FLOW
+      - STARTING_FLOW
+      - STOPPING_FLOW
+      - FLOW_STOPPED
+      - CHANGING_FLOW_VERSION
+      - UPDATING
+      - TERMINATING
+      - UNKNOWN
+  DeployedFlowStatus:
+    type: object
+    description: The status of the flow being deployed.
+    required:
+      - detailedState
+      - state
+    properties:
+      detailedState:
+        type: string
+        description: The detailed state that the deployed flow is currently in.
+      state:
+        description: The state that the deployed flow is currently in.
+        $ref: '#/definitions/DeployedFlowState'
+      message:
+        type: string
+        description: Detail message relating to the current status of the deployed flow.
+  DeployedFlow:
+    type: object
+    description: A flow, potentially one of many, deployed inside a deployment.
+    required:
+      - crn
+      - name
+      - deploymentCrn
+      - status
+    properties:
+      crn:
+        type: string
+        description: The deployed flow CRN.
+      name:
+        type: string
+        description: The deployed flow name.
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment that contains the flow.
+      status:
+        description: The deployed flow status.
+        $ref: '#/definitions/DeployedFlowStatus'
+      deploymentName:
+        type: string
+        description: The parent deployment name.
+      projectCrn:
+        type: string
+        description: The CRN of the project that the flow's deployment belongs to.
+      created:
+        type: integer
+        format: int64
+        description: Timestamp of the creation of the deployed flow.
+      updated:
+        type: integer
+        format: int64
+        description: Timestamp of the last time the deployed flow was modified.
+      flowVersion:
+        type: integer
+        format: int32
+        description: The version of the flow.
+      flowVersionCrn:
+        type: string
+        description: The deployed flow definition version CRN.
+      flowCrn:
+        type: string
+        description: The CRN of the flow definition.
+      activeInfoAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as informational.
+      activeWarningAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as warnings.
+      activeErrorAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as errors.
+      creatorCrn:
+        type: string
+        description: The CRN of the user who deployed the flow.
+  DeployedFlowSummary:
+    type: object
+    description: A deployed flow summary.
+    required:
+      - crn
+      - name
+      - deploymentCrn
+      - status
+    properties:
+      crn:
+        type: string
+        description: The deployed flow CRN.
+      name:
+        type: string
+        description: The deployed flow name.
+      deploymentCrn:
+        type: string
+        description: The deployment CRN.
+      status:
+        description: The deployed flow status.
+        $ref: '#/definitions/DeployedFlowStatus'
+      updated:
+        type: integer
+        format: int64
+        description: Timestamp of the last time the deployed flow was modified.
+      activeInfoAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as informational.
+      activeWarningAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as warnings.
+      activeErrorAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as errors.
+  ListFlowsInDeploymentRequest:
+    type: object
+    description: A request to list the flows in a deployment.
+    required:
+      - deploymentCrn
+    properties:
+      deploymentCrn:
+        type: string
+        description: The deployment CRN to list flows for.
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The page size.
+      startingToken:
+        type: string
+        x-paging-input-token: true
+        description: The token pointing to the next element to be retrieved.
+      sorts:
+        type: array
+        items:
+          type: string
+        description: The sort criteria (updated|name|state):(asc|desc) e.g., name:asc.
+      filters:
+        type: array
+        items:
+          type: string
+        description: The filter criteria (see list-filter-options).
+      searchTerm:
+        type: string
+        description: A search term by which to filter the name field.
+  ListFlowsInDeploymentResponse:
+    type: object
+    description: A response from listing flows in a deployment.
+    properties:
+      nextToken:
+        type: string
+        x-paging-output-token: true
+        description: The page token for requesting the next page of results.
+      deployedFlows:
+        type: array
+        x-paging-result: true
+        items:
+          $ref: '#/definitions/DeployedFlowSummary'
+        description: The list of deployed flows in this page.
   DiagnosticsDestination:
     type: string
     description: DiagnosticsDestination enum.
@@ -3095,6 +3651,9 @@ definitions:
       proxyName:
         type: string
         description: The name of the proxy that is configured for the CDP environment
+      enforceProject:
+        type: boolean
+        description: Indicates whether to enforce project or not.
   Service:
     type: object
     description: The DataFlow view of a CDP service.
@@ -3236,6 +3795,9 @@ definitions:
       encryptionParameters:
         description: The encryption parameters used by DataFlow service for encrypting K8s secrets and EBS volumes.
         $ref: '#/definitions/EncryptionParameters'
+      enforceProject:
+        type: boolean
+        description: Indicates whether to enforce project or not.
   ListServicesRequest:
     type: object
     description: Request object for the ListServices method.
@@ -3389,6 +3951,9 @@ definitions:
       serviceCidr:
         type: string
         description: CIDR range from which to assign IPs to internal services in the kubernetes cluster.
+      enforceProject:
+        type: boolean
+        description: Indicates whether to enforce project or not.
   EnableServiceResponse:
     type: object
     description: Response object for EnableService
@@ -3481,6 +4046,18 @@ definitions:
   RotatePasswordResponse:
     type: object
     description: Response object for RotatePassword
+  UpdateNodeImagesRequest:
+    type: object
+    description: Request object for UpdateNodeImages
+    required:
+      - serviceCrn
+    properties:
+      serviceCrn:
+        type: string
+        description: The service CRN.
+  UpdateNodeImagesResponse:
+    type: object
+    description: Response object for UpdateNodeImages
   ListServiceActiveAlertsRequest:
     type: object
     description: Request object for ListServiceActiveAlerts

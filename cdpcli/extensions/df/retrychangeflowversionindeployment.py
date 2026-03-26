@@ -21,9 +21,10 @@ from cdpcli.exceptions import CdpCLIError, ClientError, DfExtensionError
 from cdpcli.extensions.df import (get_asset_update_request_crn,
                                   get_environment_crn,
                                   process_kpis)
-from cdpcli.extensions.df.changeflowversion import (abort_asset_update_request,
-                                                    has_asset_references,
-                                                    upload_asset_references)
+from cdpcli.extensions.df.changeflowversionindeployment import (
+    abort_asset_update_request,
+    has_asset_references,
+    upload_asset_references)
 from cdpcli.extensions.df.model import (DEPLOYMENT_ALERT,
                                         DEPLOYMENT_ALERT_THRESHOLD,
                                         DEPLOYMENT_FLOW_PARAMETER_ASSET_REFERENCE,
@@ -36,16 +37,15 @@ from cdpcli.extensions.workload import set_workload_access_token
 from cdpcli.model import ObjectShape, OperationModel, ShapeResolver
 from cdpcli.utils import CachedProperty
 
-LOG = logging.getLogger('cdpcli.extensions.df.retrychangeflowversion')
+LOG = logging.getLogger('cdpcli.extensions.df.retrychangeflowversionindeployment')
 
 SERVICE_NAME = 'df'
-OPERATION_NAME = 'retryChangeFlowVersion'
-OPERATION_CLI_NAME = 'retry-change-flow-version'
-OPERATION_SUMMARY = 'Retries a change flow version attempt of a deployment'
+OPERATION_NAME = 'retryChangeFlowVersionInDeployment'
+OPERATION_CLI_NAME = 'retry-change-flow-version-in-deployment'
+OPERATION_SUMMARY = 'Retries a change flow version attempt in a deployment'
 OPERATION_DESCRIPTION = """
-    Retries a failed change flow version attempt of a deployment.
-    This operation is supported for the CLI only.  Deprecated,
-    use retry-change-flow-deployment-version instead.
+    Retries a failed change flow version attempt in a deployment.
+    This operation is supported for the CLI only.
     """
 OPERATION_DATA = {
     'summary': OPERATION_SUMMARY,
@@ -53,11 +53,11 @@ OPERATION_DATA = {
     'operationId': OPERATION_NAME
 }
 OPERATION_SHAPES = {
-    'RetryChangeFlowVersionRequest': {
+    'RetryChangeFlowVersionInDeploymentRequest': {
         'type': 'object',
         'description': 'Request object for Retry Change '
-                       'Flow version of a running deployment.',
-        'required': ['serviceCrn', 'deploymentCrn'],
+                       'Flow Version of a running flow deployment.',
+        'required': ['serviceCrn', 'deploymentCrn', 'deployedFlowCrn'],
         'properties': {
             'serviceCrn': {
                 'type': 'string',
@@ -67,11 +67,16 @@ OPERATION_SHAPES = {
                 'type': 'string',
                 'description': 'CRN for the deployment.'
             },
+            'deployedFlowCrn': {
+                'type': 'string',
+                'description': 'CRN for the deployed flow.'
+            },
             'strategy': {
                 'type': 'string',
-                'description': 'The strategy to use for retry change flow version. '
-                               'If nothing is specified, the strategy used in the '
-                               'previous change flow version attempt will be used.',
+                'description': 'The strategy to use for retry change flow '
+                               'deployment version. If nothing is specified, the '
+                               'strategy used in the previous change flow deployment '
+                               'version attempt will be used.',
                 'enum': [
                     'STOP_AND_PROCESS_DATA',
                     'STOP_AND_EMPTY_QUEUES',
@@ -80,13 +85,13 @@ OPERATION_SHAPES = {
             },
             'waitForFlowToStopInMinutes': {
                 'type': 'integer',
-                'description': 'The max time in minutes to wait for flow to bleed out. '
-                               'This is only relevant when using the default change '
-                               'flow version strategy (STOP_AND_PROCESS_DATA). '
-                               'If nothing is specified and using the '
-                               'STOP_AND_PROCESS_DATA strategy, then the'
-                               'wait time used in the previous change flow version '
-                               'attempt will be used.'
+                'description': 'The max time in minutes to wait for flow to '
+                               'bleed out. This is only relevant when using the '
+                               'default change flow version strategy '
+                               '(STOP_AND_PROCESS_DATA). If nothing is specified '
+                               'and using the STOP_AND_PROCESS_DATA strategy, then '
+                               'the wait time used in the previous change flow '
+                               'deployment version attempt will be used.'
             },
             'parameterGroups': {
                 'type': 'array',
@@ -106,9 +111,9 @@ OPERATION_SHAPES = {
             }
         }
     },
-    'RetryChangeFlowVersionResponse': {
+    'RetryChangeFlowVersionInDeploymentResponse': {
         'type': 'object',
-        'description': 'Response for Retry Change Flow Version command.',
+        'description': 'Response for Retry Change Flow Version In Deployment command.',
         'properties': {
             'crn': {
                 'type': 'string',
@@ -128,22 +133,23 @@ OPERATION_SHAPES = {
 }
 
 
-class RetryChangeFlowVersion(ServiceOperation):
+class RetryChangeFlowVersionInDeployment(ServiceOperation):
 
     def __init__(self, clidriver, service_model):
-        super(RetryChangeFlowVersion, self).__init__(
+        super(RetryChangeFlowVersionInDeployment, self).__init__(
             clidriver=clidriver,
             name=OPERATION_CLI_NAME,
             parent_name=SERVICE_NAME,
             service_model=service_model,
-            operation_model=RetryChangeFlowVersionOperationModel(service_model),
-            operation_caller=RetryChangeFlowVersionOperationCaller())
+            operation_model=RetryChangeFlowVersionInDeploymentOperationModel(
+                service_model),
+            operation_caller=RetryChangeFlowVersionInDeploymentOperationCaller())
 
 
-class RetryChangeFlowVersionOperationModel(OperationModel):
+class RetryChangeFlowVersionInDeploymentOperationModel(OperationModel):
 
     def __init__(self, service_model):
-        super(RetryChangeFlowVersionOperationModel, self).__init__(
+        super(RetryChangeFlowVersionInDeploymentOperationModel, self).__init__(
             operation_data=OPERATION_DATA,
             service_model=service_model,
             name=OPERATION_NAME,
@@ -153,19 +159,21 @@ class RetryChangeFlowVersionOperationModel(OperationModel):
     @CachedProperty
     def input_shape(self):
         resolver = ShapeResolver(OPERATION_SHAPES)
-        return ObjectShape(name='input',
-                           shape_data=OPERATION_SHAPES['RetryChangeFlowVersionRequest'],
-                           shape_resolver=resolver)
+        return ObjectShape(
+            name='input',
+            shape_data=OPERATION_SHAPES['RetryChangeFlowVersionInDeploymentRequest'],
+            shape_resolver=resolver)
 
     @CachedProperty
     def output_shape(self):
         resolver = ShapeResolver(OPERATION_SHAPES)
-        return ObjectShape(name='output',
-                           shape_data=OPERATION_SHAPES['RetryChangeFlowVersionResponse'],
-                           shape_resolver=resolver)
+        return ObjectShape(
+            name='output',
+            shape_data=OPERATION_SHAPES['RetryChangeFlowVersionInDeploymentResponse'],
+            shape_resolver=resolver)
 
 
-class RetryChangeFlowVersionOperationCaller(CLIOperationCaller):
+class RetryChangeFlowVersionInDeploymentOperationCaller(CLIOperationCaller):
 
     def invoke(self,
                client_creator,
@@ -173,7 +181,7 @@ class RetryChangeFlowVersionOperationCaller(CLIOperationCaller):
                parameters,
                parsed_args,
                parsed_globals):
-        self._validate_retry_cfv_parameters(parameters)
+        self._validate_retry_cfdv_parameters(parameters)
 
         df_client = client_creator('df')
 
@@ -182,32 +190,37 @@ class RetryChangeFlowVersionOperationCaller(CLIOperationCaller):
         environment_crn = get_environment_crn(df_client, service_crn)
 
         iam_client = client_creator('iam')
-        set_workload_access_token(iam_client, parsed_globals, SERVICE_NAME.upper(),
-                                  environment_crn)
+        set_workload_access_token(iam_client, parsed_globals,
+                                  SERVICE_NAME.upper(), environment_crn)
 
         df_workload_client = client_creator('dfworkload')
 
-        response = self._retry_change_flow_version(
+        response = self._retry_change_flow_version_in_deployment(
+            df_client,
             df_workload_client,
             environment_crn,
             parameters
         )
         self._display_response(operation_model.name, response, parsed_globals)
 
-    def _retry_change_flow_version(self,
-                                   df_workload_client,
-                                   environment_crn,
-                                   parameters):
+    def _retry_change_flow_version_in_deployment(self,
+                                                 df_client,
+                                                 df_workload_client,
+                                                 environment_crn,
+                                                 parameters):
         """
-        Retries the change flow version of a running deployment. A key difference
-        between a retry and the original change flow version is that a retry has no
-        deployment request CRN, and will instead use the stored change
-        flow version request details unless its overridden by parameters.
+        Retries the change flow version of a running flow deployment.
+        A key difference between a retry and the original change flow deployment
+        version is that a retry has no deployment request CRN, and will instead
+        use the stored change flow version request details unless its
+        overridden by parameters.
         """
         deployment_crn = parameters.get('deploymentCrn')
+        deployed_flow_crn = parameters.get('deployedFlowCrn')
         request = {
             'environmentCrn': environment_crn,
             'deploymentCrn': deployment_crn,
+            'deployedFlowCrn': deployed_flow_crn,
         }
 
         strategy = parameters.get('strategy', None)
@@ -229,15 +242,22 @@ class RetryChangeFlowVersionOperationCaller(CLIOperationCaller):
                 asset_update_request_crn = get_asset_update_request_crn(
                     df_workload_client, environment_crn, deployment_crn)
                 try:
-                    upload_asset_references(df_workload_client,
+                    # Add required parameters for asset upload
+                    upload_parameters = parameters.copy()
+                    upload_parameters['deploymentCrn'] = deployment_crn
+                    upload_parameters['deployedFlowCrn'] = deployed_flow_crn
+                    upload_parameters['environmentCrn'] = environment_crn
+                    upload_asset_references(df_client,
+                                            df_workload_client,
                                             asset_update_request_crn,
-                                            parameters)
+                                            upload_parameters)
                 except CdpCLIError:
                     abort_asset_update_request(
                         df_workload_client,
                         deployment_crn,
                         environment_crn,
-                        asset_update_request_crn
+                        asset_update_request_crn,
+                        deployed_flow_crn
                     )
                     raise
                 except Exception:
@@ -245,38 +265,40 @@ class RetryChangeFlowVersionOperationCaller(CLIOperationCaller):
                         df_workload_client,
                         deployment_crn,
                         environment_crn,
-                        asset_update_request_crn
+                        asset_update_request_crn,
+                        deployed_flow_crn
                     )
                     raise
                 request['assetUpdateRequestCrn'] = asset_update_request_crn
             request['parameterGroups'] = parameterGroups
 
-        LOG.debug('Change Flow Version Parameters for retry %s', request)
+        LOG.debug('Change Flow Deployment Version Parameters for retry %s', request)
         try:
             http, response = df_workload_client.make_api_call(
-                'changeFlowVersion',
+                'changeFlowVersionInDeployment',
                 request
             )
 
-            # this should match the format of RetryChangeFlowVersionResponse
+            # this should match the format of RetryChangeFlowVersionInDeploymentResponse
             # defined in OPERATION_SHAPES above
-            deployment_configuration = response.get('deploymentConfiguration', {})
-            change_flow_version_response = {
-                'crn': deployment_configuration.get('deploymentCrn', None)
+            deployed_flow_configuration = response.get('deployedFlowConfiguration', {})
+            change_flow_version_in_deployment_response = {
+                'crn': deployed_flow_configuration.get('deployedFlowCrn', None)
             }
-            return change_flow_version_response
+            return change_flow_version_in_deployment_response
         except (ClientError, DfExtensionError):
             if 'assetUpdateRequestCrn' in request:
                 abort_asset_update_request(
                     df_workload_client,
                     deployment_crn,
                     environment_crn,
-                    asset_update_request_crn
+                    asset_update_request_crn,
+                    deployed_flow_crn
                 )
             raise
 
-    def _validate_retry_cfv_parameters(self,
-                                       parameters):
+    def _validate_retry_cfdv_parameters(self,
+                                        parameters):
         """
         Validates the parameters that were passed in to the
         retry change flow version command.
@@ -286,10 +308,10 @@ class RetryChangeFlowVersionOperationCaller(CLIOperationCaller):
         if (strategy == 'STOP_AND_EMPTY_QUEUES' or
                 strategy == 'ONLY_RESTART_AFFECTED_COMPONENTS'):
             if flow_bleed_out_time is not None:
-                err_msg = (('--waitForFlowToStopInMinutes is not required when '
-                           'using the {strategy} change flow version strategy.')
-                           .format(strategy=strategy))
+                err_msg = ('--waitForFlowToStopInMinutes is not required when '
+                           'using the {strategy} change flow version '
+                           'strategy.').format(strategy=strategy)
                 raise DfExtensionError(err_msg=err_msg,
                                        service_name='df',
-                                       operation_name='changeFlowVersion')
+                                       operation_name='changeFlowVersionInDeployment')
         pass

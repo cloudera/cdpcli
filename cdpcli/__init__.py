@@ -82,6 +82,7 @@ ARGPARSE_DASH_ENCODING = '\\-'
 _xform_cache = {
     ('s3GuardConfiguration', '-'): 's3-guard-configuration',
     ('s3GuardTableName', '-'): 's3-guard-table-name',
+    ('disableArm64', '-'): 'disable-arm64',  # ARM64 as single unit, not arm-64
 }
 _first_cap_regex = re.compile('(.)([A-Z][a-z]+)')
 _number_cap_regex = re.compile('([a-z])([0-9]+)')

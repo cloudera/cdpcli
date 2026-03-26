@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.155
+  version: 0.9.156
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -1042,6 +1042,15 @@ definitions:
         type: integer
         format: int32
         description: EBS volume size in GB for the All Purpose Instance Group.
+      disableArm64:
+        type: boolean
+        description: When set to true, disables ARM64 (Graviton) instances for the CDE service database. When set to false (default), Graviton instances may be used for the database. If Graviton instances are not available, the system falls back to x86.
+      azureServiceManagedIdentity:
+        type: string
+        description: Azure managed identity resource ID for service.
+      azureVirtualClusterManagedIdentities:
+        type: string
+        description: Azure managed identity resource IDs for virtual cluster.
   CustomAzureFilesConfigs:
     type: object
     description: Override Azure Files Configs.
@@ -1794,6 +1803,11 @@ definitions:
       serviceName:
         type: string
         description: Specify the restored service name. If not specified, the service name from the backup will be reused.
+      servicePropertyOverride:
+        type: object
+        additionalProperties:
+          type: string
+        description: Optional service property override. Specified properties will be merged with backup properties.
   RestoreServiceResponse:
     type: object
     description: Response object for Restore Service command.

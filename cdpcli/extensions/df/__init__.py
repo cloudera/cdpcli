@@ -50,6 +50,7 @@ def upload_workload_asset(client, parameters):
         'Deployment-Request-Crn': parameters.get('deploymentRequestCrn', None),
         'Deployment-Name': parameters.get('deploymentName', None),
         'Asset-Update-Request-Crn': parameters.get('assetUpdateRequestCrn', None),
+        'Deployed-Flow-Name': parameters.get('deployedFlowName', None),
         'Parameter-Group': parameters.get('parameterGroup', None),
         'Parameter-Name': parameters.get('parameterName', None),
         'File-Path': file_path,
@@ -91,6 +92,31 @@ def initiate_deployment(df_client,
     url = response.get('dfxLocalUrl', None)
     LOG.debug('Initiated Deployment Request CRN [%s] URL [%s] for deployment '
               'CRN [%s]', request_crn, url, deployment_crn)
+    return request_crn
+
+
+def initiate_deployed_flow(df_client,
+                           service_crn,
+                           deployment_crn,
+                           flow_version_crn,
+                           deployed_flow_crn=None):
+    """
+    Initiate Deployed Flow Request on Control Plane using Service CRN,
+    Deployment CRN, and Flow Version CRN
+    """
+    deployment_parameters = {
+        'serviceCrn': service_crn,
+        'deploymentCrn': deployment_crn,
+        'flowVersionCrn': flow_version_crn
+    }
+    if deployed_flow_crn is not None:
+        deployment_parameters['deployedFlowCrn'] = deployed_flow_crn
+    http, response = df_client.make_api_call(
+            'initiateFlowInDeployment', deployment_parameters)
+    request_crn = response.get('deployedFlowRequestCrn', None)
+    url = response.get('dfxLocalUrl', None)
+    LOG.debug('Initiated Deployed Flow Request CRN [%s] URL [%s] '
+              ' for deploymentCRN [%s]', request_crn, url, deployment_crn)
     return request_crn
 
 
@@ -137,13 +163,42 @@ def get_deployment_request_details(df_workload_client,
     return response
 
 
+def get_flow_request_details_in_deployment(df_workload_client,
+                                           deployed_flow_request_crn,
+                                           environment_crn):
+    """
+    This function fetches the deployed flow request details
+    from the workload, and triggers the download of the flow.
+    This also triggers the registration of the deployed flow
+    details in the workload.
+    This should be done right after the deployed flow is
+    initiated due to the limited TTL of the resources
+    generated during the deployment initiation.
+    """
+    parameters = {
+        'deployedFlowRequestCrn': deployed_flow_request_crn,
+        'environmentCrn': environment_crn
+    }
+    http, response = df_workload_client.make_api_call(
+        'getFlowRequestDetailsInDeployment', parameters)
+    LOG.debug('Obtained Flow Deployment Request Details '
+              'for CRN [%s]',
+              deployed_flow_request_crn)
+    return response
+
+
 def get_asset_update_request_crn(df_workload_client,
                                  environment_crn,
-                                 deployment_crn):
-    response = df_workload_client.create_asset_update_request(
-        deploymentCrn=deployment_crn,
-        environmentCrn=environment_crn
-    )
+                                 deployment_crn,
+                                 deployed_flow_crn=None):
+    request_params = {
+        'deploymentCrn': deployment_crn,
+        'environmentCrn': environment_crn
+    }
+    if deployed_flow_crn:
+        request_params['deployedFlowCrn'] = deployed_flow_crn
+
+    response = df_workload_client.create_asset_update_request(**request_params)
     return response.get('assetUpdateRequestCrn', None)
 
 
@@ -202,6 +257,12 @@ class DfExtension(CLIOperationCaller):
                                                 operation_model,
                                                 parameters,
                                                 parsed_globals)
+            return True
+        elif service_name == 'dfworkload' and operation_name == 'updateFlowInDeployment':
+            self._df_workload_update_flow_in_deployment(client_creator,
+                                                        operation_model,
+                                                        parameters,
+                                                        parsed_globals)
             return True
         else:
             raise DfExtensionError(
@@ -302,13 +363,46 @@ class DfExtension(CLIOperationCaller):
         if kpis:
             process_kpis(kpis)
 
+        parameters['cliSupportsMultiFlow'] = True
+
         if self._has_asset_references(parameters):
             df_workload_client = client_creator('dfworkload')
 
             deployment_crn = parameters.get('deploymentCrn', None)
             environment_crn = parameters.get('environmentCrn', None)
+
             asset_update_request_crn = get_asset_update_request_crn(
                 df_workload_client, environment_crn, deployment_crn)
+
+            LOG.debug('Asset Update Request CRN [%s]' % asset_update_request_crn)
+            parameters['assetUpdateRequestCrn'] = asset_update_request_crn
+
+            try:
+                self._upload_asset_references(
+                    df_workload_client, asset_update_request_crn, parameters)
+            except CdpCLIError:
+                df_workload_client.abort_asset_update_request(
+                    deploymentCrn=deployment_crn,
+                    environmentCrn=environment_crn,
+                    assetUpdateRequestCrn=asset_update_request_crn
+                )
+                raise
+
+    def _df_workload_update_flow_in_deployment(self, client_creator, operation_model,
+                                               parameters, parsed_globals):
+        kpis = parameters.get('kpis', None)
+        if kpis:
+            process_kpis(kpis)
+
+        if self._has_asset_references(parameters):
+            df_workload_client = client_creator('dfworkload')
+
+            # Use deploymentCrn directly from parameters
+            deployment_crn = parameters.get('deploymentCrn', None)
+            environment_crn = parameters.get('environmentCrn', None)
+            deployed_flow_crn = parameters.get('deployedFlowCrn', None)
+            asset_update_request_crn = get_asset_update_request_crn(
+                df_workload_client, environment_crn, deployment_crn, deployed_flow_crn)
 
             LOG.debug('Asset Update Request CRN [%s]' % asset_update_request_crn)
             parameters['assetUpdateRequestCrn'] = asset_update_request_crn

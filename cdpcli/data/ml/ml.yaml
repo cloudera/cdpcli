@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.155
+  version: 0.9.156
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -981,6 +981,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RequestWorkflowCancellationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/requestWorkflowRollback:
+    post:
+      summary: Request a workflow rollback
+      description: Request a long running workflow rollback by resourve ID and workflow type.
+      operationId: requestWorkflowRollback
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RequestWorkflowRollbackRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RequestWorkflowRollbackResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2204,6 +2225,9 @@ definitions:
       workspaceCrn:
         type: string
         description: The CRN of the workbench. If CRN is specified only the CRN is used for identifying the workbench, environment and name arguments are ignored.
+      skipValidation:
+        type: boolean
+        description: Whether to skip pre-flight validations before performing the restore-based upgrade.
   UpgradeWorkspaceResponse:
     type: object
     description: Response object for the UpgradeWorkspace method.
@@ -2689,6 +2713,25 @@ definitions:
   RequestWorkflowCancellationResponse:
     type: object
     description: Response object for RequestWorkflowCancellation.
+    properties:
+      workflowMetadata:
+        type: array
+        items:
+          $ref: '#/definitions/WorkflowMetadata'
+        description: The list of workflow metedata for cancelled workflows.
+  RequestWorkflowRollbackRequest:
+    type: object
+    description: Request object for RequestWorkflowRollbackRequest.
+    properties:
+      workflowType:
+        type: string
+        description: The workflow type.
+      workspaceCrn:
+        type: string
+        description: The CRN of the workbench to rollback
+  RequestWorkflowRollbackResponse:
+    type: object
+    description: Response object for RequestRollbackCancellation.
     properties:
       workflowMetadata:
         type: array

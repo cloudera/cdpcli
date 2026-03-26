@@ -101,8 +101,11 @@ cdpcli/extensions/configure/get.py
 cdpcli/extensions/configure/list.py
 cdpcli/extensions/configure/set.py
 cdpcli/extensions/df/__init__.py
+cdpcli/extensions/df/addflowtodeployment.py
 cdpcli/extensions/df/changeflowversion.py
+cdpcli/extensions/df/changeflowversionindeployment.py
 cdpcli/extensions/df/createdeployment.py
 cdpcli/extensions/df/model.py
 cdpcli/extensions/df/register.py
 cdpcli/extensions/df/retrychangeflowversion.py
+cdpcli/extensions/df/retrychangeflowversionindeployment.py

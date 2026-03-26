@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.155
+  version: 0.9.156
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -100,8 +100,8 @@ paths:
             $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/custom-nar-configurations/get-default-custom-nar-configuration:
     post:
-      summary: Get the default custom NAR configuration.
-      description: Get the default custom NAR configuration.
+      summary: Get the default custom NAR configuration. Deprecated, no longer supported.
+      description: Get the default custom NAR configuration. Deprecated, no longer supported.
       operationId: getDefaultCustomNarConfiguration
       x-workload: true
       x-client-only: true
@@ -124,6 +124,8 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      deprecated: true
+      x-deprecated: true
   /dfx/api/rpc-v1/custom-nar-configurations/update-custom-nar-configuration:
     post:
       summary: Update the custom NAR configuration.
@@ -306,6 +308,318 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/abort-flow-request-in-deployment:
+    post:
+      summary: Aborts a flow request in deployment.
+      description: Aborts a flow request in a deployment.
+      operationId: abortFlowRequestInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Abort Flow Request In Deployment
+          required: true
+          schema:
+            $ref: '#/definitions/AbortFlowRequestInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AbortFlowRequestInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/add-flow-to-deployment:
+    post:
+      summary: Adds a flow to an existing deployment.
+      description: Adds a flow to an existing deployment.
+      operationId: addFlowToDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Add Flow to Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/AddFlowToDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/AddFlowToDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/cancel-change-flow-version-in-deployment:
+    post:
+      summary: Cancel change flow version for an existing flow deployment.
+      description: Cancel change flow version for an existing flow deployment.
+      operationId: cancelChangeFlowVersionInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Cancel Change Flow Version In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/CancelChangeFlowVersionInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CancelChangeFlowVersionInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/change-flow-version-in-deployment:
+    post:
+      summary: Change flow version of a running deployed flow.
+      description: Change flow version of a running deployed flow.
+      operationId: changeFlowVersionInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Change Flow Version In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/ChangeFlowVersionInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ChangeFlowVersionInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/get-flow-configuration-in-deployment:
+    post:
+      summary: Retrieves the deployed flow configuration in a deployment.
+      description: Retrieves the deployed flow configuration in a deployment.
+      operationId: getFlowConfigurationInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Get Flow Configuration In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/GetFlowConfigurationInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetFlowConfigurationInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/get-flow-configuration-metadata-in-deployment:
+    post:
+      summary: Retrieves the deployed flow configuration metadata in a deployment.
+      description: Retrieves the deployed flow configuration metadata in a deployment.
+      operationId: getFlowConfigurationMetadataInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Get Flow Configuration Metadata In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/GetFlowConfigurationMetadataInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetFlowConfigurationMetadataInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/get-flow-request-details-in-deployment:
+    post:
+      summary: Retrieves flow request details and registers the flow deployment request.
+      description: Retrieves flow request details and registers the flow deployment request.
+      operationId: getFlowRequestDetailsInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Get Flow Request Details in Deployment
+          required: true
+          schema:
+            $ref: '#/definitions/GetFlowDeploymentRequestDetailsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetFlowRequestDetailsInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/import-flow-into-deployment:
+    post:
+      summary: Import flow deployment configuration.
+      description: Imports flow configuration into a deployment from archive with provided archive name.
+      operationId: importFlowIntoDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Import Flow Into Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/ImportFlowIntoDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ImportFlowIntoDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/start-flow-in-deployment:
+    post:
+      summary: Starts a flow in a deployment.
+      description: Starts a NiFi flow in a deployment.
+      operationId: startFlowInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Start Flow In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/StartFlowInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartFlowInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/stop-flow-in-deployment:
+    post:
+      summary: Stops a flow in a deployment.
+      description: Stops a NiFi flow in a deployment.
+      operationId: stopFlowInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Stop Flow In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/StopFlowInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StopFlowInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/terminate-flow-in-deployment:
+    post:
+      summary: Terminates a flow in a deployment.
+      description: Initiates the termination of a flow in a deployment.
+      operationId: terminateFlowInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Terminate Flow In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/TerminateFlowInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/TerminateFlowInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployed-flows/update-flow-in-deployment:
+    post:
+      summary: Updates a flow deployment.
+      description: Updates a flow deployment.
+      operationId: updateFlowInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload,df
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Update Flow In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateFlowInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateFlowInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/abort-asset-update-request:
     post:
       summary: Aborts asset update request.
@@ -360,7 +674,7 @@ paths:
             $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/cancel-change-flow-version:
     post:
-      summary: Cancel change flow version for an existing deployment.
+      summary: Cancel change flow version for an existing deployment. Deprecated, use cancel-change-flow-version-in-deployment.
       description: Cancel change flow version for an existing deployment.
       operationId: cancelChangeFlowVersion
       x-workload: true
@@ -384,6 +698,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      deprecated: true
   /dfx/api/rpc-v1/deployments/cancel-nifi-version-update:
     post:
       summary: Cancels a NiFi version update for a deployment.
@@ -412,7 +727,7 @@ paths:
             $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/change-flow-version:
     post:
-      summary: Change flow version of a running deployment.
+      summary: Change flow version of a running deployment. Deprecated, use change-flow-version-in-deployment.
       description: Change flow version of a running deployment.
       operationId: changeFlowVersion
       x-workload: true
@@ -436,6 +751,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      deprecated: true
   /dfx/api/rpc-v1/deployments/create-asset-update-request:
     post:
       summary: Create asset update request.
@@ -774,9 +1090,35 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/deployments/start-all-flows-in-deployment:
+    post:
+      summary: Starts all flows in a deployment.
+      description: Starts all NiFi flows in a deployment.
+      operationId: startAllFlowsInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Start All Flows In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/StartAllFlowsInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StartAllFlowsInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/start-flow:
     post:
-      summary: Starts a flow.
+      summary: Starts a flow. Deprecated, use start-flow-in-deployment.
       description: Starts the NiFi flow of a deployment.
       operationId: startFlow
       x-workload: true
@@ -800,9 +1142,36 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      deprecated: true
+  /dfx/api/rpc-v1/deployments/stop-all-flows-in-deployment:
+    post:
+      summary: Stops all flows in a deployment.
+      description: Stops all NiFi flows in a deployment.
+      operationId: stopAllFlowsInDeployment
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Stop All Flows In Deployment Request
+          required: true
+          schema:
+            $ref: '#/definitions/StopAllFlowsInDeploymentRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/StopAllFlowsInDeploymentResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/deployments/stop-flow:
     post:
-      summary: Stops a flow.
+      summary: Stops a flow. Deprecated, use stop-flow-in-deployment.
       description: Stops the NiFi flow of a deployment.
       operationId: stopFlow
       x-workload: true
@@ -826,6 +1195,7 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+      deprecated: true
   /dfx/api/rpc-v1/deployments/suspend-deployment:
     post:
       summary: Suspends a deployment.
@@ -1224,6 +1594,9 @@ definitions:
       assetUpdateRequestCrn:
         type: string
         description: The CRN of the asset update request
+      deployedFlowCrn:
+        type: string
+        description: The CRN of the deployed flow.  If specified, this is used to validate that the specified asset update request indeed applies to this flow.
   AbortAssetUpdateRequestResponse:
     type: object
     description: Response object for aborting an asset update request
@@ -1249,6 +1622,88 @@ definitions:
     description: Response object for aborting a deployment request.
     x-workload: true
     x-client-only: true
+  AbortFlowRequestInDeploymentRequest:
+    type: object
+    description: Request object for abort flow deployment request.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowRequestCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deployedFlowRequestCrn:
+        type: string
+        description: The flow deployment request crn.
+  AbortFlowRequestInDeploymentResponse:
+    type: object
+    description: Response object for aborting a flow deployment request.
+    x-workload: true
+    x-client-only: true
+  AddFlowToDeploymentRequest:
+    type: object
+    description: Request object to add a flow to an existing deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - configurationVersion
+      - deployedFlowRequestCrn
+      - deploymentCrn
+      - name
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      name:
+        type: string
+        description: The name of the deployed NiFi flow.
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of this configuration.
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment.
+      deployedFlowRequestCrn:
+        type: string
+        description: The CRN of the flow deployment request.
+      parameterGroups:
+        type: array
+        description: The list of flow parameter groups.
+        items:
+          $ref: '#/definitions/FlowParameterGroup'
+      kpis:
+        type: array
+        description: The list of configured KPIs.
+        items:
+          $ref: '#/definitions/ConfiguredKpi'
+      autoStartFlow:
+        type: boolean
+        description: Indicates whether or not the flow should be started during deployment creation.
+      ignoreCustomNarConfigurationCheck:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has custom NARs configured when the flow definition contains custom components.
+      ignoreCustomPythonConfigurationCheck:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has custom Python configured when the flow definition contains custom Python processors.
+      ignoreDeploymentInboundConfigurationChecks:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has inbound connection configured for all listen components.
+      projectCrn:
+        type: string
+        description: The CRN of the project to which the deployment belongs, used for authorization.
+  AddFlowToDeploymentResponse:
+    type: object
+    description: Response object from creating a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlow:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployedFlow'
   AlertFrequencyTolerance:
     type: object
     description: The alert frequency tolerance unit choices, including a default
@@ -1353,6 +1808,34 @@ definitions:
         type: number
         format: double
         description: The memory limit (will be truncated to the nearest integer).
+  CancelChangeFlowVersionInDeploymentRequest:
+    type: object
+    description: Request object for cancel change flow version of a flow deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The crn of the deployment to cancel change flow deployment version.
+      deployedFlowCrn:
+        type: string
+        description: The crn of the deployment to cancel change flow deployment version.
+  CancelChangeFlowVersionInDeploymentResponse:
+    type: object
+    description: Response object for cancel change flow version of a flow deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlowConfiguration:
+        description: The deployed flow configuration.
+        $ref: '#/definitions/RpcDeployedFlowConfiguration'
   CancelChangeFlowVersionRequest:
     type: object
     description: Request object for cancel change flow version of a deployment.
@@ -1401,6 +1884,70 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  ChangeFlowVersionInDeploymentRequest:
+    type: object
+    description: Request object for change flow version of a flow deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The crn of the deployment being updated.
+      deployedFlowCrn:
+        type: string
+        description: The crn of the flow deployment being updated.
+      parameterGroups:
+        type: array
+        description: The list of flow parameter groups.
+        items:
+          $ref: '#/definitions/FlowParameterGroup'
+      kpis:
+        type: array
+        description: The list of configured KPIs.
+        items:
+          $ref: '#/definitions/ConfiguredKpi'
+      strategy:
+        type: string
+        description: The strategy to use during change flow version.
+        enum:
+          - STOP_AND_PROCESS_DATA
+          - STOP_AND_EMPTY_QUEUES
+          - ONLY_RESTART_AFFECTED_COMPONENTS
+      waitForFlowToStopInMinutes:
+        type: integer
+        format: int32
+        description: The max time in minutes to wait for the flow to process data.
+      ignoreCustomNarConfigurationCheck:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has custom NARs configured when the flow definition contains custom components.
+      ignoreCustomPythonConfigurationCheck:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has custom Python configured when the flow definition contains custom Python processors.
+      ignoreDeploymentInboundConfigurationChecks:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has inbound connection configured for all listen components.
+      deploymentRequestCrn:
+        type: string
+        description: The CRN of the deployment request. Required for a new deployment.
+      assetUpdateRequestCrn:
+        type: string
+        description: The CRN of the asset update request. Required when updating assets of an existing deployment.
+  ChangeFlowVersionInDeploymentResponse:
+    type: object
+    description: Response object for change flow version of a flow deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlowConfiguration:
+        description: The deployed flow configuration.
+        $ref: '#/definitions/RpcDeployedFlowConfiguration'
   ChangeFlowVersionRequest:
     type: object
     description: Request object for change flow version of a deployment.
@@ -1437,6 +1984,15 @@ definitions:
         type: integer
         format: int32
         description: The max time in minutes to wait for the flow to process data.
+      ignoreCustomNarConfigurationCheck:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has custom NARs configured when the flow definition contains custom components.
+      ignoreCustomPythonConfigurationCheck:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has custom Python configured when the flow definition contains custom Python processors.
+      ignoreDeploymentInboundConfigurationChecks:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has inbound connection configured for all listen components.
       deploymentRequestCrn:
         type: string
         description: The CRN of the deployment request.
@@ -1581,6 +2137,9 @@ definitions:
       deploymentCrn:
         type: string
         description: The deployment crn.
+      deployedFlowCrn:
+        type: string
+        description: The CRN of the deployed flow.  If unspecified and there is exactly one flow in the deployment, the asset will be uploaded to that flow.
   CreateAssetUpdateRequestResponse:
     type: object
     description: Response object for creating an asset update request
@@ -1764,6 +2323,9 @@ definitions:
         description: The list of configured KPIs.
         items:
           $ref: '#/definitions/ConfiguredKpi'
+      deployedFlowName:
+        type: string
+        description: The name of the deployed flow.
       cfmNifiVersion:
         type: string
         description: The CFM NiFi version associated with the deployment.
@@ -1807,6 +2369,9 @@ definitions:
         type: integer
         format: int32
         description: The size of the extra volume mounted for flows containing python.
+      ignoreDeploymentInboundConfigurationChecks:
+        type: boolean
+        description: When specified, ignore the check to validate if deployment has inbound connection configured for all listen components.
       customNarConfigurationCrn:
         type: string
         description: The CRN of the custom NAR configuration.
@@ -2048,6 +2613,200 @@ definitions:
       crn:
         type: string
         description: The CRN of the deleted reporting task.
+  DeployedFlow:
+    type: object
+    description: A deployed flow on a NiFi cluster
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+      - deploymentId
+      - id
+      - status
+      - targetProcessGroupId
+    properties:
+      id:
+        type: string
+        description: The id of the deployed flow.
+      status:
+        description: The status of the deployed flow.
+        $ref: '#/definitions/DeployedFlowStatus'
+      deploymentId:
+        type: string
+        description: The id of the deployment.
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of this configuration.
+      targetProcessGroupId:
+        type: string
+        description: The id of the process group in NiFi.
+      name:
+        type: string
+        description: The name of the deployed flow.
+      activeInfoAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as an info.
+      activeWarningAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as a warning.
+      activeErrorAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as an error.
+      environmentId:
+        type: string
+        description: The id of the environment.
+      environment:
+        description: Simple information about the environment of the deployment.
+        $ref: '#/definitions/DfxLocalMeta'
+      deploymentName:
+        type: string
+        description: The name of the deployment.
+      crn:
+        type: string
+        description: The CRN of the deployed flow.
+      projectId:
+        type: string
+        description: The id of the project the deployment belongs to, or null if does not belong to a project.
+      project:
+        description: Simple information about the project this deployment belongs to, or null if does not belong to a project.
+        $ref: '#/definitions/ProjectMeta'
+      artifactName:
+        type: string
+        description: The name of the flow definition.
+      catalogItemId:
+        type: string
+        description: The id of the catalog item. Will either be the flow definition id or the id of the imported ready flow.
+      flowVersion:
+        type: integer
+        format: int32
+        description: The version of the flow.
+      flowVersionCrn:
+        type: string
+        description: The deployed flow definition version CRN.
+      flowCrn:
+        type: string
+        description: The deployed flow definition CRN.
+      creatorCrn:
+        type: string
+        description: The CRN of the user who deployed the flow.
+      artifactTypeName:
+        type: string
+        description: The type of artifact of the flow definition.
+      deployedByUsername:
+        type: string
+        description: The username of the person who deployed the flow.
+      deployedByName:
+        type: string
+        description: The name of the person who deployed the flow.
+      flowVersionId:
+        type: string
+        description: The deployed flow definition version id.
+      created:
+        type: integer
+        format: int64
+        description: Timestamp of the first time the flow deployed into a NiFi cluster.
+      updated:
+        type: integer
+        format: int64
+        description: Timestamp of the last time the deployed flow was modified.
+      validActions:
+        type: array
+        description: Valid actions that can be applied to the deployed flow in its current state.
+        uniqueItems: true
+        items:
+          type: string
+          enum:
+            - VIEW_NIFI
+            - START_FLOW
+            - STOP_FLOW
+            - EDIT
+            - TERMINATE
+            - CHANGE_FLOW_VERSION
+            - RETRY_CHANGE_FLOW_VERSION
+            - CANCEL_CHANGE_FLOW_VERSION
+      dataSent:
+        type: array
+        description: The dataSent values, if requested.
+        items:
+          $ref: '#/definitions/MetricValue'
+      dataReceived:
+        type: array
+        description: The dataReceived values, if requested.
+        items:
+          $ref: '#/definitions/MetricValue'
+  DeployedFlowMetadata:
+    type: object
+    description: Contains metadata about a deployed flow.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlowName:
+        type: string
+        description: The name of the deployed flow.
+      flowDefinitionName:
+        type: string
+        description: The name of the flow definition.
+  DeployedFlowStatus:
+    type: object
+    description: The state and state message associated with a deployed flow.
+    x-workload: true
+    x-client-only: true
+    required:
+      - state
+    properties:
+      state:
+        type: string
+        description: The state that the deployed flow is currently in.
+        enum:
+          - DEPLOYING
+          - GOOD_HEALTH
+          - CONCERNING_HEALTH
+          - BAD_HEALTH
+          - IMPORTING_FLOW
+          - STARTING_FLOW
+          - STOPPING_FLOW
+          - FLOW_STOPPED
+          - CHANGING_FLOW_VERSION
+          - UPDATING
+          - TERMINATING
+          - TERMINATED
+          - DEPLOYMENT_SUSPENDED
+          - UNKNOWN
+      detailedState:
+        type: string
+        description: The detailed state that the deployed flow is currently in.
+        enum:
+          - NEW
+          - FAILED_TO_INITIATE
+          - GOOD_HEALTH
+          - IMPORTING_FLOW
+          - FAILED_TO_IMPORT
+          - STOPPING_FLOW
+          - FLOW_STOPPED
+          - FAILED_TO_STOP_FLOW
+          - STARTING_FLOW
+          - FAILED_TO_START_FLOW
+          - FAILED_TO_UPDATE
+          - UPDATING
+          - CHANGING_FLOW_VERSION
+          - FAILED_TO_PREPARE_FOR_CHANGE_FLOW_VERSION
+          - FAILED_TO_CHANGE_FLOW_VERSION
+          - CANCELLING_CHANGE_FLOW_VERSION
+          - FAILED_TO_CANCEL_CHANGE_FLOW_VERSION
+          - CANCEL_REQUESTED
+          - FAILED_TO_TERMINATE
+          - TERMINATING
+          - TERMINATED
+          - UNKNOWN
+          - KPI_OUT_OF_RANGE
+          - DEPLOYMENT_SUSPENDED
+      message:
+        type: string
+        description: Detail message relating to the current status of the deployed flow.
   DeploymentStatus:
     type: object
     description: The state and state message associated with a deployment.
@@ -2075,6 +2834,7 @@ definitions:
           - CREATING_NODES
           - DEPLOYING_ASSETS
           - DEPLOYING_FLOW_DEFINITION
+          - DEPLOYING_FLOW
           - IMPORTING_FLOW
           - STARTING_FLOW
           - STOPPING_FLOW
@@ -2095,6 +2855,8 @@ definitions:
           - TERMINATING
           - CANCEL_REQUESTED
           - STOPPED
+          - TEST_SESSION_SUSPENDED
+          - TEST_SESSION_TERMINATED
           - UNKNOWN
           - UPGRADING
           - FAILED_TO_UPGRADE
@@ -2135,6 +2897,7 @@ definitions:
           - UPGRADING
           - ROLLING_BACK
           - STOPPED
+          - TERMINATED
           - UNKNOWN
       message:
         type: string
@@ -2163,6 +2926,136 @@ definitions:
       inboundConnectionEndpointSummary:
         description: Data that describes the Inbound Connection Endpoint.
         $ref: '#/definitions/InboundConnectionEndpointSummary'
+  DfxEnvironmentStatus:
+    type: object
+    description: Environment status.
+    x-workload: true
+    x-client-only: true
+    properties:
+      detailedState:
+        type: string
+        description: The detailed state that the environment is currently in.
+        enum:
+          - NEW
+          - DEPROVISIONING_OLD_INFRASTRUCTURE
+          - PREPARING_EXISTING_INFRASTRUCTURE
+          - PROVISIONING_INFRASTRUCTURE
+          - DEPLOYING_SHARED_SERVICES
+          - UPDATING
+          - RENEWING_CERTS
+          - ROTATING_PASSWORD
+          - COLLECTING_DIAGNOSTICS
+          - GOOD_HEALTH
+          - FAILED_TO_ENABLE
+          - FAILED_TO_UPDATE
+          - FAILED_TO_ROTATE_PASSWORD
+          - FAILED_TO_DISABLE
+          - CANCEL_REQUESTED
+          - TERMINATING_DEPLOYMENTS
+          - REMOVING_SHARED_SERVICES
+          - TERMINATING_DATABASE_SERVER
+          - DEPROVISIONING_INFRASTRUCTURE
+          - NOT_ENABLED
+          - CLOUDBREAK_READY
+          - CLOUDBREAK_NOT_READY
+          - CLOUDBREAK_ERROR
+          - AT_CAPACITY
+          - ORPHANED
+          - ORPHANED_NOT_ENABLED
+          - WORKLOAD_DISCONNECTED
+          - METERING_DISCONNECTED
+          - METERING_OFFLINE
+          - CERTIFICATES_EXPIRING_SOON
+          - CERTIFICATES_EXPIRED
+          - PROMETHEUS_APPROACHING_MEMORY_LIMIT
+          - METRICS_UNAVAILABLE
+          - ALERTMANAGER_OFFLINE
+          - MINIFI_OFFLINE
+          - POD_UNAVAILABLE
+          - DEPLOYMENT_UNAVAILABLE
+          - STATEFULSET_UNAVAILABLE
+          - JOB_UNAVAILABLE
+          - KUBE_STATE_METRICS_UNAVAILABLE
+          - COMPONENT_APPROACHING_MEMORY_LIMIT
+          - MANUAL_RESOURCE_CLEANUP_REQUIRED
+          - UPGRADING
+          - FAILED_TO_UPGRADE
+          - ABORTING_UPGRADE
+          - ROLLING_BACK
+          - POST_UPGRADE_CLEANUP
+      message:
+        type: string
+        description: Detail message relating to the current status of the environment.
+      state:
+        type: string
+        description: The state that the environment is currently in.
+        enum:
+          - NOT_ENABLED
+          - ENABLING
+          - GOOD_HEALTH
+          - CONCERNING_HEALTH
+          - BAD_HEALTH
+          - UPDATING
+          - RENEWING_CERTS
+          - DISABLING
+          - UNKNOWN
+          - UPGRADING
+          - COLLECTING_DIAGNOSTICS
+          - MIGRATING
+          - ROTATING_PASSWORD
+  DfxLocalMeta:
+    type: object
+    description: Metadata about the workload.
+    x-workload: true
+    x-client-only: true
+    required:
+      - cloudPlatform
+      - cloudbreakCrn
+      - crn
+      - name
+      - region
+    properties:
+      crn:
+        type: string
+        description: The CRN of the environment.
+      name:
+        type: string
+        description: The name of the environment.
+      cloudPlatform:
+        type: string
+        description: The cloudPlatform flag of the environment.
+        enum:
+          - AWS
+          - AZURE
+          - YARN
+          - YCLOUD
+          - GCP
+          - OPENSTACK
+          - LOCAL_K8S
+          - MOCK
+      region:
+        description: The region of the environment.
+        $ref: '#/definitions/EnvCloudRegion'
+      cloudbreakCrn:
+        type: string
+        description: Crn of associated cloudbreak environment.
+      id:
+        type: string
+        description: The internal ID of the environment.
+      localUrl:
+        type: string
+        description: The DataFlow Service contact url.
+      workloadVersion:
+        type: string
+        description: The version of the DataFlow Service.
+      environmentStatus:
+        description: The status of the DataFlow Service.
+        readOnly: true
+        $ref: '#/definitions/DfxEnvironmentStatus'
+      accountId:
+        type: string
+        description: The account ID from the CRN.
+        readOnly: true
   EnvCloudRegion:
     type: object
     description: A cloud region
@@ -2272,6 +3165,9 @@ definitions:
         uniqueItems: true
         items:
           $ref: '#/definitions/VersionedParameterGroupReference'
+      otherName:
+        type: string
+        description: The other name that can be used to reference this group in a flow. This is used when multiple flows with same parameter group are deployed in to same NiFi cluster.
   GetCustomNarConfigurationRequest:
     type: object
     description: Request object for retrieving a custom NAR configuration by configuration CRN or deployment CRN.
@@ -2281,6 +3177,9 @@ definitions:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment whose custom resource configuration should be retrieved.
       customNarConfigurationCrn:
         type: string
         description: The CRN of the custom NAR configuration to retrieve.
@@ -2325,6 +3224,9 @@ definitions:
       environmentCrn:
         type: string
         description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment whose custom resource configuration should be retrieved.
       customPythonConfigurationCrn:
         type: string
         description: The CRN of the custom Python configuration to retrieve.
@@ -2473,6 +3375,86 @@ definitions:
       deploymentConfigurationMetadata:
         description: The deployment configuration metadata.
         $ref: '#/definitions/RpcDeploymentConfigurationMetadata'
+  GetFlowConfigurationInDeploymentRequest:
+    type: object
+    description: Request object for retrieving a deployed flow configuration in a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+      deployedFlowCrn:
+        type: string
+        description: The deployed flow crn.
+  GetFlowConfigurationInDeploymentResponse:
+    type: object
+    description: Response object for retrieving deployed flow configuration in a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlowConfiguration:
+        description: The deployed flow configuration.
+        $ref: '#/definitions/RpcDeployedFlowConfiguration'
+  GetFlowConfigurationMetadataInDeploymentRequest:
+    type: object
+    description: Request object for retrieving a deployed flow configuration metadata in a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+      deployedFlowCrn:
+        type: string
+        description: The deployed flow crn.
+  GetFlowConfigurationMetadataInDeploymentResponse:
+    type: object
+    description: Response object for retrieving deployed flow configuration metadata in a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlowConfigurationMetadata:
+        description: The deployed flow configuration metadata.
+        $ref: '#/definitions/RpcDeployedFlowConfigurationMetadata'
+  GetFlowDeploymentRequestDetailsRequest:
+    type: object
+    description: Request object for retrieving flow deployment request details.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowRequestCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deployedFlowRequestCrn:
+        type: string
+        description: The flow deployment request crn.
+  GetFlowRequestDetailsInDeploymentResponse:
+    type: object
+    description: Response object for retrieving flow deployment request details request.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlowConfigurationMetadata:
+        description: The deployment configuration metadata.
+        $ref: '#/definitions/RpcDeployedFlowConfigurationMetadata'
   ImportDeploymentRequest:
     type: object
     description: Request object to import deployment configuration.
@@ -2491,9 +3473,44 @@ definitions:
       archiveName:
         type: string
         description: Search term to filter exported archives by deployment name.
+      flowName:
+        type: string
+        description: The name of the deployed flow in the exported archive.
   ImportDeploymentResponse:
     type: object
     description: Response object for importing deployment configuration.
+    x-workload: true
+    x-client-only: true
+    properties:
+      rpcImportedDeploymentConfiguration:
+        description: The imported deployment configuration.
+        $ref: '#/definitions/RpcImportedDeploymentConfiguration'
+  ImportFlowIntoDeploymentRequest:
+    type: object
+    description: Request object to import a flow configuration into a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - archiveName
+      - deployedFlowRequestCrn
+      - flowName
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      archiveName:
+        type: string
+        description: Search term to filter exported archives by deployment name.
+      flowName:
+        type: string
+        description: The name of the deployed flow in the exported archive.
+      deployedFlowRequestCrn:
+        type: string
+        description: The CRN of the flow deployment request.
+  ImportFlowIntoDeploymentResponse:
+    type: object
+    description: Response object for importing a flow configuration into a deployment.
     x-workload: true
     x-client-only: true
     properties:
@@ -2886,6 +3903,20 @@ definitions:
       port:
         type: string
         description: Inbound port.
+  MetricValue:
+    type: object
+    description: A metric value.
+    x-workload: true
+    x-client-only: true
+    properties:
+      timestamp:
+        type: integer
+        format: int64
+        description: Timestamp of the metric value.
+      value:
+        type: number
+        format: double
+        description: The value of the metric.
   NodeStorage:
     type: object
     description: Node storage parameters.
@@ -3135,6 +4166,207 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  RpcDeployedFlow:
+    type: object
+    description: Provides details about a deployed flow.
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+      - status
+      - targetProcessGroupId
+    properties:
+      status:
+        description: The status of the deployed flow.
+        $ref: '#/definitions/DeployedFlowStatus'
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of this configuration.
+      targetProcessGroupId:
+        type: string
+        description: The id of the process group in NiFi.
+      name:
+        type: string
+        description: The name of the deployed flow.
+      activeInfoAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as an info.
+      activeWarningAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as a warning.
+      activeErrorAlertCount:
+        type: integer
+        format: int64
+        description: Current count of active alerts classified as an error.
+      environmentId:
+        type: string
+        description: The id of the environment.
+      environment:
+        description: Simple information about the environment of the deployment.
+        $ref: '#/definitions/DfxLocalMeta'
+      deploymentName:
+        type: string
+        description: The name of the deployment.
+      crn:
+        type: string
+        description: The CRN of the deployed flow.
+      project:
+        description: Simple information about the project this deployment belongs to, or null if does not belong to a project.
+        $ref: '#/definitions/ProjectMeta'
+      artifactName:
+        type: string
+        description: The name of the flow definition.
+      catalogItemId:
+        type: string
+        description: The id of the catalog item. Will either be the flow definition id or the id of the imported ready flow.
+      flowVersion:
+        type: integer
+        format: int32
+        description: The version of the flow.
+      flowVersionCrn:
+        type: string
+        description: The deployed flow definition version CRN.
+      flowCrn:
+        type: string
+        description: The deployed flow definition CRN.
+      creatorCrn:
+        type: string
+        description: The CRN of the user who deployed the flow.
+      artifactTypeName:
+        type: string
+        description: The type of artifact of the flow definition.
+      deployedByUsername:
+        type: string
+        description: The username of the person who deployed the flow.
+      deployedByName:
+        type: string
+        description: The name of the person who deployed the flow.
+      created:
+        type: integer
+        format: int64
+        description: Timestamp of the first time the flow deployed into a NiFi cluster.
+      updated:
+        type: integer
+        format: int64
+        description: Timestamp of the last time the deployed flow was modified.
+      validActions:
+        type: array
+        description: Valid actions that can be applied to the deployed flow in its current state.
+        uniqueItems: true
+        items:
+          type: string
+          enum:
+            - VIEW_NIFI
+            - START_FLOW
+            - STOP_FLOW
+            - EDIT
+            - TERMINATE
+            - CHANGE_FLOW_VERSION
+            - RETRY_CHANGE_FLOW_VERSION
+            - CANCEL_CHANGE_FLOW_VERSION
+      dataSent:
+        type: array
+        description: The dataSent values, if requested.
+        items:
+          $ref: '#/definitions/MetricValue'
+      dataReceived:
+        type: array
+        description: The dataReceived values, if requested.
+        items:
+          $ref: '#/definitions/MetricValue'
+      projectCrn:
+        type: string
+        description: The crn of the project this flow belongs to, or null if does not belong to a project.
+      deploymentCrn:
+        type: string
+        description: The crn of the deployment this flow belongs to.
+  RpcDeployedFlowConfiguration:
+    type: object
+    description: Provides all of the configuration that dictates how a flow is deployed.
+    x-workload: true
+    x-client-only: true
+    required:
+      - configurationVersion
+    properties:
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of this configuration.
+      deployedFlowId:
+        type: string
+        description: The id of the deployed flow.
+      deployedFlowName:
+        type: string
+        description: The name of the deployed flow.
+      deployedFlowCrn:
+        type: string
+        description: The CRN of the deployed flow.
+      parametersDirty:
+        type: boolean
+        description: Indicates whether or not all current parameter values have successfully been applied to NiFi.
+        readOnly: true
+      kpisDirty:
+        type: boolean
+        description: Indicates whether or not the current KPIs have successfully been deployed as alert rules.
+        readOnly: true
+      lastUpdatedByUsername:
+        type: string
+        description: The username of the last person to update the deployed flow configuration.
+        readOnly: true
+      parameterGroups:
+        type: array
+        description: The list of flow parameter groups.
+        items:
+          $ref: '#/definitions/FlowParameterGroup'
+      kpis:
+        type: array
+        description: The list of configured KPIs.
+        items:
+          $ref: '#/definitions/ConfiguredKpi'
+  RpcDeployedFlowConfigurationMetadata:
+    type: object
+    description: Provides details about the deployed flow and all of the different configuration items that are available.
+    x-workload: true
+    x-client-only: true
+    required:
+      - flowCrn
+      - flowName
+      - flowVersion
+      - flowVersionCrn
+      - requiresEnvironmentSslContextService
+    properties:
+      flowCrn:
+        type: string
+        description: The CRN of the flow to deploy
+      flowName:
+        type: string
+        description: The name of the flow to deploy
+      flowVersion:
+        type: integer
+        format: int32
+        description: The version of the flow to deploy
+      flowVersionCrn:
+        type: string
+        description: The CRN for the flow version
+      requiresEnvironmentSslContextService:
+        type: boolean
+        description: A flag indicating if the flow requires an Environment specific SSLContextService
+        readOnly: true
+      artifactTypeName:
+        type: string
+        description: The type of the artifact of the flow.
+        readOnly: true
+      parameterGroups:
+        type: array
+        description: The list of flow parameter groups
+        items:
+          $ref: '#/definitions/FlowParameterGroup'
+      kpiMetaData:
+        description: The KPI meta data
+        $ref: '#/definitions/KpiMetaData'
   RpcDeployment:
     type: object
     description: Provides details about a deployment.
@@ -3205,6 +4437,9 @@ definitions:
             - CHANGE_FLOW_VERSION
             - RETRY_CHANGE_FLOW_VERSION
             - CANCEL_CHANGE_FLOW_VERSION
+            - DEPLOY_NEW_FLOW
+            - START_ALL
+            - STOP_ALL
       project:
         description: Simple information about the project this deployment belongs to, or null if does not belong to a project.
         readOnly: true
@@ -3235,23 +4470,28 @@ definitions:
         description: The static number of nodes of the deployment; can only be used when autoscalingEnabled is false.
       flowName:
         type: string
-        description: The name of the flow.
+        description: The artifact name of the first deployed flow. Deprecated, use flowName inside deployedFlows.
+        x-deprecated: true
       flowVersion:
         type: integer
         format: int32
-        description: The version of the flow.
+        description: The version of the first deployed flow. Deprecated, use flowVersion inside deployedFlows.
+        x-deprecated: true
       flowVersionCrn:
         type: string
-        description: The deployment's current flow version CRN.
+        description: The current flow version CRN of the first deployed flow. Deprecated, use flowVersionCrn inside deployedFlows.
+        x-deprecated: true
       flowCrn:
         type: string
-        description: The deployment's current flow CRN.
+        description: The current flow CRN of the first deployed flow. Deprecated, use flowCrn inside deployedFlows.
+        x-deprecated: true
       creatorCrn:
         type: string
         description: The CRN of the user who deployed the first flow.
       artifactTypeName:
         type: string
-        description: The type of artifact of the flow.
+        description: The type of artifact of the first deployed flow. Deprecated, use artifactTypeName inside deployedFlows.
+        x-deprecated: true
       currentNodeCount:
         type: integer
         format: int32
@@ -3298,13 +4538,19 @@ definitions:
         $ref: '#/definitions/NodeStorage'
       targetProcessGroupId:
         type: string
-        description: The target process group ID of the deployment.
+        description: The target process group ID of the first deployed flow. Deprecated, use targetProcessGroupId inside deployedFlows.
+        x-deprecated: true
       inboundConnectionAuthorizedIpRanges:
         type: array
         description: Set of authorized IP ranges for the inbound connections.
         uniqueItems: true
         items:
           type: string
+      deployedFlows:
+        type: array
+        description: The details about the flows that are deployed into the NiFi cluster.
+        items:
+          $ref: '#/definitions/DeployedFlow'
       projectCrn:
         type: string
         description: The crn of the project this deployment belongs to, or null if does not belong to a project.
@@ -3326,6 +4572,12 @@ definitions:
         type: string
         description: The name of the flow
         readOnly: true
+      deployedFlows:
+        type: array
+        description: The list of the deployed flows and flow definition names tuples exported as part of deployment configuration
+        readOnly: true
+        items:
+          $ref: '#/definitions/DeployedFlowMetadata'
       archiveName:
         type: string
         description: The name of the exported deployment archive
@@ -3423,8 +4675,9 @@ definitions:
           - CUSTOM_AZURE
       parametersDirty:
         type: boolean
-        description: Indicates whether or not all current parameter values have successfully been applied to NiFi.
+        description: Indicates whether or not all current parameter values have successfully been applied to NiFi, for the first deployed flow. Deprecated, use parametersDirty inside deployedFlowConfigurations instead.
         readOnly: true
+        x-deprecated: true
       kpisDirty:
         type: boolean
         description: Indicates whether or not the current KPIs have successfully been deployed as alert rules, at the deployment level. Use kpisDirty inside deployedFlowConfigurations for any flow-level KPIs.
@@ -3432,6 +4685,14 @@ definitions:
       sizingAndScalingDirty:
         type: boolean
         description: Indicates whether or not the current sizing and scaling configuration has been successfully applied in Kubernetes.
+        readOnly: true
+      customNarConfigurationDirty:
+        type: boolean
+        description: Indicates whether or not the current custom NAR configuration has been successfully applied.
+        readOnly: true
+      customPythonConfigurationDirty:
+        type: boolean
+        description: Indicates whether or not the current custom Python configuration has been successfully applied.
         readOnly: true
       lastUpdatedByUsername:
         type: string
@@ -3459,6 +4720,12 @@ definitions:
         format: int32
         description: The size of the extra volume mounted for flows containing python.
         readOnly: true
+      customNarConfigurationId:
+        type: string
+        description: The id of the custom NAR configuration associated with the deployment.
+      customPythonConfigurationId:
+        type: string
+        description: The id of the custom Python configuration associated with the deployment.
   RpcDeploymentConfigurationMetadata:
     type: object
     description: Provides details about the deployment and all of the different configuration items that are available.
@@ -3474,17 +4741,21 @@ definitions:
     properties:
       flowCrn:
         type: string
-        description: The CRN of the flow to deploy
+        description: The flow CRN of the first deployed flow. Deprecated, use flowCrn inside DeployedFlow.
+        x-deprecated: true
       flowName:
         type: string
-        description: The name of the flow to deploy
+        description: The artifact name of the first deployed flow. Deprecated, use flowName inside DeployedFlow.
+        x-deprecated: true
       flowVersion:
         type: integer
         format: int32
-        description: The version of the flow to deploy
+        description: The version of the first deployed flow. Deprecated, use flowVersion inside DeployedFlow.
+        x-deprecated: true
       flowVersionCrn:
         type: string
-        description: The CRN for the flow version
+        description: The current flow version CRN of the first deployed flow. Deprecated, use flowVersionCrn inside DeployedFlow.
+        x-deprecated: true
       service:
         description: Simple information about the DataFlow service of the deployment
         $ref: '#/definitions/ServiceMeta'
@@ -3494,8 +4765,9 @@ definitions:
         readOnly: true
       artifactTypeName:
         type: string
-        description: The type of the artifact of the flow.
+        description: The type of artifact of the first deployed flow. Deprecated, use artifactTypeName inside DeployedFlow.
         readOnly: true
+        x-deprecated: true
       parameterGroups:
         type: array
         description: The list of flow parameter groups
@@ -3549,6 +4821,12 @@ definitions:
       kpis:
         type: array
         description: The list of configured KPIs imported from archive.
+        readOnly: true
+        items:
+          $ref: '#/definitions/ConfiguredKpi'
+      deployedFlowKpis:
+        type: array
+        description: The list of configured component KPIs imported from archive.
         readOnly: true
         items:
           $ref: '#/definitions/ConfiguredKpi'
@@ -3650,6 +4928,75 @@ definitions:
       environmentCrn:
         type: string
         description: Crn of associated CDP environment
+  SimpleListenComponent:
+    type: object
+    description: Provides subset of metadata of a Listen* component.
+    x-workload: true
+    x-client-only: true
+    required:
+      - protocol
+    properties:
+      protocol:
+        type: string
+        description: Inbound protocol.
+        enum:
+          - TCP
+          - UDP
+      port:
+        type: string
+        description: Inbound port.
+  StartAllFlowsInDeploymentRequest:
+    type: object
+    description: Request object for starting the NiFi flows in a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+  StartAllFlowsInDeploymentResponse:
+    type: object
+    description: Response object for starting all NiFi flows in a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployment:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployment'
+  StartFlowInDeploymentRequest:
+    type: object
+    description: Request object for starting the NiFi flow.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+      deployedFlowCrn:
+        type: string
+        description: The deployed flow crn.
+  StartFlowInDeploymentResponse:
+    type: object
+    description: Response object for starting the NiFi flow.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlow:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployedFlow'
   StartFlowRequest:
     type: object
     description: Request object for starting the NiFi flow.
@@ -3674,6 +5021,66 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  StopAllFlowsInDeploymentRequest:
+    type: object
+    description: Request object for stopping the NiFi flows in a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+      waitForFlowToStopInMinutes:
+        type: integer
+        format: int32
+        description: The max time in minutes to wait for flows to stop.
+  StopAllFlowsInDeploymentResponse:
+    type: object
+    description: Response object for stopping all NiFi flows in a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployment:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployment'
+  StopFlowInDeploymentRequest:
+    type: object
+    description: Request object for stopping the NiFi flow.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+      deployedFlowCrn:
+        type: string
+        description: The deployed flow crn.
+      waitForFlowToStopInMinutes:
+        type: integer
+        format: int32
+        description: The max time in minutes to wait for flow to stop.
+  StopFlowInDeploymentResponse:
+    type: object
+    description: Response object for stopping the NiFi flow.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlow:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployedFlow'
   StopFlowRequest:
     type: object
     description: Request object for stopping the NiFi flow.
@@ -3750,6 +5157,34 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  TerminateFlowInDeploymentRequest:
+    type: object
+    description: Request object to terminate a flow in a deployment.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - deployedFlowCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The deployment crn.
+      deployedFlowCrn:
+        type: string
+        description: The deployed flow crn.
+  TerminateFlowInDeploymentResponse:
+    type: object
+    description: Response object for terminating a flow in a deployment.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlow:
+        description: The deployment.
+        $ref: '#/definitions/RpcDeployedFlow'
   UpdateCustomNarConfigurationRequest:
     type: object
     description: Request object to update a custom NAR configuration.
@@ -3901,21 +5336,17 @@ definitions:
         description: The version of this configuration.
       assetUpdateRequestCrn:
         type: string
-        description: The CRN of the asset update request. Required when updating assets of an existing deployment.
+        description: The CRN of the asset update request. Required when updating assets of an existing deployment. Deprecated, use asset-update-request-crn in the update-flow-in-deployment command.
+        x-deprecated: true
       clusterSize:
         description: The deployment t-shirt size.
         $ref: '#/definitions/BasicClusterSize'
       parameterGroups:
         type: array
-        description: The list of flow parameter groups.
+        description: The list of flow parameter groups, for the first deployed flow. Deprecated, use parameter-groups in the update-flow-in-deployment command.
         items:
           $ref: '#/definitions/FlowParameterGroup'
-      autoScalingEnabled:
-        type: boolean
-        description: Specifies that auto-scaling should be enabled.
-      flowMetricsScalingEnabled:
-        type: boolean
-        description: Specifies that Flow metrics should be enabled for scaling.
+        x-deprecated: true
       autoScaleMinNodes:
         type: integer
         format: int32
@@ -3933,6 +5364,33 @@ definitions:
         description: The list of Key Performance Indicators (KPIs) with which to replace the current list of configured KPIs. Only deployment-level KPIs are allowed. To configure flow-level KPIs, use update-flow-in-deployment. If the list is empty, all KPIs are deleted; however, if it is not specified, the current KPI settings are not updated.
         items:
           $ref: '#/definitions/ConfiguredKpi'
+      inboundHostname:
+        type: string
+        description: The FQDN of inbound hostname or just the prefix part.
+      listenComponents:
+        type: array
+        description: Listen components port and protocol data.
+        items:
+          $ref: '#/definitions/SimpleListenComponent'
+      inboundConnectionAuthorizedIpRanges:
+        type: array
+        description: Set of authorized CIDR ranges for the inbound connections.
+        uniqueItems: true
+        items:
+          type: string
+      deactivateInboundConnection:
+        type: boolean
+        description: Specifies that the inbound connection be deactivated.
+      customNarConfigurationCrn:
+        type: string
+        description: The CRN of the Custom NAR configuration.
+      customPythonConfigurationCrn:
+        type: string
+        description: The CRN of the Custom Python configuration.
+      cliSupportsMultiFlow:
+        type: boolean
+        description: Specifies whether the CDP CLI supports the multi-flow. Deprecated, this argument is only for internal use.
+        x-deprecated: true
   UpdateDeploymentResponse:
     type: object
     description: Response object from updating a deployment.
@@ -3942,6 +5400,53 @@ definitions:
       deploymentConfiguration:
         description: The deployment configuration.
         $ref: '#/definitions/RpcDeploymentConfiguration'
+  UpdateFlowInDeploymentRequest:
+    type: object
+    description: Provides all of the configuration that dictates how a deployed flow should be updated.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - configurationVersion
+      - deployedFlowCrn
+      - deploymentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      deploymentCrn:
+        type: string
+        description: The CRN of the deployment.
+      deployedFlowCrn:
+        type: string
+        description: The CRN of the deployed flow.
+      configurationVersion:
+        type: integer
+        format: int32
+        description: The version of this configuration.
+      assetUpdateRequestCrn:
+        type: string
+        description: The CRN of the asset update request. Required when updating assets of an existing deployed flow. Deprecated, this argument is only for internal use.
+        x-deprecated: true
+      parameterGroups:
+        type: array
+        description: The list of flow parameter groups.
+        items:
+          $ref: '#/definitions/FlowParameterGroup'
+      kpis:
+        type: array
+        description: The list of configured KPIs.
+        items:
+          $ref: '#/definitions/ConfiguredKpi'
+  UpdateFlowInDeploymentResponse:
+    type: object
+    description: Response object from updating a deployed flow.
+    x-workload: true
+    x-client-only: true
+    properties:
+      deployedFlowConfiguration:
+        description: The deployed flow configuration.
+        $ref: '#/definitions/RpcDeployedFlowConfiguration'
   UpdateNifiVersionRequest:
     type: object
     description: Request object for updating the NiFi version of a deployment.
@@ -3996,6 +5501,9 @@ definitions:
       deploymentRequestCrn:
         type: string
         description: The CRN of the deployment request. Required during initial deployment.
+      deployedFlowName:
+        type: string
+        description: The name of the deployed flow.  If unspecified, the deployment name will be used.
       deploymentName:
         type: string
         description: The name of the deployment. Required during initial deployment.
