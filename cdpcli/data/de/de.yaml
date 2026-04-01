@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.156
+  version: 0.9.157
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -458,6 +458,72 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListVcsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/suspendVc:
+    post:
+      summary: Initiates suspend on the requested VC.
+      description: Initiates suspend on the requested VC.
+      operationId: suspendVc
+      x-mutating: true
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SuspendVcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SuspendVcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/resumeVc:
+    post:
+      summary: Initiates resume on the requested VC.
+      description: Initiates resume on the requested VC.
+      operationId: resumeVc
+      x-mutating: true
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ResumeVcRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ResumeVcResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/de/getSuspendResumeStatus:
+    post:
+      summary: Get CDE Service Suspend Resume Status.
+      description: The current status of the CDE Service suspend/resume process. After a particular step triggered by suspend-resume-service is completed, nextStep would point to the next step to take. If all the steps are completed, allStepsCompleted would be true.
+      operationId: getSuspendResumeStatus
+      x-mutating: false
+      x-form-factors: public
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetSuspendResumeStatusRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetSuspendResumeStatusResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1817,3 +1883,73 @@ definitions:
       serviceID:
         type: string
         description: The ID of the service being restored.
+  SuspendVcRequest:
+    type: object
+    description: Request object for suspending a virtual cluster.
+    required:
+      - clusterId
+      - vcId
+    properties:
+      clusterId:
+        type: string
+        description: Cluster ID of the service.
+      vcId:
+        type: string
+        description: Virtual Cluster ID.
+  ResumeVcRequest:
+    type: object
+    description: Request object for suspending a virtual cluster.
+    x-form-factors: public
+    required:
+      - clusterId
+      - vcId
+    properties:
+      clusterId:
+        type: string
+        description: Cluster ID of the service.
+      vcId:
+        type: string
+        description: Virtual Cluster ID.
+  SuspendVcResponse:
+    type: object
+    description: Response object for SuspendVc request.
+    x-form-factors: public
+    properties:
+      status:
+        type: string
+        description: The status message of vc suspend operation.
+  ResumeVcResponse:
+    type: object
+    description: Response object for ResumeVc request.
+    x-form-factors: public
+    properties:
+      status:
+        type: string
+        description: The status message of vc resume operation.
+  GetSuspendResumeStatusRequest:
+    type: object
+    description: Request object for GetSuspendResumeStatus method.
+    x-form-factors: public
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: Cluster ID of the service.
+      vcId:
+        type: string
+        description: Virtual Cluster ID.
+  GetSuspendResumeStatusResponse:
+    type: object
+    description: Response object for GetSuspendResumeStatus request.
+    x-form-factors: public
+    properties:
+      statusMessage:
+        type: string
+        description: The status of the suspend/resume operation.
+      nextStep:
+        type: string
+        description: The next step to take in the multi-step suspend/resume process.
+      allStepsCompleted:
+        type: boolean
+        description: Indicates if all steps in the multi-step suspend/resume process were successfully completed.
