@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.157
+  version: 0.9.158
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -3100,6 +3100,14 @@ definitions:
       enableFineGrainedAccessControl:
         type: boolean
         description: The boolean flag to enable fine-grained access control. By default, this flag is disabled.
+      rangerServicePrincipal:
+        type: string
+        description: Custom Ranger service principal for fine-grained authorization. If not provided, defaults to the machine user workload username.
+        x-form-factors: private
+      knoxTopologyName:
+        type: string
+        description: Custom Knox topology name for API key generation. If not provided, defaults to "cdp-proxy-api".
+        x-form-factors: private
   MlServingOzoneCreds:
     type: object
     description: Request object for the MlServingOzoneCreds method.

@@ -53,6 +53,8 @@ from cdpcli.extensions.configure.configure import ConfigureCommand
 from cdpcli.extensions.generatecliskeleton import add_generate_skeleton
 from cdpcli.extensions.interactivelogin import LoginCommand
 from cdpcli.extensions.logout import LogoutCommand
+from cdpcli.extensions.outfile import add_outfile_params
+from cdpcli.extensions.outfile import outfile_writer
 from cdpcli.extensions.paginate import add_pagination_params
 from cdpcli.extensions.paginate import check_should_enable_pagination
 from cdpcli.extensions.refdoc import RefdocCommand
@@ -624,7 +626,9 @@ class ServiceOperation(object):
                 no_paramfile=arg_shape.is_no_paramfile)
             arg_object.add_to_arg_table(argument_table)
         add_pagination_params(self._operation_model, argument_table)
+        add_outfile_params(self._operation_model, argument_table)
         add_cli_input_json(self._operation_model, argument_table)
+
         add_generate_skeleton(self._operation_model, argument_table)
         return argument_table
 
@@ -731,11 +735,16 @@ class CLIOperationCaller(object):
         operation_name = operation_model.name
         client = client_creator(service_name)
         py_operation_name = xform_name(operation_name)
+
         if client.can_paginate(py_operation_name) and parsed_globals.paginate:
             response = client.get_paginator(
                 py_operation_name).paginate(**parameters)
         else:
-            response = getattr(client, xform_name(operation_name))(**parameters)
+            http, response = getattr(client, xform_name(operation_name))(**parameters)
+            if operation_model.has_outfile:
+                response = outfile_writer(parsed_args, http, response)
+                return True
+
         self._display_response(operation_name, response, parsed_globals)
         return True
 

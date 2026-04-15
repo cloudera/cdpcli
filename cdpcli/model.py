@@ -325,6 +325,12 @@ class OperationModel(object):
             return self._service_model.resolve_shape_ref(
                 "output", self._operation_data['responses'][200]['schema'][REF_KEY])
 
+    @CachedProperty
+    def has_outfile(self):
+        # An operation that produces an output meant to be downloaded to
+        # wil have x-api-resources-response set
+        return "x-api-resource-response" in self._operation_data
+
 
 class ServiceModel(object):
 

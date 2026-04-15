@@ -62,7 +62,7 @@ class PageIterator(object):
                 self._max_items - items_returned
             )
 
-            response = self._method(**self._op_kwargs)
+            _, response = self._method(**self._op_kwargs)
             # yield a page of results to accumulator
             yield response
 

@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.157
+  version: 0.9.158
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -3866,6 +3866,9 @@ definitions:
       enableStatestoreHighAvailability:
         type: boolean
         description: Enables a backup instance for Impala Statestore to ensure high availability.
+      impalaEnableGlobalAdmissionController:
+        type: boolean
+        description: Set whether the Impala Global Admission Controller is enabled. This feature can only be used with high-availability mode ACTIVE_ACTIVE.
   AutoscalingOptionsUpdateRequest:
     type: object
     description: Auto-scaling configuration for a Virtual Warehouse. Provide those values only that you want to update.
@@ -3930,7 +3933,7 @@ definitions:
         description: The number of active coordinators.
       impalaEnableGlobalAdmissionController:
         type: boolean
-        description: Set whether the Impala Global Admission Controller is enabled. Once disabled, it cannot be re-enabled.
+        description: Set whether the Impala Global Admission Controller is enabled. This feature can only be used with high-availability mode ACTIVE_ACTIVE.
   AutoscalingOptionsResponse:
     type: object
     description: Auto-scaling configuration for a Virtual Warehouse.
@@ -4148,6 +4151,7 @@ definitions:
           - small
           - medium
           - large
+          - waa
       nodeCount:
         type: integer
         format: int32
@@ -4310,7 +4314,7 @@ definitions:
         description: ID of the Virtual Warehouse.
       component:
         type: string
-        description: Configuration component to update. Hive components are [DasWebapp, Hiveserver2, QueryCoordinator, QueryExecutor, StandaloneQueryExecutor, TokenAuth, Hue]. Impala components are [Hue, ImpalaAutoscaler, ImpalaCatalogd, ImpalaCoordinator, ImpalaExecutor, ImpalaProxy, ImpalaStatestored, ImpalaTokenAuth].
+        description: Configuration component to update. Hive components are [DasWebapp, Hiveserver2, QueryCoordinator, QueryExecutor, StandaloneQueryExecutor, TokenAuth, Hue]. Impala components are [Hue, ImpalaAutoscaler, ImpalaCatalogd, ImpalaCoordinator, ImpalaExecutor, ImpalaProxy, ImpalaStatestored, ImpalaTokenAuth, ImpalaAdmissiond].
         enum:
           - DasWebapp
           - Hiveserver2
@@ -4326,6 +4330,7 @@ definitions:
           - ImpalaProxy
           - ImpalaStatestored
           - ImpalaTokenAuth
+          - ImpalaAdmissiond
       set:
         description: Configuration files of the selected component to update.
         type: array
@@ -5292,6 +5297,7 @@ definitions:
           - small
           - medium
           - large
+          - waa
       nodeCount:
         type: integer
         format: int32

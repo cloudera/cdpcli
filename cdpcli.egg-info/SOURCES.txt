@@ -88,6 +88,7 @@ cdpcli/extensions/commands.py
 cdpcli/extensions/generatecliskeleton.py
 cdpcli/extensions/interactivelogin.py
 cdpcli/extensions/logout.py
+cdpcli/extensions/outfile.py
 cdpcli/extensions/paginate.py
 cdpcli/extensions/pvcapipath.py
 cdpcli/extensions/redirect.py

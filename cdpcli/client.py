@@ -169,7 +169,7 @@ class ClientCreator(object):
                 raise TypeError(
                     "%s() only accepts keyword arguments." % py_operation_name)
             http, parsed_response = self.make_api_call(operation_name, kwargs)
-            return parsed_response
+            return http, parsed_response
 
         _api_call.__name__ = str(py_operation_name)
         return _api_call

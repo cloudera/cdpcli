@@ -152,7 +152,7 @@ class EndpointResolver(object):
         """Creates a fully-resolved URL for a service endpoint.
 
         :param service_name: Altus service name, as referenced in its URLs.
-                             Or 'LOGIN' for login command
+                             Or 'LOGIN' for login command, 'DEVICELOGIN' for device login.
         :param prefix: CDP API prefix used in URLs, e.g., 'api'
         :param products: service products (ALTUS or CDP)
         :param explicit_endpoint_url: explicit endpoint URL which overrides any other
