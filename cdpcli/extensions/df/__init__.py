@@ -198,7 +198,7 @@ def get_asset_update_request_crn(df_workload_client,
     if deployed_flow_crn:
         request_params['deployedFlowCrn'] = deployed_flow_crn
 
-    response = df_workload_client.create_asset_update_request(**request_params)
+    http, response = df_workload_client.create_asset_update_request(**request_params)
     return response.get('assetUpdateRequestCrn', None)
 
 
@@ -441,7 +441,7 @@ class DfExtension(CLIOperationCaller):
                                       df_workload_client,
                                       environment_crn,
                                       deployment_crn):
-        response = df_workload_client.create_asset_update_request(
+        http, response = df_workload_client.create_asset_update_request(
             deploymentCrn=deployment_crn,
             environmentCrn=environment_crn
         )

@@ -41,7 +41,7 @@ def set_workload_access_token(iam_client,
         'workloadName': workload_name,
         'environmentCrn': environment_crn
     }
-    response = iam_client.generate_workload_auth_token(**req_params)
+    http, response = iam_client.generate_workload_auth_token(**req_params)
 
     workload_url = response.get('endpointUrl', None)
     workload_access_token = response.get('token', None)

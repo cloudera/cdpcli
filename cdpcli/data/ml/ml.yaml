@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.158
+  version: 0.9.159
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -1451,6 +1451,31 @@ definitions:
       accelerator:
         description: The accelerator, which refers to the GPU type configuration.
         $ref: '#/definitions/Accelerator'
+      singleZone:
+        type: boolean
+        description: The boolean flag to provision single zone or multi zone cluster.
+      aws:
+        description: The capacity reservation config for EKS.
+        $ref: '#/definitions/AwsCrConfig'
+  AwsCrConfig:
+    type: object
+    description: The capacity reservation config for EKS
+    properties:
+      capacityReservationId:
+        type: string
+        description: The capacity reservation Id
+      network:
+        description: The network config having subnets for AZ
+        $ref: '#/definitions/Network'
+  Network:
+    type: object
+    description: The network config for capacity reservation.
+    properties:
+      subnets:
+        type: array
+        items:
+          type: string
+        description: The array of subnets for AZ
   Accelerator:
     type: object
     description: Accelerator, i.e. GPU configurations.

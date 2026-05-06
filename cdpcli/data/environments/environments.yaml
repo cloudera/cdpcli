@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.158
+  version: 0.9.159
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2093,7 +2093,6 @@ paths:
       summary: Setup cross-realm trust between FreeIPA and Active Directory.
       description: Initiates cross-realm trust setup between FreeIPA and Active Directory. After this operation completes, configure the Active Directory side of the trust relationship by completing the steps returned by getTrustSetupCommands. Then call finishSetupTrust to validate and activate the trust for production use.
       operationId: setupActiveDirectoryTrust
-      x-entitlement: CDP_HYBRID_CLOUD
       x-mutating: true
       parameters:
         - name: input
@@ -2115,7 +2114,6 @@ paths:
       summary: Complete cross-realm trust setup for FreeIPA.
       description: Completes and validates the cross-realm trust setup initiated by setupTrust. Call this after configuring the Active Directory side of the trust relationship. This operation tests the bidirectional trust and activates it for production use.
       operationId: finishSetupTrust
-      x-entitlement: CDP_HYBRID_CLOUD
       x-mutating: true
       parameters:
         - name: input
@@ -2137,7 +2135,6 @@ paths:
       summary: Cancel cross-realm trust for FreeIPA.
       description: Cancel cross-realm trust setup between FreeIPA and Active Directory.
       operationId: cancelTrust
-      x-entitlement: CDP_HYBRID_CLOUD
       x-mutating: true
       parameters:
         - name: input
@@ -2159,7 +2156,6 @@ paths:
       summary: Repair cross-realm trust of FreeIPA with an Active Directory Server.
       description: Repairs cross-realm trust of FreeIPA with an Active Directory Server by resetting the trust secret on the FreeIPA side.
       operationId: repairTrust
-      x-entitlement: CDP_HYBRID_CLOUD
       x-mutating: true
       parameters:
         - name: input
@@ -2181,7 +2177,6 @@ paths:
       summary: Lists the commands to be executed for cross-realm trust setup.
       description: Lists the commands necessary for setting up cross-realm trust between FreeIPA and Active Directory.
       operationId: getTrustSetupCommands
-      x-entitlement: CDP_HYBRID_CLOUD
       x-mutating: false
       parameters:
         - name: input
@@ -2203,7 +2198,6 @@ paths:
       summary: Gets the commands to be run for cross-realm trust clean up.
       description: Retrieves the commands necessary for clean up cross-realm trust between FreeIPA and Active Directory.
       operationId: getTrustCleanupCommands
-      x-entitlement: CDP_HYBRID_CLOUD
       x-mutating: false
       parameters:
         - name: input
@@ -2398,7 +2392,6 @@ definitions:
         description: Existing trust secret. If not provided, CDP will generate a secure random secret.
         x-sensitive: true
   KdcServerRequest:
-    x-entitlement: CDP_HYBRID_CLOUD
     type: object
     description: Key Distribution Center (KDC) server properties.
     required:
@@ -2412,7 +2405,6 @@ definitions:
         type: string
         description: Key Distribution Center (KDC) server IPv4 address.
   SetupActiveDirectoryTrustResponse:
-    x-entitlement: CDP_HYBRID_CLOUD
     type: object
     description: Response object for Setting up Active Directory Trust.
     required:
@@ -3064,7 +3056,6 @@ definitions:
       environmentType:
         description: Environment type which can be hybrid or public cloud.
         type: string
-        x-entitlement: CDP_HYBRID_CLOUD
         enum:
           - PUBLIC_CLOUD
           - HYBRID
@@ -3682,7 +3673,6 @@ definitions:
       environmentType:
         description: Environment type which can be hybrid or public cloud.
         type: string
-        x-entitlement: CDP_HYBRID_CLOUD
         enum:
           - PUBLIC_CLOUD
           - HYBRID
@@ -3772,7 +3762,6 @@ definitions:
       environmentType:
         description: Environment type which can be hybrid or public cloud.
         type: string
-        x-entitlement: CDP_HYBRID_CLOUD
         enum:
           - PUBLIC_CLOUD
           - HYBRID
@@ -4172,7 +4161,6 @@ definitions:
       environmentType:
         description: Environment type which can be hybrid or public cloud.
         type: string
-        x-entitlement: CDP_HYBRID_CLOUD
         enum:
           - PUBLIC_CLOUD
           - HYBRID

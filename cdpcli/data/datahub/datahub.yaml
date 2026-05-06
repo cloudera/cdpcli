@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.158
+  version: 0.9.159
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -859,6 +859,69 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/ListCustomConfigurationsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/migrateZookeeperToKraft:
+    post:
+      summary: Migrate from Zookeeper to KRaft broker.
+      description: Initiate the migration from Zookeeper to KRaft broker on the given cluster.
+      operationId: migrateZookeeperToKraft
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MigrateZookeeperToKraftRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/MigrateZookeeperToKraftResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/finalizeZookeeperToKraftMigration:
+    post:
+      summary: Finalize the migration from Zookeeper to KRaft broker.
+      description: Initiates the finalization of the migration from Zookeeper to KRaft broker.
+      operationId: finalizeZookeeperToKraftMigration
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/FinalizeZookeeperToKraftMigrationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/FinalizeZookeeperToKraftMigrationResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datahub/rollbackZookeeperToKraftMigration:
+    post:
+      summary: Rollback the migration from Zookeeper to KRaft broker.
+      description: Initiates the rollback of the migration from Zookeeper to KRaft broker.
+      operationId: rollbackZookeeperToKraftMigration
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RollbackZookeeperToKraftMigrationRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RollbackZookeeperToKraftMigrationResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3809,6 +3872,63 @@ definitions:
         type: string
         x-paging-output-token: true
         description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  MigrateZookeeperToKraftRequest:
+    type: object
+    description: Request object to migrate Zookeeper to KRaft.
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the given cluster.
+  MigrateZookeeperToKraftResponse:
+    type: object
+    description: Response object to migrate Zookeeper to KRaft.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+      message:
+        type: string
+        description: This property contains additional information about the status of the migration.
+  FinalizeZookeeperToKraftMigrationRequest:
+    type: object
+    description: Request object to finalize the migration of Zookeeper to KRaft.
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the given cluster.
+  FinalizeZookeeperToKraftMigrationResponse:
+    type: object
+    description: Response object to finalization of the Zookeeper to KRaft migration.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+      message:
+        type: string
+        description: This property contains additional information about the status of the migration.
+  RollbackZookeeperToKraftMigrationRequest:
+    type: object
+    description: Request object to rollback the migration from Zookeeper to KRaft broker.
+    required:
+      - crn
+    properties:
+      crn:
+        type: string
+        description: The CRN of the given cluster.
+  RollbackZookeeperToKraftMigrationResponse:
+    type: object
+    description: Response object to rollback the migration from Zookeeper to KRaft broker.
+    properties:
+      operationId:
+        type: string
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+      message:
+        type: string
+        description: This property contains additional information about the status of the migration.
   DatahubResourceTagRequest:
     type: object
     description: Tag for a datahub resource.

@@ -1,0 +1,1955 @@
+swagger: '2.0'
+x-endpoint-name: lakehouseopt
+x-products: CDP
+x-form-factors: public
+x-cdp-releases: PUBLIC
+x-audit: true
+info:
+  version: 0.9.159
+  title: Cloudera Lakehouse Optimizer Service
+  license:
+    name: Apache 2.0
+  description: CDP Cloudera Lakehouse Optimizer Service does the iceberg table maintenance, it allows users to define policies to schedule iceberg spark actions to perform regular maintenance.
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/v1/lakehouseopt/getHealth:
+    post:
+      summary: Performs health check on CLO components.
+      description: Returns the CLO component (Scheduler, dispatcher, DAO) wise health check result. Service specific result will include the state of the service (healthy or unhealthy) and additional details.
+      operationId: getHealth
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetHealthRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetHealthResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/listEnvironments:
+    post:
+      summary: List environments.
+      description: Returns the list of environments along with the CLO Data Hub details if it's enabled.
+      operationId: listEnvironments
+      x-mutating: false
+      x-paging-default-max-items: 100
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListEnvironmentsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListEnvironmentsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getDatahubCrn:
+    post:
+      summary: Fetches Data Hub CRN for an environment.
+      description: Fetches Data Hub CRN for an environment.
+      operationId: getDatahubCrn
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetDatahubCrnRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetDatahubCrnResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getCloDatahub:
+    post:
+      summary: Fetches CLO Data Hub for an environment.
+      description: Fetches CLO Data Hub for an environment.
+      operationId: getCloDatahub
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetCloDatahubRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetCloDatahubResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/listPolicies:
+    post:
+      summary: Lists policies.
+      description: Lists policies across all namespaces or a particular namespace.
+      operationId: listPolicies
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListPoliciesRequest'
+      responses:
+        200:
+          description: Policy list response
+          schema:
+            $ref: '#/definitions/ListPoliciesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getPolicy:
+    post:
+      summary: Fetches the policy details.
+      description: Fetches policy details like version IDs, policy actions, scope of the policy, status and associations.
+      operationId: getPolicy
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetPolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetPolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/downloadPolicy:
+    post:
+      summary: Downloads the policy definition for a particular policy version.
+      description: Downloads the policy scripts and/or arguments for a particular policy version. Version is identified by a unique ID.
+      operationId: downloadPolicy
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DownloadPolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DownloadPolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getNamespaces:
+    post:
+      summary: Get all namespaces.
+      description: Get all namespaces in a catalog.
+      operationId: getNamespaces
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetNamespacesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetNamespacesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getTableNames:
+    post:
+      summary: Get table names in a namespace.
+      description: Get table names in a namespace.
+      operationId: getTableNames
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetTableNamesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetTableNamesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/listTables:
+    post:
+      summary: List tables in a namespace.
+      description: list tables in a namespace.
+      operationId: listTables
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListTablesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListTablesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getTablePolicies:
+    post:
+      summary: get policies of a table in a namespace.
+      description: get policies of a table in a namespace.
+      operationId: getTablePolicies
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetTablePoliciesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetTablePoliciesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getPolicyNames:
+    post:
+      summary: get all policy names associated with a namespace.
+      description: get policy names associated with a namespace.
+      operationId: getPolicyNames
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetPolicyNamesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetPolicyNamesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/createTablePoliciesAssociations:
+    post:
+      summary: create associations of a table and policies.
+      description: create associations of a table and policies.
+      operationId: createTablePoliciesAssociations
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTablePoliciesAssociationsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateTablePoliciesAssociationsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getScripts:
+    post:
+      summary: Get scripts.
+      description: Get scripts which are default or defined at catalog level.
+      operationId: getScripts
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetScriptsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetScriptsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getAssociations:
+    post:
+      summary: Get policy to table associations.
+      description: Get list of tables associated per namespace for a policy.
+      operationId: getAssociations
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAssociationsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAssociationsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/createAssociations:
+    post:
+      summary: Create policy to table associations.
+      description: Associate set of tables per namespace to a policy.
+      operationId: createAssociations
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAssociationsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateAssociationsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/createPolicy:
+    post:
+      summary: Create a new policy.
+      description: Create a new policy with a name.
+      operationId: createPolicy
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreatePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/updatePolicy:
+    post:
+      summary: Update an existing policy.
+      description: Update an existing policy.
+      operationId: updatePolicy
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdatePolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdatePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/unsubscribePolicy:
+    post:
+      summary: Unsubscribe a policy from the table.
+      description: Remove a policy associated with the table.
+      operationId: unsubscribePolicy
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnsubscribePolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UnsubscribePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/pauseTable:
+    post:
+      summary: Pause a table.
+      description: Pause all maintenance actions on a table.
+      operationId: pauseTable
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PauseTableRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/PauseTableResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/unpauseTable:
+    post:
+      summary: Unpause a table.
+      description: Resume maintenance actions on a table.
+      operationId: unpauseTable
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnpauseTableRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UnpauseTableResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/listTasks:
+    post:
+      summary: Retrieves CLO maintenance tasks.
+      description: Retrieves CLO maintenance tasks for a given namespace.
+      operationId: listTasks
+      x-paging-default-max-items: 100
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListTasksRequest'
+      responses:
+        200:
+          description: List of tasks.
+          schema:
+            $ref: '#/definitions/ListTasksResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/changeTablePolicy:
+    post:
+      summary: Perform policy change operations on a table.
+      description: Perform operations on a table to associate new policies, remove existing policies, replace existing policies.
+      operationId: changeTablePolicy
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChangeTablePolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ChangeTablePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/deletePolicy:
+    post:
+      summary: Delete a policy definition for a resource.
+      description: Delete a policy definition which is applicable on a provided resource. Resource could be a namespace or a table. If ''*'' is provided for namespace, then it deletes all policies across all namespaces. Otherwise, namespace and table must be provided.
+      operationId: deletePolicy
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeletePolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeletePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getTimezones:
+    post:
+      summary: Get all supported timezones.
+      description: Return all supported timezones to schedule the policy.
+      operationId: getTimezones
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetTimezonesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetTimezonesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getAssociatedTables:
+    post:
+      summary: Get all associated tables for a policy
+      description: Return tables per namespaces along with a flag to indicate if they are associated to the policy.
+      operationId: getAssociatedTables
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAssociatedTablesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAssociatedTablesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getAssociatedNamespaces:
+    post:
+      summary: Get all associated namespaces for a policy.
+      description: Get all namespaces along with a flag to indicate if they are associated to the policy.
+      operationId: getAssociatedNamespaces
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAssociatedNamespacesRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAssociatedNamespacesResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getTableStatusDetails:
+    post:
+      summary: Get table status details.
+      description: Get details on table's current status.
+      operationId: getTableStatusDetails
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetTableStatusDetailsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetTableStatusDetailsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/executePolicy:
+    post:
+      summary: Execute a policy on a table.
+      description: Execute a policy on a table. If dryRun flag is set to true, then it will only do the policy evaluation without actually performing any action on the table.
+      operationId: executePolicy
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ExecutePolicyRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ExecutePolicyResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/lakehouseopt/getAssociationDetails:
+    post:
+      summary: Get policy association details.
+      description: Get details about policy association. It contains directAssociation and starAssociation. 'directAssociation' will provide details on set of policies which are associated with individual tables and 'starAssociation" will provide details on policies which are associated at namespace level.
+      operationId: getAssociationDetails
+      x-mutating: false
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GetAssociationDetailsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/GetAssociationDetailsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Error:
+    type: object
+    description: An object returned on an error.
+    properties:
+      code:
+        type: string
+        description: The error code.
+      message:
+        type: string
+        description: The error message.
+  GetHealthRequest:
+    type: object
+    description: Request object for health check.
+    required:
+      - datahubCrn
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      scope:
+        type: string
+        description: Health check scope. The supported values are "Full" and "Partial". The "Full" performs a deep health check along with livy session creation. The "Partial" performs a shallow health check which doesn't involve session creation.
+        enum:
+          - Full
+          - Partial
+        default: Partial
+  GetHealthResponse:
+    type: object
+    description: Response object for health check.
+    required:
+      - result
+    properties:
+      result:
+        type: object
+        description: Map containing the service wise health check result.
+        additionalProperties:
+          $ref: '#/definitions/HealthCheckResult'
+      action:
+        type: string
+        description: Action performed. For example, READ or NOOP or CREATE.
+  GetDatahubCrnRequest:
+    type: object
+    description: Request object to get CLO Data Hub CRN.
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+  GetDatahubCrnResponse:
+    type: object
+    description: Response object containing the CLO Data Hub CRN.
+    required:
+      - datahubCrn
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+  GetCloDatahubRequest:
+    type: object
+    description: Request object to get CLO Data Hub.
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+  GetCloDatahubResponse:
+    type: object
+    description: Response object containing the CLO Data Hub details.
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      datahubName:
+        type: string
+        description: The name of the CLO Data Hub.
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      cloudPlatform:
+        type: string
+        description: The cloud platform of the environment, possible values are AZURE or AWS.
+      status:
+        type: string
+        description: The CLO Data Hub status.
+  ListPoliciesRequest:
+    type: object
+    description: Request object to get list of policies across all namespaces or a particular namespace.
+    required:
+      - datahubCrn
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The namespace name. If set, then it will list policies from this namespace. Omitting it, will list policies across all namespaces.
+  ListPoliciesResponse:
+    type: object
+    description: Response object containing the list of policies.
+    properties:
+      policies:
+        type: array
+        description: List of all policies for a particular namespace or across all namespaces.
+        items:
+          $ref: '#/definitions/PolicyObject'
+  DownloadPolicyRequest:
+    type: object
+    description: Request object to get a particular policy version.
+    required:
+      - policyName
+      - policyVersion
+      - datahubCrn
+    properties:
+      policyName:
+        type: string
+        description: The name of the policy.
+      policyVersion:
+        type: string
+        description: The policy version.
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+  DownloadPolicyResponse:
+    type: object
+    description: Response object containing the policy script and arguments.
+    properties:
+      script:
+        type: string
+        format: byte
+        description: The policy script.
+        x-skip-logging: true
+      arguments:
+        type: string
+        format: byte
+        description: The policy arguments.
+        x-skip-logging: true
+  GetPolicyRequest:
+    type: object
+    description: Request object to fetch the details of a policy.
+    required:
+      - policyName
+      - datahubCrn
+    properties:
+      policyName:
+        type: string
+        description: The name of the policy.
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+  GetPolicyResponse:
+    type: object
+    description: Response object containing the policy detail which includes version IDs, associations, scope and status.
+    properties:
+      versions:
+        type: array
+        description: List of all version IDs of the policy.
+        items:
+          type: string
+      policyDetail:
+        type: object
+        description: Policy detail corresponding to a unique policy version.
+        properties:
+          version:
+            type: string
+            description: The policy version which is a UUID.
+          arguments:
+            type: string
+            format: byte
+            description: JSON containing the action specific arguments and other user defined arguments.
+            x-skip-logging: true
+          scope:
+            type: string
+            description: The scope of the policy. It can be Catalog or Namespace.
+          associations:
+            type: array
+            description: The list containing table associations for each namespace.
+            items:
+              $ref: '#/definitions/NamespaceAssociation'
+          tableCount:
+            type: integer
+            format: int32
+            description: The count of associated tables.
+          creationTime:
+            type: integer
+            format: int64
+            description: The policy creation time in epoch milliseconds.
+          lastExecutionTime:
+            type: integer
+            format: int64
+            description: The recent policy execution epoch time in milliseconds.
+  NamespaceAssociation:
+    type: object
+    description: The table associations per namespace.
+    properties:
+      namespace:
+        type: string
+        description: The name of the namespace.
+      status:
+        type: string
+        description: The namespace status. Possible values are ERROR, SUCCESS, PAUSED, AUTO_PAUSED, USER_PAUSED, UNAVAILABLE and WARNING. PAUSED indicated that namespace is paused for maintenance actions, AUTO_PAUSED indicates namespace is paused automatically due to errors, USER_PAUSED indicates paused by user, ERROR indicates that recent task has failed or a table is in paused state due to exceptions, WARNING if a table is paused by user, SUCCESS if there are no recent task failures or paused tables, UNAVAILABLE if no tasks have run yet.
+        enum:
+          - ERROR
+          - SUCCESS
+          - AUTO_PAUSED
+          - USER_PAUSED
+          - PAUSED
+          - UNAVAILABLE
+          - WARNING
+        default: UNAVAILABLE
+      tableAssociations:
+        type: array
+        description: The list of associated tables and their details for a namespace.
+        items:
+          $ref: '#/definitions/TableAssociation'
+  HealthCheckResult:
+    type: object
+    description: Health check result.
+    properties:
+      isHealthy:
+        type: boolean
+        description: Service health status. The supported values are true or false. "true" represents the service is healthy and "false" represents the service is in an unhealthy state.
+      message:
+        type: string
+        description: Service health check message.
+      error:
+        type: string
+        description: Exception during health checks.
+      details:
+        type: object
+        description: Map with additional service specific details.
+        additionalProperties:
+          type: string
+          description: 'Additional service details encoded as a string (Example: "Tasks": "[]", "Dispatched count": "5", "Scheduled count": "2")'
+      time:
+        type: integer
+        format: int64
+        description: Time when the health check was performed. It will be in milliseconds.
+      duration:
+        type: integer
+        format: int64
+        description: Health check duration in millis.
+  PolicyObject:
+    type: object
+    description: The policy object containing name, status and other details.
+    properties:
+      status:
+        type: string
+        description: The policy status.
+        enum:
+          - ERROR
+          - SUCCESS
+          - PAUSED
+          - UNAVAILABLE
+      policyName:
+        type: string
+        description: The policy name.
+      taskCount:
+        type: integer
+        format: int32
+        description: The number of tasks ran for this policy.
+      tableCount:
+        type: integer
+        format: int32
+        description: The number of tables associated with this policy.
+      creationTime:
+        type: integer
+        format: int64
+        description: The policy creation time in epoch milliseconds.
+      lastExecutionTime:
+        type: integer
+        format: int64
+        description: The recent task execution time in epoch milliseconds.
+      isDefault:
+        type: boolean
+        description: Flag to indicate if the policy is a default one provided by Cloudera. Policy is default if true else false.
+  TableAssociation:
+    type: object
+    description: The object containing information about a table to policy association.
+    properties:
+      name:
+        type: string
+        description: The table name.
+      namespace:
+        type: string
+        description: The namespace name.
+      taskCount:
+        type: integer
+        format: int32
+        description: The count of CLO tasks ran for the table.
+      lastExecutionTime:
+        type: integer
+        format: int64
+        description: The time in epoch milliseconds of recent CLO task that ran for the table.
+      version:
+        type: string
+        description: The policy version applicable to this table.
+      status:
+        type: string
+        description: The table status.
+        enum:
+          - ERROR
+          - SUCCESS
+          - PAUSED
+          - UNAVAILABLE
+  ListEnvironmentsRequest:
+    type: object
+    description: The request object to get environments.
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The page size.
+      pageToken:
+        type: string
+        x-paging-input-token: true
+        description: The page token. If the token value is 'ALL' then it will list all existing environments irrespective of pageSize.
+  ListEnvironmentsResponse:
+    type: object
+    description: The response object containing environment and CLO Data Hub details.
+    properties:
+      nextPageToken:
+        type: string
+        x-paging-output-token: true
+        description: The page token for requesting the next page of results.
+      totalEnvironments:
+        type: integer
+        format: int32
+        description: This field represents the total number of environments.
+      environments:
+        type: array
+        x-paging-result: true
+        description: The list containing environment details.
+        items:
+          $ref: '#/definitions/Environment'
+  Environment:
+    type: object
+    description: The environment details.
+    properties:
+      environmentName:
+        type: string
+        description: The name of the environment.
+      environmentCrn:
+        type: string
+        description: The CRN of the environment.
+      isCloEnabled:
+        type: boolean
+        description: The flag indicating if CLO is enabled. If enabled it is true else false.
+      datahubName:
+        type: string
+        description: The name of the CLO Data Hub. If CLO is not enabled it will be null.
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub. If CLO is not enabled it will be null.
+      cloudPlatform:
+        type: string
+        description: The cloud platform of the environment, possible values are AZURE or AWS.
+      status:
+        type: string
+        description: The CLO Data Hub status. If CLO is not enabled it will be null.
+  GetNamespacesRequest:
+    type: object
+    description: The request object to get list of namespaces in a catalog.
+    required:
+      - datahubCrn
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+  GetNamespacesResponse:
+    type: object
+    description: The response object with list of namespaces in a catalog.
+    properties:
+      namespaces:
+        type: array
+        description: The list of namespace names.
+        items:
+          type: string
+  GetTableNamesRequest:
+    type: object
+    description: Request object to get all tables in a given namespace.
+    required:
+      - datahubCrn
+      - namespace
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The namespace name.
+  GetTableNamesResponse:
+    type: object
+    description: Response object containing table names in a namespace.
+    properties:
+      tables:
+        type: array
+        description: The list of table names.
+        items:
+          type: string
+  GetScriptsRequest:
+    type: object
+    description: Request object to fetch all scripts.
+    required:
+      - datahubCrn
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+  GetScriptsResponse:
+    type: object
+    description: Response object containing list of scripts.
+    properties:
+      scripts:
+        type: array
+        description: List of scripts.
+        items:
+          $ref: '#/definitions/Script'
+  Script:
+    type: object
+    description: The policy script.
+    properties:
+      name:
+        type: string
+        description: The script name.
+      uri:
+        type: string
+        description: The script uri which follows CLO uri format. EG, dlm://tps/hive/snapshot.
+      description:
+        type: string
+        description: The script description.
+  GetAssociationsRequest:
+    type: object
+    description: Request object to get associations for a policy.
+    required:
+      - datahubCrn
+      - policyName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      policyName:
+        type: string
+        description: The policy name.
+  GetAssociationsResponse:
+    type: object
+    description: Response object containing table associations per namespace.
+    properties:
+      associations:
+        type: array
+        description: List of associations for each namespace.
+        items:
+          $ref: '#/definitions/Associations'
+  Associations:
+    type: object
+    description: Association per namespace.
+    properties:
+      namespace:
+        type: string
+        description: The namespace name.
+      tables:
+        type: array
+        description: The list of tables associated for a namespace.
+        items:
+          type: string
+  CreateAssociationsRequest:
+    type: object
+    description: Request object to create associations for a policy.
+    required:
+      - datahubCrn
+      - policyName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      policyName:
+        type: string
+        description: The policy name.
+      associations:
+        type: array
+        description: List of associations for each namespace.
+        items:
+          $ref: '#/definitions/CreateAssociations'
+  CreateAssociationsResponse:
+    type: object
+    description: Response object containing created associations per namespace.
+    properties:
+      associations:
+        type: array
+        description: List of associations for each namespace.
+        items:
+          $ref: '#/definitions/Associations'
+  CreateAssociations:
+    type: object
+    description: Association to create per namespace.
+    properties:
+      namespace:
+        type: string
+        description: The namespace name.
+      tables:
+        type: array
+        description: The list of tables associated for a namespace.
+        items:
+          type: string
+  CreatePolicyRequest:
+    type: object
+    description: Request object to create a new policy.
+    required:
+      - datahubCrn
+      - policyName
+      - resources
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      policyName:
+        type: string
+        description: The policy name.
+      resources:
+        description: The policy resources like script and arguments.
+        $ref: '#/definitions/PolicyResource'
+  CreatePolicyResponse:
+    type: object
+    description: Response object for creating policy.
+  UpdatePolicyRequest:
+    type: object
+    description: Request object to update an existing policy.
+    required:
+      - datahubCrn
+      - policyName
+      - resources
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      policyName:
+        type: string
+        description: The policy name.
+      resources:
+        description: The policy resources like script and arguments.
+        $ref: '#/definitions/PolicyResource'
+  UpdatePolicyResponse:
+    type: object
+    description: Response object for updating policy.
+  PolicyResource:
+    type: object
+    description: The policy resources such as policy script and arguments.
+    properties:
+      arguments:
+        type: string
+        description: A base64 encoded version of policy arguments json.
+      script:
+        type: string
+        description: A base64 encoded jexl script.
+  ListTablesRequest:
+    type: object
+    description: Request object to get list of tables for a particular namespace.
+    required:
+      - datahubCrn
+      - namespace
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The namespace name for which table and it's policies will be listed.
+  ListTablesResponse:
+    type: object
+    description: Response object containing the list of tables.
+    properties:
+      tables:
+        type: array
+        description: List of all tables for a particular namespace
+        items:
+          $ref: '#/definitions/TableObject'
+  TableObject:
+    type: object
+    description: The table object containing name, status and other details.
+    properties:
+      status:
+        type: string
+        description: The table status.
+        enum:
+          - ERROR
+          - SUCCESS
+          - AUTO_PAUSED
+          - USER_PAUSED
+          - PAUSED
+          - UNAVAILABLE
+          - WARNING
+      namespace:
+        type: string
+        description: The name of the namespace.
+      tableName:
+        type: string
+        description: The name of the table.
+      policies:
+        type: array
+        description: The list of associated policies.
+        items:
+          type: string
+          description: The name of the associated policy.
+      lastExecutionTime:
+        type: integer
+        format: int64
+        description: The last task execution time in epoch milliseconds.
+  GetTablePoliciesRequest:
+    type: object
+    description: Request object to get list of policies associated with a table.
+    required:
+      - datahubCrn
+      - namespace
+      - tableName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The name of the namespace.
+      tableName:
+        type: string
+        description: The name of the table.
+  GetTablePoliciesResponse:
+    type: object
+    description: Response object to get list of policies associated with a table.
+    properties:
+      policies:
+        type: array
+        description: List of all policies associated with a table.
+        items:
+          $ref: '#/definitions/TablePoliciesObject'
+  TablePoliciesObject:
+    type: object
+    description: The table object containing details of policy association.
+    properties:
+      status:
+        type: string
+        description: The status of the policy on this table.
+        enum:
+          - ERROR
+          - SUCCESS
+          - AUTO_PAUSED
+          - USER_PAUSED
+          - PAUSED
+          - UNAVAILABLE
+          - WARNING
+      policyName:
+        type: string
+        description: The name of the policy.
+      taskCount:
+        type: integer
+        format: int32
+        description: The number of tasks ran for this policies on this table.
+      lastExecutionTime:
+        type: integer
+        format: int64
+        description: The last task execution time in epoch milliseconds.
+  GetPolicyNamesRequest:
+    type: object
+    description: Request object to get list of policy names for a namespace or across all namespaces.
+    required:
+      - datahubCrn
+      - namespace
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The name of the namespace. Provide * to list policies across all namespaces.
+  GetPolicyNamesResponse:
+    type: object
+    description: Response object containing list of policy names for a namespace or across all namespaces.
+    properties:
+      policyNames:
+        type: array
+        description: all policy names for a namespace.
+        items:
+          type: string
+          description: The policy names.
+  CreateTablePoliciesAssociationsRequest:
+    type: object
+    description: Request object to associate a table with set of policies.
+    required:
+      - datahubCrn
+      - namespace
+      - tableName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The name of the namespace.
+      tableName:
+        type: string
+        description: The name of the table.
+      policies:
+        type: array
+        description: The list of policy names to be associated.
+        items:
+          type: string
+          description: The policy name.
+  CreateTablePoliciesAssociationsResponse:
+    type: object
+    description: Response object containing list of policy names associated with the table.
+    properties:
+      policies:
+        type: array
+        description: The associated policy names.
+        items:
+          type: string
+          description: The policy names.
+  UnsubscribePolicyRequest:
+    type: object
+    description: Request object to unsubscribe a policy from table.
+    required:
+      - datahubCrn
+      - policyName
+      - namespace
+      - tableName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      policyName:
+        type: string
+        description: The name of the policy that is to be unsubscribed.
+      namespace:
+        type: string
+        description: The name of the namespace.
+      tableName:
+        type: string
+        description: The name of the table.
+  UnsubscribePolicyResponse:
+    type: object
+    description: Response object of unsubscribing a policy from table.
+    properties:
+      policies:
+        type: array
+        description: The list of policy names which are associated with the table.
+        items:
+          type: string
+          description: The list of policy names.
+  PauseTableRequest:
+    type: object
+    description: Request object to pause a table.
+    required:
+      - datahubCrn
+      - namespace
+      - tableName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The name of the namespace.
+      tableName:
+        type: string
+        description: The name of the table.
+  PauseTableResponse:
+    type: object
+    description: Response object for pausing table.
+  UnpauseTableRequest:
+    type: object
+    description: Request object to unpause a table.
+    required:
+      - datahubCrn
+      - namespace
+      - tableName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The name of the namespace.
+      tableName:
+        type: string
+        description: The name of the table.
+  UnpauseTableResponse:
+    type: object
+    description: Response object to unpause a table.
+  ChangeTablePolicyRequest:
+    type: object
+    description: Request object to perform policy change.
+    required:
+      - datahubCrn
+      - namespace
+      - tableName
+      - operation
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The name of the namespace.
+      tableName:
+        type: string
+        description: The name of the table.
+      operation:
+        type: string
+        description: The operation to be performed. APPEND will add provided policies to set of existing associated policies, REMOVEALL will delete all existing associations for this table, REPLACEALL will replace existing associations with provided set of policies.
+        enum:
+          - APPEND
+          - REMOVEALL
+          - REPLACEALL
+        default: APPEND
+      policies:
+        type: array
+        description: The list of policy names.
+        items:
+          type: string
+          description: The policy name.
+  ChangeTablePolicyResponse:
+    type: object
+    description: Response object of policy change.
+  ListTasksRequest:
+    type: object
+    description: Request object for listing tasks for a namespace.
+    required:
+      - datahubCrn
+      - namespace
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: Namespace name to filter tasks.
+      pageSize:
+        type: integer
+        format: int32
+        default: 1
+        minimum: 1
+        maximum: 100
+        x-paging-page-size: true
+        description: The number of tasks.
+      pageToken:
+        type: string
+        x-paging-input-token: true
+        description: A token to specify where to start paginating. This is the nextToken from a previously truncated response.
+  ListTasksResponse:
+    type: object
+    description: Response object of list tasks.
+    properties:
+      tasks:
+        type: array
+        items:
+          $ref: '#/definitions/TaskObject'
+        x-paging-result: true
+        description: The tasks list.
+      nextPageToken:
+        type: string
+        x-paging-output-token: true
+        description: The token to use when requesting the next set of results. If not present, there are no additional results.
+  TaskObject:
+    type: object
+    description: Task metadata for a policy on a table.
+    properties:
+      status:
+        type: string
+        description: The task status. It can be INIT, SUBMITTED, COMPLETED, FAILED. Initially the task status would be INIT and transition to SUBMITTED after submitting to spark. Based on the spark execution it changed to COMPLETED, FAILED.
+        enum:
+          - INIT
+          - SUBMITTED
+          - COMPLETED
+          - FAILED
+        default: INIT
+      taskId:
+        type: string
+        description: Unique identified for task in UUID format.
+      policy:
+        type: string
+        description: The policy name.
+      catalog:
+        type: string
+        description: The catalog name.
+      namespace:
+        type: string
+        description: The namespace name.
+      table:
+        type: string
+        description: The table name.
+      createdAt:
+        type: integer
+        format: int64
+        description: The task creation time in epoch milliseconds.
+      details:
+        type: string
+        format: byte
+        description: A base64 encoded version of task details json.
+        x-skip-logging: true
+  TaskAction:
+    type: object
+    description: Describes metadata for action on the table.
+    properties:
+      action:
+        type: string
+        description: Action that was performed on the table.
+      status:
+        type: string
+        description: Status of the action.
+  DeletePolicyRequest:
+    type: object
+    description: Request object specifying the policy and resource scope for deletion.
+    required:
+      - datahubCrn
+      - policyName
+      - resourceScope
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      policyName:
+        type: string
+        description: Policy name that needs to be deleted. The version is identified through the resource.
+      resourceScope:
+        type: string
+        description: Represents the hierarchical level (<catalog>.<namespace>.<table>) at which a policy is defined and needs to be deleted. Give `*` for catalog level and `catalog.namespace.*` for namespace level.
+  DeletePolicyResponse:
+    type: object
+    description: Response object of delete policy.
+    properties:
+      deletedPolicies:
+        type: integer
+        format: int32
+        description: Number of policy versions deleted.
+  GetTimezonesRequest:
+    type: object
+    description: Request object to get all supported timezones to define policy schedule.
+  GetTimezonesResponse:
+    type: object
+    description: Response object containing all supported timezones to define policy schedule.
+    properties:
+      timezones:
+        type: array
+        description: The list of all supported timezones.
+        items:
+          $ref: '#/definitions/TimezoneObject'
+  TimezoneObject:
+    type: object
+    description: Describes a timezone.
+    properties:
+      id:
+        type: string
+        description: The timezone id.
+      displayName:
+        type: string
+        description: The timezone display name.
+      offset:
+        type: integer
+        format: int32
+        description: The offset in milliseconds from UTC.
+  GetAssociatedTablesRequest:
+    type: object
+    description: Request object to get the associated tables for a policy.
+    required:
+      - datahubCrn
+      - policyName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      policyName:
+        type: string
+        description: The policy name.
+  GetAssociatedTablesResponse:
+    type: object
+    description: Response object containing namespace wise table names and a flag to indicate if it's associated with the table.
+    properties:
+      associatedTables:
+        type: array
+        description: The namespace wise table list.
+        items:
+          $ref: '#/definitions/GetAssociatedTablesObject'
+  GetAssociatedNamespacesRequest:
+    type: object
+    description: Request object to get the associated namespaces for a policy.
+    required:
+      - datahubCrn
+      - policyName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      policyName:
+        type: string
+        description: The policy name.
+  GetAssociatedNamespacesResponse:
+    type: object
+    description: Response object containing all namespaces and a flag to indicate if it's associated with the particular namespace.
+    properties:
+      associatedNamespaces:
+        type: array
+        description: The namespaces.
+        items:
+          $ref: '#/definitions/GetAssociatedNamespacesObject'
+  GetAssociatedTablesObject:
+    type: object
+    description: Describes association for a namespace.
+    properties:
+      namespace:
+        type: string
+        description: The namespace.
+      tables:
+        type: array
+        description: The list of table names in the namespace and a flag to indicate if it's associated.
+        items:
+          $ref: '#/definitions/AssociatedTableObject'
+  AssociatedTableObject:
+    type: object
+    description: Describes association for a table.
+    properties:
+      tableName:
+        type: string
+        description: The table name.
+      isAssociated:
+        type: boolean
+        description: The flag to indicate if the table is associated with the policy. TRUE if associated else FALSE.
+  GetAssociatedNamespacesObject:
+    type: object
+    description: Describes association for a namespace.
+    properties:
+      namespace:
+        type: string
+        description: The namespace.
+      isAssociated:
+        type: boolean
+        description: The flag to indicate if the namespace is associated with the policy. TRUE if associated else FALSE.
+  GetTableStatusDetailsRequest:
+    type: object
+    description: Request object to get the table status details.
+    required:
+      - datahubCrn
+      - namespace
+      - tableName
+      - policyName
+      - status
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the CLO Data Hub.
+      namespace:
+        type: string
+        description: The namespace.
+      tableName:
+        type: string
+        description: The table name.
+      policyName:
+        type: string
+        description: The policy name.
+      status:
+        type: string
+        description: The table status. It can be UNAVAILABLE, SUCCESS, ERROR, PAUSED. UNAVAILABLE if no tasks ran recently, SUCCESS if recent task got completed successfully, ERROR if recent task has failed, PAUSED if the table is in paused state.
+        enum:
+          - UNAVAILABLE
+          - SUCCESS
+          - ERROR
+          - PAUSED
+        default: UNAVAILABLE
+  GetTableStatusDetailsResponse:
+    type: object
+    description: Returns the table's current status details.
+    properties:
+      pausedTable:
+        $ref: '#/definitions/PausedTable'
+        description: The paused table details.
+      recentTask:
+        $ref: '#/definitions/Task'
+        description: The recent maintenance task that ran on the table.
+  PausedTable:
+    type: object
+    description: The paused table details.
+    properties:
+      message:
+        type: string
+        description: The paused message.
+      details:
+        $ref: '#/definitions/PausedDetails'
+        description: The paused details.
+  PausedDetails:
+    type: object
+    description: The paused details.
+    properties:
+      pausedSince:
+        type: string
+        description: The paused time in ISO format.
+      reasons:
+        type: array
+        description: The list containing the reasons for table getting paused.
+        items:
+          type: string
+  Task:
+    type: object
+    description: The maintenance task that ran on a table.
+    properties:
+      actions:
+        type: array
+        description: The list of actions that ran with a policy on a table.
+        items:
+          $ref: '#/definitions/TaskAction'
+      policyName:
+        type: string
+        description: Policy name.
+      tableName:
+        type: string
+        description: Table name.
+      lastExecutionTime:
+        type: integer
+        format: int64
+        description: The recent policy execution epoch time in milliseconds.
+  ExecutePolicyRequest:
+    type: object
+    description: Request object for executing a policy on a table.
+    required:
+      - datahubCrn
+      - namespace
+      - tableName
+      - policyName
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the Cloudera Lakehouse Optimizer Data Hub.
+      namespace:
+        type: string
+        description: Namespace name.
+      tableName:
+        type: string
+        description: Table name.
+      policyName:
+        type: string
+        description: Policy name.
+      dryRun:
+        type: boolean
+        description: Flag to indicate if the execution is a dry run. If true, it will perform a dry run else actual execution.
+        default: true
+  ExecutePolicyResponse:
+    type: object
+    description: Response object of policy execution on a table.
+    properties:
+      dryRunResult:
+        $ref: '#/definitions/DryRunResult'
+        description: The dry run result. This field will be present only if the request had dryRun as true.
+      executionResult:
+        $ref: '#/definitions/ExecutionResult'
+        description: The execution result. This field will be present only if the request had dryRun as false.
+  DryRunResult:
+    type: object
+    description: The dry run result metadata.
+    properties:
+      actions:
+        type: array
+        items:
+          type: string
+        description: The list of actions that would be performed on the table if the policy is executed.
+      details:
+        type: string
+        format: byte
+        description: The detailed output of the dry run in a base64 encoded string.
+        x-skip-logging: true
+  ExecutionResult:
+    type: object
+    description: The execution result metadata.
+    properties:
+      taskId:
+        type: string
+        description: The unique identifier for the maintenance task in UUID format.
+      details:
+        type: string
+        format: byte
+        description: The detailed output of the execution task metadata in a base64 encoded string.
+        x-skip-logging: true
+  GetAssociationDetailsRequest:
+    type: object
+    description: Request object for getting the association details.
+    required:
+      - datahubCrn
+    properties:
+      datahubCrn:
+        type: string
+        description: The CRN of the Cloudera Lakehouse Optimizer Data Hub.
+  GetAssociationDetailsResponse:
+    type: object
+    description: Response object containing the association details. It contains direct table to policy associations and policy to entire namespace associations.
+    properties:
+      directionAssociation:
+        type: array
+        description: The direct table to policy associations for each namespace.
+        items:
+          $ref: '#/definitions/DirectAssociationDetails'
+      starAssociation:
+        type: array
+        description: The policy to entire namespace associations for each catalog.
+        items:
+          $ref: '#/definitions/StarAssociationDetails'
+  DirectAssociationDetails:
+    type: object
+    description: Describes direct table to policy association details per namespace.
+    properties:
+      namespace:
+        type: string
+        description: The namespace.
+      status:
+        type: string
+        description: The namespace status.
+        enum:
+          - ERROR
+          - SUCCESS
+          - AUTO_PAUSED
+          - USER_PAUSED
+          - PAUSED
+          - UNAVAILABLE
+          - WARNING
+        default: UNAVAILABLE
+      tables:
+        type: array
+        description: The table to policy associations for a namespace
+        items:
+          $ref: '#/definitions/TablePolicyAssociation'
+  TablePolicyAssociation:
+    type: object
+    description: Describes table to policy associations.
+    properties:
+      tableName:
+        type: string
+        description: The table name.
+      policies:
+        type: array
+        description: The list of associated policies for the table.
+        items:
+          type: string
+      lastExecutionEpoch:
+        type: integer
+        format: int64
+        description: The last executed maintenance task in epoch milliseconds.
+      status:
+        type: string
+        description: The table status.
+        enum:
+          - ERROR
+          - SUCCESS
+          - USER_PAUSED
+          - AUTO_PAUSED
+          - PAUSED
+          - UNAVAILABLE
+          - WARNING
+        default: UNAVAILABLE
+  StarAssociationDetails:
+    type: object
+    description: Describes policy to entire namespace association details per catalog.
+    properties:
+      catalog:
+        type: string
+        description: The catalog.
+      status:
+        type: string
+        description: The catalog status.
+        enum:
+          - ERROR
+          - SUCCESS
+          - PAUSED
+          - WARNING
+          - UNAVAILABLE
+        default: UNAVAILABLE
+      namespaces:
+        type: array
+        description: The policy to namespace associations for a catalog.
+        items:
+          $ref: '#/definitions/NamespacePolicyAssociation'
+  NamespacePolicyAssociation:
+    type: object
+    description: Describes policy to namespace associations.
+    properties:
+      namespace:
+        type: string
+        description: The namespace.
+      status:
+        type: string
+        description: The namespace status.
+        enum:
+          - ERROR
+          - SUCCESS
+          - PAUSED
+          - WARNING
+          - UNAVAILABLE
+        default: UNAVAILABLE
+      policies:
+        type: array
+        description: The list of associated policies for the namespace.
+        items:
+          type: string

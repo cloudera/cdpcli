@@ -13,6 +13,7 @@ dw: null
 environments: null
 iam: null
 imagecatalog: null
+lakehouseopt: null
 ml: null
 opdb: null
 replicationmanager: null
