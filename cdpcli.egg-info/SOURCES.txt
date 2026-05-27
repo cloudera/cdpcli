@@ -107,6 +107,7 @@ cdpcli/extensions/df/addflowtodeployment.py
 cdpcli/extensions/df/changeflowversion.py
 cdpcli/extensions/df/changeflowversionindeployment.py
 cdpcli/extensions/df/createdeployment.py
+cdpcli/extensions/df/createparametergroup.py
 cdpcli/extensions/df/model.py
 cdpcli/extensions/df/register.py
 cdpcli/extensions/df/retrychangeflowversion.py

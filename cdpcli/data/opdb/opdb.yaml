@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.159
+  version: 0.9.160
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -291,6 +291,27 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: false
+  /api/v1/opdb/prepareUpgradeDatabase:
+    post:
+      summary: Prepare database upgrade.
+      description: Runs upgrade related validations and prepares the required parcels for the upgrade.
+      operationId: prepareUpgradeDatabase
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PrepareUpgradeDatabaseRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/PrepareUpgradeDatabaseResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
   /api/v1/opdb/restoreSnapshot:
     post:
       summary: Restores a snapshot.
@@ -1470,9 +1491,35 @@ definitions:
       osUpgradeOnly:
         type: boolean
         description: Only perform an Operating System upgrade.
+  PrepareUpgradeDatabaseRequest:
+    type: object
+    description: Asynchronous request to prepare cluster upgrade.
+    required:
+      - environment
+      - database
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      database:
+        type: string
+        description: The name or CRN of the database.
+      runtime:
+        type: string
+        description: The CDP Runtime version to upgrade to.
+      imageId:
+        type: string
+        description: ID of a database image to upgrade to.
   UpgradeDatabaseResponse:
     type: object
     description: Response with the reason whether upgrade request is accepted or why it is not possible.
+    properties:
+      statusReason:
+        type: string
+        description: The reason whether upgrade request is accepted or why it is not possible.
+  PrepareUpgradeDatabaseResponse:
+    type: object
+    description: Response with the reason whether prepare upgrade request is accepted or why it is not possible.
     properties:
       statusReason:
         type: string

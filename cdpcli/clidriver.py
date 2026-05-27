@@ -112,8 +112,8 @@ class CLIDriver(object):
             args = ['help']
         parsed_args, remaining = parser.parse_known_args(args)
         try:
-            self._form_factor = self._get_form_factor(parsed_args)
             self._handle_top_level_args(parsed_args)
+            self._form_factor = self._get_form_factor(parsed_args)
             self._filter_command_table_for_form_factor()
             self._warn_for_old_python()
             self._warn_for_non_public_release()
@@ -310,6 +310,10 @@ class CLIDriver(object):
             def _allowed_gai_family():
                 return socket.AF_INET
             urllib3_connection.allowed_gai_family = _allowed_gai_family
+
+        if args.ca_bundle:
+            self._client_creator.context.set_config_variable('ca_bundle',
+                                                             args.ca_bundle)
 
     def _setup_logger(self, log_level):
         ROOT_LOGGER.setLevel(logging.DEBUG)
@@ -669,7 +673,7 @@ class ServiceOperation(object):
             # is a little odd, but ultimately comes from the python HTTP requests
             # library we're using.
             tls_verification = parsed_globals.verify_tls
-            ca_bundle = getattr(parsed_globals, 'ca_bundle', None)
+            ca_bundle = client_creator.context.get_config_variable('ca_bundle')
             if parsed_globals.verify_tls and ca_bundle is not None:
                 tls_verification = ca_bundle
 

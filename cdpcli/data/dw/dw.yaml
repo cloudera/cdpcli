@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.159
+  version: 0.9.160
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -734,6 +734,97 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/DeleteSecretResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/dw/createConnector:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Creates a Connector
+      description: Creates a new Connector in the specified cluster.
+      operationId: createConnector
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateConnectorRequest'
+      responses:
+        '200':
+          description: Connector created successfully.
+          schema:
+            $ref: '#/definitions/CreateConnectorResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+      x-form-factors: public,private
+  /api/v1/dw/listConnectors:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Lists Database Connectors.
+      description: Lists Database Connectors.
+      operationId: listConnectors
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListConnectorsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListConnectorsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
+      x-form-factors: public,private
+  /api/v1/dw/deleteConnector:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Deletes a Database connector.
+      description: Deletes a Database connector.
+      operationId: deleteConnector
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteConnectorRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteConnectorResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+      x-form-factors: public,private
+  /api/v1/dw/updateConnector:
+    post:
+      x-mutating: true
+      x-form-factors: public,private
+      summary: Updates the Cloudera Data Warehouse connector.
+      description: Update the Cloudera Data Warehouse connector.
+      operationId: updateConnector
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateConnectorRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateConnectorResponse'
         default:
           description: The default response on an error.
           schema:
@@ -2578,6 +2669,11 @@ definitions:
         description: Information about the restore-plan of the Impala Virtual Warehouses.
         items:
           $ref: '#/definitions/RestoreClusterEntityPlan'
+      trinoRestorePlans:
+        type: array
+        description: Information about the restore-plan of the Trino Virtual Warehouses.
+        items:
+          $ref: '#/definitions/RestoreClusterEntityPlan'
       vizRestorePlans:
         type: array
         description: Information about the restore-plan of the Data Visualization Apps.
@@ -3637,6 +3733,148 @@ definitions:
       dbcId:
         type: string
         description: ID of the new Database Catalog.
+  Connector:
+    x-form-factors: public,private
+    type: object
+    description: Represents the details of a connector used to integrate external systems or data sources with Cloudera Data Warehouse. A connector defines the configuration, and connection properties required to establish and manage connectivity.
+    properties:
+      crn:
+        type: string
+        description: The CRN of the connector.
+      id:
+        type: string
+        description: Unique per-cluster connector ID.
+      name:
+        type: string
+        description: Display name.
+      template:
+        type: string
+        description: The template of the connector.
+      config:
+        type: object
+        description: 'The connector configuration in key-value format. For example, { "connector.name": "hive", "fs.cache.directories": "/data/trino/fs_cache_hive", "fs.cache.enabled": "true", "fs.cache.max-disk-usage-percentages": "30", "fs.cache.preferred-hosts-count": "2", "fs.cache.ttl": "7d", "hive.allow-drop-table": "true", "hive.collect-column-statistics-on-write": "false", "hive.metastore.uri": "thrift://metastore-service.{{ .Values.warehouseId }}.svc.cluster.local:9083", "hive.non-managed-table-writes-enabled": "true", "hive.security": "{{ .Values.authorizationMode }}", "ranger.audit_config": "ranger-hive-audit.xml", "ranger.hadoop_config": "core-site.xml", "ranger.policy_mgr_ssl_config": "ranger-policymgr-ssl.xml", "ranger.security_config": "ranger-hive-security.xml", "ranger.service_name": "{{ .Values.rangerHiveSvcName }}" }.'
+        additionalProperties:
+          type: string
+      description:
+        type: string
+        description: User-provided description.
+      createdBy:
+        type: string
+        description: The CRN of the user who created the connector.
+      createdAt:
+        type: integer
+        format: int64
+        description: The timestamp when the connector was created.
+      updatedAt:
+        type: integer
+        format: int64
+        description: The timestamp when the connector was last updated.
+      updatedBy:
+        type: string
+        description: The CRN of the user who last updated the connector.
+  ListConnectorsRequest:
+    x-form-factors: public,private
+    type: object
+    description: Request for listing connectors configured in Cloudera Data Warehouse.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to list.
+  ListConnectorsResponse:
+    x-form-factors: public,private
+    type: object
+    description: Response object for the listConnectors method. This object contains the list of all connectors configured in the specified Cloudera Data Warehouse cluster.
+    properties:
+      connectors:
+        type: array
+        items:
+          $ref: '#/definitions/Connector'
+        description: The list of Database Connectors.
+  CreateConnectorRequest:
+    x-form-factors: public,private
+    type: object
+    description: Request object to create a new connector for integrating external systems or data sources with Cloudera Data Warehouse.
+    required:
+      - name
+      - template
+    properties:
+      name:
+        type: string
+        description: The name of the connector.
+      template:
+        type: string
+        description: The template of the connector.
+      clusterId:
+        type: string
+        description: THe ID of the Database Catalog's cluster.
+      config:
+        type: object
+        description: 'The connector configuration in key-value format. For example, { "connector.name": "iceberg", "fs.cache.directories": "/data/trino/fs_cache_iceberg", "fs.cache.enabled": "true", "fs.cache.max-disk-usage-percentages": "30", "fs.cache.preferred-hosts-count": "2", "fs.cache.ttl": "7d", "hive.metastore.uri": "thrift://metastore-service.{{ .Values.warehouseId }}.svc.cluster.local:9083", "iceberg.catalog.type": "hive_metastore", "iceberg.security": "{{ .Values.authorizationMode }}", "ranger.audit_config": "ranger-hive-audit.xml", "ranger.hadoop_config": "core-site.xml", "ranger.policy_mgr_ssl_config": "ranger-policymgr-ssl.xml", "ranger.security_config": "ranger-hive-security.xml", "ranger.service_name": "{{ .Values.rangerHiveSvcName }}" }'
+        additionalProperties:
+          type: string
+      description:
+        type: string
+        description: User-provided description.
+  CreateConnectorResponse:
+    x-form-factors: public,private
+    type: object
+    description: Response for the createConnector call.
+    properties:
+      result:
+        description: The ID of the newly created Connector.
+        $ref: '#/definitions/Connector'
+  DeleteConnectorRequest:
+    x-form-factors: public,private
+    type: object
+    description: Request object for the deleteConnectorById method.
+    required:
+      - clusterId
+      - connectorId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the Database Catalog's cluster.
+      connectorId:
+        type: string
+        description: The ID of the Database connector to delete.
+  DeleteConnectorResponse:
+    x-form-factors: public,private
+    type: object
+    description: Response object for the deleteConnector method.
+  UpdateConnectorRequest:
+    x-form-factors: public,private
+    type: object
+    description: Request object for the updateConnector method.
+    required:
+      - clusterId
+      - connectorId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster to update.
+      connectorId:
+        type: string
+        description: The ID of the connector to update.
+      description:
+        type: string
+        description: Cluster description.
+      name:
+        type: string
+        description: The name of the connector.
+      template:
+        type: string
+        description: The template of the connector.
+      config:
+        type: object
+        description: Key-value type configurations.
+        additionalProperties:
+          type: string
+  UpdateConnectorResponse:
+    x-form-factors: public,private
+    type: object
+    description: Response object for the updateConnector method.
   ListDbcsRequest:
     type: object
     description: Request object for the listDbcs method.
@@ -3814,6 +4052,35 @@ definitions:
       impalaExecutorGroupSets:
         $ref: '#/definitions/ImpalaExecutorGroupSetsCreateRequest'
         description: Configures executor group sets for workload aware autoscaling.
+      trinoDisableAutoScaling:
+        type: boolean
+        description: Disables Auto-scaling for Trino VW.
+        default: true
+      trinoMaxWorkerCount:
+        type: integer
+        format: int32
+        description: Maximum number of worker nodes in a Trino VW.
+        default: 10
+      trinoMinWorkerCount:
+        type: integer
+        format: int32
+        description: Minimum number of worker nodes in a Trino VW.
+        default: 1
+      trinoShutdownGracePeriod:
+        type: integer
+        format: int32
+        description: Grace period in seconds before shutting down Trino workers.
+        default: 300
+      trinoScaleDownDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale down threshold in seconds. If not provided, the defaults will apply.
+        default: 30
+      trinoScaleUpDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale up threshold in seconds. If not provided defaults will apply.
+        default: 15
   ImpalaOptionsCreateRequest:
     type: object
     description: Impala specific options. It cannot be provided for Virtual Warehouse types other than Impala.
@@ -4878,6 +5145,9 @@ definitions:
         x-form-factors: public
         type: string
         description: The underlying instance type for this Virtual Warehouse.
+      imageVersion:
+        type: string
+        description: Version of the Virtual Warehouse.
       dbcId:
         type: string
         description: ID of Database Catalog that the Virtual Warehouse is attached to.
@@ -5053,6 +5323,29 @@ definitions:
         description: The actual resources used by the Virtual Warehouse.
         additionalProperties:
           $ref: '#/definitions/ApplicationResources'
+      associatedConnectors:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/ConnectorData'
+        description: Map of connector ID to connector information for the Virtual Warehouse.
+        x-omitempty: true
+        x-nullable: true
+  ConnectorData:
+    type: object
+    description: Information about a connector associated with a Virtual Warehouse.
+    properties:
+      name:
+        type: string
+        description: The name of the connector
+        x-omitempty: true
+        x-nullable: true
+      configId:
+        type: string
+        description: The config UUID of the connector
+        x-omitempty: true
+        x-nullable: true
+    x-omitempty: true
+    x-nullable: true
   TagResponse:
     description: A key/value pair attached to some resources.
     type: object
@@ -5305,6 +5598,12 @@ definitions:
         x-nullable: true
         x-form-factors: private
         description: 'If specified, modifies Hive Server High Availability mode in Private Cloud: * `DISABLED` - Disables Hive Server high availability. * `ACTIVE_PASSIVE` - Runs two Hive Server instances, one active and one passive. Hive session failover is not supported in this setup.'
+      associatedConnectors:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/ConnectorData'
+        description: Map of connector ID to connector information for the VW.
+        x-nullable: true
       additionalQuota:
         x-nullable: true
         x-form-factors: private

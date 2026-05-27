@@ -14,6 +14,8 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+import html
+
 
 class CdpCLIError(Exception):
     """
@@ -74,16 +76,10 @@ class ClientError(Exception):
             service_name=service_name,
             http_status_code=http_status_code,
             request_id=request_id)
-        msg = self.cleanup_error_msg(msg)
+        msg = html.unescape(msg)
         super(ClientError, self).__init__(msg)
         self.http_status_code = http_status_code
         self.response = error_response
-
-    def cleanup_error_msg(self, msg):
-        msg = msg.replace('&quot;', '"').replace("&#39;", "'")\
-            .replace("/&lt;", "<").replace("&gt;", ">")
-
-        return msg
 
 
 class UnseekableStreamError(CdpCLIError):

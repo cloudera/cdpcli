@@ -70,6 +70,7 @@ CDP_REGION_KEY_NAME = 'cdp_region'
 CDP_ENDPOINT_URL_KEY_NAME = 'cdp_endpoint_url'
 ENDPOINT_URL_KEY_NAME = 'endpoint_url'
 FORM_FACTOR_KEY_NAME = 'form_factor'
+CA_BUNDLE_KEY_NAME = 'ca_bundle'
 # Python argparse has a bug in which '-' are not parsed correctly if they appear
 # as values for other arguments, see: http://bugs.python.org/issue9334 for more
 # details. This defines special encoding for dash that we will "decode" and

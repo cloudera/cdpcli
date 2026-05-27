@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.159
+  version: 0.9.160
   title: Cloudera Consumption API Service
   license:
     name: Apache 2.0
@@ -72,7 +72,7 @@ definitions:
         type: integer
         format: int32
         minimum: 1
-        maximum: 10000
+        maximum: 5000
         x-paging-page-size: true
         description: The page size.
       pageToken:

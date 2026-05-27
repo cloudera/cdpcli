@@ -86,12 +86,24 @@ OPERATION_SHAPES = {
                 'type': 'boolean',
                 'description': 'Automatically start the flow.'
             },
+            'useSharedParameterGroupCrn': {
+                'type': 'string',
+                'description': 'The CRN of the shared parameter group to use for '
+                               'populating the flow parameters. All parameters of the '
+                               'flow should be present in the provided shared parameter '
+                               'group. Mutually exclusive with --parameter-groups.'
+            },
             'parameterGroups': {
                 'type': 'array',
-                'description': 'Parameter groups with each requiring a value or assets. '
-                               'If --from-archive is used, then parameters defined here '
-                               'will override what is defined in the archive. Sensitive '
-                               'parameters must always be specified here.',
+                'description': 'Parameter groups with each parameter requiring a value '
+                               'or assets. If --from-archive is used, then parameters '
+                               'defined here will override what is defined in the '
+                               'archive. Sensitive parameters must always be specified '
+                               'here. Shared parameter groups where values should come '
+                               'from need to be all listed under '
+                               'inheritedParameterGroups, and must also be explicitly '
+                               'provided as the source for the desired parameters with '
+                               'sourceParameterGroupId.',
                 'items': {
                     '$ref': '#/definitions/DeploymentFlowParameterGroup'
                 }
@@ -109,7 +121,7 @@ OPERATION_SHAPES = {
                 'description': 'When specified, ignore the check to validate if '
                                'deployment has inbound connection configured for '
                                'all listen components.'
-            },
+            }
         }
     },
     'AddFlowToDeploymentResponse': {
@@ -184,8 +196,9 @@ class AddFlowToDeploymentOperationCaller(CLIOperationCaller):
         deployment_crn = parameters.get('deploymentCrn', None)
         flow_version_crn = parameters.get('flowVersionCrn', None)
 
-        # Get service CRN, environment CRN, and deployment name from deployment CRN
-        service_crn, environment_crn, deployment_name = (
+        # Get service CRN, environment CRN, deployment name, and project CRN
+        # from deployment CRN
+        service_crn, environment_crn, deployment_name, project_crn = (
             self._get_crns_and_deployment_name_from_deployment(
                 df_client, deployment_crn))
 
@@ -208,7 +221,8 @@ class AddFlowToDeploymentOperationCaller(CLIOperationCaller):
                 df_workload_client, deployment_request_crn, environment_crn)
             raise
         response = self._add_flow_to_deployment(
-                df_workload_client, deployment_request_crn, environment_crn, parameters)
+                df_workload_client, deployment_request_crn, environment_crn, parameters,
+                project_crn)
         self._display_response(operation_model.name, response, parsed_globals)
 
     def _validate_operation_parameters(self,
@@ -224,7 +238,8 @@ class AddFlowToDeploymentOperationCaller(CLIOperationCaller):
 
     def _get_crns_and_deployment_name_from_deployment(self, df_client, deployment_crn):
         """
-        Get Service CRN, Environment CRN, and Deployment Name from Deployment CRN
+        Get Service CRN, Environment CRN, Deployment Name, and Project CRN
+        from Deployment CRN
         """
         http, response = df_client.make_api_call(
             'describeDeployment', {'deploymentCrn': deployment_crn})
@@ -233,16 +248,19 @@ class AddFlowToDeploymentOperationCaller(CLIOperationCaller):
         service_crn = service.get('crn', None)
         environment_crn = service.get('environmentCrn', None)
         deployment_name = deployment.get('name', None)
-        LOG.debug('Found Service CRN [%s], Environment CRN [%s], and Deployment Name '
-                  '[%s] for Deployment CRN [%s]', service_crn, environment_crn,
-                  deployment_name, deployment_crn)
-        return service_crn, environment_crn, deployment_name
+        project_crn = deployment.get('project', {}).get('crn', None)
+        LOG.debug('Found Service CRN [%s], Environment CRN [%s], Deployment Name '
+                  '[%s], and Project CRN [%s] for Deployment CRN [%s]',
+                  service_crn, environment_crn, deployment_name,
+                  project_crn, deployment_crn)
+        return service_crn, environment_crn, deployment_name, project_crn
 
     def _add_flow_to_deployment(self,
                                 df_workload_client,
                                 deployment_request_crn,
                                 environment_crn,
-                                parameters):
+                                parameters,
+                                project_crn):
         """
         Add Flow to Deployment on Workload using Deployed Flow Request CRN
         """
@@ -269,6 +287,8 @@ class AddFlowToDeploymentOperationCaller(CLIOperationCaller):
                     deployment_request_crn, parameters)
 
             flow_configuration['environmentCrn'] = environment_crn
+            if project_crn is not None:
+                flow_configuration['projectCrn'] = project_crn
             LOG.debug('Add Flow to Deployment Parameters %s', flow_configuration)
             http, response = df_workload_client.make_api_call(
                 'addFlowToDeployment', flow_configuration)
@@ -368,9 +388,11 @@ class AddFlowToDeploymentOperationCaller(CLIOperationCaller):
             # Always include kpis field, even if empty, since backend expects it
             flow_configuration['kpis'] = []
 
-        projectCrn = parameters.get('projectCrn', None)
-        if projectCrn is not None:
-            flow_configuration['projectCrn'] = projectCrn
+        use_shared_parameter_group_crn = parameters.get(
+            'useSharedParameterGroupCrn', None)
+        if use_shared_parameter_group_crn is not None:
+            flow_configuration['useSharedParameterGroupCrn'] = \
+                use_shared_parameter_group_crn
 
         return flow_configuration
 

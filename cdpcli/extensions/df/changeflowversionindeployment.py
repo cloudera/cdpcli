@@ -95,9 +95,25 @@ OPERATION_SHAPES = {
                                'flow version strategy (STOP_AND_PROCESS_DATA). '
                                'The default wait time is 15 minutes.'
             },
+            'updateSharedParameterGroupCrns': {
+                'type': 'array',
+                'description': 'The CRNs of the shared parameter groups to update. They '
+                               'will be updated across all parameter groups. Mutually '
+                               'exclusive with --parameter-groups.',
+                'items': {
+                    'type': 'string'
+                }
+            },
             'parameterGroups': {
                 'type': 'array',
-                'description': 'Parameter groups with each requiring a value or assets.',
+                'description': 'Parameter groups with each parameter requiring a value '
+                               'or assets. When updating shared parameters, individual '
+                               'shared parameters cannot be updated. All parameters '
+                               'referencing a given shared parameter group need to be '
+                               'updated simultaneously by providing the group\'s id '
+                               'under inheritedParameterGroups, and also explicitly '
+                               'providing these parameters with the '
+                               'sourceParameterGroupId populated.',
                 'items': {
                     '$ref': '#/definitions/DeploymentFlowParameterGroup'
                 }
@@ -116,7 +132,7 @@ OPERATION_SHAPES = {
                 'description': 'When specified, ignore the check to validate if '
                                'deployment has inbound connection configured for '
                                'all listen components.'
-            },
+            }
         }
     },
     'ChangeFlowVersionInDeploymentResponse': {
@@ -425,6 +441,12 @@ class ChangeFlowVersionInDeploymentOperationCaller(CLIOperationCaller):
                 request['assetUpdateRequestCrn'] = asset_update_request_crn
             request['parameterGroups'] = parameterGroups
 
+        update_shared_parameter_group_crns = parameters.get(
+            'updateSharedParameterGroupCrns', None)
+        if update_shared_parameter_group_crns:
+            request['updateSharedParameterGroupCrns'] = \
+                update_shared_parameter_group_crns
+
         LOG.debug('Change Flow Version In Deployment Parameters %s', request)
         try:
             http, response = df_workload_client.make_api_call(
@@ -476,4 +498,14 @@ class ChangeFlowVersionInDeploymentOperationCaller(CLIOperationCaller):
                 raise DfExtensionError(err_msg=err_msg,
                                        service_name='df',
                                        operation_name='changeFlowVersionInDeployment')
+
+        update_shared_parameter_group_crns = \
+            parameters.get('updateSharedParameterGroupCrns', None)
+        if (update_shared_parameter_group_crns is not None and
+                not update_shared_parameter_group_crns):
+            err_msg = 'update-shared-parameter-group-crns argument should have at ' \
+                      'least one CRN provided.'
+            raise DfExtensionError(err_msg=err_msg,
+                                   service_name='df',
+                                   operation_name='changeFlowVersionInDeployment')
         pass

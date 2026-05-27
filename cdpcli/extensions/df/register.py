@@ -29,6 +29,9 @@ from cdpcli.extensions.df.changeflowversionindeployment import OPERATION_CLI_NAM
 from cdpcli.extensions.df.createdeployment import CreateDeployment
 from cdpcli.extensions.df.createdeployment import OPERATION_CLI_NAME \
     as CREATE_DEPLOYMENT_OPERATION_CLI_NAME
+from cdpcli.extensions.df.createparametergroup import CreateParameterGroup
+from cdpcli.extensions.df.createparametergroup import OPERATION_CLI_NAME \
+    as CREATE_PARAMETER_GROUP_OPERATION_CLI_NAME
 from cdpcli.extensions.df.retrychangeflowversion import OPERATION_CLI_NAME \
     as RETRY_CHANGE_FLOW_VERSION_OPERATION_CLI_NAME
 from cdpcli.extensions.df.retrychangeflowversion import RetryChangeFlowVersion
@@ -60,6 +63,8 @@ def register_command(clidriver, service_model, command_table):
         ChangeFlowVersionInDeployment(clidriver, service_model)
     command_table[CREATE_DEPLOYMENT_OPERATION_CLI_NAME] = \
         CreateDeployment(clidriver, service_model)
+    command_table[CREATE_PARAMETER_GROUP_OPERATION_CLI_NAME] = \
+        CreateParameterGroup(clidriver, service_model)
     command_table[RETRY_CHANGE_FLOW_VERSION_OPERATION_CLI_NAME] = \
         RetryChangeFlowVersion(clidriver, service_model)
     command_table[RETRY_CHANGE_FLOW_VERSION_IN_DEPLOYMENT_OPERATION_CLI_NAME] = \

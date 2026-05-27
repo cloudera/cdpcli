@@ -22,6 +22,7 @@ from cdpcli.clidriver import CLIOperationCaller
 from cdpcli.exceptions import CdpCLIError, DfExtensionError
 
 LOG = logging.getLogger('cdpcli.extensions.df')
+MAX_ASSET_SIZE = 150 * 1024 * 1024
 
 
 def get_expanded_file_path(file_path):
@@ -56,6 +57,19 @@ def upload_workload_asset(client, parameters):
         'File-Path': file_path,
     }
     return upload_file(client, 'uploadAsset', method, url, headers, file_path)
+
+
+def upload_parameter_asset(client, parameters):
+    method = 'post'
+    url = '/dfx/api/rpc-v1/parameter-groups/upload-parameter-asset-content'
+    file_path = parameters.get('filePath', None)
+    headers = {
+        'Content-Type': 'application/octet-stream',
+        'Parameter-Group-Crn': parameters.get('parameterGroupCrn', None),
+        'Parameter-Name': parameters.get('parameterName', None),
+        'File-Path': file_path,
+    }
+    return upload_file(client, 'uploadParameterAsset', method, url, headers, file_path)
 
 
 def upload_file(client, operation_name, method, url, headers, file_path):
@@ -247,6 +261,11 @@ class DfExtension(CLIOperationCaller):
                                            operation_model,
                                            parameters,
                                            parsed_globals)
+        elif service_name == 'dfworkload' and operation_name == 'uploadParameterAsset':
+            self._df_workload_upload_parameter_asset(client_creator,
+                                                     operation_model,
+                                                     parameters,
+                                                     parsed_globals)
         elif service_name == 'dfworkload' and operation_name == 'createReportingTask':
             self._df_workload_create_reporting_task(client_creator,
                                                     operation_model,
@@ -263,6 +282,12 @@ class DfExtension(CLIOperationCaller):
                                                         operation_model,
                                                         parameters,
                                                         parsed_globals)
+            return True
+        elif service_name == 'dfworkload' and operation_name == 'updateParameterGroup':
+            self._df_workload_update_parameter_group(client_creator,
+                                                     operation_model,
+                                                     parameters,
+                                                     parsed_globals)
             return True
         else:
             raise DfExtensionError(
@@ -350,6 +375,13 @@ class DfExtension(CLIOperationCaller):
         response = upload_workload_asset(client, parameters)
         self._display_response(operation_name, response, parsed_globals)
 
+    def _df_workload_upload_parameter_asset(
+            self, client_creator, operation_model, parameters, parsed_globals):
+        client = client_creator('dfworkload')
+        operation_name = operation_model.name
+        response = upload_parameter_asset(client, parameters)
+        self._display_response(operation_name, response, parsed_globals)
+
     def _df_workload_create_reporting_task(self, client_creator, operation_model,
                                            parameters, parsed_globals):
         client = client_creator('dfworkload')
@@ -417,6 +449,68 @@ class DfExtension(CLIOperationCaller):
                     assetUpdateRequestCrn=asset_update_request_crn
                 )
                 raise
+
+    def _df_workload_update_parameter_group(self, client_creator, operation_model,
+                                            parameters, parsed_globals):
+        params = parameters.get('parameters', [])
+        if not params:
+            return
+
+        # Check if there are assets to upload and validate file sizes
+        has_assets = False
+        for parameter in params:
+            asset_references = parameter.get('assetReferences', None)
+            if asset_references:
+                for asset_ref in asset_references:
+                    asset_path = asset_ref.get('path', None)
+                    if asset_path:
+                        has_assets = True
+                        try:
+                            file_stats = os.stat(get_expanded_file_path(asset_path))
+                        except OSError as e:
+                            raise DfExtensionError(
+                                err_msg='Could not access file [{}]: {}'
+                                        .format(asset_path, str(e)),
+                                service_name='dfworkload',
+                                operation_name='uploadParameterAsset')
+                        if file_stats.st_size > MAX_ASSET_SIZE:
+                            raise DfExtensionError(
+                                err_msg='The file size exceeds the 150 MB limit, '
+                                        'file: [{}]' .format(asset_path),
+                                service_name='dfworkload',
+                                operation_name='uploadParameterAsset')
+
+        if not has_assets:
+            return
+
+        client = client_creator('dfworkload')
+        parameter_group_crn = parameters.get('parameterGroupCrn', None)
+
+        for parameter in params:
+            asset_references = parameter.get('assetReferences', None)
+            if asset_references:
+                parameter['sensitive'] = False
+                for asset_reference in asset_references:
+                    asset_path = asset_reference.get('path', None)
+                    if asset_path:
+                        upload_params = {
+                            'parameterGroupCrn': parameter_group_crn,
+                            'parameterName': parameter.get('name', None),
+                            'filePath': asset_path,
+                        }
+                        upload_parameter_asset(client, upload_params)
+
+                        file_path = get_expanded_file_path(asset_path)
+                        path, name = os.path.split(file_path)
+                        asset_reference['name'] = name
+                        asset_reference['path'] = path
+
+        # Drop None-valued keys from each parameter dict to avoid
+        # validation failures (validator rejects NoneType for string fields).
+        for parameter in params:
+            none_keys = [k for k, v in parameter.items() if v is None]
+            for k in none_keys:
+                del parameter[k]
 
     def _has_asset_references(self,
                               parameters):

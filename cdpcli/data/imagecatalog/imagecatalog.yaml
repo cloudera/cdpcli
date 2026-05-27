@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.159
+  version: 0.9.160
   title: Image catalog service
   license:
     name: Apache 2.0
@@ -532,6 +532,13 @@ definitions:
       runtimeVersion:
         type: string
         description: Cloudera runtime version
+      architecture:
+        type: string
+        default: X86_64
+        description: Specifies the CPU architecture. Values are ARM64, X86_64. Default is X86_64.
+        enum:
+          - ARM64
+          - X86_64
   FindDefaultImageResponse:
     type: object
     description: The response object for holding data about an image retrieved from the default image catalog.

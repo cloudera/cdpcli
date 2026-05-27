@@ -165,17 +165,25 @@ OPERATION_SHAPES = {
                 'type': 'boolean',
                 'description': 'Automatically start the flow.'
             },
+            'useSharedParameterGroupCrn': {
+                'type': 'string',
+                'description': 'The CRN of the shared parameter group to use for '
+                               'populating the flow parameters. All parameters of the '
+                               'flow should be present in the provided shared parameter '
+                               'group. Mutually exclusive with --parameter-groups.'
+            },
             'parameterGroups': {
                 'type': 'array',
-                'description': 'Parameter groups with each requiring a value or assets. '
-                               'If --from-archive or --import-parameters-from is used, '
-                               'then parameters defined here will override what is '
-                               'defined in the archive. Sensitive parameters must '
-                               'always be specified here. Shared parameter groups '
-                               'where values should come from need to be all listed '
-                               'under inheritedParameterGroups, and must also be '
-                               'explicity provided as the source for the desired '
-                               'parameters with sourceParameterGroupId.',
+                'description': 'Parameter groups with each parameter requiring a value '
+                               'or assets. If --from-archive or '
+                               '--import-parameters-from is used, then parameters '
+                               'defined here will override what is defined in the '
+                               'archive. Sensitive parameters must always be specified '
+                               'here. Shared parameter groups where values should come '
+                               'from need to be all listed under '
+                               'inheritedParameterGroups, and must also be explicitly '
+                               'provided as the source for the desired parameters with '
+                               'sourceParameterGroupId.',
                 'items': {
                     '$ref': '#/definitions/DeploymentFlowParameterGroup'
                 }
@@ -344,7 +352,7 @@ OPERATION_SHAPES = {
                                'Not specifying this will result in the '
                                'deployment to be unassigned to any project. '
                                'This argument will be ignored if --from-archive is used.'
-            },
+            }
         }
     },
     'CreateDeploymentResponse': {
@@ -765,6 +773,12 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
         kpis = parameters.get('kpis', None)
         if kpis:
             deployment_configuration['kpis'] = process_kpis(kpis)
+
+        use_shared_parameter_group_crn = parameters.get(
+            'useSharedParameterGroupCrn', None)
+        if use_shared_parameter_group_crn is not None:
+            deployment_configuration['useSharedParameterGroupCrn'] = \
+                use_shared_parameter_group_crn
 
         return deployment_configuration
 

@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
   description: "This REST API provides remote access to the DataFlow Service.\n Endpoints that are marked as [BETA] are subject to change in future releases of the application without backwards compatibility and without a major version change."
-  version: 0.9.159
+  version: 0.9.160
   title: Cloudera DataFlow Workload Service
   license:
     name: Apache 2.0
@@ -1352,6 +1352,162 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/fd-proxy/delete-flow-draft:
+    post:
+      summary: Deletes flow draft.
+      description: Deletes flow draft.
+      operationId: deleteFlowDraft
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Delete Flow Draft Request.
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteFlowDraftRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteFlowDraftResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/fd-proxy/list-flow-drafts:
+    post:
+      summary: Lists flow drafts.
+      description: Lists flow drafts.
+      operationId: listFlowDrafts
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: List Flow Drafts Request.
+          required: true
+          schema:
+            $ref: '#/definitions/ListFlowDraftsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListFlowDraftsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/fd-proxy/list-test-sessions:
+    post:
+      summary: Lists test sessions.
+      description: Lists test sessions.
+      operationId: listTestSessions
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: List Test Sessions Request.
+          required: true
+          schema:
+            $ref: '#/definitions/ListTestSessionsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListTestSessionsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/fd-proxy/restart-test-session:
+    post:
+      summary: Restarts test session.
+      description: Restarts test session.
+      operationId: restartTestSession
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Restart Test Session Request.
+          required: true
+          schema:
+            $ref: '#/definitions/RestartTestSessionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/RestartTestSessionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/fd-proxy/suspend-test-session:
+    post:
+      summary: Suspends test session.
+      description: Suspends test session.
+      operationId: suspendTestSession
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Suspend Test Session Request.
+          required: true
+          schema:
+            $ref: '#/definitions/SuspendTestSessionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SuspendTestSessionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/fd-proxy/terminate-test-session:
+    post:
+      summary: Terminates test session.
+      description: Terminates test session.
+      operationId: terminateTestSession
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Terminate Test Session Request.
+          required: true
+          schema:
+            $ref: '#/definitions/TerminateTestSessionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/TerminateTestSessionResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
   /dfx/api/rpc-v1/inbound-connection-endpoint-certificates/download-client-certificates-encoded:
     post:
       summary: Get Inbound Connection Endpoint Client Certificates (in PEM encoding)
@@ -1504,6 +1660,188 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/RenewInboundConnectionEndpointCertificateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/parameter-groups/create-parameter-group:
+    post:
+      summary: Creates a new parameter group.
+      description: Creates a new parameter group with the specified configuration.
+      operationId: createParameterGroup
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload,df
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Create Parameter Group Request.
+          required: true
+          schema:
+            $ref: '#/definitions/CreateParameterGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/CreateParameterGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/parameter-groups/delete-parameter-group:
+    post:
+      summary: Deletes the parameter group.
+      description: Deletes a parameter group if it is not associated with any resources.
+      operationId: deleteParameterGroup
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Delete Parameter Group Request.
+          required: true
+          schema:
+            $ref: '#/definitions/DeleteParameterGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DeleteParameterGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/parameter-groups/describe-parameter-group:
+    post:
+      summary: Describes the parameter group with the given parameter group CRN.
+      description: Describe a parameter group by its CRN.
+      operationId: describeParameterGroup
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Describe Parameter Group Request.
+          required: true
+          schema:
+            $ref: '#/definitions/DescribeParameterGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DescribeParameterGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/parameter-groups/duplicate-parameter-group:
+    post:
+      summary: Duplicates the parameter group with the given CRN under the given new name.
+      description: Creates a duplicate of an existing parameter group with a new name.
+      operationId: duplicateParameterGroup
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Duplicate Parameter Group Request.
+          required: true
+          schema:
+            $ref: '#/definitions/DuplicateParameterGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/DuplicateParameterGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/parameter-groups/list-parameter-groups:
+    post:
+      summary: Lists all known parameter groups.
+      description: Lists all parameter groups with optional filtering by project IDs and search term.
+      operationId: listParameterGroups
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: List Parameter Groups Request.
+          required: true
+          schema:
+            $ref: '#/definitions/ListParameterGroupsRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListParameterGroupsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/parameter-groups/update-parameter-group:
+    post:
+      summary: Updates the parameter group for the given parameter group CRN.
+      description: Updates an existing parameter group with new configuration. A parameter with only its name set indicates deletion. A parameter matching an existing name indicates an update. A parameter with a new name indicates an addition.
+      operationId: updateParameterGroup
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload,df
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Update Parameter Group Request.
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateParameterGroupRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UpdateParameterGroupResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /dfx/api/rpc-v1/parameter-groups/upload-parameter-asset:
+    post:
+      summary: Uploads a parameter asset.
+      description: Uploads an asset for a parameter in a parameter group.
+      operationId: uploadParameterAsset
+      x-workload: true
+      x-client-only: true
+      x-extensions: workload,df
+      tags:
+        - CDFLocalRPCAPIVersion1
+      parameters:
+        - in: body
+          name: input
+          description: Upload Parameter Asset Request.
+          required: true
+          schema:
+            $ref: '#/definitions/UploadParameterAssetRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UploadParameterAssetResponse'
         default:
           description: The default response on an error.
           schema:
@@ -1695,6 +2033,9 @@ definitions:
       projectCrn:
         type: string
         description: The CRN of the project to which the deployment belongs, used for authorization.
+      useSharedParameterGroupCrn:
+        type: string
+        description: The CRN of the shared group to use. All parameters of the flow should be present in the provided shared parameter group.
   AddFlowToDeploymentResponse:
     type: object
     description: Response object from creating a deployment.
@@ -1939,6 +2280,11 @@ definitions:
       assetUpdateRequestCrn:
         type: string
         description: The CRN of the asset update request. Required when updating assets of an existing deployment.
+      updateSharedParameterGroupCrns:
+        type: array
+        description: The CRNs of the shared parameter groups to update. They will be updated across all parameter groups.
+        items:
+          type: string
   ChangeFlowVersionInDeploymentResponse:
     type: object
     description: Response object for change flow version of a flow deployment.
@@ -2381,6 +2727,9 @@ definitions:
       projectCrn:
         type: string
         description: The CRN of the project.
+      useSharedParameterGroupCrn:
+        type: string
+        description: The CRN of the shared group to use. All parameters of the flow should be present in the provided shared parameter group.
   CreateDeploymentResponse:
     type: object
     description: Response object from creating a deployment.
@@ -2416,6 +2765,42 @@ definitions:
       inboundConnectionEndpointSummary:
         description: Data that describes the Inbound Connection Endpoint.
         $ref: '#/definitions/InboundConnectionEndpointSummary'
+  CreateParameterGroupRequest:
+    type: object
+    description: Request object for creating a parameter group.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - name
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      name:
+        type: string
+        description: The name of the parameter group.
+      description:
+        type: string
+        description: The description of the parameter group.
+      parameters:
+        type: array
+        description: The parameters in this group.
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ParameterRequest'
+      projectCrn:
+        type: string
+        description: Optional project CRN that parameter group is assigned to.
+  CreateParameterGroupResponse:
+    type: object
+    description: Response object for creating a parameter group.
+    x-workload: true
+    x-client-only: true
+    properties:
+      parameterGroup:
+        description: The created parameter group.
+        $ref: '#/definitions/ParameterGroupSummary'
   CreateReportingTaskRequest:
     type: object
     description: Request object for creating a reporting task
@@ -2565,6 +2950,30 @@ definitions:
       crn:
         type: string
         description: The CRN of the custom resource configuration to update.
+  DeleteFlowDraftRequest:
+    type: object
+    description: Request object for deleting a flow designer draft.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - flowDraftCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      flowDraftCrn:
+        type: string
+        description: The CRN of the flow designer draft to be deleted.
+  DeleteFlowDraftResponse:
+    type: object
+    description: Response object for deleting a flow draft.
+    x-workload: true
+    x-client-only: true
+    properties:
+      flowMetadata:
+        description: The metadata of the deleted flow designer draft.
+        $ref: '#/definitions/FlowMetadata'
   DeleteInboundConnectionEndpointRequest:
     type: object
     description: Request object that contains the identifier of the Inbound Connection Endpoint to delete
@@ -2583,6 +2992,26 @@ definitions:
   DeleteInboundConnectionEndpointResponse:
     type: object
     description: Response object returned during deletion of an Inbound Connection Endpoint
+    x-workload: true
+    x-client-only: true
+  DeleteParameterGroupRequest:
+    type: object
+    description: Request object for deleting a parameter group.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - parameterGroupCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      parameterGroupCrn:
+        type: string
+        description: The parameter group CRN.
+  DeleteParameterGroupResponse:
+    type: object
+    description: Response object for deleting a parameter group.
     x-workload: true
     x-client-only: true
   DeleteReportingTaskRequest:
@@ -2926,6 +3355,30 @@ definitions:
       inboundConnectionEndpointSummary:
         description: Data that describes the Inbound Connection Endpoint.
         $ref: '#/definitions/InboundConnectionEndpointSummary'
+  DescribeParameterGroupRequest:
+    type: object
+    description: Request object for describing a parameter group.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - parameterGroupCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      parameterGroupCrn:
+        type: string
+        description: The parameter group CRN.
+  DescribeParameterGroupResponse:
+    type: object
+    description: Response object for describing a parameter group.
+    x-workload: true
+    x-client-only: true
+    properties:
+      parameterGroup:
+        description: The parameter group.
+        $ref: '#/definitions/ParameterGroup'
   DfxEnvironmentStatus:
     type: object
     description: Environment status.
@@ -3056,6 +3509,37 @@ definitions:
         type: string
         description: The account ID from the CRN.
         readOnly: true
+  DuplicateParameterGroupRequest:
+    type: object
+    description: Request object for duplicating a parameter group.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - newParameterGroupName
+      - parameterGroupCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      parameterGroupCrn:
+        type: string
+        description: The parameter group CRN.
+      newParameterGroupName:
+        type: string
+        description: The new parameter group name.
+      description:
+        type: string
+        description: The description.
+  DuplicateParameterGroupResponse:
+    type: object
+    description: Response object for duplicating a parameter group.
+    x-workload: true
+    x-client-only: true
+    properties:
+      parameterGroup:
+        description: The duplicated parameter group.
+        $ref: '#/definitions/ParameterGroup'
   EnvCloudRegion:
     type: object
     description: A cloud region
@@ -3107,6 +3591,56 @@ definitions:
       archiveName:
         type: string
         description: The exported deployment configuration archive name .
+  FlowMetadata:
+    type: object
+    description: Provides details about a flow designer draft.
+    x-workload: true
+    x-client-only: true
+    properties:
+      runtimeVersion:
+        type: string
+        description: The runtime version associated with this flow.
+      flowName:
+        type: string
+        description: The name of the flow.
+      created:
+        type: integer
+        format: int64
+        description: The timestamp the flow was created
+        readOnly: true
+      updated:
+        type: integer
+        format: int64
+        description: The timestamp the flow was updated
+        readOnly: true
+      catalogArtifactVersion:
+        type: integer
+        format: int32
+        description: The version of the flow artifact in the catalog associated with this flow design.
+      catalogArtifactName:
+        type: string
+        description: The name of the flow artifact in the catalog associated with this flow design.
+      catalogArtifactVersionCrn:
+        type: string
+        description: The CRN of the flow artifact in the catalog associated with this flow design.
+      resourceType:
+        type: string
+        description: Resource type of the catalog item.
+        enum:
+          - READY_FLOW
+          - FLOW
+      project:
+        description: Optional project that the flow is assigned to
+        readOnly: true
+        $ref: '#/definitions/ProjectMeta'
+      crn:
+        type: string
+        description: The CRN of the flow designer draft.
+      nifiMajorVersion:
+        type: integer
+        format: int32
+        description: The NiFi major version of the runtime
+        readOnly: true
   FlowParameter:
     type: object
     description: A flow parameter
@@ -3168,6 +3702,58 @@ definitions:
       otherName:
         type: string
         description: The other name that can be used to reference this group in a flow. This is used when multiple flows with same parameter group are deployed in to same NiFi cluster.
+  FlowSummary:
+    type: object
+    description: Data object for information describing a flow designer draft.
+    x-workload: true
+    x-client-only: true
+    properties:
+      flowName:
+        type: string
+        description: The name of the flow.
+      created:
+        type: integer
+        format: int64
+        description: Creation timestamp of the flow.
+      lastModified:
+        type: integer
+        format: int64
+        description: The timestamp the flow was last modified.
+      lastModifiedBy:
+        type: string
+        description: The identity of the user that last modified the flow.
+      createdBy:
+        type: string
+        description: The identity of the user that created the flow.
+      catalogArtifactVersion:
+        type: integer
+        format: int32
+        description: Optional, originating artifact version from the flow catalog this flow is associated with.
+      catalogArtifactName:
+        type: string
+        description: Optional, originating artifact name from the flow catalog this flow is associated with.
+      catalogArtifactVersionCrn:
+        type: string
+        description: The crn of the flow in the catalog associated with this flow design.
+      resourceType:
+        type: string
+        description: Resource type of the catalog item.
+        enum:
+          - READY_FLOW
+          - FLOW
+      nifiMajorVersion:
+        type: integer
+        format: int32
+        description: The NiFi Major version.
+      project:
+        description: Optional project summary that the flow is assigned to.
+        $ref: '#/definitions/ProjectSummary'
+      crn:
+        type: string
+        description: The CRN of the flow designer draft.
+      runtimeSession:
+        description: Information about the runtime session, if one exists for the flow under design.
+        $ref: '#/definitions/RuntimeSession'
   GetCustomNarConfigurationRequest:
     type: object
     description: Request object for retrieving a custom NAR configuration by configuration CRN or deployment CRN.
@@ -3797,6 +4383,28 @@ definitions:
         description: The deployment configuration exported archives.
         items:
           $ref: '#/definitions/RpcDeploymentArchiveMetadata'
+  ListFlowDraftsRequest:
+    type: object
+    description: Request object for listing the flow designer drafts.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+  ListFlowDraftsResponse:
+    type: object
+    description: Response object for listing the flow drafts.
+    x-workload: true
+    x-client-only: true
+    properties:
+      flowSummaries:
+        type: array
+        description: The flow summaries.
+        items:
+          $ref: '#/definitions/FlowSummary'
   ListInboundConnectionEndpointsRequest:
     type: object
     description: Request object to use to list Inbound Connection Endpoints
@@ -3842,6 +4450,36 @@ definitions:
         description: A list of supported NiFi versions.
         items:
           type: string
+  ListParameterGroupsRequest:
+    type: object
+    description: Request object for listing parameter groups.
+    x-workload: true
+    x-client-only: true
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      projectCrns:
+        type: array
+        description: The list of project CRNs by which to filter the parameter group list.
+        items:
+          type: string
+      searchTerm:
+        type: string
+        description: The search term to filter by parameter group name.
+    required:
+      - environmentCrn
+  ListParameterGroupsResponse:
+    type: object
+    description: Response object for listing parameter groups.
+    x-workload: true
+    x-client-only: true
+    properties:
+      parameterGroups:
+        type: array
+        description: A list of parameter groups.
+        items:
+          $ref: '#/definitions/ParameterGroupSummary'
   ListReportingTasksRequest:
     type: object
     description: Request object for listing the reporting tasks for a deployment
@@ -3867,6 +4505,28 @@ definitions:
         description: The listed reporting tasks.
         items:
           $ref: '#/definitions/ReportingTaskSummary'
+  ListTestSessionsRequest:
+    type: object
+    description: Request object for listing the test sessions.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+  ListTestSessionsResponse:
+    type: object
+    description: Response object for listing the test sessions.
+    x-workload: true
+    x-client-only: true
+    properties:
+      runtimeSessions:
+        type: array
+        description: The runtime sessions.
+        items:
+          $ref: '#/definitions/FlowSummary'
   ListenComponent:
     type: object
     description: Provides subset of metadata of a Listen* component
@@ -4024,6 +4684,210 @@ definitions:
         description: AWS custom storage size, iops and throughput limits
         readOnly: true
         $ref: '#/definitions/AWSNodeStorageProfileMetaData'
+  Parameter:
+    type: object
+    description: Represents a parameter which can be used in a parameter context or a deployed flow.
+    x-workload: true
+    x-client-only: true
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: The name of the parameter.
+      sensitive:
+        type: boolean
+        description: Whether or not the parameter value is sensitive.
+      description:
+        type: string
+        description: A brief explanation of how the parameter is used.
+      value:
+        type: string
+        description: The value of the parameter in this context.
+      valueSet:
+        type: boolean
+        description: Indicates if the value of this parameter is set (i.e. not null).
+        readOnly: true
+      assetReferences:
+        type: array
+        description: The list of asset references, if this parameter is a FILE or FILES type.
+        items:
+          $ref: '#/definitions/AssetReference'
+  ParameterGroup:
+    type: object
+    description: A parameter group represents a collection of parameters that can be used across multiple workloads.
+    x-workload: true
+    x-client-only: true
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: The name of the parameter group.
+      id:
+        type: string
+        description: The parameter group ID.
+      source:
+        type: string
+        description: The source of parameter group creation.
+        enum:
+          - LOCAL
+          - SHARED_FLOW_DRAFT
+          - SHARED
+          - SHARED_PARAMETER_PROVIDER
+      projectId:
+        type: string
+        description: Optional project ID that parameter group is assigned to.
+      projectSummary:
+        description: Optional project summary that the parameter group is assigned to.
+        $ref: '#/definitions/ProjectSummary'
+      usages:
+        type: array
+        description: The list of usages where this parameter group is used.
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ParameterGroupUsage'
+      created:
+        type: integer
+        format: int64
+        description: Creation timestamp of the parameter group.
+      updated:
+        type: integer
+        format: int64
+        description: Timestamp of the last time the parameter group was modified.
+      description:
+        type: string
+        description: The description of the parameter group.
+      crn:
+        type: string
+        description: The CRN of the Parameter Group.
+        readOnly: true
+      createdBy:
+        type: string
+        description: The username of the creator of the parameter group.
+      version:
+        type: integer
+        format: int64
+        description: The version of the parameter group.
+      parameters:
+        type: array
+        description: The parameters in this group.
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/Parameter'
+  ParameterGroupSummary:
+    type: object
+    description: Summary of a parameter group.
+    x-workload: true
+    x-client-only: true
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: The name of the parameter group.
+      id:
+        type: string
+        description: The parameter group ID.
+      source:
+        type: string
+        description: The source of parameter group creation.
+        enum:
+          - LOCAL
+          - SHARED_FLOW_DRAFT
+          - SHARED
+          - SHARED_PARAMETER_PROVIDER
+      projectId:
+        type: string
+        description: Optional project ID that parameter group is assigned to.
+      projectSummary:
+        description: Optional project summary that the parameter group is assigned to.
+        $ref: '#/definitions/ProjectSummary'
+      usages:
+        type: array
+        description: The list of usages where this parameter group is used.
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ParameterGroupUsage'
+      created:
+        type: integer
+        format: int64
+        description: Creation timestamp of the parameter group.
+      updated:
+        type: integer
+        format: int64
+        description: Timestamp of the last time the parameter group was modified.
+      description:
+        type: string
+        description: The description of the parameter group.
+      crn:
+        type: string
+        description: The CRN of the Parameter Group.
+        readOnly: true
+      createdBy:
+        type: string
+        description: The username of the creator of the parameter group.
+      version:
+        type: integer
+        format: int64
+        description: The version of the parameter group.
+  ParameterGroupUsage:
+    type: object
+    description: Represents a resource that uses a parameter group.
+    x-workload: true
+    x-client-only: true
+    required:
+      - resourceId
+      - resourceType
+    properties:
+      resourceId:
+        type: string
+        description: The ID of the resource that uses the parameter group.
+      resourceType:
+        type: string
+        description: The type of the resource that uses the parameter group.
+        enum:
+          - FLOW_DRAFT
+          - DEPLOYED_FLOW
+      parentResourceId:
+        type: string
+        description: The parent-resource ID (e.g., deploymentId when resourceType is DEPLOYED_FLOW).
+      resourceName:
+        type: string
+        description: The name of the resource that uses the parameter group.
+      status:
+        type: string
+        description: The synchronization status between the parameter group and the resource.
+        enum:
+          - SYNCED
+          - UNSYNCED
+          - SYNCING
+          - SYNC_FAILED
+  ParameterRequest:
+    type: object
+    description: Represents a parameter in a parameter group.
+    x-workload: true
+    x-client-only: true
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: The name of the parameter.
+      sensitive:
+        type: boolean
+        description: Whether or not the parameter value is sensitive.
+      description:
+        type: string
+        description: A brief explanation of how the parameter is used.
+      value:
+        type: string
+        description: The value of the parameter in this context.
+      assetReferences:
+        type: array
+        description: The list of asset references. Required if this parameter is a FILE or FILES type.
+        items:
+          $ref: '#/definitions/AssetReference'
   ProjectMeta:
     type: object
     description: The meta information about a project.
@@ -4041,6 +4905,36 @@ definitions:
       name:
         type: string
         description: The name of the group.
+        readOnly: true
+  ProjectSummary:
+    type: object
+    description: Provides a summary of the project.
+    x-workload: true
+    x-client-only: true
+    properties:
+      id:
+        type: string
+        description: The ID of the project.
+        readOnly: true
+      crn:
+        type: string
+        description: The CRN of the project.
+        readOnly: true
+      name:
+        type: string
+        description: The name of the group.
+        readOnly: true
+      description:
+        type: string
+        description: The description of the group.
+        readOnly: true
+      workloadAdministrationGroup:
+        type: string
+        description: The name of the workload administration group for this project.
+        readOnly: true
+      deleting:
+        type: boolean
+        description: Indicates the project is in the process of being deleted.
         readOnly: true
   ReassignResourcesRequest:
     type: object
@@ -4142,6 +5036,30 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  RestartTestSessionRequest:
+    type: object
+    description: Request object for restarting a test session.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - flowDraftCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      flowDraftCrn:
+        type: string
+        description: The CRN for the flow designer draft to be restarted.
+  RestartTestSessionResponse:
+    type: object
+    description: Response object for restarting a flow designer runtime session.
+    x-workload: true
+    x-client-only: true
+    properties:
+      runtimeSession:
+        description: The restarted runtime session.
+        $ref: '#/definitions/RuntimeSession'
   ResumeDeploymentRequest:
     type: object
     description: Request object to resume a deployment.
@@ -4892,6 +5810,36 @@ definitions:
       projectCrn:
         type: string
         description: The project crn that the resource is assigned to. Should be null if resource is not assigned to a project.
+  RuntimeSession:
+    type: object
+    description: Provides details about a flow designer runtime session.
+    x-workload: true
+    x-client-only: true
+    properties:
+      status:
+        description: The workflow status of the deployment for the runtime session.
+        readOnly: true
+        $ref: '#/definitions/DeploymentStatus'
+      runtimeStatus:
+        description: The runtime status of the deployment for the runtime session.
+        readOnly: true
+        $ref: '#/definitions/DeploymentStatus'
+      runtimeVersion:
+        type: string
+        description: Runtime version of NiFi backing this session.
+        readOnly: true
+      createdTimestamp:
+        type: integer
+        format: int64
+        description: Timestamp of the creation of the runtime session.
+      crn:
+        type: string
+        description: The CRN of the deployment for the runtime session.
+        readOnly: true
+      name:
+        type: string
+        description: The name of the deployment for the runtime session.
+        readOnly: true
   ServiceMeta:
     type: object
     description: The meta information about a DataFlow service.
@@ -5133,6 +6081,30 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  SuspendTestSessionRequest:
+    type: object
+    description: Request object for suspending a running test session.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - flowDraftCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      flowDraftCrn:
+        type: string
+        description: The CRN for the flow designer draft to be suspended.
+  SuspendTestSessionResponse:
+    type: object
+    description: Response object for suspending a flow designer runtime session.
+    x-workload: true
+    x-client-only: true
+    properties:
+      runtimeSession:
+        description: The suspended runtime session.
+        $ref: '#/definitions/RuntimeSession'
   TerminateDeploymentRequest:
     type: object
     description: Request object to terminate a deployment.
@@ -5185,6 +6157,30 @@ definitions:
       deployedFlow:
         description: The deployment.
         $ref: '#/definitions/RpcDeployedFlow'
+  TerminateTestSessionRequest:
+    type: object
+    description: Request object for terminating a test session.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - flowDraftCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      flowDraftCrn:
+        type: string
+        description: The CRN for the flow designer draft to be terminated.
+  TerminateTestSessionResponse:
+    type: object
+    description: Response object for terminating a flow designer test session.
+    x-workload: true
+    x-client-only: true
+    properties:
+      runtimeSession:
+        description: The terminated runtime session.
+        $ref: '#/definitions/RuntimeSession'
   UpdateCustomNarConfigurationRequest:
     type: object
     description: Request object to update a custom NAR configuration.
@@ -5430,7 +6426,7 @@ definitions:
         x-deprecated: true
       parameterGroups:
         type: array
-        description: The list of flow parameter groups.
+        description: The list of flow parameter groups. When updating shared parameters, individual shared parameters cannot be updated. All parameters referencing a given shared parameter group need to be updated simultaneously by providing the group id under inheritedParameterGroups, and also explicitly providing these parameters with the sourceParameterGroupId populated.
         items:
           $ref: '#/definitions/FlowParameterGroup'
       kpis:
@@ -5438,6 +6434,11 @@ definitions:
         description: The list of configured KPIs.
         items:
           $ref: '#/definitions/ConfiguredKpi'
+      updateSharedParameterGroupCrns:
+        type: array
+        description: The CRNs of the shared parameter groups to update. They will be updated across all parameter groups.
+        items:
+          type: string
   UpdateFlowInDeploymentResponse:
     type: object
     description: Response object from updating a deployed flow.
@@ -5475,6 +6476,40 @@ definitions:
       deployment:
         description: The deployment.
         $ref: '#/definitions/RpcDeployment'
+  UpdateParameterGroupRequest:
+    type: object
+    description: Request object for updating a parameter group. A parameter with only its name set indicates deletion. A parameter matching an existing name indicates an update. A parameter with a new name indicates an addition.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - parameterGroupCrn
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      parameterGroupCrn:
+        type: string
+        description: The CRN of the Parameter Group.
+        readOnly: true
+      description:
+        type: string
+        description: The description of the parameter group.
+      parameters:
+        type: array
+        description: The parameters in this group.
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ParameterRequest'
+  UpdateParameterGroupResponse:
+    type: object
+    description: Response object for updating a parameter group.
+    x-workload: true
+    x-client-only: true
+    properties:
+      parameterGroup:
+        description: The updated parameter group.
+        $ref: '#/definitions/ParameterGroup'
   UploadAssetRequest:
     type: object
     description: Request object for uploading an asset
@@ -5513,6 +6548,34 @@ definitions:
   UploadAssetResponse:
     type: object
     description: Response for uploading an asset.
+    x-workload: true
+    x-client-only: true
+  UploadParameterAssetRequest:
+    type: object
+    description: Request object for uploading an asset to a parameter.
+    x-workload: true
+    x-client-only: true
+    required:
+      - environmentCrn
+      - filePath
+      - parameterGroupCrn
+      - parameterName
+    properties:
+      environmentCrn:
+        type: string
+        description: The CRN of an environment to execute the command.
+      parameterGroupCrn:
+        type: string
+        description: The CRN of the parameter group.
+      parameterName:
+        type: string
+        description: The name of the parameter.
+      filePath:
+        type: string
+        description: The full local path to the file being uploaded.
+  UploadParameterAssetResponse:
+    type: object
+    description: Response object for uploading a parameter asset.
     x-workload: true
     x-client-only: true
   ValidateCustomNarConfigurationRequest:

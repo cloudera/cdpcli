@@ -15,7 +15,8 @@
 # language governing permissions and limitations under the License.
 import sys
 
-from cdpcli import CDP_ACCESS_KEY_ID_KEY_NAME, \
+from cdpcli import CA_BUNDLE_KEY_NAME, \
+    CDP_ACCESS_KEY_ID_KEY_NAME, \
     CDP_ENDPOINT_URL_KEY_NAME, \
     CDP_PRIVATE_KEY_KEY_NAME, \
     CDP_REGION_KEY_NAME, \
@@ -88,6 +89,8 @@ class ConfigureListCommand(BasicCommand):
                                    ENDPOINT_URL_KEY_NAME)
         self._display_config_value(self._lookup_config(context, FORM_FACTOR_KEY_NAME),
                                    FORM_FACTOR_KEY_NAME)
+        self._display_config_value(self._lookup_config(context, CA_BUNDLE_KEY_NAME),
+                                   CA_BUNDLE_KEY_NAME)
 
     def _display_config_value(self, config_value, config_name):
         truncated_value = (config_value.value[:27] + '...')\

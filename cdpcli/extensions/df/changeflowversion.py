@@ -113,7 +113,7 @@ OPERATION_SHAPES = {
                 'description': 'When specified, ignore the check to validate if '
                                'deployment has inbound connection configured for '
                                'all listen components.'
-            },
+            }
         }
     },
     'ChangeFlowVersionResponse': {

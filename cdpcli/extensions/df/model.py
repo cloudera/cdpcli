@@ -227,14 +227,58 @@ AWS_NODE_STORAGE_PROFILE = {
     'description': 'Custom AWS node storage parameters.'
 }
 
+PARAMETER_GROUP_PARAMETER = {
+    'type': 'object',
+    'description': 'A parameter in a parameter group.',
+    'required': ['name'],
+    'properties': {
+        'name': {
+            'type': 'string',
+            'description': 'Name for the parameter.'
+        },
+        'value': {
+            'type': 'string',
+            'description': 'Value for the named parameter.',
+            'x-no-paramfile': 'true'
+        },
+        'sensitive': {
+            'type': 'boolean',
+            'description': 'Whether the parameter is sensitive.'
+        },
+        'description': {
+            'type': 'string',
+            'description': 'Description for the parameter.'
+        },
+        'assetReferences': {
+            'type': 'array',
+            'description': 'Local paths of the assets for the named parameter.',
+            'items': {
+                'type': 'string'
+            }
+        }
+    }
+}
+
 PARAMETER_GROUP_REFERENCES = {
     'type': 'object',
-    'description': 'A reference to the latest version of a shared parameter group',
-    'required': ['groupId'],
+    'description': 'Parameter object for the NiFi flow deployment.',
+    'required': ['name'],
     'properties': {
-        'groupId': {
+        'name': {
             'type': 'string',
-            'description': 'The id of the parameter group'
+            'description': 'Name for the parameter.'
+        },
+        'value': {
+            'type': 'string',
+            'description': 'Value for the named parameter.',
+            'x-no-paramfile': 'true'
+        },
+        'assetReferences': {
+            'type': 'array',
+            'description': 'Local paths of the assets for the named parameter.',
+            'items': {
+                'type': 'string'
+            }
         }
     }
 }
