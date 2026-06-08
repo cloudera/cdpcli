@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.160
+  version: 0.9.161
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -654,6 +654,9 @@ definitions:
       ssdUsed:
         type: boolean
         description: If true, SSD would have been be used for workload filesystem.
+      version:
+        type: string
+        description: The version of the CDE service.
   ServiceResources:
     type: object
     description: Object to store resources for a CDE service.
@@ -1447,6 +1450,10 @@ definitions:
         additionalProperties:
           type: string
           description: Spark configs that will be applied to all the spark jobs inside a virtual cluster.
+      enableComputeOverride:
+        type: boolean
+        description: Whether to enable job-level override for how drivers and executors run in the Virtual Cluster.
+        x-form-factors: public
   CreateVcResponse:
     type: object
     description: Response object for CreateVc method.
@@ -1520,6 +1527,10 @@ definitions:
         description: Discard the Spark configs inside a VC.
         type: boolean
         default: false
+      enableComputeOverride:
+        type: boolean
+        description: Whether to enable job-level override for how drivers and executors run in the Virtual Cluster.
+        x-form-factors: public
   UpdateVcResponse:
     type: object
     description: Response object for updateVc method.

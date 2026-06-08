@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.160
+  version: 0.9.161
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -760,6 +760,52 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+      x-form-factors: public,private
+  /api/v1/dw/createConnectorTestJob:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: Test Trino Connector in a CDW cluster.
+      description: Test Trino Connector in a CDW cluster.
+      operationId: createConnectorTestJob
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateConnectorTestJobRequest'
+      responses:
+        '200':
+          description: Connection test job created
+          schema:
+            $ref: '#/definitions/CreateConnectorTestJobResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+      x-form-factors: public,private
+  /api/v1/dw/listConnectorTestJobs:
+    post:
+      x-no-compatibility-guarantee: true
+      summary: List test connector jobs.
+      description: List test connector jobs.
+      operationId: listConnectorTestJobs
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListConnectorTestJobsRequest'
+      responses:
+        '200':
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/ListConnectorTestJobsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
       x-form-factors: public,private
   /api/v1/dw/listConnectors:
     post:
@@ -3825,6 +3871,92 @@ definitions:
       result:
         description: The ID of the newly created Connector.
         $ref: '#/definitions/Connector'
+  CreateConnectorTestJobRequest:
+    x-form-factors: public,private
+    type: object
+    description: Request for the createConnectorTestJob call.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+      connectorId:
+        type: string
+        description: The ID of the connector to test.
+      connectorName:
+        type: string
+        description: The name of the connector to test.
+      config:
+        type: object
+        description: Key-value type configurations.
+        additionalProperties:
+          type: string
+  CreateConnectorTestJobResponse:
+    x-form-factors: public,private
+    type: object
+    description: Response for the createConnectorTestJob call.
+    properties:
+      jobId:
+        type: string
+        description: The ID of the created test job.
+  GetConnectorTestJob:
+    x-form-factors: public,private
+    type: object
+    description: Test connector job details.
+    properties:
+      jobId:
+        type: string
+        description: The ID of the test job.
+      jobStartTime:
+        type: string
+        format: date-time
+        description: The start time of the test job.
+      jobFinishTime:
+        type: string
+        format: date-time
+        description: The finish time of the test job.
+      outputLog:
+        type: string
+        description: The output log of the test job.
+      status:
+        type: string
+        description: Represents the possible status values of a test connector job.
+        enum:
+          - Starting
+          - Succeeded
+          - Failed
+          - Running
+          - Unknown
+          - Deleted
+      labels:
+        type: object
+        description: Additional key-value pair attributes associated with the test connector job.
+        additionalProperties:
+          type: string
+  ListConnectorTestJobsRequest:
+    x-form-factors: public,private
+    type: object
+    description: Request for the listConnectorTestJobs call.
+    required:
+      - clusterId
+    properties:
+      clusterId:
+        type: string
+        description: The ID of the cluster.
+      jobId:
+        type: string
+        description: The ID of the specific job to fetch (optional).
+  ListConnectorTestJobsResponse:
+    x-form-factors: public,private
+    type: object
+    description: Response for the listConnectorTestJobs call.
+    properties:
+      results:
+        type: array
+        description: List of test connector jobs.
+        items:
+          $ref: '#/definitions/GetConnectorTestJob'
   DeleteConnectorRequest:
     x-form-factors: public,private
     type: object
