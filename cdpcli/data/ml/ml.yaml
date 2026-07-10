@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.161
+  version: 0.9.162
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -417,6 +417,28 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/fetchAiRegistriesStorageConfig:
+    post:
+      summary: Fetch AI Registry storage configuration for a Cloudera AI Inference Service.
+      description: Returns installed AI Registries in the environment with S3 fields from the database and link status from cluster secrets.
+      operationId: fetchAiRegistriesStorageConfig
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/FetchAiRegistriesStorageConfigRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/FetchAiRegistriesStorageConfigResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: false
   /api/v1/ml/getAuditEvents:
     post:
       summary: Gets all the events belong to a workbench crn.
@@ -2250,6 +2272,9 @@ definitions:
       workspaceCrn:
         type: string
         description: The CRN of the workbench. If CRN is specified only the CRN is used for identifying the workbench, environment and name arguments are ignored.
+      overrideUpgrade:
+        type: boolean
+        description: Override parameter to perform Upgrade via Restore Based Upgrade
       skipValidation:
         type: boolean
         description: Whether to skip pre-flight validations before performing the restore-based upgrade.
@@ -3125,14 +3150,6 @@ definitions:
       enableFineGrainedAccessControl:
         type: boolean
         description: The boolean flag to enable fine-grained access control. By default, this flag is disabled.
-      rangerServicePrincipal:
-        type: string
-        description: Custom Ranger service principal for fine-grained authorization. If not provided, defaults to the machine user workload username.
-        x-form-factors: private
-      knoxTopologyName:
-        type: string
-        description: Custom Knox topology name for API key generation. If not provided, defaults to "cdp-proxy-api".
-        x-form-factors: private
   MlServingOzoneCreds:
     type: object
     description: Request object for the MlServingOzoneCreds method.
@@ -3630,9 +3647,62 @@ definitions:
       s3Creds:
         description: The S3 credentials to update.
         $ref: '#/definitions/MlServingOzoneCreds'
+      registryNamespace:
+        type: string
+        description: The namespace of the AI Registry
+      linkRegistry:
+        type: boolean
+        description: Whether to link the registry
+      envName:
+        type: string
+        description: The environment name of the linked registry
     x-form-factors: private
   UpdateMlServingAppS3CredsResponse:
     type: object
     description: Response object for the UpdateMlServingAppS3Creds method.
+    x-form-factors: private
+  FetchAiRegistriesStorageConfigRequest:
+    type: object
+    description: Request object for the FetchAiRegistriesStorageConfig method.
+    required:
+      - appCrn
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service.
+    x-form-factors: private
+  AiRegistryStorageConfigEntry:
+    type: object
+    description: One AI Registry storage row keyed by Kubernetes namespace in FetchAiRegistriesStorageConfigResponse.
+    properties:
+      s3AccessId:
+        type: string
+        description: S3-compatible access key ID from the database.
+      s3SecretKey:
+        type: string
+        description: S3-compatible secret access key from the database.
+        x-sensitive: true
+      s3EndpointUrl:
+        type: string
+        description: S3-compatible endpoint URL from the database.
+      s3Region:
+        type: string
+        description: S3-compatible region from the database.
+      linkRegistry:
+        type: boolean
+        description: True when this registry is linked per ai-registry-secrets for its namespace.
+      environmentName:
+        type: string
+        description: CDP environment name for this AI Registry (from the database).
+    x-form-factors: private
+  FetchAiRegistriesStorageConfigResponse:
+    type: object
+    description: Response object for the FetchAiRegistriesStorageConfig method.
+    properties:
+      registries:
+        type: object
+        description: Map from AI Registry Kubernetes namespace to storage config.
+        additionalProperties:
+          $ref: '#/definitions/AiRegistryStorageConfigEntry'
     x-form-factors: private
 x-audit: true

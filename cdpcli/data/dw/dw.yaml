@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.161
+  version: 0.9.162
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -4117,7 +4117,8 @@ definitions:
     enum:
       - hive
       - impala
-    description: 'Type of Virtual Warehouse: ''hive'' or ''impala''.'
+      - trino
+    description: 'Type of Virtual Warehouse: ''hive'', ''impala'', ''trino''.'
   AutoscalingOptionsCreateRequest:
     type: object
     description: Auto-scaling configuration for a Virtual Warehouse.

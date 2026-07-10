@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.161
+  version: 0.9.162
   title: Cloudera Datalake Service
   license:
     name: Apache 2.0
@@ -1134,6 +1134,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/UpdateToAwsImdsV1Response'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/datalake/setDefaultJavaVersion:
+    post:
+      summary: Configures the default Java version for the Data Lake.
+      description: Configures the default Java version for the Data Lake. This command updates the system's default Java version and will restart both the Cluster Manager and the services.
+      operationId: setDefaultJavaVersion
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetDefaultJavaVersionRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/SetDefaultJavaVersionResponse'
         default:
           description: The default response on an error.
           schema:
@@ -3985,6 +4006,30 @@ definitions:
         type: integer
         format: int32
         description: The modified storage size for the database.
+  SetDefaultJavaVersionRequest:
+    type: object
+    description: Request object for setting the default Java version on the Data Lake cluster.
+    required:
+      - crn
+      - javaVersion
+    properties:
+      crn:
+        type: string
+        description: The CRN of the Data Lake cluster.
+      javaVersion:
+        type: string
+        description: The default Java version to be set on the Data Lake cluster.
+      rollingRestart:
+        default: false
+        type: boolean
+        description: If set to true Cloudera Manager will use Rolling Restart to restart services running on the cluster. This operation can take a long time. Default value is false.
+  SetDefaultJavaVersionResponse:
+    type: object
+    description: Response object for setting the default Java version on the Data Lake cluster.
+    properties:
+      operationId:
+        type: string
+        description: The id of the related operation.
   MigrateSkusRequest:
     type: object
     description: Request object for migrating SKUs.
