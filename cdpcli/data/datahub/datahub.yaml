@@ -6,7 +6,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.162
+  version: 0.9.163
   title: Cloudera Data hub Service
   license:
     name: Apache 2.0
@@ -2040,11 +2040,8 @@ definitions:
         type: string
         description: The CRN of the cluster template used for the cluster creation.
       certificateExpirationState:
-        type: string
-        description: Indicates the certificate status on the cluster.
-        enum:
-          - VALID
-          - HOST_CERT_EXPIRING
+        $ref: '#/definitions/CertificateExpirationState'
+        description: Indicates the certificate expiration status on the cluster.
   Recipe:
     type: object
     description: Information about a recipe.
@@ -5205,3 +5202,9 @@ definitions:
       operationId:
         type: string
         description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+  CertificateExpirationState:
+    type: string
+    description: Indicates the certificate expiration status on the cluster.
+    enum:
+      - VALID
+      - HOST_CERT_EXPIRING

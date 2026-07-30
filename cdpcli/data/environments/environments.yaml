@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.162
+  version: 0.9.163
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -3022,11 +3022,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeIpa:
         $ref: '#/definitions/AWSFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -3132,11 +3127,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeIpa:
         $ref: '#/definitions/AWSFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -3596,11 +3586,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeIpa:
         $ref: '#/definitions/AzureFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -3721,11 +3706,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeIpa:
         $ref: '#/definitions/GCPFreeIpaCreationRequest'
         description: The FreeIPA creation request for the environment
@@ -4129,11 +4109,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: When this is enabled, diagnostic information about job and query execution is sent to Workload Manager for Data Hub clusters created within this environment.
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] When true, this will report additional diagnostic information back to Cloudera.'
       freeipa:
         description: Details of FreeIPA instance associated with this environment.
         $ref: '#/definitions/FreeipaDetails'
@@ -5827,11 +5802,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: Flag to enable environment level workload analytics.
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] Flag to enable environment level deployment log collection.'
   SetTelemetryFeaturesResponse:
     type: object
     description: Response object to enable environment level telemetry features.
@@ -5912,11 +5882,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: Flag to enable account level workload analytics. (that will be used as a default for environment)
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] Flag to enable environment level deployment log collection.'
       rules:
         type: array
         description: List of anonymization rules that are applied on logs that are shipped to Cloudera
@@ -5929,11 +5894,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: Flag to enable account level workload analytics. (that will be used as a default for environment)
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] Flag to enable account level deployment log collection. (that will be used as a default for environment)'
       rules:
         type: array
         description: List of anonymization rules that are applied on logs that are shipped to Cloudera
@@ -5949,11 +5909,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: Flag to enable account level workload analytics. (that will be used as a default for environment)
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] Flag to enable account level deployment log collection. (that will be used as a default for environment)'
       rules:
         type: array
         description: List of anonymization rules that are applied on logs that are shipped to Cloudera
@@ -5969,11 +5924,6 @@ definitions:
       workloadAnalytics:
         type: boolean
         description: Flag to enable account level workload analytics. (that will be used as a default for environment)
-      reportDeploymentLogs:
-        type: boolean
-        default: false
-        x-deprecated: true
-        description: '[Deprecated] Flag to enable account level deployment log collection. (that will be used as a default for environment)'
       rules:
         type: array
         description: List of anonymization rules that are applied on logs that are shipped to Cloudera
