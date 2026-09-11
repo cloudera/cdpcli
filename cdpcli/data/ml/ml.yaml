@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.163
+  version: 0.9.164
   title: Cloudera AI
   license:
     name: Apache 2.0
@@ -377,8 +377,8 @@ paths:
       x-mutating: false
   /api/v1/ml/describeWorkspaceBackup:
     post:
-      summary: Describe backup snaphot of a workbench.
-      description: Describe backup snaphot of a workbench.
+      summary: Describe backup snapshot of a workbench.
+      description: Describe backup snapshot of a workbench.
       operationId: describeWorkspaceBackup
       parameters:
         - name: input
@@ -1261,6 +1261,50 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       x-mutating: true
+  /api/v1/ml/uploadCertificate:
+    post:
+      summary: Upload custom CA certificate for AI Inference Service.
+      description: Uploads a custom CA certificate for the AI Inference Service trust store (private cloud only).
+      operationId: uploadCertificate
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UploadCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UploadCertificateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
+  /api/v1/ml/uploadModelRegistryCertificate:
+    post:
+      summary: Upload custom CA certificate for an AI Registry instance.
+      description: Uploads a CA certificate to be trusted by the AI Registry service. Supported on CSK only.
+      operationId: uploadModelRegistryCertificate
+      x-form-factors: private
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UploadModelRegistryCertificateRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/UploadModelRegistryCertificateResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+      x-mutating: true
 definitions:
   Error:
     type: object
@@ -1908,14 +1952,14 @@ definitions:
     properties:
       backupCrn:
         type: string
-        description: The CRN of the backup snaphot.
+        description: The CRN of the backup snapshot.
   DescribeWorkspaceBackupResponse:
     type: object
     description: Response object for DescribeWorkspaceBackup method.
     properties:
       backupCrn:
         type: string
-        description: The CRN of the backup snaphot.
+        description: The CRN of the backup snapshot.
       backupName:
         type: string
         description: The name of the backup snapshot.
@@ -2256,6 +2300,12 @@ definitions:
       upgradeType:
         type: string
         description: 'The type of upgrade used for the workbench: "Inplace" or "RestoreBased". Only visible when set.'
+      serviceQuota:
+        description: Quota configured for the cml service resource pool.
+        $ref: '#/definitions/ResourceQuota'
+      serviceAvailableQuota:
+        description: Available quota for the cml service resource pool.
+        $ref: '#/definitions/ResourceQuota'
   UpgradeWorkspaceRequest:
     type: object
     description: Request object for the UpgradeWorkspace method.
@@ -3011,6 +3061,30 @@ definitions:
     type: object
     description: Response for refreshing AI registry configmap with enhanced trust store functionality.
     x-form-factors: private
+  UploadModelRegistryCertificateRequest:
+    type: object
+    description: Request object for the UploadModelRegistryCertificate method.
+    required:
+      - modelRegistryCrn
+      - certificateInfo
+    properties:
+      modelRegistryCrn:
+        type: string
+        description: The CRN of the AI Registry instance to upload a certificate for.
+      certificateInfo:
+        type: string
+        description: Self Signed CA Cert details (base64-encoded PEM).
+    x-form-factors: private
+  UploadModelRegistryCertificateResponse:
+    type: object
+    description: Response object for the UploadModelRegistryCertificate method.
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        description: Status of the upload operation.
+    x-form-factors: private
   ResourceQuota:
     type: object
     description: Resource quota configuration for quota management.
@@ -3202,6 +3276,30 @@ definitions:
   DeleteMlServingAppResponse:
     type: object
     description: Response object for the DeleteMlServingApp method.
+  UploadCertificateRequest:
+    type: object
+    description: Request object for the UploadCertificate method.
+    required:
+      - appCrn
+      - certificateInfo
+    properties:
+      appCrn:
+        type: string
+        description: The CRN of the Cloudera AI Inference Service to upload a certificate for.
+      certificateInfo:
+        type: string
+        description: Self Signed CA Cert details (base64-encoded PEM).
+    x-form-factors: private
+  UploadCertificateResponse:
+    type: object
+    description: Response object for the UploadCertificate method.
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        description: Status of the upload operation.
+    x-form-factors: private
   RefreshAiInferenceRequest:
     type: object
     description: Request object for the RefreshAiInference method.

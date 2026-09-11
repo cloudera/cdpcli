@@ -5,7 +5,7 @@ x-form-factors: public
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.163
+  version: 0.9.164
   title: Cloudera DataCatalog Service
   license:
     name: Apache 2.0
@@ -459,6 +459,28 @@ paths:
           description: The default response on an error.
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/datacatalog/getFgacStatusByAssets:
+    post:
+      summary: get FGAC (Fine-Grained Access Control) status by assets.
+      description: Detects whether tables being added to a Data Share have matching Ranger FGAC (Fine-Grained Access Control) policies.
+      operationId: getFgacStatusByAssets
+      x-entitlement: CDP_DATA_SHARE_ADMIN
+      x-mutating: false
+      parameters:
+        - in: body
+          name: input
+          required: true
+          schema:
+            $ref: '#/definitions/GetFgacStatusByAssetsRequest'
+      responses:
+        200:
+          description: Map of asset identifier to FGAC enabled status.
+          schema:
+            $ref: '#/definitions/GetFgacStatusByAssetsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
@@ -470,6 +492,48 @@ definitions:
       message:
         type: string
         description: The error message.
+  GetFgacStatusByAssetsRequest:
+    type: object
+    description: Assets to get FGAC status for.
+    required:
+      - assets
+      - datalakeCrn
+      - environmentCrn
+    properties:
+      datalakeCrn:
+        type: string
+        description: The CRN of the Data Lake where the assets are located.
+      environmentCrn:
+        type: string
+        description: The CRN of the Environment where the assets are located.
+      assets:
+        type: array
+        description: List of assets to get FGAC status for.
+        items:
+          $ref: '#/definitions/AssetForFGACStatus'
+  AssetForFGACStatus:
+    type: object
+    description: Asset for FGAC status.
+    required:
+      - databaseName
+      - tableName
+    properties:
+      databaseName:
+        type: string
+        description: Name of the database.
+      tableName:
+        type: string
+        description: Name of the table.
+  GetFgacStatusByAssetsResponse:
+    type: object
+    description: Map of asset identifier to FGAC enabled status.
+    properties:
+      listOfFgacStatus:
+        type: object
+        description: list of FGAC statuses for the assets.
+        additionalProperties:
+          type: string
+          description: FGAC enabled status for the asset.
   DeleteExternalUserRequest:
     type: object
     description: Delete external user request.

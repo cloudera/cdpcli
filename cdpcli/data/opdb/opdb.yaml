@@ -5,7 +5,7 @@ x-products: CDP
 x-form-factors: public
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.163
+  version: 0.9.164
   title: Operational Database service
   license:
     name: Apache 2.0
@@ -654,6 +654,9 @@ definitions:
       customInstanceTypes:
         description: Provide custom VM instance types for master, worker, gateway, leader, edge and compute groups.
         $ref: '#/definitions/CustomInstanceTypes'
+      encryptionProfile:
+        type: string
+        description: The encryption profile name or CRN that manages the encryption.
   CustomInstanceTypes:
     type: object
     description: Custom VM Instance Types.

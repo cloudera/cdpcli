@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.163
+  version: 0.9.164
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -2210,6 +2210,27 @@ paths:
           description: Expected response to a valid request.
           schema:
             $ref: '#/definitions/GetTrustCleanupCommandsResponse'
+        default:
+          description: The default response on an error.
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/environments2/prepareFreeipaUpgrade:
+    post:
+      summary: Prepares and validates an environment for FreeIPA upgrade.
+      description: Runs pre-upgrade checks to minimize failure risk during the upgrade process. As part of validation, a temporary load balancer is provisioned to verify network permissions and is automatically deleted upon completion.
+      operationId: prepareFreeipaUpgrade
+      x-mutating: true
+      parameters:
+        - name: input
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PrepareFreeipaUpgradeRequest'
+      responses:
+        200:
+          description: Expected response to a valid request.
+          schema:
+            $ref: '#/definitions/PrepareFreeipaUpgradeResponse'
         default:
           description: The default response on an error.
           schema:
@@ -7021,3 +7042,30 @@ definitions:
         format: int64
         minimum: 1
         description: GPU quota (in Cores) for the Environment. Must be a positive number. By default, a quota won't be set for this resource type in the environment.
+  PrepareFreeipaUpgradeRequest:
+    type: object
+    description: Request object for FreeIPA upgrade preparation.
+    required:
+      - environment
+    properties:
+      environment:
+        type: string
+        description: The name or CRN of the environment.
+      imageId:
+        type: string
+        description: Target image ID for upgrade.
+      allowMajorOsUpgrade:
+        type: boolean
+        description: Allows the upgrade to a subsequent major OS version in the series.
+  PrepareFreeipaUpgradeResponse:
+    type: object
+    description: Response object for FreeIPA upgrade preparation.
+    required:
+      - flowId
+    properties:
+      flowId:
+        type: string
+        description: Flow ID of the FreeIPA upgrade preparation flow.
+      operationId:
+        description: Unique operation ID assigned to this command execution. Use this identifier with 'get-operation' to track status and retrieve detailed results.
+        type: string
