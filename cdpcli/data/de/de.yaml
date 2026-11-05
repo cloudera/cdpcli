@@ -5,7 +5,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.164
+  version: 0.9.165-dirty
   title: Cloudera Data Engineering
   license:
     name: Apache 2.0
@@ -1665,6 +1665,10 @@ definitions:
         type: integer
         format: int64
         description: The ID of the backup to describe.
+      includeRestoreRequest:
+        type: boolean
+        default: false
+        description: When true, the backup restoreRequest is included in the response.
   DescribeBackupResponse:
     type: object
     description: Response object for Describe Backup command.
@@ -1736,6 +1740,9 @@ definitions:
       archiveLocation:
         type: string
         description: Archive location under the base path.
+      restoreRequest:
+        type: string
+        description: The backup restore request. Only populated when describe-backup is called with includeRestoreRequest set to true.
   GetBackupLogsRequest:
     type: object
     description: Request object for Get Backup Logs command.
@@ -1885,6 +1892,9 @@ definitions:
         additionalProperties:
           type: string
         description: Optional service property override. Specified properties will be merged with backup properties.
+      serviceConfigReplacement:
+        type: string
+        description: Optional final service config override as a JSON string, passed through to the restore backend as-is. At most one of serviceConfigReplacement or servicePropertyOverride may be specified.
   RestoreServiceResponse:
     type: object
     description: Response object for Restore Service command.

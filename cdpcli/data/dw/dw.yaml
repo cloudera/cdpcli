@@ -4,7 +4,7 @@ x-products: CDP
 x-form-factors: public,private
 x-cdp-releases: PUBLIC
 info:
-  version: 0.9.164
+  version: 0.9.165-dirty
   title: Cloudera Data Warehouse [EXPERIMENTAL]
   license:
     name: Apache 2.0
@@ -4315,6 +4315,29 @@ definitions:
       impalaExecutorGroupSets:
         $ref: '#/definitions/ImpalaExecutorGroupSetsUpdateRequest'
         description: Re-configures executor group sets for workload aware autoscaling.
+      trinoDisableAutoScaling:
+        type: boolean
+        description: Disables Auto-scaling for Trino VW.
+      trinoMaxWorkerCount:
+        type: integer
+        format: int32
+        description: Maximum number of worker nodes in a Trino VW.
+      trinoMinWorkerCount:
+        type: integer
+        format: int32
+        description: Minimum number of worker nodes in a Trino VW.
+      trinoShutdownGracePeriod:
+        type: integer
+        format: int32
+        description: Grace period in seconds before shutting down Trino workers.
+      trinoScaleDownDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale down threshold in seconds.
+      trinoScaleUpDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale up threshold in seconds.
   ImpalaHASettingsUpdateRequest:
     type: object
     description: High Availability settings update options for the Impala Virtual Warehouse.
@@ -4394,6 +4417,29 @@ definitions:
       impalaExecutorGroupSets:
         $ref: '#/definitions/ImpalaExecutorGroupSetsResponse'
         description: Configurations of executor groups sets for workload aware autoscaling.
+      trinoDisableAutoScaling:
+        type: boolean
+        description: Disables Auto-scaling for Trino VW.
+      trinoMaxWorkerCount:
+        type: integer
+        format: int32
+        description: Maximum number of worker nodes in a Trino VW.
+      trinoMinWorkerCount:
+        type: integer
+        format: int32
+        description: Minimum number of worker nodes in a Trino VW.
+      trinoShutdownGracePeriod:
+        type: integer
+        format: int32
+        description: Grace period in seconds before shutting down Trino workers.
+      trinoScaleDownDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale down threshold in seconds.
+      trinoScaleUpDelaySeconds:
+        type: integer
+        format: int32
+        description: Scale up threshold in seconds.
   ImpalaHASettingsOptionsResponse:
     type: object
     description: Impala High Availability settings for a Virtual Warehouse.
@@ -5689,6 +5735,7 @@ definitions:
           - medium
           - large
           - waa
+          - custom
       nodeCount:
         type: integer
         format: int32

@@ -6,7 +6,7 @@ x-form-factors: public,private
 x-cdp-releases: PUBLIC
 x-audit: true
 info:
-  version: 0.9.164
+  version: 0.9.165-dirty
   title: Cloudera Environments Service
   license:
     name: Apache 2.0
@@ -1584,8 +1584,8 @@ paths:
             $ref: '#/definitions/Error'
   /api/v1/environments2/updateTags:
     post:
-      summary: Updates the user defined tags of the given environment. The newly added tags will only be used for the Cloudera Data Hub clusters created within the environment after the new tags were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain with the tags originally defined during environment creation.
-      description: Updates the user defined tags of the given environment. The newly added tags will only be used for the Cloudera Data Hub clusters created within the environment after the new tags were added. All the existing environment resources such as the Data Lake, FreeIPA, and any existing Cloudera Data Hub clusters will remain with the tags originally defined during environment creation.
+      summary: Updates the user-defined tags of the given environment.
+      description: Updates the user-defined tags of the given environment. Resources created after the update inherit the updated tags. By default, tags on existing resources remain unchanged. Set updateTagsOnExistingResources to true to also propagate the updated tags to existing resources in the environment, including FreeIPA, Data Lake, and Data Hub resources. Updating tags on existing cloud resources may require additional permissions in the environment credential.
       operationId: updateTags
       x-mutating: true
       parameters:
@@ -2538,6 +2538,10 @@ definitions:
         additionalProperties:
           type: string
           description: An individual tag value.
+      updateTagsOnExistingResources:
+        type: boolean
+        default: false
+        description: When true, propagates the updated user-defined environment tags to existing resources in the environment. When false or omitted, tags on existing resources remain unchanged. Updating tags on existing cloud resources may require additional permissions in the environment credential.
   UpdateTagsResponse:
     type: object
     description: Response object for an update environment tags request.

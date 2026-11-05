@@ -7,7 +7,7 @@ x-cdp-releases: PUBLIC
 x-audit: true
 x-extensions: pvcapipath
 info:
-  version: 0.9.164
+  version: 0.9.165-dirty
   title: Cloudera IAM Service
   license:
     name: Apache 2.0
@@ -1720,7 +1720,6 @@ paths:
       summary: Sets the SAML AuthnRequest signing key and verification certificate.
       description: Sets the SAML AuthnRequest signing key and verification certificate. The signing key will be used by CDP to sign the AuthnRequest and the verification certificate(s) will be used by the customer's Identity Provider to verify the AuthnRequest. These keys are generated and managed by the customer. The API always replaces the previously stored signing key and verification certificates with the given key and certificates. The parameters that are omitted from the request will be cleared.
       operationId: setSamlAuthnRequestSigningKey
-      x-form-factors: private
       x-entitlement: IAM_SIGN_SAML_AUTHN_REQUEST_BY_EXTERNAL_KEY
       x-right: iam/setSamlAuthnRequestSigningKey
       x-mutating: true
@@ -2247,19 +2246,15 @@ definitions:
         type: string
         format: date-time
         description: The date when SAML AuthnRequest signing key and verification certificates were set or cleared.
-        x-form-factor: private
       authnRequestSigningKeyDefined:
         type: boolean
         description: Whether the AuthnRequest signing key is set or cleared.
-        x-form-factor: private
       currentAuthnRequestVerificationCertificateDefined:
         type: boolean
         description: Whether the current AuthnRequest verification certificate is set or cleared.
-        x-form-factor: private
       nextAuthnRequestVerificationCertificateDefined:
         type: boolean
         description: Whether the next AuthnRequest verification certificate is set or cleared.
-        x-form-factor: private
       samlResponseEncryptionDecryptionConfigurationLastUpdated:
         type: string
         format: date-time
@@ -4268,7 +4263,6 @@ definitions:
   SetSamlAuthnRequestSigningKeyRequest:
     type: object
     description: Request object for setting the SAML AuthnRequest signing key and verification certificate.
-    x-form-factor: private
     required:
       - samlProvider
     properties:
@@ -4291,7 +4285,6 @@ definitions:
   SetSamlAuthnRequestSigningKeyResponse:
     type: object
     description: Response object for setting the SAML AuthnRequest signing key and verification certificate.
-    x-form-factor: private
     required:
       - authnRequestConfigurationLastUpdated
       - authnRequestSigningKeyDefined

@@ -461,6 +461,43 @@ class CreateDeploymentOperationCaller(CLIOperationCaller):
                                        service_name='df',
                                        operation_name='createDeployment')
 
+        self._validate_parameter_groups(parameters.get('parameterGroups', None))
+
+    def _validate_parameter_groups(self, parameter_groups):
+        """
+        Validate the structure of the --parameter-groups payload before it is
+        used, so a malformed payload produces a clear error instead of a raw
+        KeyError deep in asset upload or deployment creation.
+        """
+        if parameter_groups is None:
+            return
+
+        base_msg = ('Invalid --parameter-groups payload: each parameter group '
+                    'must be an object with a "name" (string) and "parameters" '
+                    '(array).')
+
+        def _raise(detail):
+            raise DfExtensionError(err_msg='{} {}'.format(base_msg, detail),
+                                   service_name='df',
+                                   operation_name='createDeployment')
+
+        if not isinstance(parameter_groups, list):
+            _raise('The payload must be an array of parameter groups.')
+
+        for index, parameter_group in enumerate(parameter_groups):
+            if not isinstance(parameter_group, dict):
+                _raise('Group at index {} is not an object.'.format(index))
+            if not isinstance(parameter_group.get('name', None), str):
+                _raise('Group at index {} is missing "name".'.format(index))
+            group_parameters = parameter_group.get('parameters', None)
+            if not isinstance(group_parameters, list):
+                _raise('Group at index {} is missing "parameters".'.format(index))
+            for parameter in group_parameters:
+                if not isinstance(parameter, dict) or \
+                        not isinstance(parameter.get('name', None), str):
+                    _raise('A parameter in group at index {} is missing '
+                           '"name".'.format(index))
+
     def _create_deployment(self,
                            df_workload_client,
                            deployment_request_crn,

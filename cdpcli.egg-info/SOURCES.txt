@@ -72,6 +72,7 @@ cdpcli/data/imagecatalog/imagecatalog.yaml
 cdpcli/data/lakehouseopt/lakehouseopt.yaml
 cdpcli/data/ml/ml.yaml
 cdpcli/data/opdb/opdb.yaml
+cdpcli/data/publicendpointmanagement/publicendpointmanagement.yaml
 cdpcli/data/replicationmanager/replicationmanager.yaml
 cdpcli/doc/__init__.py
 cdpcli/doc/docstringparser.py

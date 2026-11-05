@@ -110,6 +110,17 @@ class EndpointResolver(object):
             return "%s://console.%s.cdp.cloudera.com:%d/consoleauth/%s" % \
                 (scheme, region, port, path)
 
+    def _supports_cdp(self, products):
+        """Whether a service can be reached via a CDP-style endpoint, i.e., 'CDP'
+        is one of its declared products. Services can declare more than one
+        product (e.g., ['ALTUS', 'CDP']), so this is a superset of a service
+        being CDP-only (products == ['CDP']).
+
+        :param products: service products (ALTUS or CDP)
+        :returns: True if 'CDP' is one of the service's products
+        """
+        return 'CDP' in products
+
     def _substitute_custom_endpoint(self, endpoint_url, service_name, prefix, products):
         """Applies string formatting for one %s value.
 
@@ -121,7 +132,11 @@ class EndpointResolver(object):
         :returns: formatted string
         """
         # For an explicit endpoint URL, swap in the service name (Altus) or prefix
-        # (CDP) if there is a spot for it, and then return it.
+        # (CDP) if there is a spot for it, and then return it. Note this is
+        # products == ['CDP'] rather than _supports_cdp(products): a service with
+        # multiple products (e.g. ['ALTUS', 'CDP']) still uses Altus-style
+        # service_name substitution here, since that's the long-standing
+        # convention for its templated URLs (e.g. %sapi.thunderhead-*.cloudera.com).
         if endpoint_url.count('%s') == 1:
             if products == ['CDP']:
                 return endpoint_url % prefix
@@ -193,6 +208,21 @@ class EndpointResolver(object):
                                                         service_name, prefix, products)
             region = self._read_region_from_config(region, config)
             return self._construct_cdp_endpoint(scheme, prefix, region, port)
+        elif self._supports_cdp(products):
+            # A service with more than one product (e.g., ['ALTUS', 'CDP']) still
+            # honors an explicitly configured CDP endpoint, e.g. for Private Cloud.
+            # If none is configured, fall through to the same Altus config/default
+            # resolution as a pure-Altus service, unchanged.
+            endpoint_from_config = config.get(EndpointResolver.CDP_ENDPOINT_URL_KEY_NAME)
+            if endpoint_from_config is not None:
+                return self._substitute_custom_endpoint(endpoint_from_config,
+                                                        service_name, prefix, products)
+            endpoint_from_config = config.get(EndpointResolver.ENDPOINT_URL_KEY_NAME)
+            if endpoint_from_config is not None:
+                return self._substitute_custom_endpoint(endpoint_from_config,
+                                                        service_name, prefix, products)
+            region = self._read_region_from_config(region, config)
+            return self._construct_altus_endpoint(service_name, scheme, region, port)
         else:
             # If an Altus endpoint base URL has been configured, use it, swapping in the
             # prefix if there is a spot for it. Otherwise, construct a default URL for
